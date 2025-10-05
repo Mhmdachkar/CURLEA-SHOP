@@ -1,3 +1,4 @@
+import React from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -574,6 +575,8 @@ const ProductGridWithCursorFollower = ({
           className="w-10 h-10 rounded-full bg-primary flex items-center justify-center"
           animate={{
             scale: hoveredProduct ? 1.5 : 1,
+          }}
+          style={{
             backgroundColor: hoveredProduct ? "hsl(var(--accent))" : "hsl(var(--primary))",
           }}
           transition={{ duration: 0.2 }}
@@ -638,25 +641,18 @@ const ProductGridWithCursorFollower = ({
 };
 
 // 3D Product Card Component
-const ProductCard3D = ({ 
-  product, 
-  index, 
-  setQuickViewProduct, 
-  navigate, 
-  onHover 
-}: {
+const ProductCard3D = React.forwardRef<HTMLDivElement, {
   product: Product;
   index: number;
   setQuickViewProduct: (product: Product | null) => void;
   navigate: (path: string) => void;
   onHover: (isHovering: boolean) => void;
-}) => {
+}>(({ product, index, setQuickViewProduct, navigate, onHover }, ref) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
+    if (ref && typeof ref !== 'function' && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       
@@ -674,7 +670,7 @@ const ProductCard3D = ({
 
   return (
                 <motion.div
-      ref={cardRef}
+      ref={ref}
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -742,7 +738,9 @@ const ProductCard3D = ({
                   </div>
                 </motion.div>
   );
-};
+});
+
+ProductCard3D.displayName = 'ProductCard3D';
 
 // Hero Title Component with Word-by-Word Animation
 const HeroTitle = ({ text }: { text: string }) => {

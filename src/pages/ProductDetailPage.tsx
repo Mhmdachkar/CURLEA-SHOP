@@ -33,12 +33,14 @@ export const ProductDetailPage = () => {
     );
   }
 
-  // Check if it's a special product first
-  const product = id?.startsWith('heatless-') 
-    ? getHeatlessCurlingRodProductById(id)
-    : id?.startsWith('curly-')
-    ? getCurlyHairCollectionProductById(id)
-    : getProductById(id);
+  // Get product by ID - try main products first, then specialized collections
+  let product = getProductById(id);
+  if (!product && id?.startsWith('curly-')) {
+    product = getCurlyHairCollectionProductById(id);
+  }
+  if (!product && id?.startsWith('heatless-')) {
+    product = getHeatlessCurlingRodProductById(id);
+  }
 
   if (!product) {
     return (
@@ -57,8 +59,72 @@ export const ProductDetailPage = () => {
     );
   }
 
-  // Get related products (same category, excluding current product)
-  const relatedProducts = products
+  // Get related products - for curly hair clip, show the 3 hair care products
+  const relatedProducts = product.id.startsWith('curly-') ? [
+    {
+      id: "curly-shampoo-1",
+      name: "Curly Hair Shampoo - Sulfate Free",
+      price: "€18.99",
+      image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
+      category: "Hair Care",
+      hairType: "Curly",
+      featured: false,
+      description: [
+        "Gentle cleansing for curly hair",
+        "Sulfate-free formula preserves natural oils",
+        "Moisturizing ingredients for softness",
+        "Prevents frizz and breakage",
+        "Perfect for daily use",
+        "Sold as complete set - includes 9 pieces total",
+        "Full collection provides variety for all styling needs"
+      ],
+      ingredients: ["Coconut Oil", "Aloe Vera", "Shea Butter"],
+      size: "250ml",
+      inStock: true,
+    },
+    {
+      id: "curly-conditioner-1", 
+      name: "Deep Moisturizing Conditioner",
+      price: "€22.99",
+      image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
+      category: "Hair Care",
+      hairType: "Curly",
+      featured: false,
+      description: [
+        "Intensive moisture for curly hair",
+        "Detangling formula reduces breakage",
+        "Long-lasting hydration",
+        "Enhances natural curl definition",
+        "Lightweight and non-greasy",
+        "Sold as complete set - includes 9 pieces total",
+        "Full collection provides variety for all styling needs"
+      ],
+      ingredients: ["Argan Oil", "Jojoba Oil", "Vitamin E"],
+      size: "250ml",
+      inStock: true,
+    },
+    {
+      id: "curly-serum-1",
+      name: "Curl Defining Serum",
+      price: "€16.99", 
+      image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
+      category: "Hair Care",
+      hairType: "Curly",
+      featured: false,
+      description: [
+        "Defines natural curls beautifully",
+        "Frizz control for smooth finish",
+        "Lightweight formula doesn't weigh down",
+        "Heat protection up to 450°F",
+        "Long-lasting hold",
+        "Sold as complete set - includes 9 pieces total",
+        "Full collection provides variety for all styling needs"
+      ],
+      ingredients: ["Silk Proteins", "Coconut Oil", "Natural Gums"],
+      size: "100ml",
+      inStock: true,
+    }
+  ] : products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
 
@@ -184,7 +250,7 @@ export const ProductDetailPage = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-sm font-medium text-primary">
-                    × {9 * quantity} pieces in total
+                    × {product.id === 'curly-clip-1' ? 9 * quantity : product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity} pieces in total
                   </span>
                 </motion.div>
               )}
@@ -414,7 +480,13 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       const specialVideo = isHeatlessProduct 
         ? new URL('../assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4', import.meta.url).href
         : isCurlyHairProduct
-        ? new URL('../assets/curly hair collection/Download (3).mp4', import.meta.url).href
+        ? product.id === 'curly-clip-1'
+          ? new URL('../assets/curly hair collection/Download (3).mp4', import.meta.url).href
+          : product.id === 'curly-scarf-1'
+          ? new URL('../assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4', import.meta.url).href
+          : product.id === 'curly-claw-1'
+          ? new URL('../assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4', import.meta.url).href
+          : null
         : null;
 
   const handleVideoPlay = () => {
@@ -424,7 +496,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="py-24 px-6 bg-gradient-to-b from-background to-muted/20"
+      className="relative py-24 px-6 bg-gradient-to-b from-background to-muted/20"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
@@ -440,7 +512,10 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                 {isHeatlessProduct 
                   ? "Heatless Curling in Motion" 
                   : isCurlyHairProduct
-                  ? "Hair Clips in Action"
+                  ? product.id === 'curly-clip-1' ? "Hair Clips in Action" 
+                    : product.id === 'curly-scarf-1' ? "Satin Scarves in Action"
+                    : product.id === 'curly-claw-1' ? "Hair Claw Clips in Action"
+                    : "Hair Accessories in Action"
                   : "The Curlea Ritual in Motion"
                 }
               </h2>
@@ -448,7 +523,13 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                 {isHeatlessProduct 
                   ? "Watch how to achieve beautiful, damage-free curls with our innovative heatless curling rod."
                   : isCurlyHairProduct
-                  ? "See how our comfortable curved resin hair clips work their magic for secure and stylish hair styling."
+                  ? product.id === 'curly-clip-1' 
+                    ? "See how our comfortable curved resin hair clips work their magic for secure and stylish hair styling."
+                    : product.id === 'curly-scarf-1'
+                    ? "Discover how our elegant satin hair bands and scrunchies protect and style your hair beautifully."
+                    : product.id === 'curly-claw-1'
+                    ? "Watch how our fashion-forward geometric hair claw clips provide secure hold with elegant style."
+                    : "Experience how our premium hair accessories transform your styling routine."
                   : "Experience the transformative power of our products as they work their magic on your hair."
                 }
               </p>
@@ -506,7 +587,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                       {isHeatlessProduct 
                         ? "Watch the heatless curling technique"
                         : isCurlyHairProduct
-                        ? "See the hair clips in action"
+                        ? product.id === 'curly-clip-1' ? "See the hair clips in action" : "See the satin scarves in action"
                         : "Experience the product"
                       }
                     </p>
@@ -610,37 +691,42 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
       description: "Separate curls with fingers (avoid brushes). Shake from roots for volume. Finish with hairspray or anti-frizz serum.",
       image: stepImages[8] || product.image
     }
-  ] : [
-    {
-      number: 1,
-      title: "Emulsify",
-      description: "Warm a small amount between your palms to activate the luxurious texture.",
-      image: product.image
-    },
-    {
-      number: 2,
-      title: "Apply",
-      description: "Gently work through damp hair, focusing on mid-lengths to ends for optimal absorption.",
-      image: product.image
-    },
-    {
-      number: 3,
-      title: "Define",
-      description: "Use your fingers or a wide-tooth comb to shape and define your natural pattern.",
-      image: product.image
-    },
-    {
-      number: 4,
-      title: "Air Dry",
-      description: "Allow to dry naturally for the most beautiful, defined results that last all day.",
-      image: product.image
-    }
-  ];
+  ] : product.id.startsWith('curly-') ? [] : [
+      {
+        number: 1,
+        title: "Emulsify",
+        description: "Warm a small amount between your palms to activate the luxurious texture.",
+        image: product.image
+      },
+      {
+        number: 2,
+        title: "Apply",
+        description: "Gently work through damp hair, focusing on mid-lengths to ends for optimal absorption.",
+        image: product.image
+      },
+      {
+        number: 3,
+        title: "Define",
+        description: "Use your fingers or a wide-tooth comb to shape and define your natural pattern.",
+        image: product.image
+      },
+      {
+        number: 4,
+        title: "Air Dry",
+        description: "Allow to dry naturally for the most beautiful, defined results that last all day.",
+        image: product.image
+      }
+    ];
+
+  // Don't render if there are no steps
+  if (steps.length === 0) {
+    return null;
+  }
 
   return (
     <motion.section
       ref={ref}
-      className="py-24 px-6 bg-background"
+      className="relative py-24 px-6 bg-background"
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
@@ -973,7 +1059,7 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
         image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
         science: 'Keratin is the primary structural protein in hair. Our advanced keratin complex helps rebuild damaged hair cuticles, restoring strength, elasticity, and natural shine while protecting against environmental stressors.',
         soul: 'Nature\'s own building block for strong, healthy hair. Our keratin is derived from sustainable sources and processed using gentle methods that preserve its natural integrity and effectiveness.'
-      }
+      },
     };
     
     return ingredientMap[product.id] || ingredientMap['1'];
@@ -984,7 +1070,7 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
+      className="relative py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
@@ -1100,50 +1186,134 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   // Mock community content - in production, this would come from an API
-  const communityPosts = product.id.startsWith('curly-') ? [
-    {
-      id: 1,
-      image: new URL('../assets/curly hair collection/real result.png', import.meta.url).href,
-      username: '@curlygirl_maria',
-      caption: 'These hair clips are absolutely amazing! Perfect hold and so comfortable.',
-      likes: 1247
-    },
-    {
-      id: 2,
-      image: new URL('../assets/curly hair collection/real result2.png', import.meta.url).href,
-      username: '@wavyhairdaily',
-      caption: 'Love how secure these clips hold my hair! Perfect for any occasion.',
-      likes: 892
-    },
-    {
-      id: 3,
-      image: new URL('../assets/curly hair collection/real result3.png', import.meta.url).href,
-      username: '@naturalbeauty_sofia',
-      caption: 'Amazing quality and comfort. These clips are a game changer!',
-      likes: 2156
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop',
-      username: '@curlyqueen_anna',
-      caption: 'The texture is perfect and the scent is divine. Obsessed!',
-      likes: 743
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=400&fit=crop',
-      username: '@hairgoals_sarah',
-      caption: 'Game changer! My routine is so much easier now.',
-      likes: 1834
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop',
-      username: '@curlyjourney_lisa',
-      caption: 'The results speak for themselves. Thank you Curlea!',
-      likes: 967
-    }
-  ] : [
+      const communityPosts = product.id.startsWith('curly-') ? [
+        // Different photos for different curly hair products
+        ...(product.id === 'curly-clip-1' ? [
+          {
+            id: 1,
+            image: new URL('../assets/curly hair collection/product1/real result.png', import.meta.url).href,
+            username: '@curlygirl_maria',
+            caption: 'These hair clips are absolutely amazing! Perfect hold and so comfortable.',
+            likes: 1247
+          },
+          {
+            id: 2,
+            image: new URL('../assets/curly hair collection/product1/real result2.png', import.meta.url).href,
+            username: '@wavyhairdaily',
+            caption: 'Love how secure these clips hold my hair! Perfect for any occasion.',
+            likes: 892
+          },
+          {
+            id: 3,
+            image: new URL('../assets/curly hair collection/product1/real result3.png', import.meta.url).href,
+            username: '@naturalbeauty_sofia',
+            caption: 'Amazing quality and comfort. These clips are a game changer!',
+            likes: 2156
+          }
+        ] : product.id === 'curly-scarf-1' ? [
+          // Photos for satin scarf product
+          {
+            id: 1,
+            image: new URL('../assets/curly hair collection/product2/result.png', import.meta.url).href,
+            username: '@satinhair_grace',
+            caption: 'These satin hair bands are so elegant! Perfect for protecting my curls while sleeping.',
+            likes: 1834
+          },
+          {
+            id: 2,
+            image: new URL('../assets/curly hair collection/product2/result1.png', import.meta.url).href,
+            username: '@curlyprotect_lisa',
+            caption: 'Love how soft and gentle these are on my hair. No more breakage!',
+            likes: 1298
+          },
+          {
+            id: 3,
+            image: new URL('../assets/curly hair collection/product2/result2.png', import.meta.url).href,
+            username: '@haircare_queen',
+            caption: 'The turban wrap style is my favorite! So fashionable and comfortable.',
+            likes: 2156
+          },
+          {
+            id: 4,
+            image: new URL('../assets/curly hair collection/product2/result3.png', import.meta.url).href,
+            username: '@satinlover_emma',
+            caption: 'These scarves have transformed my hair routine. Highly recommend!',
+            likes: 1673
+          },
+          {
+            id: 5,
+            image: new URL('../assets/curly hair collection/product2/result4.png', import.meta.url).href,
+            username: '@curlystyle_anna',
+            caption: 'Amazing results! My hair looks so healthy and styled beautifully with these scarves.',
+            likes: 1923
+          },
+          {
+            id: 6,
+            image: new URL('../assets/curly hair collection/product2/result5.png', import.meta.url).href,
+            username: '@hairgoals_sarah',
+            caption: 'Perfect for both styling and protection. These scarves are a must-have!',
+            likes: 1547
+          }
+        ] : product.id === 'curly-claw-1' ? [
+          // Photos for claw clips product
+          {
+            id: 1,
+            image: new URL('../assets/curly hair collection/product3/result.png', import.meta.url).href,
+            username: '@geometric_hair_anna',
+            caption: 'These geometric claw clips are so stylish! Perfect for creating elegant updos.',
+            likes: 1456
+          },
+          {
+            id: 2,
+            image: new URL('../assets/curly hair collection/product3/result2.png', import.meta.url).href,
+            username: '@fashion_clips_jenny',
+            caption: 'Love the neutral color and matte finish. So sophisticated!',
+            likes: 1189
+          },
+          {
+            id: 3,
+            image: new URL('../assets/curly hair collection/product3/result.png', import.meta.url).href,
+            username: '@hair_accessories_luna',
+            caption: 'The 16-piece set gives me so many styling options. Absolutely love them!',
+            likes: 2034
+          },
+          {
+            id: 4,
+            image: new URL('../assets/curly hair collection/product3/result2.png', import.meta.url).href,
+            username: '@style_queen_emma',
+            caption: 'Perfect for thick hair! These clips hold everything in place beautifully.',
+            likes: 1678
+          },
+          {
+            id: 5,
+            image: new URL('../assets/curly hair collection/product3/result1.png', import.meta.url).href,
+            username: '@claw_clips_lover',
+            caption: 'The geometric design is so unique! Love how they add a modern touch to any hairstyle.',
+            likes: 1423
+          },
+          {
+            id: 6,
+            image: new URL('../assets/curly hair collection/product3/result3.png', import.meta.url).href,
+            username: '@hair_styling_pro',
+            caption: 'These clips are perfect for creating professional-looking updos. Highly recommend!',
+            likes: 1891
+          },
+          {
+            id: 7,
+            image: new URL('../assets/curly hair collection/product3/result4.png', import.meta.url).href,
+            username: '@beauty_enthusiast_rose',
+            caption: 'The matte finish looks so elegant! Perfect for both casual and formal occasions.',
+            likes: 1567
+          },
+          {
+            id: 8,
+            image: new URL('../assets/curly hair collection/product3/result5.png', import.meta.url).href,
+            username: '@hair_accessories_queen',
+            caption: 'With 16 pieces in the set, I can create so many different styles. Amazing value!',
+            likes: 2134
+          }
+        ] : [])
+      ] : [
     {
       id: 1,
       image: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=400&h=400&fit=crop',
@@ -1191,7 +1361,7 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="py-24 px-6 bg-background"
+      className="relative py-24 px-6 bg-background"
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
@@ -1284,22 +1454,65 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
 // Curly Hair Collection Image Gallery Component
 const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
 
-  // Import all curly hair collection images
-  const curlyHairImages = [
-    new URL('../assets/curly hair collection/p1.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p2.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p3.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p4.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p5.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p6.jpg', import.meta.url).href,
-    new URL('../assets/curly hair collection/p7.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/p8.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/p9.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/p10.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/p11.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/p12.avif', import.meta.url).href,
+  // Import images based on product type
+  const curlyHairImages = product.id === 'curly-clip-1' ? [
+    new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p5.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p6.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p7.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p8.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p9.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p10.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p11.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product1/p12.avif', import.meta.url).href,
+  ] : product.id === 'curly-scarf-1' ? [
+    new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp2.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp3.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp4.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp5.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp6.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp7.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp8.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp9.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp10.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp11.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp12.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product2/pp13.avif', import.meta.url).href,
+  ] : [
+    // Images for claw clips product
+    new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp2.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp3.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp4.jpg', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp5.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp6.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp7.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp8.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp9.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp10.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp11.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp12.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp13.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp14.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp15.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp16.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp17.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp18.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp19.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp20.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp21.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp22.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp23.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp24.avif', import.meta.url).href,
+    new URL('../assets/curly hair collection/product3/ppp25.avif', import.meta.url).href,
   ];
+
 
   return (
     <div className="space-y-4">
@@ -1318,6 +1531,10 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
+          onError={(e) => {
+            console.error(`Failed to load image: ${curlyHairImages[selectedImageIndex]}`);
+            e.currentTarget.src = '/placeholder-image.jpg'; // Fallback image
+          }}
         />
         
         {/* Image Counter */}
@@ -1326,66 +1543,114 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
         </div>
       </motion.div>
 
-      {/* Thumbnail Grid */}
-      <div className="grid grid-cols-6 gap-2">
-        {curlyHairImages.map((image, index) => (
+      {/* Enhanced Image Gallery with Smart Pagination */}
+      <div className="space-y-4">
+        {/* Main Navigation Controls */}
+        <div className="flex items-center justify-between">
           <motion.button
-            key={index}
-            onClick={() => setSelectedImageIndex(index)}
-            className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-              selectedImageIndex === index
-                ? 'border-primary shadow-lg'
-                : 'border-transparent hover:border-primary/50'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
+            onClick={() => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : curlyHairImages.length - 1)}
+            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <img
-              src={image}
-              alt={`${product.name} thumbnail ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
-            {selectedImageIndex === index && (
-              <motion.div
-                className="absolute inset-0 bg-primary/20"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-              />
-            )}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous
           </motion.button>
-        ))}
+
+          <div className="text-sm text-muted-foreground font-medium">
+            {selectedImageIndex + 1} of {curlyHairImages.length}
+          </div>
+
+          <motion.button
+            onClick={() => setSelectedImageIndex(prev => prev < curlyHairImages.length - 1 ? prev + 1 : 0)}
+            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Next
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+        </div>
+
+        {/* Smart Thumbnail Display - Show 6 images with pagination */}
+        <div className="grid grid-cols-6 gap-2">
+          {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((image, index) => {
+            const actualIndex = thumbnailStartIndex + index;
+            return (
+              <motion.button
+                key={actualIndex}
+                onClick={() => setSelectedImageIndex(actualIndex)}
+                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                  selectedImageIndex === actualIndex
+                    ? 'border-primary shadow-lg scale-105'
+                    : 'border-transparent hover:border-primary/50'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <img
+                  src={image}
+                  alt={`${product.name} thumbnail ${actualIndex + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error(`Failed to load thumbnail: ${image}`);
+                    e.currentTarget.src = '/placeholder-thumbnail.jpg';
+                  }}
+                />
+                {selectedImageIndex === actualIndex && (
+                  <motion.div
+                    className="absolute inset-0 bg-primary/20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Thumbnail Pagination Controls */}
+        {curlyHairImages.length > 6 && (
+          <div className="flex items-center justify-center gap-4">
+            <motion.button
+              onClick={() => {
+                const newStart = thumbnailStartIndex > 0 ? thumbnailStartIndex - 6 : Math.max(0, curlyHairImages.length - 6);
+                setThumbnailStartIndex(newStart);
+              }}
+              className="px-3 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              ← Previous Set
+            </motion.button>
+
+            <div className="text-xs text-muted-foreground">
+              Showing {thumbnailStartIndex + 1}-{Math.min(thumbnailStartIndex + 6, curlyHairImages.length)} of {curlyHairImages.length}
+            </div>
+
+            <motion.button
+              onClick={() => {
+                const newStart = thumbnailStartIndex + 6 < curlyHairImages.length ? thumbnailStartIndex + 6 : 0;
+                setThumbnailStartIndex(newStart);
+              }}
+              className="px-3 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Next Set →
+            </motion.button>
+          </div>
+        )}
       </div>
 
-      {/* Image Navigation Arrows */}
-      <div className="flex justify-center gap-4">
-        <motion.button
-          onClick={() => setSelectedImageIndex((prev) => 
-            prev === 0 ? curlyHairImages.length - 1 : prev - 1
-          )}
-          className="p-2 bg-muted rounded-full hover:bg-muted/80 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          disabled={curlyHairImages.length <= 1}
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </motion.button>
-        
-        <motion.button
-          onClick={() => setSelectedImageIndex((prev) => 
-            prev === curlyHairImages.length - 1 ? 0 : prev + 1
-          )}
-          className="p-2 bg-muted rounded-full hover:bg-muted/80 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          disabled={curlyHairImages.length <= 1}
-        >
-          <ArrowLeft className="w-5 h-5 rotate-180" />
-        </motion.button>
-      </div>
     </div>
   );
 };

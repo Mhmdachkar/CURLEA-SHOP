@@ -189,6 +189,12 @@ export const compressImage = async (
 // Security: Validate image URLs to prevent malicious content
 export const validateImageUrl = (url: string): boolean => {
   try {
+    // Handle relative paths (local assets)
+    if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+      // Allow relative paths that look like asset paths
+      return !url.includes('..') || url.includes('/assets/');
+    }
+    
     const urlObj = new URL(url);
     const allowedDomains = [
       'images.unsplash.com',

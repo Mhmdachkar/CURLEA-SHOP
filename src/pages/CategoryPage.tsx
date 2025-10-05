@@ -7,6 +7,10 @@ import { Navbar } from "@/components/Navbar";
 import { getProductsByHairType, getCurlyHairCollectionProducts, Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 
+// Import hero images for different categories
+import heatlessHeroImage from "@/assets/Heatless Hair Curling Rod/hero.png";
+import curlyHeroImage from "@/assets/curly hair collection/hero.png";
+
 export const CategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
@@ -95,19 +99,27 @@ export const CategoryPage = () => {
       {/* Hero Section */}
       <motion.section
         className={`relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden ${
-          normalizedCategory === 'wavy' 
-            ? 'bg-cover bg-center bg-no-repeat' 
+          (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+            ? 'bg-center bg-no-repeat' 
             : `bg-gradient-to-br ${config.gradient}`
         }`}
-        style={normalizedCategory === 'wavy' ? {
-          backgroundImage: `url(${new URL('../assets/Heatless Hair Curling Rod/hero.png', import.meta.url).href})`
+        style={(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? {
+          backgroundImage: normalizedCategory === 'wavy' 
+            ? `url(${heatlessHeroImage})`
+            : `url(${curlyHeroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          minHeight: '70vh',
+          width: '100%',
+          objectFit: 'contain'
         } : {}}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
         {/* Floating Particles Effect for Hero Image */}
-        {normalizedCategory === 'wavy' && (
+        {(normalizedCategory === 'wavy' || normalizedCategory === 'curly') && (
           <>
             <motion.div
               className="absolute top-20 left-10 w-2 h-2 bg-white/30 rounded-full"
@@ -164,7 +176,7 @@ export const CategoryPage = () => {
           </>
         )}
         {/* Overlay for text readability on hero image */}
-        {normalizedCategory === 'wavy' && (
+        {(normalizedCategory === 'wavy' || normalizedCategory === 'curly') && (
           <div className="absolute inset-0 bg-black/30" />
         )}
         
@@ -177,7 +189,7 @@ export const CategoryPage = () => {
           >
               <motion.h1 
                 className={`fluid-text-5xl lg:fluid-text-6xl xl:fluid-text-7xl font-bold mb-6 ${
-                  normalizedCategory === 'wavy' 
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
                     ? 'text-white drop-shadow-lg' 
                     : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
                 }`}
@@ -216,7 +228,7 @@ export const CategoryPage = () => {
             {/* Animated Subtitle with Character Reveal */}
             <motion.p 
               className={`fluid-text-lg lg:fluid-text-xl xl:fluid-text-2xl mb-6 sm:mb-8 max-w-4xl mx-auto leading-relaxed px-4 ${
-                normalizedCategory === 'wavy' 
+                (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
                   ? 'text-white/90 drop-shadow-md' 
                   : 'text-muted-foreground'
               }`}
@@ -241,7 +253,7 @@ export const CategoryPage = () => {
                 }}
                 whileHover={{ 
                   scale: 1.1, 
-                  color: normalizedCategory === 'wavy' ? '#fbbf24' : undefined,
+                  color: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '#fbbf24' : undefined,
                   transition: { duration: 0.2 } 
                 }}
               >
@@ -253,7 +265,7 @@ export const CategoryPage = () => {
             {/* Animated Description with Staggered Lines */}
             <motion.p 
               className={`fluid-text-base lg:fluid-text-lg max-w-3xl mx-auto mb-8 sm:mb-12 px-4 ${
-                normalizedCategory === 'wavy' 
+                (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
                   ? 'text-white/80 drop-shadow-sm' 
                   : 'text-muted-foreground'
               }`}
@@ -306,7 +318,7 @@ export const CategoryPage = () => {
             >
               <motion.div 
                 className={`text-3xl font-bold relative ${
-                  normalizedCategory === 'wavy' ? 'text-white drop-shadow-md' : 'text-primary'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
                 }`}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -325,7 +337,7 @@ export const CategoryPage = () => {
               </motion.div>
               <motion.div 
                 className={`text-sm ${
-                  normalizedCategory === 'wavy' ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
                 }`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -352,7 +364,7 @@ export const CategoryPage = () => {
             >
               <motion.div 
                 className={`text-3xl font-bold relative ${
-                  normalizedCategory === 'wavy' ? 'text-white drop-shadow-md' : 'text-primary'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
                 }`}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -371,7 +383,7 @@ export const CategoryPage = () => {
               </motion.div>
               <motion.div 
                 className={`text-sm ${
-                  normalizedCategory === 'wavy' ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
                 }`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -398,7 +410,7 @@ export const CategoryPage = () => {
             >
               <motion.div 
                 className={`text-3xl font-bold relative ${
-                  normalizedCategory === 'wavy' ? 'text-white drop-shadow-md' : 'text-primary'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
                 }`}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -417,7 +429,7 @@ export const CategoryPage = () => {
               </motion.div>
               <motion.div 
                 className={`text-sm ${
-                  normalizedCategory === 'wavy' ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
                 }`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -540,7 +552,7 @@ export const CategoryPage = () => {
 
                     {/* Minimalist Product Info */}
                     <div className="space-y-4 max-w-xs">
-                      <h3 className="font-bold text-lg tracking-wide uppercase group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2">
                         {product.name}
                       </h3>
                       <p className="text-muted-foreground text-sm font-light leading-relaxed">
