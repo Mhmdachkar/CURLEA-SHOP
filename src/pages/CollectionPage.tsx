@@ -8,10 +8,12 @@ import { OptimizedImage } from "@/components/OptimizedImage";
 import { Navbar } from "@/components/Navbar";
 import getTheWavyLook from "@/assets/getthewavylook.png";
 import { products as allProducts, Product } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
 
 
 export const CollectionPage = () => {
   const navigate = useNavigate();
+  const { addToCart, openCart } = useCart();
   const [showLoader, setShowLoader] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [selectedHairType, setSelectedHairType] = useState("All Types");
@@ -99,6 +101,8 @@ export const CollectionPage = () => {
           loadMore={loadMore}
           visibleCount={visibleCount}
           filteredProductsLength={filteredProducts.length}
+          addToCart={addToCart}
+          openCart={openCart}
         />
       </div>
 
@@ -535,7 +539,9 @@ const ProductGridWithCursorFollower = ({
   navigate,
   loadMore,
   visibleCount,
-  filteredProductsLength
+  filteredProductsLength,
+  addToCart,
+  openCart
 }: {
   displayedProducts: Product[];
   setQuickViewProduct: (product: Product | null) => void;
@@ -543,6 +549,8 @@ const ProductGridWithCursorFollower = ({
   loadMore: () => void;
   visibleCount: number;
   filteredProductsLength: number;
+  addToCart: (item: any) => void;
+  openCart: () => void;
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHoveringGrid, setIsHoveringGrid] = useState(false);
@@ -614,6 +622,8 @@ const ProductGridWithCursorFollower = ({
               setQuickViewProduct={setQuickViewProduct}
               navigate={navigate}
               onHover={(isHovering) => setHoveredProduct(isHovering ? product.id : null)}
+              addToCart={addToCart}
+              openCart={openCart}
             />
           ))}
         </AnimatePresence>
@@ -647,7 +657,9 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
   setQuickViewProduct: (product: Product | null) => void;
   navigate: (path: string) => void;
   onHover: (isHovering: boolean) => void;
-}>(({ product, index, setQuickViewProduct, navigate, onHover }, ref) => {
+  addToCart: (item: any) => void;
+  openCart: () => void;
+}>(({ product, index, setQuickViewProduct, navigate, onHover, addToCart, openCart }, ref) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -715,6 +727,11 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                         Quick View
                       </motion.button>
                       <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                          openCart();
+                        }}
                         className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-md flex items-center gap-2 hover:bg-primary/90 transition-colors"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}

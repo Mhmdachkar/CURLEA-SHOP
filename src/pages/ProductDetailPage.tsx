@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ArrowLeft, Minus, Plus, Play, CheckCircle, Leaf, Users, Heart } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, products, Product } from "@/data/products";
+import { getHeatlessCurlingRodProducts } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
 
@@ -13,7 +14,8 @@ export const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   // Validate product ID
   if (!id || !validateProductId(id)) {
@@ -39,7 +41,7 @@ export const ProductDetailPage = () => {
     product = getCurlyHairCollectionProductById(id);
   }
   if (!product && id?.startsWith('heatless-')) {
-    product = getHeatlessCurlingRodProductById(id);
+    product = getHeatlessCurlingRodProducts().find(p => p.id === id);
   }
 
   if (!product) {
@@ -59,6 +61,46 @@ export const ProductDetailPage = () => {
     );
   }
 
+  // Initialize selected color when product is loaded
+  // Simple color initialization - only run once when product is first loaded
+  useEffect(() => {
+    if (product && product.colors && product.colors.length > 0 && !selectedColor) {
+      setSelectedColor(product.colors[0]);
+    }
+  }, [product, selectedColor]);
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // For products with colors, require color selection
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      setError('Please select a color');
+      return;
+    }
+
+    // Clear any previous errors
+    setError('');
+
+    // Prepare the product for cart
+    const productToAdd = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      selectedColor: selectedColor || undefined,
+      size: product.size,
+    };
+
+    // Add multiple quantities to cart
+    for (let i = 0; i < quantity; i++) {
+      addToCart(productToAdd);
+    }
+    
+    // Open cart drawer
+    openCart();
+  };
+
   // Get related products - for curly hair clip, show the 3 hair care products
   const relatedProducts = product.id.startsWith('curly-') ? [
     {
@@ -69,7 +111,7 @@ export const ProductDetailPage = () => {
       category: "Hair Care",
       hairType: "Curly",
       featured: false,
-      description: [
+    description: [
         "Gentle cleansing for curly hair",
         "Sulfate-free formula preserves natural oils",
         "Moisturizing ingredients for softness",
@@ -128,22 +170,10 @@ export const ProductDetailPage = () => {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
 
-  const handleAddToCart = () => {
-    try {
-      setError(null);
-      // Add multiple quantities to cart
-      for (let i = 0; i < quantity; i++) {
-        addToCart(product);
-      }
-      openCart();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to add to cart');
-    }
-  };
 
   const handleQuickAdd = (relatedProduct: Product) => {
     try {
-      setError(null);
+      setError('');
       addToCart(relatedProduct);
       openCart();
     } catch (error) {
@@ -256,6 +286,76 @@ export const ProductDetailPage = () => {
               )}
             </div>
 
+    {/* Simple Color Selection for BUN BONS */}
+    {product.id === 'heatless-5' && product.colors && product.colors.length > 0 && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+        </div>
+        
+        <div className="flex gap-2">
+          {product.colors.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => setSelectedColor(color)}
+              className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-200 ${
+                selectedColor === color
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-white text-gray-800 border border-gray-300 hover:border-gray-400'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {color}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
+    {/* Simple Color Selection for Bonnet */}
+    {product.id === 'heatless-6' && product.colors && product.colors.length > 0 && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+        </div>
+        
+        <div className="flex gap-2">
+          {product.colors.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => setSelectedColor(color)}
+              className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-200 ${
+                selectedColor === color
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-white text-gray-800 border border-gray-300 hover:border-gray-400'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {color}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
             {/* Error Display */}
             {error && (
               <motion.div
@@ -285,13 +385,25 @@ export const ProductDetailPage = () => {
           >
             {product.id.startsWith('curly-') ? (
               <CurlyHairCollectionImageGallery product={product} />
-            ) : (
-              <motion.img
-                layoutId={`product-img-${id}`}
-                src={product.image}
-                alt={product.name}
-                className="w-full h-auto rounded-lg"
+            ) : product.id === 'heatless-5' ? (
+              <BunBonsImageGallery 
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
               />
+            ) : product.id === 'heatless-6' ? (
+              <BonnetImageGallery 
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
+              />
+            ) : (
+            <motion.img
+              layoutId={`product-img-${id}`}
+              src={product.image}
+              alt={product.name}
+              className="w-full h-auto rounded-lg"
+            />
             )}
           </motion.div>
         </div>
@@ -299,8 +411,11 @@ export const ProductDetailPage = () => {
         {/* 1. The "Ritual in Motion" Video Section */}
         <RitualInMotionSection product={product} />
 
-        {/* 2. The Interactive Step-by-Step Guide */}
-        <InteractiveStepGuide product={product} />
+        {/* BUN BONS Usage Steps Section */}
+        {product.id === 'heatless-5' && product.usageSteps && (
+          <BunBonsUsageSteps product={product} />
+        )}
+
 
         {/* 3. The "Science & Soul" Ingredient Spotlight */}
         <ScienceAndSoulSection product={product} />
@@ -358,8 +473,8 @@ export const ProductDetailPage = () => {
               </motion.div>
             ))}
           </div>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
@@ -372,6 +487,8 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
   const product2Image = new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href;
   const product3Image = new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href;
   const product4Image = new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href;
+  const product5Image = new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href;
+  const product6Image = new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href;
 
   const heatlessProducts: Product[] = [
     {
@@ -449,6 +566,67 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       ingredients: ["Flexible Silicon", "Gentle Texture"],
       size: "Small",
       inStock: true,
+    },
+    {
+      id: "heatless-5",
+      name: "BUN BONS - Heatless Curling System",
+      price: "€89.99",
+      image: product5Image,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: true,
+      description: [
+        "Experience overnight blowout-style volume with exceptional comfort and secure sleep",
+        "Innovation that transformed heatless hairstyling - created by CURLEA, named by our community",
+        "Unique curling system encased within a protective capsule",
+        "Thoughtfully designed to reduce friction, preserve shape, and leave hair smoother and shinier",
+        "Layered design creates curls while safeguarding hair from damage and friction",
+        "Inner elongated fiber fill holds form without applying pressure",
+        "Outer vegan Peau de Soie layer allows strands to glide smoothly, minimizing friction",
+        "Lightweight, refined, and luxurious styling experience with subtle gold-accent buttons",
+        "Perfect for those who love wrapping sections to achieve lift at the crown",
+        "Available in Original Size (fine to medium hair) and Jumbo Size (thick hair)"
+      ],
+      ingredients: ["Vegan Peau de Soie", "Elongated Fiber Fill", "Gold-accent Buttons"],
+      size: "3 Heatless Curlers + 3 Matching Mini Bonnets",
+      colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE", "BUTTERMILK"],
+      usageSteps: [
+        "Start with clean, dry hair (80-90% dry for best results)",
+        "Divide your hair into 3-4 sections at the crown area",
+        "Take one BUN BONS curler and place it at the base of a section",
+        "Wrap your hair around the curler in a spiral motion, working from roots to ends",
+        "Secure the wrapped hair with the elegant gold-accent buttons",
+        "Repeat the process for all sections, using different sized curlers if needed",
+        "Cover everything with the coordinating Peau de Soie bonnet for protection",
+        "Sleep comfortably overnight or leave in for 4-6 hours during the day",
+        "Remove the bonnet and carefully unwind each curler in reverse order",
+        "Gently separate the curls with your fingers and enjoy your beautiful blowout-style waves"
+      ],
+      inStock: true,
+    },
+    {
+      id: "heatless-6",
+      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+      price: "€39.99",
+      image: product6Image,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: true,
+      description: [
+        "For all overnight heatless styling enthusiasts, the Eternal Muse Reversible Bonnet is a must-have addition to your bedtime routine",
+        "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
+        "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
+        "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
+        "This luxurious sleep cap ensures maximum comfort all night long",
+        "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
+        "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
+        "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
+        "Upgrade your hair care regimen with the Eternal Muse Reversible Bonnet - an elegant addition to your bedtime attire"
+      ],
+      ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
+      size: "XL Size",
+      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
+      inStock: true,
     }
   ];
 
@@ -477,9 +655,13 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       const isCurlyHairProduct = product.id.startsWith('curly-');
       
       // Import the appropriate video for special products
-      const specialVideo = isHeatlessProduct 
-        ? new URL('../assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4', import.meta.url).href
-        : isCurlyHairProduct
+    const specialVideo = isHeatlessProduct 
+      ? product.id === 'heatless-5'
+        ? new URL('../assets/Heatless Hair Curling Rod/product5/Untitled video - Made with Clipchamp (3).mp4', import.meta.url).href
+        : product.id === 'heatless-6'
+        ? new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href
+        : new URL('../assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4', import.meta.url).href
+      : isCurlyHairProduct
         ? product.id === 'curly-clip-1'
           ? new URL('../assets/curly hair collection/Download (3).mp4', import.meta.url).href
           : product.id === 'curly-scarf-1'
@@ -510,7 +692,9 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
         >
               <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                 {isHeatlessProduct 
-                  ? "Heatless Curling in Motion" 
+                  ? product.id === 'heatless-5' ? "BUN BONS in Motion" 
+                    : product.id === 'heatless-6' ? "Peau de Soie Bonnet in Action"
+                    : "Heatless Curling in Motion"
                   : isCurlyHairProduct
                   ? product.id === 'curly-clip-1' ? "Hair Clips in Action" 
                     : product.id === 'curly-scarf-1' ? "Satin Scarves in Action"
@@ -521,7 +705,11 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 {isHeatlessProduct 
-                  ? "Watch how to achieve beautiful, damage-free curls with our innovative heatless curling rod."
+                  ? product.id === 'heatless-5'
+                    ? "Experience the revolutionary BUN BONS system - the innovation that transformed heatless hairstyling. Watch how our unique curling system creates overnight blowout-style volume with exceptional comfort."
+                    : product.id === 'heatless-6'
+                    ? "Discover the luxurious comfort and protection of our Peau de Soie XL Overnight Bonnet. Watch how this premium sleep cap preserves your hairstyle while providing ultimate comfort throughout the night."
+                    : "Watch how to achieve beautiful, damage-free curls with our innovative heatless curling rod."
                   : isCurlyHairProduct
                   ? product.id === 'curly-clip-1' 
                     ? "See how our comfortable curved resin hair clips work their magic for secure and stylish hair styling."
@@ -1313,6 +1501,66 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
             likes: 2134
           }
         ] : [])
+      ] : product.id === 'heatless-5' ? [
+        // BUN BONS community posts
+        {
+          id: 1,
+          image: new URL('../assets/Heatless Hair Curling Rod/product5/result1.webp', import.meta.url).href,
+          username: '@bunbons_lover',
+          caption: 'Beautiful overnight curls with BUN BONS! Slept so comfortably and woke up with perfect waves.',
+          likes: 1247
+        },
+        {
+          id: 2,
+          image: new URL('../assets/Heatless Hair Curling Rod/product5/result2.webp', import.meta.url).href,
+          username: '@heatless_queen',
+          caption: 'The revolutionary curling system works like magic! No heat damage, just gorgeous curls.',
+          likes: 892
+        },
+        {
+          id: 3,
+          image: new URL('../assets/Heatless Hair Curling Rod/product5/result3.jpg', import.meta.url).href,
+          username: '@curlea_community',
+          caption: 'BUN BONS transformed my styling routine. The Peau de Soie layer is so luxurious!',
+          likes: 2156
+        },
+        {
+          id: 4,
+          image: new URL('../assets/Heatless Hair Curling Rod/product5/result4.jpg', import.meta.url).href,
+          username: '@blowout_style',
+          caption: 'Achieved salon-quality blowout waves overnight! This system is absolutely incredible.',
+          likes: 1834
+        }
+      ] : product.id === 'heatless-6' ? [
+        // Bonnet community posts
+        {
+          id: 1,
+          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_gseekhgseekhgsee.png', import.meta.url).href,
+          username: '@luxury_sleep_stylist',
+          caption: 'This is THE bonnet that changed everything! The Peau de Soie fabric is incredibly soft and my hair has never looked better in the morning.',
+          likes: 2156
+        },
+        {
+          id: 2,
+          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_2u8z0f2u8z0f2u8z.png', import.meta.url).href,
+          username: '@bonnet_lover',
+          caption: 'The Peau de Soie bonnet is pure luxury! Slept so comfortably and woke up with perfectly preserved curls.',
+          likes: 1456
+        },
+        {
+          id: 3,
+          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_syu8posyu8posyu8.png', import.meta.url).href,
+          username: '@silk_sleep_queen',
+          caption: 'This XL bonnet fits over everything! No more bed head or frizz - just beautiful, protected hair every morning.',
+          likes: 1234
+        },
+        {
+          id: 4,
+          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_x4i4fxx4i4fxx4i4.png', import.meta.url).href,
+          username: '@curlea_community',
+          caption: 'The reversible design is genius! Love how it protects my heatless curls while keeping me comfortable all night.',
+          likes: 1678
+        }
       ] : [
     {
       id: 1,
@@ -1652,5 +1900,290 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
       </div>
 
     </div>
+  );
+};
+
+// BUN BONS Image Gallery Component - Simplified
+const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // Import images for BUN BONS product (5 images mapped to 5 colors)
+  const bunBonsImages = [
+    new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href,
+  ];
+
+  // Color-specific image mapping - corrected mapping
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'MULBERRY': bunBonsImages[3], // pppp4.webp
+      'CANDY': bunBonsImages[1],    // pppp2.webp
+      'LATTE': bunBonsImages[0],    // pppp1.webp
+      'OLIVE': bunBonsImages[2],    // pppp3.webp
+      'BUTTERMILK': bunBonsImages[4], // pppp5.webp
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || bunBonsImages[0];
+  };
+
+  // Get the current main image based on selected color
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('MULBERRY');
+  
+
+  return (
+    <div className="space-y-4">
+      {/* Simple Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <img
+          key={`${selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={`${product.name} - ${selectedColor} Color`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error(`Failed to load image: ${currentMainImage}`);
+            e.currentTarget.src = '/placeholder-image.jpg';
+          }}
+        />
+        
+      </motion.div>
+
+      {/* Simple Color Thumbnail Grid */}
+      <div className="space-y-4">
+        <div className="text-center">
+          <span className="text-sm text-muted-foreground">Available Colors</span>
+        </div>
+
+        <div className="grid grid-cols-5 gap-2">
+          {product.colors?.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => onColorSelect(color)}
+              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                selectedColor === color
+                  ? 'border-primary shadow-lg'
+                  : 'border-gray-200 hover:border-primary/50'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <img
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} color preview`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error(`Failed to load color preview: ${color}`);
+                  e.currentTarget.src = '/placeholder-thumbnail.jpg';
+                }}
+              />
+              
+              {selectedColor === color && (
+                <div className="absolute inset-0 bg-primary/20" />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Bonnet Image Gallery Component - Simplified
+const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // Import images for Bonnet product (3 images mapped to 3 colors)
+  const bonnetImages = [
+    new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp4.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp4.webp', import.meta.url).href,
+  ];
+
+  // Color-specific image mapping - simple and clean
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'CANDY & MARSHMALLOW': bonnetImages[0], // candy&marchmello.webp
+      'LATTE & MARSHMALLOW': bonnetImages[1], // latte&marchmello.webp4.webp
+      'OLIVE & LATTE': bonnetImages[2], // olive&latte.webp4.webp
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || bonnetImages[0];
+  };
+
+  // Get the current main image based on selected color
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('CANDY & MARSHMALLOW');
+
+  return (
+    <div className="space-y-4">
+      {/* Simple Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <img
+          key={`${selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={`${product.name} - ${selectedColor} Color`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error(`Failed to load image: ${currentMainImage}`);
+            e.currentTarget.src = '/placeholder-image.jpg';
+          }}
+        />
+      </motion.div>
+
+      {/* Simple Color Thumbnail Grid */}
+      <div className="space-y-4">
+        <div className="text-center">
+          <span className="text-sm text-muted-foreground">Available Colors</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {product.colors?.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => onColorSelect(color)}
+              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                selectedColor === color
+                  ? 'border-primary shadow-lg'
+                  : 'border-gray-200 hover:border-primary/50'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <img
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} color preview`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error(`Failed to load color preview: ${color}`);
+                  e.currentTarget.src = '/placeholder-thumbnail.jpg';
+                }}
+              />
+              
+              {selectedColor === color && (
+                <div className="absolute inset-0 bg-primary/20" />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// BUN BONS Usage Steps Component
+const BunBonsUsageSteps = ({ product }: { product: Product }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  if (!product.usageSteps) return null;
+
+  return (
+    <motion.section
+      ref={ref}
+      className="relative py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            How to Use BUN BONS
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Follow these simple steps to achieve beautiful, blowout-style waves with your BUN BONS heatless curling system.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          {product.usageSteps.map((step, index) => (
+            <motion.div
+              key={index}
+              className="relative p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ delay: 0.1 * index, duration: 0.6 }}
+              whileHover={{ scale: 1.02, y: -5 }}
+            >
+              <div className="flex items-start gap-4">
+                <motion.div
+                  className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
+                  transition={{ delay: 0.1 * index + 0.2, type: "spring", stiffness: 200 }}
+                >
+                  {index + 1}
+                </motion.div>
+                
+                <div className="flex-1">
+                  <p className="text-foreground leading-relaxed">
+                    {step}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Decorative element */}
+              <motion.div
+                className="absolute top-4 right-4 w-8 h-8 bg-primary/10 rounded-full"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+                transition={{ delay: 0.1 * index + 0.4, duration: 0.3 }}
+              />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Pro Tips Section */}
+        <motion.div
+          className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <div className="text-center">
+            <h3 className="text-2xl font-bold mb-4 text-primary">Pro Tips</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
+                  <Leaf className="w-8 h-8 text-primary" />
+                </div>
+                <h4 className="font-semibold mb-2">Best Results</h4>
+                <p className="text-sm text-muted-foreground">Use on 80-90% dry hair for optimal curl formation</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
+                  <Users className="w-8 h-8 text-primary" />
+                </div>
+                <h4 className="font-semibold mb-2">Comfort</h4>
+                <p className="text-sm text-muted-foreground">Sleep comfortably with the protective Peau de Soie bonnet</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
+                  <Heart className="w-8 h-8 text-primary" />
+                </div>
+                <h4 className="font-semibold mb-2">Long-lasting</h4>
+                <p className="text-sm text-muted-foreground">Enjoy beautiful waves that last for days</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.section>
   );
 };

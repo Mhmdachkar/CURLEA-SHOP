@@ -9,6 +9,8 @@ export interface Product {
   description: string[];
   ingredients?: string[];
   size?: string;
+  colors?: string[];
+  usageSteps?: string[];
   inStock?: boolean;
 }
 

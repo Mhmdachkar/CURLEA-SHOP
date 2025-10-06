@@ -3,7 +3,8 @@ import { useRef, useState } from "react";
 import { ProductCard } from "./ProductCard";
 import { QuickViewModal } from "./QuickViewModal";
 import { useNavigate } from "react-router-dom";
-import { products, Product } from "@/data/products";
+import { products, Product, getCurlyHairCollectionProducts } from "@/data/products";
+import { getHeatlessCurlingRodProducts } from "@/pages/CategoryPage";
 
 export const TrendingProducts = () => {
   const ref = useRef(null);
@@ -11,8 +12,10 @@ export const TrendingProducts = () => {
   const navigate = useNavigate();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
-  // Get trending products (first 6 products)
-  const trendingProducts = products.slice(0, 6);
+  // Get trending products: 3 from Heatless Hair Curling Rod and 3 from Curly Hair Collection
+  const heatlessProducts = getHeatlessCurlingRodProducts().slice(0, 3);
+  const curlyProducts = getCurlyHairCollectionProducts().slice(0, 3);
+  const trendingProducts = [...heatlessProducts, ...curlyProducts];
 
   const containerVariants = {
     hidden: { opacity: 0 },

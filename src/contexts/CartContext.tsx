@@ -1,183 +1,144 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { Product } from '@/data/products';
-import { validateProduct, cartRateLimiter, RateLimitError } from '@/utils/validation';
 
-// Cart Item Interface
-export interface CartItem extends Product {
+export interface CartItem {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
   quantity: number;
+  selectedColor?: string;
+  size?: string;
 }
 
-// Cart State Interface
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
 }
 
-// Cart Action Types
 type CartAction =
-  | { type: 'ADD_TO_CART'; payload: Product }
+  | { type: 'ADD_TO_CART'; payload: CartItem }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'CLEAR_CART' }
+  | { type: 'TOGGLE_CART' }
   | { type: 'OPEN_CART' }
-  | { type: 'CLOSE_CART' }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLOSE_CART' };
 
-// Cart Context Interface
-interface CartContextType {
-  cartItems: CartItem[];
-  isCartOpen: boolean;
-  cartTotal: number;
-  itemCount: number;
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, newQuantity: number) => void;
+const CartContext = createContext<{
+  state: CartState;
+  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  clearCart: () => void;
-}
+  itemCount: number;
+} | null>(null);
 
-// Initial State
-const initialState: CartState = {
-  items: [],
-  isOpen: false,
-};
-
-// Cart Reducer
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
-      
+      const existingItem = state.items.find(item => 
+        item.id === action.payload.id && 
+        item.selectedColor === action.payload.selectedColor
+      );
+
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
+            item.id === action.payload.id && item.selectedColor === action.payload.selectedColor
+              ? { ...item, quantity: item.quantity + action.payload.quantity }
               : item
           ),
         };
       }
-      
+
       return {
         ...state,
-        items: [...state.items, { ...action.payload, quantity: 1 }],
+        items: [...state.items, action.payload],
       };
     }
 
-    case 'REMOVE_FROM_CART': {
+    case 'REMOVE_FROM_CART':
       return {
         ...state,
         items: state.items.filter(item => item.id !== action.payload),
       };
-    }
 
-    case 'UPDATE_QUANTITY': {
-      const { id, quantity } = action.payload;
-      
-      if (quantity <= 0) {
-        return {
-          ...state,
-          items: state.items.filter(item => item.id !== id),
-        };
-      }
-      
+    case 'UPDATE_QUANTITY':
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === id ? { ...item, quantity } : item
-        ),
+          item.id === action.payload.id
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        ).filter(item => item.quantity > 0),
       };
-    }
-
-    case 'OPEN_CART':
-      return { ...state, isOpen: true };
-
-    case 'CLOSE_CART':
-      return { ...state, isOpen: false };
 
     case 'CLEAR_CART':
-      return { ...state, items: [] };
+      return {
+        ...state,
+        items: [],
+      };
+
+    case 'TOGGLE_CART':
+      return {
+        ...state,
+        isOpen: !state.isOpen,
+      };
+
+    case 'OPEN_CART':
+      return {
+        ...state,
+        isOpen: true,
+      };
+
+    case 'CLOSE_CART':
+      return {
+        ...state,
+        isOpen: false,
+      };
 
     default:
       return state;
   }
 };
 
-// Create Context
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(cartReducer, {
+    items: [],
+    isOpen: false,
+  });
 
-// Cart Provider Component
-interface CartProviderProps {
-  children: ReactNode;
-}
-
-export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, initialState);
-
-  // Calculate cart total
-  const cartTotal = state.items.reduce((total, item) => {
-    const price = parseFloat(item.price.replace('€', '').replace(',', '.'));
-    return total + (price * item.quantity);
-  }, 0);
-
-  // Calculate item count
-  const itemCount = state.items.reduce((count, item) => count + item.quantity, 0);
-
-  // Cart Actions with validation and rate limiting
-  const addToCart = (product: Product) => {
-    // Rate limiting check
-    const userId = 'user-' + (Math.random().toString(36).substr(2, 9)); // In production, use actual user ID
-    if (!cartRateLimiter.isAllowed(userId)) {
-      throw new RateLimitError('Too many cart operations. Please wait a moment.');
-    }
-
-    // Input validation
-    if (!validateProduct(product)) {
-      throw new Error('Invalid product data');
-    }
-
-    // Quantity validation
-    const totalItems = state.items.reduce((count, item) => count + item.quantity, 0);
-    if (totalItems >= 50) { // Maximum cart size
-      throw new Error('Cart is full. Maximum 50 items allowed.');
-    }
-
-    dispatch({ type: 'ADD_TO_CART', payload: product });
+  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: { ...item, quantity: 1 },
+    });
   };
 
-  const removeFromCart = (productId: string) => {
-    // Rate limiting check
-    const userId = 'user-' + (Math.random().toString(36).substr(2, 9));
-    if (!cartRateLimiter.isAllowed(userId)) {
-      throw new RateLimitError('Too many cart operations. Please wait a moment.');
-    }
-
-    // Input validation
-    if (!productId || typeof productId !== 'string' || productId.length > 50) {
-      throw new Error('Invalid product ID');
-    }
-
-    dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
+  const removeFromCart = (id: string) => {
+    dispatch({
+      type: 'REMOVE_FROM_CART',
+      payload: id,
+    });
   };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
-    // Rate limiting check
-    const userId = 'user-' + (Math.random().toString(36).substr(2, 9));
-    if (!cartRateLimiter.isAllowed(userId)) {
-      throw new RateLimitError('Too many cart operations. Please wait a moment.');
-    }
+  const updateQuantity = (id: string, quantity: number) => {
+    dispatch({
+      type: 'UPDATE_QUANTITY',
+      payload: { id, quantity },
+    });
+  };
 
-    // Input validation
-    if (!productId || typeof productId !== 'string' || productId.length > 50) {
-      throw new Error('Invalid product ID');
-    }
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' });
+  };
 
-    if (!Number.isInteger(newQuantity) || newQuantity < 0 || newQuantity > 99) {
-      throw new Error('Invalid quantity. Must be between 0 and 99.');
-    }
-
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: productId, quantity: newQuantity } });
+  const toggleCart = () => {
+    dispatch({ type: 'TOGGLE_CART' });
   };
 
   const openCart = () => {
@@ -188,34 +149,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     dispatch({ type: 'CLOSE_CART' });
   };
 
-  const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
-  };
-
-  const contextValue: CartContextType = {
-    cartItems: state.items,
-    isCartOpen: state.isOpen,
-    cartTotal,
-    itemCount,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    openCart,
-    closeCart,
-    clearCart,
-  };
+  const itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <CartContext.Provider value={contextValue}>
+    <CartContext.Provider
+      value={{
+        state,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        toggleCart,
+        openCart,
+        closeCart,
+        itemCount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom Hook
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;

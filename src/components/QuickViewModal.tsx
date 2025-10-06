@@ -106,31 +106,50 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                   </p>
 
                   <div className="space-y-3 mb-8 flex-1">
-                    <div className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2" />
-                      <p className="text-muted-foreground">
-                        Enhances natural texture and shine
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2" />
-                      <p className="text-muted-foreground">
-                        Lightweight formula with lasting hydration
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2" />
-                      <p className="text-muted-foreground">
-                        Sulfate-free and paraben-free
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2" />
-                      <p className="text-muted-foreground">
-                        Luxurious texture with instant absorption
-                      </p>
-                    </div>
+                    {product.description.length > 0 ? (
+                      <>
+                        {product.description.slice(0, 4).map((desc, index) => (
+                          <div key={index} className="flex items-start gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
+                            <p className="text-muted-foreground">
+                              {desc}
+                            </p>
+                          </div>
+                        ))}
+                        {product.description.length > 4 && (
+                          <div className="flex items-start gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
+                            <p className="text-muted-foreground italic">
+                              ... and {product.description.length - 4} more features
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
+                        <p className="text-muted-foreground">
+                          Premium quality product with excellent features
+                        </p>
+                      </div>
+                    )}
                   </div>
+
+                  {/* View Full Details Link */}
+                  {product.description.length > 4 && (
+                    <motion.button
+                      onClick={() => {
+                        onClose();
+                        // Navigate to full product page
+                        window.location.href = `/product/${product.id}`;
+                      }}
+                      className="text-sm text-primary hover:text-primary/80 underline mb-4 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      View Full Details →
+                    </motion.button>
+                  )}
 
                   {/* Quantity Selector */}
                   <div className="flex items-center gap-4 mb-6">

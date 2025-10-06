@@ -605,12 +605,14 @@ export const CategoryPage = () => {
 };
 
 // Special function to get heatless curling rod products
-const getHeatlessCurlingRodProducts = (): Product[] => {
+export const getHeatlessCurlingRodProducts = (): Product[] => {
   // Import the images
   const product1Image = new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href;
   const product2Image = new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href;
   const product3Image = new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href;
   const product4Image = new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href;
+  const product5Image = new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href;
+  const product6Image = new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href;
 
   return [
     {
@@ -688,6 +690,72 @@ const getHeatlessCurlingRodProducts = (): Product[] => {
       ingredients: ["Flexible Silicon", "Gentle Texture"],
       size: "Small",
       inStock: true,
+    },
+    {
+      id: "heatless-5",
+      name: "BUN BONS - Heatless Curling System",
+      price: "€89.99",
+      image: product5Image,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: true,
+      description: [
+        "Experience overnight blowout-style volume with exceptional comfort and secure sleep",
+        "Innovation that transformed heatless hairstyling - created by CURLEA, named by our community",
+        "Unique curling system encased within a protective capsule",
+        "Thoughtfully designed to reduce friction, preserve shape, and leave hair smoother and shinier",
+        "Layered design creates curls while safeguarding hair from damage and friction",
+        "Inner elongated fiber fill holds form without applying pressure",
+        "Outer vegan Peau de Soie layer allows strands to glide smoothly, minimizing friction",
+        "Lightweight, refined, and luxurious styling experience with subtle gold-accent buttons",
+        "Perfect for those who love wrapping sections to achieve lift at the crown",
+        "Available in Original Size (fine to medium hair) and Jumbo Size (thick hair)"
+      ],
+      ingredients: ["Vegan Peau de Soie", "Elongated Fiber Fill", "Gold-accent Buttons"],
+      size: "3 Heatless Curlers + 3 Matching Mini Bonnets",
+      colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE", "BUTTERMILK"],
+      usageSteps: [
+        "Start with clean, dry hair (80-90% dry for best results)",
+        "Divide your hair into 3-4 sections at the crown area",
+        "Take one BUN BONS curler and place it at the base of a section",
+        "Wrap your hair around the curler in a spiral motion, working from roots to ends",
+        "Secure the wrapped hair with the elegant gold-accent buttons",
+        "Repeat the process for all sections, using different sized curlers if needed",
+        "Cover everything with the coordinating Peau de Soie bonnet for protection",
+        "Sleep comfortably overnight or leave in for 4-6 hours during the day",
+        "Remove the bonnet and carefully unwind each curler in reverse order",
+        "Gently separate the curls with your fingers and enjoy your beautiful blowout-style waves"
+      ],
+      inStock: true,
+    },
+    {
+      id: "heatless-6",
+      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+      price: "€39.99",
+      image: product6Image,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: true,
+      description: [
+        "For all overnight heatless styling enthusiasts, the Eternal Muse Reversible Bonnet is a must-have addition to your bedtime routine",
+        "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
+        "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
+        "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
+        "This luxurious sleep cap ensures maximum comfort all night long",
+        "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
+        "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
+        "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
+        "Upgrade your hair care regimen with the Eternal Muse Reversible Bonnet - an elegant addition to your bedtime attire"
+      ],
+      ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
+      size: "XL Size",
+      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
+      inStock: true,
     }
   ];
+};
+
+// Helper function to get heatless curling rod product by ID
+export const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
+  return getHeatlessCurlingRodProducts().find(product => product.id === id);
 };
