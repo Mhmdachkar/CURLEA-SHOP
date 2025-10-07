@@ -682,7 +682,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       // Import the appropriate video for special products
     const specialVideo = isHeatlessProduct 
       ? product.id === 'heatless-5'
-        ? new URL('../assets/Heatless Hair Curling Rod/product5/Untitled video - Made with Clipchamp (3).mp4', import.meta.url).href
+        ? new URL('../assets/Heatless Hair Curling Rod/product5/Screen Recording 2025-10-07 143110.mp4', import.meta.url).href
         : product.id === 'heatless-6'
         ? new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href
         : new URL('../assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4', import.meta.url).href
