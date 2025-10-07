@@ -7,8 +7,197 @@ import { QuickViewModal } from "@/components/QuickViewModal";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { Navbar } from "@/components/Navbar";
 import getTheWavyLook from "@/assets/getthewavylook.png";
-import { products as allProducts, Product } from "@/data/products";
+import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
+
+// Import all real products from both collections
+const getAllProducts = (): Product[] => {
+  // Heatless Hair Curling Rod products
+  const heatlessProducts: Product[] = [
+    {
+      id: "heatless-1",
+      name: "Premium Heatless Curling Rod - Set of 4",
+      price: "€29.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
+      category: "Heatless Tools",
+    hairType: "All Types",
+      featured: true,
+      description: [
+        "Create beautiful curls without heat damage",
+        "Set of 4 different sized rods for various curl patterns",
+        "Soft, flexible material that's gentle on hair",
+        "Easy to use and remove",
+        "Perfect for overnight styling"
+      ],
+      ingredients: ["Silicon Material", "Non-toxic Coating"],
+      size: "Set of 4",
+      inStock: true,
+    },
+    {
+      id: "heatless-2", 
+      name: "Deluxe Heatless Curling Rod - Large",
+      price: "€24.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: false,
+      description: [
+        "Extra large size for loose, beachy waves",
+        "Soft silicone material prevents hair damage",
+        "Comfortable to sleep in overnight",
+        "Creates natural-looking waves",
+        "Reusable and easy to clean"
+      ],
+      ingredients: ["Premium Silicon", "Anti-slip Coating"],
+      size: "Large",
+      inStock: true,
+    },
+    {
+      id: "heatless-3",
+      name: "Professional Heatless Curling Rod - Medium",
+      price: "€19.99", 
+      image: new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href,
+      category: "Heatless Tools",
+    hairType: "All Types",
+      featured: false,
+      description: [
+        "Medium size for versatile curl options",
+        "Professional-grade silicone construction",
+        "Creates defined, long-lasting curls",
+        "Suitable for all hair lengths",
+        "Heat-free styling solution"
+      ],
+      ingredients: ["Medical-grade Silicon", "Smooth Finish"],
+      size: "Medium",
+      inStock: true,
+    },
+    {
+      id: "heatless-4",
+      name: "Compact Heatless Curling Rod - Small",
+      price: "€16.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: false,
+      description: [
+        "Small size for tight, defined curls",
+        "Perfect for short hair or detailed styling",
+        "Lightweight and portable",
+        "Creates spiral curls",
+        "Easy to store and travel with"
+      ],
+      ingredients: ["Flexible Silicon", "Travel-friendly Design"],
+      size: "Small",
+      inStock: true,
+    },
+    {
+      id: "heatless-5",
+      name: "BUN BONS",
+      price: "€34.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      category: "Heatless Tools",
+      hairType: "All Types",
+      featured: true,
+      description: [
+        "Revolutionary heatless curling solution",
+        "Creates perfect buns and curls without heat damage",
+        "Soft, comfortable material for overnight wear",
+        "Easy to use and remove",
+        "Suitable for all hair types and lengths"
+      ],
+      ingredients: ["Premium Silicon", "Hypoallergenic Coating"],
+      size: "One Size",
+      colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE", "BUTTERMILK"],
+      inStock: true,
+    },
+    {
+      id: "heatless-6",
+      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
+      category: "Heatless Tools",
+    hairType: "All Types",
+    featured: true,
+      description: [
+        "Luxurious satin bonnet for overnight hair protection",
+        "Extra large size accommodates all hair lengths",
+        "Prevents frizz and breakage while sleeping",
+        "Soft, breathable satin material",
+        "Maintains hairstyles and curl patterns"
+      ],
+      ingredients: ["Premium Satin", "Silk-like Finish"],
+      size: "XL",
+      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
+      inStock: true,
+    }
+  ];
+
+  // Curly Hair Collection products
+  const curlyHairProducts: Product[] = [
+    {
+      id: "curly-clip-1",
+      name: "Comfortable Curved Resin Hair Clip with Duckbill Grip and Strong Teeth New Flat Circular Hollow Design for Hair Styling",
+      price: "€15.99",
+      image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: true,
+      description: [
+        "Comfortable curved design with duckbill grip",
+        "Strong teeth for secure hold without damage",
+        "Flat circular hollow design for better styling",
+        "Perfect for curly hair styling and management",
+        "**Sold as complete set - includes 9 pieces total**",
+        "Durable construction for long-lasting use"
+      ],
+      ingredients: ["High-Quality Resin", "Non-slip Coating"],
+      size: "9-Piece Set",
+      inStock: true,
+    },
+    {
+      id: "curly-scarf-1",
+      name: "MIO Elegant Scarf Soft Satin Elastic Hair Band Solid Color Fashion Ribbon Bow Hair Scrunchies Headdress Hair Ties for Women",
+      price: "€12.99",
+      image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
+      category: "Hair Accessories",
+    hairType: "Curly",
+      featured: false,
+      description: [
+        "Elegant satin scarf with soft elastic hair band",
+        "Solid color fashion ribbon bow design",
+        "Versatile hair scrunchies and headdress",
+        "Perfect for women's hair styling",
+        "**Comes in 7-piece set (quantity × 7)**",
+        "Soft material prevents hair breakage"
+      ],
+      ingredients: ["Premium Satin", "Elastic Band", "Fashion Ribbon"],
+      size: "7-Piece Set",
+      inStock: true,
+    },
+    {
+      id: "curly-claw-1",
+      name: "HC027D Fashion Solid Elegant Neutral Geometric Flower Hair Claw Clips Large Matte Hair Claw Clamps for Woman Girls Thick Hair",
+      price: "€18.99",
+      image: new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: false,
+      description: [
+        "Fashion solid elegant neutral geometric flower design",
+        "Large matte hair claw clips for thick hair",
+        "Perfect for women and girls with thick hair",
+        "Strong grip for secure hold",
+        "**Comes as complete set - includes 16 pieces total**",
+        "Versatile styling for various hair lengths"
+      ],
+      ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
+      size: "16-Piece Set",
+      inStock: true,
+    }
+  ];
+
+  return [...heatlessProducts, ...curlyHairProducts];
+};
 
 
 export const CollectionPage = () => {
@@ -17,7 +206,6 @@ export const CollectionPage = () => {
   const [showLoader, setShowLoader] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [selectedHairType, setSelectedHairType] = useState("All Types");
-  const [visibleCount, setVisibleCount] = useState(6);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -27,17 +215,16 @@ export const CollectionPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const allProducts = getAllProducts();
+
   const filteredProducts = allProducts.filter((product) => {
     const matchesCategory = selectedFilter === "All" || product.category === selectedFilter;
     const matchesHairType = selectedHairType === "All Types" || product.hairType === selectedHairType;
     return matchesCategory && matchesHairType;
   });
 
-  const displayedProducts = filteredProducts.slice(0, visibleCount);
-
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 6);
-  };
+  // Display all products at once instead of pagination
+  const displayedProducts = filteredProducts;
 
   return (
     <div className="min-h-screen">
@@ -98,9 +285,6 @@ export const CollectionPage = () => {
           displayedProducts={displayedProducts}
           setQuickViewProduct={setQuickViewProduct}
           navigate={navigate}
-          loadMore={loadMore}
-          visibleCount={visibleCount}
-          filteredProductsLength={filteredProducts.length}
           addToCart={addToCart}
           openCart={openCart}
         />
@@ -168,26 +352,26 @@ const CurleaBrandAnimation = () => {
   );
 };
 
-// Shop the Look Section Component
+// Shop the Look Section Component - Updated with real products
 const ShopTheLookSection = () => {
   const lookProducts = [
     {
-      id: "2",
-      name: "Curl Defining Cream",
-      price: "€38.00",
-      image: "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=600&h=600&fit=crop",
+      id: "heatless-1",
+      name: "Premium Heatless Curling Rod - Set of 4",
+      price: "€29.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
     },
     {
-      id: "7",
-      name: "Repair & Shine Oil",
-      price: "€48.00",
-      image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&h=600&fit=crop",
+      id: "curly-clip-1",
+      name: "Curved Resin Hair Clip - Duckbill Grip & Strong Teeth",
+      price: "€15.99",
+      image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
     },
     {
-      id: "6",
-      name: "Volume Boost Spray",
-      price: "€29.00",
-      image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&h=600&fit=crop",
+      id: "heatless-5",
+      name: "BUN BONS",
+      price: "€34.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
     },
   ];
 
@@ -369,16 +553,17 @@ const ShopTheLookSection = () => {
                   />
                   
                   <motion.div 
-                    className="w-20 h-20 rounded-xl overflow-hidden bg-muted relative"
+                    className="w-20 h-20 rounded-xl overflow-hidden relative"
                     whileHover={{ rotateY: 5 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <motion.img
+                    <OptimizedImage
                       src={product.image}
                       alt={product.name}
+                      width={80}
+                      height={80}
+                      quality={85}
                       className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.4 }}
                     />
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
@@ -443,8 +628,8 @@ const InteractiveFilterBar = ({
   selectedHairType: string;
   setSelectedHairType: (type: string) => void;
 }) => {
-  const categories = ["All", "Shampoo", "Conditioner", "Serum", "Styling", "Treatment"];
-  const hairTypes = ["All Types", "Straight", "Wavy", "Curly"];
+  const categories = ["All", "Heatless Tools", "Hair Accessories"];
+  const hairTypes = ["All Types", "All Types", "Curly"];
 
   return (
         <motion.div
@@ -537,18 +722,12 @@ const ProductGridWithCursorFollower = ({
   displayedProducts, 
   setQuickViewProduct, 
   navigate,
-  loadMore,
-  visibleCount,
-  filteredProductsLength,
   addToCart,
   openCart
 }: {
   displayedProducts: Product[];
   setQuickViewProduct: (product: Product | null) => void;
   navigate: (path: string) => void;
-  loadMore: () => void;
-  visibleCount: number;
-  filteredProductsLength: number;
   addToCart: (item: any) => void;
   openCart: () => void;
 }) => {
@@ -629,23 +808,6 @@ const ProductGridWithCursorFollower = ({
         </AnimatePresence>
       </motion.div>
 
-      {/* Load More Button */}
-      {visibleCount < filteredProductsLength && (
-        <motion.div
-          className="flex justify-center mt-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.button
-            onClick={loadMore}
-            className="px-12 py-4 bg-foreground text-background font-semibold rounded-md hover:bg-foreground/90 transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Load More Products
-          </motion.button>
-        </motion.div>
-      )}
     </div>
   );
 };
@@ -703,11 +865,18 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
         transformStyle: "preserve-3d",
       }}
                 >
-                  <div className="relative aspect-square overflow-hidden">
-                    <motion.img
+                  <div className="relative aspect-square overflow-hidden bg-muted">
+                    <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'center center',
+                        display: 'block'
+                      }}
                     />
                     
                     {/* Overlay Buttons */}

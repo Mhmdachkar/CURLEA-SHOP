@@ -423,9 +423,9 @@ export const ProductDetailPage = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 <AnimatePresence mode="popLayout">
-                  {relatedProducts.map((relatedProduct, index) => (
-                    <motion.div
-                      key={relatedProduct.id}
+            {relatedProducts.map((relatedProduct, index) => (
+              <motion.div
+                key={relatedProduct.id}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1, duration: 0.6 }}
@@ -615,6 +615,15 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
+  // Reset video state when product changes
+  useEffect(() => {
+    setIsVideoPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [product.id]);
+
   // Auto-play video when section comes into view
   useEffect(() => {
     if (isInView && videoRef.current && !isVideoPlaying) {
@@ -623,7 +632,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
         console.log('Autoplay prevented by browser');
       });
     }
-  }, [isInView, isVideoPlaying]);
+  }, [isInView, isVideoPlaying, product.id]);
 
       // Check if it's a special product type
       const isHeatlessProduct = product.id.startsWith('heatless-');
@@ -997,8 +1006,8 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
                   {/* Step Header */}
                   <motion.div
                     key={`header-${activeStep}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className="mb-8"
                   >
@@ -1025,7 +1034,7 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
                     className="mb-8"
                   >
                     <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-muted/20 to-muted/5">
-                      <motion.img
+                  <motion.img
                         src={steps[activeStep].image}
                         alt={`Step ${steps[activeStep].number}: ${steps[activeStep].title}`}
                         className="w-full h-full object-cover"
@@ -1036,7 +1045,7 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
                       
                       {/* Elegant Overlay Gradient */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                    </div>
+                </div>
                   </motion.div>
 
                   {/* Dynamic Text Content */}
@@ -1168,7 +1177,7 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
                         activeStep === index ? 'text-primary' : 'text-foreground'
                       }`}>
                         {step.title}
-                      </h3>
+                  </h3>
                       <p className={`transition-colors duration-300 ${
                         activeStep === index ? 'text-foreground' : 'text-muted-foreground'
                       }`}>
@@ -1290,21 +1299,21 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
           >
             {/* Tab Navigation */}
             <div className="flex gap-2 p-2 bg-muted/30 rounded-xl">
-              <motion.button
+                  <motion.button
                 className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
                   activeTab === 'science'
                     ? 'bg-white text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab('science')}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
               >
                 <div className="flex items-center justify-center gap-2">
                   <Leaf className="w-5 h-5" />
                   The Science
                 </div>
-              </motion.button>
+                  </motion.button>
               <motion.button
                 className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
                   activeTab === 'soul'
@@ -1334,8 +1343,8 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
                 <p className="text-lg leading-relaxed text-foreground">
                   {activeTab === 'science' ? ingredient.science : ingredient.soul}
                 </p>
-              </div>
-            </motion.div>
+                </div>
+              </motion.div>
           </motion.div>
         </div>
       </div>
@@ -1648,8 +1657,8 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
                 <Users className="w-5 h-5 text-white" />
               </motion.div>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
 
         {/* Call to action */}
         <motion.div
@@ -1669,7 +1678,7 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
             Share Your Results
           </motion.button>
         </motion.div>
-      </div>
+        </div>
     </motion.section>
   );
 };
@@ -1763,7 +1772,7 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
         {/* Image Counter */}
         <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
           {selectedImageIndex + 1} / {curlyHairImages.length}
-        </div>
+      </div>
       </motion.div>
 
       {/* Enhanced Image Gallery with Smart Pagination */}
@@ -1784,7 +1793,7 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
 
           <div className="text-sm text-muted-foreground font-medium">
             {selectedImageIndex + 1} of {curlyHairImages.length}
-          </div>
+    </div>
 
           <motion.button
             onClick={() => setSelectedImageIndex(prev => prev < curlyHairImages.length - 1 ? prev + 1 : 0)}
