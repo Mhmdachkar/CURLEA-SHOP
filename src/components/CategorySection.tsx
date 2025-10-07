@@ -40,7 +40,7 @@ export const CategorySection = () => {
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 0.8 }}
-        className="grid grid-cols-1 md:grid-cols-3 h-[50vh] sm:h-[60vh] lg:h-[70vh]"
+        className="grid grid-cols-1 md:grid-cols-3 h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh]"
       >
         {categories.map((category, index) => (
           <motion.div

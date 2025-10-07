@@ -703,19 +703,19 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="relative py-24 px-6 bg-gradient-to-b from-background to-muted/20"
+      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 bg-gradient-to-b from-background to-muted/20"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-              <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                 {isHeatlessProduct 
                   ? product.id === 'heatless-5' ? "BUN BONS in Motion" 
                     : product.id === 'heatless-6' ? "Peau de Soie Bonnet in Action"
@@ -728,7 +728,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   : "The Curlea Ritual in Motion"
                 }
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4 sm:px-0">
                 {isHeatlessProduct 
                   ? product.id === 'heatless-5'
                     ? "Experience the revolutionary BUN BONS system - the innovation that transformed heatless hairstyling. Watch how our unique curling system creates overnight blowout-style volume with exceptional comfort."
@@ -749,9 +749,9 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
         </motion.div>
 
             <motion.div
-              className={`relative rounded-2xl overflow-hidden shadow-2xl ${
+              className={`relative rounded-2xl overflow-hidden shadow-2xl w-full ${
                 (isHeatlessProduct || isCurlyHairProduct) && specialVideo 
-                  ? "aspect-[16/10] min-h-[500px]" 
+                  ? "aspect-[16/10] sm:aspect-[16/10] min-h-[250px] sm:min-h-[400px] md:min-h-[500px]" 
                   : "aspect-video"
               }`}
               initial={{ scale: 0.95, opacity: 0 }}
@@ -763,7 +763,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   {/* Actual Video for Special Products */}
                   <video
                     ref={videoRef}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover sm:object-contain"
                     controls={isVideoPlaying}
                     muted
                     loop

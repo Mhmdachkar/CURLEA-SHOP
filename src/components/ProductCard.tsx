@@ -67,7 +67,7 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
       }}
     >
       <motion.div
-        className="relative aspect-[4/3] sm:aspect-square mb-3 sm:mb-4 overflow-hidden bg-muted"
+        className="relative aspect-[3/4] sm:aspect-[4/3] md:aspect-square mb-3 sm:mb-4 overflow-hidden bg-muted"
         layoutId={`product-image-${id}`}
       >
         <motion.div
@@ -132,16 +132,16 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
         />
       </motion.div>
 
-      <motion.div layoutId={`product-info-${id}`} className="px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
+      <motion.div layoutId={`product-info-${id}`} className="px-3 sm:px-3 lg:px-4 py-3 sm:py-3">
         <motion.h3
           layoutId={`product-name-${id}`}
-          className="font-medium fluid-text-sm sm:fluid-text-base lg:fluid-text-lg mb-1 sm:mb-2 tracking-wide group-hover:text-accent transition-colors line-clamp-2"
+          className="font-medium text-sm sm:text-base lg:text-lg mb-2 tracking-wide group-hover:text-accent transition-colors line-clamp-2"
         >
           {name}
         </motion.h3>
         <motion.p
           layoutId={`product-price-${id}`}
-          className="text-muted-foreground font-light tracking-wider fluid-text-sm sm:fluid-text-base"
+          className="text-muted-foreground font-light tracking-wider text-sm sm:text-base"
         >
           {price}
         </motion.p>
