@@ -38,11 +38,11 @@ export const Navbar = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div className="container-fluid py-3 sm:py-4 flex items-center justify-between">
         {/* Logo */}
         <motion.a
           href="/"
-          className={`text-3xl font-bold tracking-tight ${
+          className={`fluid-text-2xl sm:fluid-text-3xl font-bold tracking-tight touch-target ${
             isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
           }`}
           whileHover={{ scale: 1.05 }}
@@ -54,7 +54,7 @@ export const Navbar = () => {
         {/* Mobile Menu Button */}
         <div className="md:hidden">
           <motion.button
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors touch-target ${
               isScrolled ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"
             }`}
             whileHover={{ scale: 1.05 }}
@@ -132,16 +132,16 @@ export const Navbar = () => {
         </div>
 
         {/* Right Icons */}
-        <div className={`flex items-center gap-3 sm:gap-6 ${isScrolled ? "text-foreground" : "text-white drop-shadow"}`}>
+        <div className={`flex items-center gap-2 sm:gap-3 lg:gap-6 ${isScrolled ? "text-foreground" : "text-white drop-shadow"}`}>
           <MagneticButton>
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
           </MagneticButton>
           <MagneticButton>
-            <User className="w-5 h-5" />
+            <User className="w-4 h-4 sm:w-5 sm:h-5" />
           </MagneticButton>
           <MagneticButton onClick={openCart}>
             <div className="relative">
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
               <AnimatePresence>
                 {itemCount > 0 && (
                   <motion.div
@@ -169,12 +169,12 @@ export const Navbar = () => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden bg-background/95 backdrop-blur-md border-t border-border/20"
           >
-            <div className="px-4 py-6 space-y-4">
+            <div className="px-4 py-4 space-y-3">
               {navLinks.map((link, index) => (
                 <motion.a
                   key={link.label}
                   href={link.href}
-                  className="block text-lg font-medium text-foreground hover:text-accent transition-colors py-2"
+                  className="block fluid-text-lg font-medium text-foreground hover:text-accent transition-colors py-3 touch-target"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}

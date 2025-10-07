@@ -41,13 +41,13 @@ export const TrendingProducts = () => {
   };
 
   return (
-    <section ref={ref} className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background">
+    <section ref={ref} className="py-12 sm:py-16 lg:py-20 xl:py-24 container-fluid bg-background">
       <div className="max-w-7xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-12 sm:mb-16"
+          className="fluid-text-3xl sm:fluid-text-4xl lg:fluid-text-5xl font-bold text-center mb-8 sm:mb-12 lg:mb-16"
         >
           Trending Now
         </motion.h2>
@@ -56,7 +56,7 @@ export const TrendingProducts = () => {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 xl:gap-8"
         >
           {trendingProducts.map((product) => (
             <motion.div key={product.id} variants={itemVariants}>

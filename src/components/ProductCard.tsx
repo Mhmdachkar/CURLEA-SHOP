@@ -67,7 +67,7 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
       }}
     >
       <motion.div
-        className="relative aspect-[4/3] sm:aspect-square mb-4 overflow-hidden bg-muted"
+        className="relative aspect-[4/3] sm:aspect-square mb-3 sm:mb-4 overflow-hidden bg-muted"
         layoutId={`product-image-${id}`}
       >
         <motion.div
@@ -90,13 +90,13 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
         
         {/* Overlay Actions */}
         <motion.div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center gap-3"
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center gap-2 sm:gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
           <motion.button
-            className="p-3 sm:p-4 bg-white rounded-full hover:bg-accent hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-2 sm:p-3 lg:p-4 bg-white rounded-full hover:bg-accent hover:text-white transition-colors touch-target flex items-center justify-center"
             whileHover={{ scale: 1.1, rotate: 360 }}
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.3 }}
@@ -112,7 +112,7 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
           </motion.button>
           
           <motion.button
-            className="p-3 sm:p-4 bg-accent text-white rounded-full hover:bg-primary transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-2 sm:p-3 lg:p-4 bg-accent text-white rounded-full hover:bg-primary transition-colors touch-target flex items-center justify-center"
             whileHover={{ scale: 1.1, rotate: -360 }}
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.3 }}
@@ -132,16 +132,16 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
         />
       </motion.div>
 
-      <motion.div layoutId={`product-info-${id}`} className="px-3 sm:px-4 py-2">
+      <motion.div layoutId={`product-info-${id}`} className="px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
         <motion.h3
           layoutId={`product-name-${id}`}
-          className="font-medium text-sm sm:text-base lg:text-lg mb-2 tracking-wide group-hover:text-accent transition-colors line-clamp-2"
+          className="font-medium fluid-text-sm sm:fluid-text-base lg:fluid-text-lg mb-1 sm:mb-2 tracking-wide group-hover:text-accent transition-colors line-clamp-2"
         >
           {name}
         </motion.h3>
         <motion.p
           layoutId={`product-price-${id}`}
-          className="text-muted-foreground font-light tracking-wider text-sm sm:text-base"
+          className="text-muted-foreground font-light tracking-wider fluid-text-sm sm:fluid-text-base"
         >
           {price}
         </motion.p>

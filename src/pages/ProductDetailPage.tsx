@@ -1,10 +1,11 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
+import { QuickViewModal } from "@/components/QuickViewModal";
 import { ArrowLeft, Minus, Plus, Play, CheckCircle, Leaf, Users, Heart } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
-import { getProductById, getCurlyHairCollectionProductById, products, Product } from "@/data/products";
+import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
 import { getHeatlessCurlingRodProducts } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
@@ -16,6 +17,7 @@ export const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   // Validate product ID
   if (!id || !validateProductId(id)) {
@@ -101,74 +103,37 @@ export const ProductDetailPage = () => {
     openCart();
   };
 
-  // Get related products - for curly hair clip, show the 3 hair care products
-  const relatedProducts = product.id.startsWith('curly-') ? [
-    {
-      id: "curly-shampoo-1",
-      name: "Curly Hair Shampoo - Sulfate Free",
-      price: "€18.99",
-      image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
-      category: "Hair Care",
-      hairType: "Curly",
-      featured: false,
-    description: [
-        "Gentle cleansing for curly hair",
-        "Sulfate-free formula preserves natural oils",
-        "Moisturizing ingredients for softness",
-        "Prevents frizz and breakage",
-        "Perfect for daily use",
-        "Sold as complete set - includes 9 pieces total",
-        "Full collection provides variety for all styling needs"
-      ],
-      ingredients: ["Coconut Oil", "Aloe Vera", "Shea Butter"],
-      size: "250ml",
-      inStock: true,
-    },
-    {
-      id: "curly-conditioner-1", 
-      name: "Deep Moisturizing Conditioner",
-      price: "€22.99",
-      image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
-      category: "Hair Care",
-      hairType: "Curly",
-      featured: false,
-      description: [
-        "Intensive moisture for curly hair",
-        "Detangling formula reduces breakage",
-        "Long-lasting hydration",
-        "Enhances natural curl definition",
-        "Lightweight and non-greasy",
-        "Sold as complete set - includes 9 pieces total",
-        "Full collection provides variety for all styling needs"
-      ],
-      ingredients: ["Argan Oil", "Jojoba Oil", "Vitamin E"],
-      size: "250ml",
-      inStock: true,
-    },
-    {
-      id: "curly-serum-1",
-      name: "Curl Defining Serum",
-      price: "€16.99", 
-      image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
-      category: "Hair Care",
-      hairType: "Curly",
-      featured: false,
-      description: [
-        "Defines natural curls beautifully",
-        "Frizz control for smooth finish",
-        "Lightweight formula doesn't weigh down",
-        "Heat protection up to 450°F",
-        "Long-lasting hold",
-        "Sold as complete set - includes 9 pieces total",
-        "Full collection provides variety for all styling needs"
-      ],
-      ingredients: ["Silk Proteins", "Coconut Oil", "Natural Gums"],
-      size: "100ml",
-      inStock: true,
+  // Get related products based on current product's collection
+  const getRelatedProducts = () => {
+    if (product.id.startsWith('heatless-')) {
+      // If user is viewing a Heatless Hair Curling Rod product:
+      // Show 1 from Heatless collection + 2 from Curly Hair Collection
+      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+      const curlyProducts = getCurlyHairCollectionProducts();
+      
+      const oneHeatless = heatlessProducts.slice(0, 1);
+      const twoCurly = curlyProducts.slice(0, 2);
+      
+      return [...oneHeatless, ...twoCurly];
+    } else if (product.id.startsWith('curly-')) {
+      // If user is viewing a Curly Hair Collection product:
+      // Show 1 from Curly collection + 2 from Heatless Hair Curling Rod
+      const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
+      const heatlessProducts = getHeatlessCurlingRodProducts();
+      
+      const oneCurly = curlyProducts.slice(0, 1);
+      const twoHeatless = heatlessProducts.slice(0, 2);
+      
+      return [...oneCurly, ...twoHeatless];
+    } else {
+      // For other products, show products from the same category
+      return products
+        .filter(p => p.category === product.category && p.id !== product.id)
+        .slice(0, 3);
     }
-  ] : products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 3);
+  };
+
+  const relatedProducts = getRelatedProducts();
 
 
   const handleQuickAdd = (relatedProduct: Product) => {
@@ -475,6 +440,66 @@ export const ProductDetailPage = () => {
           </div>
           </div>
         </div>
+
+        {/* Complete Your Routine Section */}
+        {relatedProducts.length > 0 && (
+          <motion.section 
+            className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <div className="max-w-7xl mx-auto">
+              <motion.div
+                className="text-center mb-16"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+                  Complete Your Routine
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {product.id.startsWith('heatless-') 
+                    ? "Enhance your heatless styling with complementary products from our collections"
+                    : product.id.startsWith('curly-')
+                    ? "Complete your curly hair care routine with our premium styling tools"
+                    : "Discover products that work perfectly together"
+                  }
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <AnimatePresence mode="popLayout">
+                  {relatedProducts.map((relatedProduct, index) => (
+                    <motion.div
+                      key={relatedProduct.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.6 }}
+                      viewport={{ once: true }}
+                      layout
+                    >
+                      <ProductCard
+                        {...relatedProduct}
+                        onClick={() => navigate(`/product/${relatedProduct.id}`)}
+                        onQuickView={() => setQuickViewProduct(relatedProduct)}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Quick View Modal */}
+        <QuickViewModal
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+        />
       </div>
     </div>
   );

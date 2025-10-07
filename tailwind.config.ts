@@ -58,6 +58,23 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      spacing: {
+        'xs': 'var(--space-xs)',
+        'sm': 'var(--space-sm)',
+        'md': 'var(--space-md)',
+        'lg': 'var(--space-lg)',
+        'xl': 'var(--space-xl)',
+        '2xl': 'var(--space-2xl)',
+        '3xl': 'var(--space-3xl)',
+      },
+      minHeight: {
+        'touch': 'var(--touch-target-min)',
+        'touch-comfortable': 'var(--touch-target-comfortable)',
+      },
+      minWidth: {
+        'touch': 'var(--touch-target-min)',
+        'touch-comfortable': 'var(--touch-target-comfortable)',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

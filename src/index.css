@@ -9,7 +9,7 @@
   }
 }
 
-/* Curlea Premium Design System */
+/* Curlea Premium Design System - Mobile-First */
 
 @layer base {
   :root {
@@ -51,6 +51,20 @@
     /* Transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Mobile-First Spacing System */
+    --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+    --space-sm: clamp(0.5rem, 1vw, 0.75rem);
+    --space-md: clamp(0.75rem, 1.5vw, 1rem);
+    --space-lg: clamp(1rem, 2vw, 1.5rem);
+    --space-xl: clamp(1.5rem, 3vw, 2rem);
+    --space-2xl: clamp(2rem, 4vw, 3rem);
+    --space-3xl: clamp(3rem, 6vw, 4rem);
+
+    /* Mobile-First Touch Targets */
+    --touch-target-min: 44px;
+    --touch-target-comfortable: 48px;
+    --touch-spacing: 8px;
   }
 }
 
@@ -165,6 +179,89 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+  }
+
+  /* Mobile-First Container System */
+  .container-fluid {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+
+  @media (min-width: 640px) {
+    .container-fluid {
+      padding-left: var(--space-lg);
+      padding-right: var(--space-lg);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-fluid {
+      padding-left: var(--space-xl);
+      padding-right: var(--space-xl);
+    }
+  }
+
+  /* Mobile-First Safe Viewport Heights */
+  .min-h-screen-safe {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+
+  /* Mobile-First Touch Targets */
+  .touch-target {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .touch-target-comfortable {
+    min-width: var(--touch-target-comfortable);
+    min-height: var(--touch-target-comfortable);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Mobile-First Spacing Utilities */
+  .space-mobile {
+    padding: var(--space-md);
+  }
+
+  .space-tablet {
+    padding: var(--space-lg);
+  }
+
+  .space-desktop {
+    padding: var(--space-xl);
+  }
+
+  /* Mobile-First Grid System */
+  .grid-mobile {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .grid-tablet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .grid-desktop {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-xl);
   }
 }
 

@@ -35,12 +35,12 @@ export const CategorySection = () => {
   };
 
   return (
-    <section ref={ref} className="py-24">
+    <section ref={ref} className="py-12 sm:py-16 lg:py-20 xl:py-24">
       <motion.div
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 0.8 }}
-        className="grid grid-cols-1 md:grid-cols-3 h-[70vh]"
+        className="grid grid-cols-1 md:grid-cols-3 h-[50vh] sm:h-[60vh] lg:h-[70vh]"
       >
         {categories.map((category, index) => (
           <motion.div
@@ -76,19 +76,19 @@ export const CategorySection = () => {
 
             {/* Text Overlay */}
             <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-end p-8"
+              className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8"
               animate={{
                 y: hoveredId === category.id ? -10 : 0,
               }}
               transition={{ duration: 0.4 }}
             >
-              <h3 className="text-white text-2xl md:text-3xl font-bold text-center mb-4">
+              <h3 className="text-white fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl font-bold text-center mb-3 sm:mb-4">
                 {category.name}
               </h3>
               
               {/* Explore Button */}
               <motion.div
-                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors touch-target"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ 
                   opacity: hoveredId === category.id ? 1 : 0.7,
@@ -96,7 +96,7 @@ export const CategorySection = () => {
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <span className="text-sm font-medium">Explore Collection</span>
+                <span className="fluid-text-sm font-medium">Explore Collection</span>
                 <motion.div
                   animate={{ x: hoveredId === category.id ? 5 : 0 }}
                   transition={{ duration: 0.3 }}

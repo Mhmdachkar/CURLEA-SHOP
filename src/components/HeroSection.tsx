@@ -47,7 +47,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative h-screen w-full overflow-hidden pt-20">
+    <section ref={heroRef} className="relative h-screen-safe w-full overflow-hidden pt-16 sm:pt-20">
       {/* Background Video/Image Layer with Elegant Crossfade & Parallax */}
       <AnimatePresence mode="sync">
         <motion.div
@@ -92,7 +92,7 @@ export const HeroSection = () => {
 
       {/* Content with Subtle Parallax */}
       <motion.div 
-        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6"
+        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8"
         style={{ opacity }}
       >
         <AnimatedTitle text={slides[currentSlide].title} key={`title-${currentSlide}`} />
@@ -102,7 +102,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
-          className="text-white/95 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 max-w-3xl font-light tracking-wider px-4"
+          className="text-white/95 fluid-text-base sm:fluid-text-lg lg:fluid-text-xl mb-6 sm:mb-8 lg:mb-12 max-w-3xl font-light tracking-wider"
         >
           {slides[currentSlide].subtitle}
         </motion.p>
@@ -117,7 +117,7 @@ export const HeroSection = () => {
 
         {/* Animated Scroll Indicator */}
         <motion.div
-          className="absolute bottom-24 left-1/2 -translate-x-1/2"
+          className="absolute bottom-16 sm:bottom-20 lg:bottom-24 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1, repeat: Infinity, repeatType: "reverse", repeatDelay: 0.5 }}
@@ -133,13 +133,13 @@ export const HeroSection = () => {
       </motion.div>
 
       {/* Enhanced Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
         {slides.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`h-1 rounded-full transition-all duration-500 ${
-              index === currentSlide ? "w-12 bg-white" : "w-8 bg-white/40 hover:bg-white/60"
+            className={`h-1 rounded-full transition-all duration-500 touch-target ${
+              index === currentSlide ? "w-8 sm:w-12 bg-white" : "w-6 sm:w-8 bg-white/40 hover:bg-white/60"
             }`}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
@@ -156,7 +156,7 @@ const AnimatedTitle = ({ text }: { text: string }) => {
   const words = text.split(" ");
 
   return (
-    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-6 drop-shadow-2xl leading-tight">
+    <h1 className="fluid-text-4xl sm:fluid-text-5xl lg:fluid-text-6xl xl:fluid-text-7xl font-bold text-white mb-4 sm:mb-6 drop-shadow-2xl leading-tight">
       {words.map((word, index) => (
         <motion.span
           key={index}
@@ -167,7 +167,7 @@ const AnimatedTitle = ({ text }: { text: string }) => {
             delay: index * 0.12,
             ease: [0.43, 0.13, 0.23, 0.96],
           }}
-          className="inline-block mr-2 sm:mr-3 md:mr-5"
+          className="inline-block mr-1 sm:mr-2 lg:mr-3"
         >
           {word}
         </motion.span>
@@ -202,7 +202,7 @@ const MagneticCTAButton = () => {
   return (
     <motion.button
       ref={buttonRef}
-      className="relative px-8 sm:px-12 lg:px-14 py-4 sm:py-5 bg-white text-primary font-semibold tracking-widest overflow-hidden group shadow-2xl text-sm sm:text-base"
+      className="relative px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 bg-white text-primary font-semibold tracking-widest overflow-hidden group shadow-2xl fluid-text-sm sm:fluid-text-base touch-target-comfortable"
       animate={{ x: mousePosition.x, y: mousePosition.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       whileHover={{ scale: 1.05, boxShadow: "0 25px 70px rgba(0,0,0,0.4)" }}
