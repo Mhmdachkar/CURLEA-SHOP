@@ -132,21 +132,6 @@ export const HeroSection = () => {
         </motion.div>
       </motion.div>
 
-      {/* Enhanced Slide Indicators */}
-      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
-        {slides.map((_, index) => (
-          <motion.button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`h-1 rounded-full transition-all duration-500 touch-target ${
-              index === currentSlide ? "w-8 sm:w-12 bg-white" : "w-6 sm:w-8 bg-white/40 hover:bg-white/60"
-            }`}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
     </section>
   );
 };
