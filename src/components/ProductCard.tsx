@@ -82,9 +82,9 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
           <OptimizedImage
             src={image}
             alt={name}
-            width={250}
-            height={300}
-            quality={80}
+            width={400}
+            height={400}
+            quality={85}
             className="w-full h-full"
           />
         </motion.div>

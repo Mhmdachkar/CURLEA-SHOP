@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 
@@ -13,6 +13,29 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   const { addToCart, openCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (product) {
+      // Disable body scroll
+      document.body.style.overflow = 'hidden';
+      // Prevent touch scrolling on mobile
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      // Re-enable body scroll when modal is closed
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    // Cleanup function to ensure scroll is re-enabled
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -47,13 +70,13 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-background rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-background rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -68,7 +91,8 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+              <div className="max-h-[90vh] overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
                 {/* Left: Image */}
                 <motion.div
                   className="relative aspect-square rounded-lg overflow-hidden bg-muted"
@@ -186,6 +210,7 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                     {isAdded ? "Added to Cart ✓" : "Add to Cart"}
                   </motion.button>
                 </motion.div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
