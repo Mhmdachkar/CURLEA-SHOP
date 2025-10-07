@@ -21,7 +21,7 @@ const getAllProducts = (): Product[] => {
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       category: "Heatless Tools",
     hairType: "All Types",
-      featured: true,
+    featured: true,
       description: [
         "Create beautiful curls without heat damage",
         "Set of 4 different sized rods for various curl patterns",
@@ -39,7 +39,7 @@ const getAllProducts = (): Product[] => {
       price: "€24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href,
       category: "Heatless Tools",
-      hairType: "All Types",
+    hairType: "All Types",
       featured: false,
       description: [
         "Extra large size for loose, beachy waves",
@@ -96,8 +96,8 @@ const getAllProducts = (): Product[] => {
       price: "€34.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
       category: "Heatless Tools",
-      hairType: "All Types",
-      featured: true,
+    hairType: "All Types",
+    featured: true,
       description: [
         "Revolutionary heatless curling solution",
         "Creates perfect buns and curls without heat damage",
@@ -140,7 +140,7 @@ const getAllProducts = (): Product[] => {
       price: "€15.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
       category: "Hair Accessories",
-      hairType: "Curly",
+    hairType: "Curly",
       featured: true,
       description: [
         "Comfortable curved design with duckbill grip",
@@ -204,8 +204,6 @@ export const CollectionPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [showLoader, setShowLoader] = useState(true);
-  const [selectedFilter, setSelectedFilter] = useState("All");
-  const [selectedHairType, setSelectedHairType] = useState("All Types");
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -217,14 +215,8 @@ export const CollectionPage = () => {
 
   const allProducts = getAllProducts();
 
-  const filteredProducts = allProducts.filter((product) => {
-    const matchesCategory = selectedFilter === "All" || product.category === selectedFilter;
-    const matchesHairType = selectedHairType === "All Types" || product.hairType === selectedHairType;
-    return matchesCategory && matchesHairType;
-  });
-
-  // Display all products at once instead of pagination
-  const displayedProducts = filteredProducts;
+  // Display all products at once
+  const displayedProducts = allProducts;
 
   return (
     <div className="min-h-screen">
@@ -272,13 +264,8 @@ export const CollectionPage = () => {
         {/* Shop the Look Section */}
         <ShopTheLookSection />
 
-        {/* Interactive Filter Bar */}
-        <InteractiveFilterBar
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-          selectedHairType={selectedHairType}
-          setSelectedHairType={setSelectedHairType}
-        />
+        {/* Beautiful Animated Title Section */}
+        <BeautifulAnimatedTitle />
 
         {/* Dynamic Product Grid with Cursor Follower */}
         <ProductGridWithCursorFollower
@@ -377,8 +364,8 @@ const ShopTheLookSection = () => {
 
   return (
     <motion.section
-      className="py-32 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden"
-      initial={{ opacity: 0 }}
+      className="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden"
+          initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
@@ -402,8 +389,8 @@ const ShopTheLookSection = () => {
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
           {/* Model Image */}
           <motion.div
             className="relative aspect-[4/5] rounded-2xl overflow-hidden group"
@@ -484,8 +471,8 @@ const ShopTheLookSection = () => {
               transition={{ delay: 0.6, duration: 0.8 }}
             >
             <motion.h2
-                className="text-5xl md:text-6xl font-bold mb-6"
-                initial={{ opacity: 0, y: 20 }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
+              initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
               >
@@ -504,9 +491,9 @@ const ShopTheLookSection = () => {
                     transition={{ delay: 1.2, duration: 0.8 }}
                   />
                 </motion.span>
-              </motion.h2>
+            </motion.h2>
               <motion.p 
-                className="text-xl text-muted-foreground leading-relaxed max-w-lg"
+                className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2, duration: 0.8 }}
@@ -527,7 +514,7 @@ const ShopTheLookSection = () => {
               {lookProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
-                  className="flex items-center gap-6 p-6 bg-card/50 backdrop-blur-sm rounded-2xl hover:bg-card/80 transition-all duration-500 cursor-pointer group relative overflow-hidden border border-border/20"
+                  className="flex items-center gap-3 sm:gap-4 md:gap-6 p-3 sm:p-4 md:p-6 bg-card/50 backdrop-blur-sm rounded-2xl hover:bg-card/80 transition-all duration-500 cursor-pointer group relative overflow-hidden border border-border/20"
                   initial={{ opacity: 0, x: 50, rotateX: -10 }}
                   whileInView={{ opacity: 1, x: 0, rotateX: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
@@ -553,7 +540,7 @@ const ShopTheLookSection = () => {
                   />
                   
                   <motion.div 
-                    className="w-20 h-20 rounded-xl overflow-hidden relative"
+                    className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden relative"
                     whileHover={{ rotateY: 5 }}
                     transition={{ duration: 0.3 }}
                   >
@@ -575,18 +562,18 @@ const ShopTheLookSection = () => {
                   
                   <div className="flex-1 relative z-10">
                     <motion.h4 
-                      className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors"
+                      className="font-semibold text-sm sm:text-base md:text-lg mb-1 group-hover:text-primary transition-colors line-clamp-2"
                       whileHover={{ x: 2 }}
                     >
                       {product.name}
                     </motion.h4>
                     <motion.p 
-                      className="text-muted-foreground text-sm"
+                      className="text-muted-foreground text-xs sm:text-sm"
                       whileHover={{ x: 2 }}
                     >
                       {product.price}
                     </motion.p>
-                  </div>
+          </div>
                   
                   <motion.div
                     className="relative z-10"
@@ -597,10 +584,10 @@ const ShopTheLookSection = () => {
                   </motion.div>
                 </motion.div>
               ))}
-            </motion.div>
+        </motion.div>
 
             <motion.button
-              className="px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors text-sm sm:text-base touch-target"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
@@ -613,6 +600,313 @@ const ShopTheLookSection = () => {
         </div>
           </div>
     </motion.section>
+  );
+};
+
+// Beautiful Animated Title Component
+const BeautifulAnimatedTitle = () => {
+  return (
+    <motion.section
+      className="relative py-20 sm:py-24 md:py-32 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
+    >
+      {/* Animated Background Elements */}
+        <motion.div
+        className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.6, 0.3],
+          rotate: [0, 180, 360],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div
+        className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-l from-accent/10 to-primary/10 rounded-full blur-3xl"
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.4, 0.7, 0.4],
+          rotate: [360, 180, 0],
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+      />
+      
+      {/* Floating Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-primary/20 rounded-full"
+            style={{
+              left: `${10 + i * 12}%`,
+              top: `${20 + (i % 3) * 30}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.8, 0.2],
+              scale: [0.8, 1.2, 0.8],
+            }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="text-center">
+          {/* Main Title with Staggered Animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: 0.2, duration: 1.0, ease: [0.43, 0.13, 0.23, 0.96] }}
+            className="mb-8"
+          >
+            <motion.h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 0.4, duration: 1.2 }}
+            >
+              <AnimatedText text="Curlea Collection" />
+            </motion.h1>
+          </motion.div>
+
+          {/* Subtitle with Typewriter Effect */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: 0.8, duration: 1.0 }}
+            className="mb-12"
+          >
+            <motion.p
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light max-w-4xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 1.0, duration: 1.2 }}
+            >
+              <TypewriterText 
+                text="Discover our premium collection of heatless styling tools and elegant hair accessories, designed to enhance your natural beauty."
+                speed={50}
+              />
+            </motion.p>
+          </motion.div>
+
+          {/* Decorative Line with Animation */}
+          <motion.div
+            className="flex items-center justify-center gap-8 mb-12"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: 1.4, duration: 1.0 }}
+          >
+            <motion.div
+              className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent flex-1 max-w-32"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 1.6, duration: 1.2 }}
+            />
+            <motion.div
+              className="w-3 h-3 bg-primary rounded-full"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="h-px bg-gradient-to-l from-transparent via-primary/50 to-transparent flex-1 max-w-32"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 1.6, duration: 1.2 }}
+            />
+          </motion.div>
+
+          {/* Stats Section */}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: 1.8, duration: 1.0 }}
+          >
+            <motion.div
+              className="text-center"
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 2.0, duration: 0.8, ease: "backOut" }}
+              >
+                9+
+              </motion.div>
+              <motion.p
+                className="text-sm sm:text-base text-muted-foreground"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 2.2, duration: 0.8 }}
+              >
+                Premium Products
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              className="text-center"
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="text-3xl sm:text-4xl md:text-5xl font-bold text-accent mb-2"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 2.4, duration: 0.8, ease: "backOut" }}
+              >
+                100%
+              </motion.div>
+              <motion.p
+                className="text-sm sm:text-base text-muted-foreground"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 2.6, duration: 0.8 }}
+              >
+                Heat-Free
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              className="text-center"
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 2.8, duration: 0.8, ease: "backOut" }}
+              >
+                ∞
+              </motion.div>
+              <motion.p
+                className="text-sm sm:text-base text-muted-foreground"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 3.0, duration: 0.8 }}
+              >
+                Possibilities
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
+// Animated Text Component
+const AnimatedText = ({ text }: { text: string }) => {
+  const words = text.split(" ");
+
+  return (
+    <span className="relative">
+      {words.map((word, index) => (
+        <motion.span
+          key={index}
+          className="relative inline-block mr-4"
+          initial={{ 
+            opacity: 0, 
+            y: 50, 
+            rotateX: -90,
+            filter: "blur(10px)"
+          }}
+          whileInView={{ 
+            opacity: 1, 
+            y: 0, 
+            rotateX: 0,
+            filter: "blur(0px)"
+          }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{
+            duration: 1.2,
+            delay: 0.6 + index * 0.2,
+            ease: [0.43, 0.13, 0.23, 0.96],
+          }}
+          style={{
+            textShadow: "0 0 40px rgba(0,0,0,0.1)",
+            transformStyle: "preserve-3d",
+          }}
+        >
+          {word === "Curlea" ? (
+            <motion.span
+              className="relative inline-block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              {word}
+              <motion.div
+                className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg blur-sm -z-10"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 1.0, duration: 0.8 }}
+              />
+            </motion.span>
+          ) : (
+            word
+          )}
+        </motion.span>
+      ))}
+    </span>
+  );
+};
+
+// Typewriter Text Component
+const TypewriterText = ({ text, speed = 50 }: { text: string; speed?: number }) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, speed);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text, speed]);
+
+  return (
+    <span className="relative">
+      {displayedText}
+      <motion.span
+        className="inline-block w-0.5 h-6 bg-primary ml-1"
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ duration: 1, repeat: Infinity }}
+      />
+    </span>
   );
 };
 
@@ -633,12 +927,12 @@ const InteractiveFilterBar = ({
 
   return (
         <motion.div
-          className="max-w-7xl mx-auto px-6 py-12"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.4, duration: 0.6 }}
         >
-      <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center justify-center">
         {/* Category Filters */}
         <div className="flex flex-col items-center gap-4">
               <span className="text-sm font-medium text-muted-foreground">Filter by:</span>
@@ -647,7 +941,7 @@ const InteractiveFilterBar = ({
                 <motion.button
                   key={filter}
                   onClick={() => setSelectedFilter(filter)}
-                className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${
                     selectedFilter === filter
                     ? "text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -684,7 +978,7 @@ const InteractiveFilterBar = ({
                 <motion.button
                   key={type}
                   onClick={() => setSelectedHairType(type)}
-                className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${
                     selectedHairType === type
                     ? "text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -711,9 +1005,9 @@ const InteractiveFilterBar = ({
                 </motion.button>
               ))}
             </div>
+            </div>
           </div>
-      </div>
-    </motion.div>
+        </motion.div>
   );
 };
 
@@ -747,9 +1041,9 @@ const ProductGridWithCursorFollower = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-16 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 relative">
       {/* Custom Cursor */}
-      <motion.div
+          <motion.div
         className="fixed pointer-events-none z-50 mix-blend-difference"
         animate={{
           x: mousePosition.x - 20,
@@ -783,7 +1077,7 @@ const ProductGridWithCursorFollower = ({
           <motion.div
         ref={gridRef}
             layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8"
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHoveringGrid(true)}
         onMouseLeave={() => {
@@ -795,7 +1089,7 @@ const ProductGridWithCursorFollower = ({
             <AnimatePresence mode="popLayout">
               {displayedProducts.map((product, index) => (
             <ProductCard3D
-              key={product.id}
+                  key={product.id}
               product={product}
               index={index}
               setQuickViewProduct={setQuickViewProduct}
@@ -855,7 +1149,7 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                     layout: { duration: 0.4 },
                   }}
                   className={`group relative bg-card rounded-lg overflow-hidden ${
-                    product.featured ? "md:col-span-2" : ""
+                    product.featured ? "col-span-1 md:col-span-2" : ""
                   }`}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
@@ -881,19 +1175,20 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                     
                     {/* Overlay Buttons */}
                     <motion.div
-                      className="absolute inset-0 bg-black/40 flex items-center justify-center gap-4"
+                      className="absolute inset-0 bg-black/40 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 p-2 sm:p-0"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     >
                       <motion.button
                         onClick={() => setQuickViewProduct(product)}
-                        className="px-6 py-3 bg-white text-black font-medium rounded-md flex items-center gap-2 hover:bg-white/90 transition-colors"
+                        className="px-3 py-2 sm:px-6 sm:py-3 bg-white text-black font-medium rounded-md flex items-center gap-1 sm:gap-2 hover:bg-white/90 transition-colors text-xs sm:text-sm touch-target"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Eye className="w-4 h-4" />
-                        Quick View
+                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Quick View</span>
+                        <span className="sm:hidden">View</span>
                       </motion.button>
                       <motion.button
                         onClick={(e) => {
@@ -901,24 +1196,25 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                           addToCart(product);
                           openCart();
                         }}
-                        className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-md flex items-center gap-2 hover:bg-primary/90 transition-colors"
+                        className="px-3 py-2 sm:px-6 sm:py-3 bg-primary text-primary-foreground font-medium rounded-md flex items-center gap-1 sm:gap-2 hover:bg-primary/90 transition-colors text-xs sm:text-sm touch-target"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Plus className="w-4 h-4" />
-                        Add to Cart
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Add to Cart</span>
+                        <span className="sm:hidden">Add</span>
                       </motion.button>
                     </motion.div>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-3 sm:p-4 md:p-6">
                     <h3
-                      className="font-semibold text-xl mb-2 cursor-pointer hover:text-primary transition-colors"
+                      className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2"
                       onClick={() => navigate(`/product/${product.id}`)}
                     >
                       {product.name}
                     </h3>
-                    <p className="text-2xl font-light text-muted-foreground">
+                    <p className="text-lg sm:text-xl md:text-2xl font-light text-muted-foreground">
                       {product.price}
                     </p>
                   </div>
@@ -937,7 +1233,7 @@ const HeroTitle = ({ text }: { text: string }) => {
       {words.map((word, index) => (
         <motion.span
           key={index}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl inline-block mr-4"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-bold text-white drop-shadow-2xl inline-block mr-2 sm:mr-4"
           initial={{ 
             opacity: 0, 
             y: 80, 
@@ -989,7 +1285,7 @@ const HeroSubtitle = ({ text }: { text: string }) => {
 
   return (
     <motion.p 
-      className="text-xl md:text-2xl lg:text-3xl text-white/95 mb-12 font-light leading-relaxed"
+      className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/95 mb-8 sm:mb-12 font-light leading-relaxed px-4 sm:px-0"
       style={{ textShadow: "0 0 20px rgba(0,0,0,0.3)" }}
     >
       {characters.map((char, index) => (
@@ -1027,93 +1323,6 @@ const HeroSubtitle = ({ text }: { text: string }) => {
   );
 };
 
-// Enhanced Hero CTA Button Component
-const HeroCTAButton = () => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!buttonRef.current) return;
-    const rect = buttonRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
-    setMousePosition({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePosition({ x: 0, y: 0 });
-    setIsHovered(false);
-  };
-
-  return (
-    <motion.button
-      ref={buttonRef}
-      className="relative px-16 py-6 bg-white text-primary font-bold tracking-widest overflow-hidden group shadow-2xl text-lg md:text-xl"
-      animate={{ 
-        x: mousePosition.x, 
-        y: mousePosition.y,
-        scale: isHovered ? 1.05 : 1,
-        opacity: 1
-      }}
-      transition={{ 
-        type: "spring", 
-        stiffness: 150, 
-        damping: 15, 
-        mass: 0.1,
-        delay: 3.8, 
-        duration: 1.0, 
-        ease: "backOut"
-      }}
-      whileHover={{ 
-        boxShadow: "0 25px 70px rgba(0,0,0,0.4)"
-      }}
-      whileTap={{ scale: 0.95 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 40, scale: 0.8 }}
-    >
-      {/* Animated background */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-accent via-[hsl(35,80%,65%)] to-accent"
-        initial={{ x: "-100%" }}
-        animate={{ x: isHovered ? "0%" : "-100%" }}
-        transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
-      />
-      
-      {/* Shimmer effect */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-        initial={{ x: "-100%" }}
-        animate={{ x: isHovered ? "100%" : "-100%" }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
-      />
-      
-      <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center gap-3">
-        START THE QUIZ
-        <motion.span
-          animate={{ x: isHovered ? 8 : 0, rotate: isHovered ? 5 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="text-2xl"
-        >
-          →
-        </motion.span>
-      </span>
-      
-      {/* Glow effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full blur-xl bg-white/20"
-        animate={{
-          scale: isHovered ? [1, 1.2, 1] : 1,
-          opacity: isHovered ? [0.3, 0.6, 0.3] : 0,
-        }}
-        transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
-      />
-    </motion.button>
-  );
-};
 
 // Hero Section with Rotating Images Component (using home page transition technique)
 const HeroSectionWithRotation = () => {
@@ -1132,8 +1341,8 @@ const HeroSectionWithRotation = () => {
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.8], [1, 0.9, 0]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -1145,24 +1354,29 @@ const HeroSectionWithRotation = () => {
   return (
     <motion.section 
       ref={heroRef} 
-      className="relative h-screen w-full overflow-hidden"
+      className="relative h-screen-safe sm:h-screen w-full overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 1.8, duration: 0.6 }}
     >
-      {/* Background Image Layer with Elegant Crossfade & Parallax */}
+      {/* Background Image Layer with Optimized Performance */}
       <AnimatePresence mode="sync">
-        <motion.div
+            <motion.div
           key={currentImageIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 2, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 1.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="absolute inset-0"
-          style={{ y }}
+          style={{ 
+            y,
+            willChange: "transform, opacity",
+            backfaceVisibility: "hidden",
+            transform: "translateZ(0)"
+          }}
         >
           <div className="absolute inset-0 w-full h-full">
-            <motion.img
+            <img
               src={heroImages[currentImageIndex]}
               alt={`Curlea Collection Hero ${currentImageIndex + 1}`}
               className="w-full h-full object-cover object-center"
@@ -1170,25 +1384,27 @@ const HeroSectionWithRotation = () => {
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: 'center center'
+                objectPosition: 'center center',
+                willChange: "auto",
+                backfaceVisibility: "hidden"
               }}
-              initial={{ scale: 1 }}
-              animate={{ scale: 1.05 }}
-              transition={{ duration: 8, ease: "easeOut" }}
             />
           </div>
 
-          {/* Enhanced Multi-layer Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {/* Optimized Single Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Content with Subtle Parallax */}
+      {/* Content with Optimized Parallax */}
       <motion.div 
-        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6"
-        style={{ opacity }}
+        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6"
+        style={{ 
+          opacity,
+          willChange: "opacity",
+          backfaceVisibility: "hidden",
+          transform: "translateZ(0)"
+        }}
       >
         <motion.div
           className="text-center max-w-4xl"
@@ -1201,27 +1417,9 @@ const HeroSectionWithRotation = () => {
           
           {/* Subtitle with Character-by-Character Reveal */}
           <HeroSubtitle text="Unlock the science of your unique hair" />
-          
-          {/* Enhanced CTA Button */}
-          <HeroCTAButton />
-        </motion.div>
+            </motion.div>
       </motion.div>
 
-      {/* Enhanced Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-        {heroImages.map((_, index) => (
-          <motion.button
-            key={index}
-            onClick={() => setCurrentImageIndex(index)}
-            className={`h-1 rounded-full transition-all duration-500 ${
-              index === currentImageIndex ? "w-12 bg-white" : "w-8 bg-white/40 hover:bg-white/60"
-            }`}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
     </motion.section>
   );
 };
