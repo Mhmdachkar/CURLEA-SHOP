@@ -12,6 +12,22 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 
+/* GPU acceleration for better performance */
+.hero-section,
+.hero-section *,
+.product-card,
+.product-card * {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize images for better performance */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
 /* Custom gradients for seamless product display */
 @layer utilities {
   .bg-gradient-radial {

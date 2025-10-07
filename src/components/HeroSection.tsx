@@ -47,7 +47,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative h-screen-safe w-full overflow-hidden pt-16 sm:pt-20">
+    <section ref={heroRef} className="hero-section relative h-screen-safe w-full overflow-hidden pt-16 sm:pt-20">
       {/* Background Video/Image Layer with Elegant Crossfade & Parallax */}
       <AnimatePresence mode="sync">
         <motion.div
@@ -55,9 +55,12 @@ export const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 2, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
           className="absolute inset-0"
-          style={{ y }}
+          style={{ 
+            transform: `translateY(${y * 0.3}px)`,
+            willChange: "transform, opacity"
+          }}
         >
           <div className="absolute inset-0 w-full h-full">
             {useVideo ? (
@@ -77,23 +80,39 @@ export const HeroSection = () => {
                 alt={slides[currentSlide].title}
                 className="w-full h-full object-cover"
                 initial={{ scale: 1 }}
-                animate={{ scale: 1.05 }}
-                transition={{ duration: 8, ease: "easeOut" }}
+                animate={{ scale: 1.02 }}
+                transition={{ duration: 12, ease: "easeOut" }}
+                style={{
+                  willChange: "transform",
+                  backfaceVisibility: "hidden",
+                  transform: "translateZ(0)"
+                }}
               />
             )}
           </div>
 
-          {/* Enhanced Multi-layer Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {/* Optimized Single Gradient Overlay */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: `
+                linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.3), rgba(0,0,0,0.7)),
+                linear-gradient(to right, rgba(0,0,0,0.3), transparent, rgba(0,0,0,0.3)),
+                linear-gradient(to top, rgba(0,0,0,0.6), transparent)
+              `,
+              willChange: "auto"
+            }}
+          />
         </motion.div>
       </AnimatePresence>
 
-      {/* Content with Subtle Parallax */}
+      {/* Content with Optimized Performance */}
       <motion.div 
         className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8"
-        style={{ opacity }}
+        style={{ 
+          opacity,
+          willChange: "opacity"
+        }}
       >
         <AnimatedTitle text={slides[currentSlide].title} key={`title-${currentSlide}`} />
         
@@ -115,18 +134,20 @@ export const HeroSection = () => {
           <MagneticCTAButton />
         </motion.div>
 
-        {/* Animated Scroll Indicator */}
+        {/* Optimized Scroll Indicator */}
         <motion.div
           className="absolute bottom-16 sm:bottom-20 lg:bottom-24 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1, repeat: Infinity, repeatType: "reverse", repeatDelay: 0.5 }}
+          transition={{ duration: 1, delay: 1 }}
+          style={{ willChange: "auto" }}
         >
           <div className="w-6 h-10 border-2 border-white/40 rounded-full flex items-start justify-center p-2">
             <motion.div
               className="w-1.5 h-1.5 bg-white/60 rounded-full"
               animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              style={{ willChange: "transform" }}
             />
           </div>
         </motion.div>
@@ -145,14 +166,15 @@ const AnimatedTitle = ({ text }: { text: string }) => {
       {words.map((word, index) => (
         <motion.span
           key={index}
-          initial={{ opacity: 0, y: 60, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 0.8,
-            delay: index * 0.12,
+            duration: 0.6,
+            delay: index * 0.08,
             ease: [0.43, 0.13, 0.23, 0.96],
           }}
           className="inline-block mr-1 sm:mr-2 lg:mr-3"
+          style={{ willChange: "transform, opacity" }}
         >
           {word}
         </motion.span>

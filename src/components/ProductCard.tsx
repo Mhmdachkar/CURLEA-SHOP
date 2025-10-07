@@ -40,7 +40,7 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
     <motion.div
       ref={cardRef}
       layoutId={`product-${id}`}
-      className="group cursor-pointer bg-card relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+      className="product-card group cursor-pointer bg-card relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
       animate={{ 
         x: mousePosition.x, 
         y: mousePosition.y,
@@ -82,9 +82,9 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
           <OptimizedImage
             src={image}
             alt={name}
-            width={300}
-            height={400}
-            quality={85}
+            width={250}
+            height={300}
+            quality={80}
             className="w-full h-full"
           />
         </motion.div>
