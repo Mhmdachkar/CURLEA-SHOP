@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Large files that exceed GitHub's 100MB limit
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.flv
+*.webm
+
+# Exception for smaller video files (under 100MB)
+!src/assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4
+!src/assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4
+!src/assets/curly hair collection/Download (3).mp4
+!src/assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4
+!src/assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4
