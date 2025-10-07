@@ -96,8 +96,3 @@
 # Functions (if you plan to add serverless functions later)
 [functions]
   directory = "netlify/functions"
-
-# Form handling (if you plan to add forms)
-[build.processing.skip_processing]
-  - "*.min.js"
-  - "*.min.css"
