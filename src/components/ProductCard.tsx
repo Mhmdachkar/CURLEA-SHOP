@@ -64,6 +64,7 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
       style={{
         transformStyle: "preserve-3d",
         perspective: "1000px",
+        willChange: "transform",
       }}
     >
       <motion.div
@@ -81,10 +82,10 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
           <OptimizedImage
             src={image}
             alt={name}
-            width={600}
-            height={600}
+            width={300}
+            height={400}
             quality={85}
-            className="w-full h-full object-cover"
+            className="w-full h-full"
           />
         </motion.div>
         
