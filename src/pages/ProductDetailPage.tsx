@@ -388,57 +388,7 @@ export const ProductDetailPage = () => {
         {/* 4. The "From Our Community" Showcase */}
         <CommunityShowcase product={product} />
 
-        {/* Complete Your Routine */}
-        <div>
-          <h2 className="text-3xl font-bold mb-4">Complete Your Routine</h2>
-          <p className="text-muted-foreground text-lg mb-12 max-w-2xl">
-            These products work synergistically with your selection to deliver optimal results for your hair.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {relatedProducts.map((relatedProduct, index) => (
-              <motion.div
-                key={relatedProduct.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="group bg-card rounded-lg overflow-hidden border border-border/50 hover:border-border transition-all duration-300"
-              >
-                <div
-                  className="relative aspect-square overflow-hidden cursor-pointer"
-                  onClick={() => navigate(`/product/${relatedProduct.id}`)}
-                >
-                  <motion.img
-                    src={relatedProduct.image}
-                    alt={relatedProduct.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                
-                <div className="p-6">
-                  <h3
-                    className="font-semibold text-xl mb-2 cursor-pointer hover:text-primary transition-colors"
-                    onClick={() => navigate(`/product/${relatedProduct.id}`)}
-                  >
-                    {relatedProduct.name}
-                  </h3>
-                  <p className="text-2xl font-light text-muted-foreground mb-4">
-                    {relatedProduct.price}
-                  </p>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleQuickAdd(relatedProduct)}
-                    className="w-full py-3 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Quick Add
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          </div>
+        
         </div>
 
         {/* Complete Your Routine Section */}
