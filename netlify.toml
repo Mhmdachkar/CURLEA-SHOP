@@ -1,6 +1,6 @@
 [build]
-  # Build command
-  command = "bun run build:netlify"
+  # Install dependencies and build command
+  command = "npm install && npm run build:netlify"
   
   # Directory to publish (where the built files are)
   publish = "dist"
