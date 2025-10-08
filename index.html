@@ -34,6 +34,20 @@
 
   <body>
     <div id="root"></div>
+    
+    <!-- Analytics Configuration -->
+    <script>
+      // Configuration passed from build process
+      window.__ANALYTICS_CONFIG__ = {
+        endpoint: 'https://vfhxwzcbjdlfmizakvqc.supabase.co/functions/v1/track',
+        debug: true // Change to false in production
+      };
+    </script>
+    
+    <!-- Analytics SDK -->
+    <script src="/analytics.js"></script>
+    <script src="/init-analytics.js"></script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

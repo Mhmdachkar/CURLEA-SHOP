@@ -1194,6 +1194,19 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart(product);
+                          
+                          // Track add to cart event
+                          if (typeof window !== 'undefined' && (window as any).analytics) {
+                            const priceNumber = parseFloat(product.price.replace('€', ''));
+                            (window as any).analytics.trackCart('add', {
+                              product_id: product.id,
+                              title: product.name,
+                              price: priceNumber,
+                              quantity: 1,
+                              total_value: priceNumber,
+                            });
+                          }
+                          
                           openCart();
                         }}
                         className="px-3 py-2 sm:px-6 sm:py-3 bg-primary text-primary-foreground font-medium rounded-md flex items-center gap-1 sm:gap-2 hover:bg-primary/90 transition-colors text-xs sm:text-sm touch-target"
@@ -1210,7 +1223,19 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                   <div className="p-3 sm:p-4 md:p-6">
                     <h3
                       className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2"
-                      onClick={() => navigate(`/product/${product.id}`)}
+                      onClick={() => {
+                        // Track product view
+                        if (typeof window !== 'undefined' && (window as any).analytics) {
+                          (window as any).analytics.track('ProductViewed', {
+                            product_id: product.id,
+                            product_name: product.name,
+                            price: product.price,
+                            category: product.category,
+                            page: 'Collection'
+                          });
+                        }
+                        navigate(`/product/${product.id}`);
+                      }}
                     >
                       {product.name}
                     </h3>

@@ -71,6 +71,19 @@ export const ProductDetailPage = () => {
     }
   }, [product, selectedColor]);
 
+  // Track product view when product loads
+  useEffect(() => {
+    if (product && typeof window !== 'undefined' && (window as any).analytics) {
+      (window as any).analytics.track('ProductViewed', {
+        product_id: product.id,
+        product_name: product.name,
+        price: product.price,
+        category: product.category,
+        page: 'ProductDetail'
+      });
+    }
+  }, [product]);
+
   // Handle add to cart
   const handleAddToCart = () => {
     if (!product) return;
@@ -97,6 +110,20 @@ export const ProductDetailPage = () => {
     // Add multiple quantities to cart
     for (let i = 0; i < quantity; i++) {
       addToCart(productToAdd);
+    }
+
+    // Track add to cart event
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(product.price.replace('€', ''));
+      (window as any).analytics.trackCart('add', {
+        product_id: product.id,
+        title: product.name,
+        price: priceNumber,
+        quantity: quantity,
+        variant_id: selectedColor || undefined,
+        variant_title: selectedColor || undefined,
+        total_value: priceNumber * quantity,
+      });
     }
     
     // Open cart drawer
