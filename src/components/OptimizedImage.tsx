@@ -11,6 +11,9 @@ interface OptimizedImageProps {
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 }
 
+// Image cache to prevent re-downloading
+const imageCache = new Map<string, boolean>();
+
 export const OptimizedImage = ({
   src,
   alt,
@@ -20,14 +23,17 @@ export const OptimizedImage = ({
   priority = false,
   objectFit = 'cover'
 }: OptimizedImageProps) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(imageCache.has(src));
   const [isInView, setIsInView] = useState(priority);
-  const [currentSrc, setCurrentSrc] = useState(priority ? src : placeholderSrc || '');
+  const [currentSrc, setCurrentSrc] = useState(priority || imageCache.has(src) ? src : '');
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Intersection Observer for lazy loading
+  // Aggressive Intersection Observer for faster loading
   useEffect(() => {
-    if (priority || !imgRef.current) return;
+    if (priority || !imgRef.current || imageCache.has(src)) {
+      setIsInView(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -39,7 +45,8 @@ export const OptimizedImage = ({
         });
       },
       {
-        rootMargin: '50px', // Start loading 50px before the image enters viewport
+        rootMargin: '200px', // Start loading 200px before (increased from 50px)
+        threshold: 0.01, // Trigger as soon as 1% is visible
       }
     );
 
@@ -48,51 +55,76 @@ export const OptimizedImage = ({
     return () => {
       observer.disconnect();
     };
-  }, [priority]);
+  }, [priority, src]);
 
-  // Load the actual image when in view
+  // Preload image immediately when in view
   useEffect(() => {
-    if (!isInView || currentSrc === src) return;
+    if (!isInView || currentSrc === src || imageCache.has(src)) {
+      if (imageCache.has(src)) {
+        setIsLoaded(true);
+        setCurrentSrc(src);
+      }
+      return;
+    }
+
+    // Use link preload for faster loading
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    document.head.appendChild(link);
 
     const img = new Image();
     img.src = src;
     
+    // Set image immediately, don't wait for full load
+    setCurrentSrc(src);
+    
     img.onload = () => {
-      setCurrentSrc(src);
+      imageCache.set(src, true); // Cache the loaded image
       setIsLoaded(true);
+      document.head.removeChild(link);
     };
 
     img.onerror = () => {
       console.error(`Failed to load image: ${src}`);
-      if (onError) {
+      document.head.removeChild(link);
+      if (onError && imgRef.current) {
         const syntheticEvent = {
           currentTarget: imgRef.current,
         } as React.SyntheticEvent<HTMLImageElement>;
         onError(syntheticEvent);
       }
     };
+
+    return () => {
+      if (link.parentNode) {
+        document.head.removeChild(link);
+      }
+    };
   }, [isInView, src, currentSrc, onError]);
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Blur placeholder while loading */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-muted animate-pulse" />
+      {/* Minimal placeholder while loading */}
+      {!isLoaded && !imageCache.has(src) && (
+        <div className="absolute inset-0 bg-muted/30" />
       )}
       
       {/* Actual image */}
       {currentSrc && (
-        <motion.img
+        <img
           src={currentSrc}
           alt={alt}
           className={`w-full h-full ${className}`}
           style={{ objectFit }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isLoaded ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          onLoad={() => setIsLoaded(true)}
+          onLoad={() => {
+            setIsLoaded(true);
+            imageCache.set(src, true);
+          }}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
+          fetchPriority={priority ? 'high' : 'auto'}
         />
       )}
     </div>

@@ -10,6 +10,7 @@ import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollecti
 import { getHeatlessCurlingRodProducts } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
+import { preloadImagesWithPriority } from "@/utils/imagePreloader";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
@@ -82,6 +83,36 @@ export const ProductDetailPage = () => {
     // Scroll to top when product changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id, product?.id]);
+
+  // Aggressive image preloading for instant display
+  useEffect(() => {
+    if (!product) return;
+
+    const highPriorityImages: string[] = [];
+    const lowPriorityImages: string[] = [];
+
+    // High priority: Main image and first 2 images
+    if (product.image) {
+      highPriorityImages.push(product.image);
+    }
+
+    if (product.images && product.images.length > 0) {
+      // First 2 images are high priority (visible immediately)
+      highPriorityImages.push(...product.images.slice(0, 2));
+      // Rest are low priority (preload in background)
+      lowPriorityImages.push(...product.images.slice(2));
+    }
+
+    // Preload with priority
+    preloadImagesWithPriority(highPriorityImages, lowPriorityImages);
+
+    // Preload video metadata for faster playback
+    if (product.video) {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.src = product.video;
+    }
+  }, [product]);
 
   // Track product view when product loads
   useEffect(() => {
