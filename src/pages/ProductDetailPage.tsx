@@ -755,7 +755,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "heatless-2", 
-      name: "DreamCurl™ Short Set – Earl Grey Edition",
+      name: "DreamCurl™ Short Set – Royal Purple Edition",
       price: "€24.99",
       image: product2Image,
       category: "Heatless Tools",
@@ -793,7 +793,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "heatless-4",
-      name: "Compact Heatless Curling Rod - Small",
+      name: "DreamCurl™ Short Set – Earl Grey Edition",
       price: "€16.99",
       image: product4Image,
       category: "Heatless Tools", 

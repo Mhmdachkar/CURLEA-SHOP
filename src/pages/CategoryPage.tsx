@@ -730,7 +730,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
          },
     {
       id: "heatless-1",
-      name: "Premium Heatless Curling Rod - Set of 4",
+      name: "DreamCurl™ Short Set – Rose Gold Edition",
       price: "€29.99",
       image: product1Image,
       category: "Heatless Tools",
@@ -749,7 +749,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     },
     {
       id: "heatless-2", 
-      name: "Deluxe Heatless Curling Rod - Large",
+      name: "DreamCurl™ Short Set – Royal Purple Edition",
       price: "€24.99",
       image: product2Image,
       category: "Heatless Tools",
@@ -768,7 +768,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     },
     {
       id: "heatless-3",
-      name: "Professional Heatless Curling Rod - Medium",
+      name: "DreamCurl™ Short Set – Olive Lux Edition",
       price: "€19.99", 
       image: product3Image,
       category: "Heatless Tools",
@@ -787,7 +787,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     },
     {
       id: "heatless-4",
-      name: "Compact Heatless Curling Rod - Small",
+      name: "DreamCurl™ Short Set – Earl Grey Edition",
       price: "€16.99",
       image: product4Image,
       category: "Heatless Tools", 
