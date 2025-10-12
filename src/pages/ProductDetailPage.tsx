@@ -11,13 +11,25 @@ import { getHeatlessCurlingRodProducts } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
 import { preloadImagesWithPriority } from "@/utils/imagePreloader";
+import { useRealtimeState } from "@/hooks/useRealtimeState";
+import { useEventProduct, useEventUI, EVENTS } from "@/hooks/useEventSystem";
+import { useRealtimeContext } from "@/contexts/RealtimeContext";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
-  const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState<string>("");
+  
+  // Real-time context for global state
+  const { setCurrentProduct, setSelectedColor: setGlobalColor, setSelectedQuantity: setGlobalQuantity } = useRealtimeContext();
+  
+  // Event system for instant updates
+  const { selectProduct, selectColor, selectQuantity } = useEventProduct();
+  const { showError, hideError } = useEventUI();
+  
+  // Real-time state management
+  const [quantity, setQuantity] = useRealtimeState(`product-${id}-quantity`, 1);
+  const [selectedColor, setSelectedColor] = useRealtimeState(`product-${id}-color`, "");
   const [error, setError] = useState<string>("");
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
@@ -69,20 +81,31 @@ export const ProductDetailPage = () => {
   useEffect(() => {
     // Reset quantity
     setQuantity(1);
+    setGlobalQuantity(1);
     
     // Reset error
     setError('');
+    hideError();
     
     // Reset selected color
     if (product && product.colors && product.colors.length > 0) {
-      setSelectedColor(product.colors[0]);
+      const defaultColor = product.colors[0];
+      setSelectedColor(defaultColor);
+      setGlobalColor(defaultColor);
     } else {
       setSelectedColor('');
+      setGlobalColor('');
+    }
+    
+    // Update global product state
+    if (product) {
+      setCurrentProduct(product);
+      selectProduct(product);
     }
     
     // Scroll to top when product changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [id, product?.id]);
+  }, [id, product?.id, setQuantity, setSelectedColor, setCurrentProduct, setGlobalColor, setGlobalQuantity, selectProduct, hideError]);
 
   // Aggressive image preloading for instant display
   useEffect(() => {
@@ -127,18 +150,21 @@ export const ProductDetailPage = () => {
     }
   }, [product]);
 
-  // Handle add to cart
+  // Handle add to cart with real-time updates
   const handleAddToCart = () => {
     if (!product) return;
 
     // For products with colors, require color selection
     if (product.colors && product.colors.length > 0 && !selectedColor) {
-      setError('Please select a color');
+      const errorMsg = 'Please select a color';
+      setError(errorMsg);
+      showError(errorMsg);
       return;
     }
 
     // Clear any previous errors
     setError('');
+    hideError();
 
     // Prepare the product for cart
     const productToAdd = {
@@ -153,6 +179,12 @@ export const ProductDetailPage = () => {
     // Add multiple quantities to cart
     for (let i = 0; i < quantity; i++) {
       addToCart(productToAdd);
+    }
+    
+    // Emit real-time events for instant updates
+    selectQuantity(quantity);
+    if (selectedColor) {
+      selectColor(selectedColor);
     }
 
     // Track add to cart event

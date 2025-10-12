@@ -53,9 +53,9 @@ export const CategoryPage = () => {
   // Category configuration
   const categoryConfig = {
     wavy: {
-      title: "Heatless Hair Curling Rod",
-      subtitle: "Achieve beautiful curls without heat damage",
-      description: "Discover our innovative heatless curling rods that create stunning curls while protecting your hair from heat damage. Perfect for all hair types and lengths.",
+      title: "Curlea® DreamCurl™ Collection",
+      subtitle: "Effortless curls, no heat, no damage",
+      description: "Professional curls made easy — protect your hair while you style.",
       gradient: "from-blue-500/10 via-purple-500/20 to-pink-500/10",
       accentColor: "text-blue-600"
     },
@@ -219,7 +219,89 @@ export const CategoryPage = () => {
                     transition: { duration: 0.3 } 
                   }}
                 >
-                  {word}
+                  {word === "Curlea®" ? (
+                    <motion.span
+                      className="relative inline-block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+                      initial={{ 
+                        opacity: 0, 
+                        scale: 0.8, 
+                        rotateY: -180,
+                        filter: "blur(10px)"
+                      }}
+                      animate={{ 
+                        opacity: 1, 
+                        scale: 1, 
+                        rotateY: 0,
+                        filter: "blur(0px)"
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        delay: 0.5 + index * 0.15,
+                        ease: [0.43, 0.13, 0.23, 0.96],
+                        type: "spring",
+                        stiffness: 100
+                      }}
+                      whileHover={{ 
+                        scale: 1.1, 
+                        rotateY: 10,
+                        transition: { duration: 0.4, ease: "easeOut" } 
+                      }}
+                      style={{
+                        textShadow: "0 0 30px rgba(0,0,0,0.3)",
+                        transformStyle: "preserve-3d"
+                      }}
+                    >
+                      Curlea®
+                      {/* Animated background glow */}
+                      <motion.div
+                        className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-accent/30 to-primary/20 rounded-lg blur-lg -z-10"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{
+                          duration: 1.2,
+                          delay: 0.8 + index * 0.15,
+                          ease: "easeOut"
+                        }}
+                        whileHover={{ 
+                          scale: 1.2, 
+                          opacity: 0.8,
+                          transition: { duration: 0.3 }
+                        }}
+                      />
+                      {/* Floating particles around Curlea */}
+                      <motion.div
+                        className="absolute -inset-4 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.2 + index * 0.15, duration: 0.8 }}
+                      >
+                        {[...Array(4)].map((_, particleIndex) => (
+                          <motion.div
+                            key={particleIndex}
+                            className="absolute w-1 h-1 bg-accent/60 rounded-full"
+                            style={{
+                              left: `${20 + particleIndex * 20}%`,
+                              top: `${30 + (particleIndex % 2) * 40}%`,
+                            }}
+                            animate={{
+                              y: [0, -15, 0],
+                              x: [0, 5, 0],
+                              opacity: [0.6, 1, 0.6],
+                              scale: [1, 1.2, 1],
+                            }}
+                            transition={{
+                              duration: 3 + particleIndex * 0.5,
+                              repeat: Infinity,
+                              delay: particleIndex * 0.2,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        ))}
+                      </motion.div>
+                    </motion.span>
+                  ) : (
+                    word
+                  )}
                 </motion.span>
               ))}
             </motion.h1>

@@ -447,9 +447,6 @@ const ShopTheLookSection = () => {
               <OptimizedImage
                 src={getTheWavyLook}
                 alt="Get the wavy look with Curlea"
-                width={800}
-                height={600}
-                quality={85}
                 priority={true}
                 className="w-full h-full object-cover"
               />
@@ -580,9 +577,6 @@ const ShopTheLookSection = () => {
                     <OptimizedImage
                       src={product.image}
                       alt={product.name}
-                      width={80}
-                      height={80}
-                      quality={85}
                       className="w-full h-full object-cover"
                     />
                     <motion.div
@@ -891,19 +885,100 @@ const AnimatedText = ({ text }: { text: string }) => {
             transformStyle: "preserve-3d",
           }}
         >
-          {word === "Curlea" ? (
+          {word === "Curlea®" ? (
             <motion.span
               className="relative inline-block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
-              whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.3 }}
+              initial={{ 
+                opacity: 0, 
+                scale: 0.8, 
+                rotateY: -180,
+                filter: "blur(10px)"
+              }}
+              whileInView={{ 
+                opacity: 1, 
+                scale: 1, 
+                rotateY: 0,
+                filter: "blur(0px)"
+              }}
+              transition={{
+                duration: 1.5,
+                delay: 0.6 + index * 0.2,
+                ease: [0.43, 0.13, 0.23, 0.96],
+                type: "spring",
+                stiffness: 100
+              }}
+              whileHover={{ 
+                scale: 1.1, 
+                rotateY: 10,
+                transition: { duration: 0.4, ease: "easeOut" } 
+              }}
+              style={{
+                textShadow: "0 0 30px rgba(0,0,0,0.3)",
+                transformStyle: "preserve-3d"
+              }}
             >
               {word}
+              {/* Enhanced animated background glow */}
               <motion.div
-                className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg blur-sm -z-10"
-                initial={{ opacity: 0, scale: 0.8 }}
+                className="absolute -inset-3 bg-gradient-to-r from-primary/30 via-accent/40 to-primary/30 rounded-xl blur-xl -z-10"
+                initial={{ opacity: 0, scale: 0.3 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: 1.0, duration: 0.8 }}
+                transition={{ delay: 0.8 + index * 0.2, duration: 1.2, ease: "easeOut" }}
+                whileHover={{ 
+                  scale: 1.3, 
+                  opacity: 0.8,
+                  transition: { duration: 0.3 }
+                }}
+              />
+              {/* Floating particles around Curlea® */}
+              <motion.div
+                className="absolute -inset-6 pointer-events-none"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 1.2 + index * 0.2, duration: 0.8 }}
+              >
+                {[...Array(6)].map((_, particleIndex) => (
+                  <motion.div
+                    key={particleIndex}
+                    className="absolute w-1.5 h-1.5 bg-accent/70 rounded-full"
+                    style={{
+                      left: `${15 + particleIndex * 15}%`,
+                      top: `${25 + (particleIndex % 2) * 50}%`,
+                    }}
+                    animate={{
+                      y: [0, -20, 0],
+                      x: [0, 8, 0],
+                      opacity: [0.7, 1, 0.7],
+                      scale: [1, 1.3, 1],
+                      rotate: [0, 180, 360],
+                    }}
+                    transition={{
+                      duration: 4 + particleIndex * 0.5,
+                      repeat: Infinity,
+                      delay: particleIndex * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
+              </motion.div>
+              {/* Pulsing ring effect */}
+              <motion.div
+                className="absolute -inset-4 border-2 border-primary/30 rounded-full"
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  delay: 1.0 + index * 0.2,
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               />
             </motion.span>
           ) : (
