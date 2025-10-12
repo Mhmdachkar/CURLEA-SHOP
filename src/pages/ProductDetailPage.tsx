@@ -265,23 +265,32 @@ export const ProductDetailPage = () => {
       </div>
 
       {/* Product Detail */}
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6" key={product.id}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
           {/* Left: Product Info */}
           <motion.div
-            layoutId={`product-info-${id}`}
+            key={`product-info-${product.id}`}
             className="order-2 md:order-1"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <motion.h1
-              layoutId={`product-name-${id}`}
+              key={`product-name-${product.id}`}
               className="text-4xl md:text-5xl font-bold mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
             >
               {product.name}
             </motion.h1>
 
             <motion.p
-              layoutId={`product-price-${id}`}
+              key={`product-price-${product.id}`}
               className="text-3xl text-muted-foreground font-light mb-8"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
             >
               {product.price}
             </motion.p>
@@ -482,35 +491,44 @@ export const ProductDetailPage = () => {
 
           {/* Right: Product Image Gallery */}
           <motion.div
-            layoutId={`product-image-${id}`}
+            key={`product-image-${product.id}`}
             className="order-1 md:order-2"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
           >
             {product.id.startsWith('curly-') ? (
-              <CurlyHairCollectionImageGallery product={product} />
+              <CurlyHairCollectionImageGallery key={`curly-gallery-${product.id}`} product={product} />
             ) : product.id === 'dreamcurl-original' ? (
               <DreamCurlImageGallery 
+                key={`dreamcurl-gallery-${product.id}`}
                 product={product} 
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
             ) : product.id === 'heatless-5' ? (
               <BunBonsImageGallery 
+                key={`bunbons-gallery-${product.id}`}
                 product={product} 
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
             ) : product.id === 'heatless-6' ? (
               <BonnetImageGallery 
+                key={`bonnet-gallery-${product.id}`}
                 product={product} 
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
             ) : (
             <motion.img
-              layoutId={`product-img-${id}`}
+              key={`product-img-${product.id}`}
               src={product.image}
               alt={product.name}
               className="w-full h-auto rounded-lg"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
             />
             )}
           </motion.div>
