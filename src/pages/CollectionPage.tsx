@@ -10,10 +10,43 @@ import getTheWavyLook from "@/assets/getthewavylook.png";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 
+// Updated Product interface now supports video and images arrays
+
 // Import all real products from both collections
 const getAllProducts = (): Product[] => {
   // Heatless Hair Curling Rod products
   const heatlessProducts: Product[] = [
+           {
+             id: "dreamcurl-original",
+             name: "DreamCurl™ Original Set",
+             price: "€39.99",
+             image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+             category: "DreamCurl™ Collection",
+             hairType: "Medium to Long",
+             featured: true,
+             description: [
+               "The Original Heatless Curler - by CURLEA",
+               "For bouncy, voluminous curls overnight. Designed for medium to long hair.",
+               "This isn't just a heatless curler. It's the one that redefined the category.",
+               "We invented the first curlers by size and engineered tools for how people actually sleep.",
+               "Developed with elongated, structured fibres that hold shape through the night without wires, foam or tension.",
+               "Exclusive vegan Peau de Soie fabric reduces friction and protects against overnight breakage.",
+               "No bunching. No pressure. No stiffness behind your ears.",
+               "Available in 4 colors: Mulberry, Candy, Latte, Olive",
+               "The curler that makes people say, 'What did you use?'"
+             ],
+             ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
+             size: "Original Size",
+             inStock: true,
+             colors: ["Mulberry", "Candy", "Latte", "Olive"],
+             video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
+             images: [
+               new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+               new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+               new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+               new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+             ]
+           },
     {
       id: "heatless-1",
       name: "Premium Heatless Curling Rod - Set of 4",
@@ -21,7 +54,7 @@ const getAllProducts = (): Product[] => {
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       category: "Heatless Tools",
     hairType: "All Types",
-    featured: true,
+    featured: false,
       description: [
         "Create beautiful curls without heat damage",
         "Set of 4 different sized rods for various curl patterns",
@@ -674,7 +707,7 @@ const BeautifulAnimatedTitle = () => {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: 0.4, duration: 1.2 }}
             >
-              <AnimatedText text="Curlea Collection" />
+              <AnimatedText text="Curlea® DreamCurl™ Collection" />
             </motion.h1>
           </motion.div>
 
@@ -694,7 +727,7 @@ const BeautifulAnimatedTitle = () => {
               transition={{ delay: 1.0, duration: 1.2 }}
             >
               <TypewriterText 
-                text="Discover our premium collection of heatless styling tools and elegant hair accessories, designed to enhance your natural beauty."
+                text="Experience the original heatless curler that redefined the category. Professional curls made easy — protect your hair while you style."
                 speed={50}
               />
             </motion.p>
@@ -922,8 +955,8 @@ const InteractiveFilterBar = ({
   selectedHairType: string;
   setSelectedHairType: (type: string) => void;
 }) => {
-  const categories = ["All", "Heatless Tools", "Hair Accessories"];
-  const hairTypes = ["All Types", "All Types", "Curly"];
+  const categories = ["All", "DreamCurl™ Collection", "Heatless Tools", "Hair Accessories"];
+  const hairTypes = ["All Types", "Medium to Long", "All Types", "Curly"];
 
   return (
         <motion.div

@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { QuickViewModal } from "@/components/QuickViewModal";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { ArrowLeft, Minus, Plus, Play, CheckCircle, Leaf, Users, Heart } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
@@ -42,7 +43,7 @@ export const ProductDetailPage = () => {
   if (!product && id?.startsWith('curly-')) {
     product = getCurlyHairCollectionProductById(id);
   }
-  if (!product && id?.startsWith('heatless-')) {
+  if (!product && (id?.startsWith('heatless-') || id?.startsWith('dreamcurl-'))) {
     product = getHeatlessCurlingRodProducts().find(p => p.id === id);
   }
 
@@ -63,13 +64,24 @@ export const ProductDetailPage = () => {
     );
   }
 
-  // Initialize selected color when product is loaded
-  // Simple color initialization - only run once when product is first loaded
+  // Reset all state when product ID changes (navigating between products)
   useEffect(() => {
-    if (product && product.colors && product.colors.length > 0 && !selectedColor) {
+    // Reset quantity
+    setQuantity(1);
+    
+    // Reset error
+    setError('');
+    
+    // Reset selected color
+    if (product && product.colors && product.colors.length > 0) {
       setSelectedColor(product.colors[0]);
+    } else {
+      setSelectedColor('');
     }
-  }, [product, selectedColor]);
+    
+    // Scroll to top when product changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id, product?.id]);
 
   // Track product view when product loads
   useEffect(() => {
@@ -132,8 +144,8 @@ export const ProductDetailPage = () => {
 
   // Get related products based on current product's collection
   const getRelatedProducts = () => {
-    if (product.id.startsWith('heatless-')) {
-      // If user is viewing a Heatless Hair Curling Rod product:
+    if (product.id.startsWith('heatless-') || product.id === 'dreamcurl-original') {
+      // If user is viewing a Heatless Hair Curling Rod or DreamCurl product:
       // Show 1 from Heatless collection + 2 from Curly Hair Collection
       const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
       const curlyProducts = getCurlyHairCollectionProducts();
@@ -368,6 +380,41 @@ export const ProductDetailPage = () => {
             >
               Add to Cart
             </motion.button>
+
+            {/* Color Selection for DreamCurl - Placed after Add to Cart */}
+            {product.id === 'dreamcurl-original' && product.colors && product.colors.length > 0 && (
+              <motion.div
+                className="mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className="mb-4">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Available Colors</span>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 sm:gap-3">
+                  {product.colors.map((color, index) => (
+                    <motion.button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide transition-all duration-200 rounded-full touch-manipulation ${
+                        selectedColor === color
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/60'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      {color}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Right: Product Image Gallery */}
@@ -377,6 +424,12 @@ export const ProductDetailPage = () => {
           >
             {product.id.startsWith('curly-') ? (
               <CurlyHairCollectionImageGallery product={product} />
+            ) : product.id === 'dreamcurl-original' ? (
+              <DreamCurlImageGallery 
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
+              />
             ) : product.id === 'heatless-5' ? (
               <BunBonsImageGallery 
                 product={product} 
@@ -401,19 +454,20 @@ export const ProductDetailPage = () => {
         </div>
 
         {/* 1. The "Ritual in Motion" Video Section */}
-        <RitualInMotionSection product={product} />
+        <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
 
         {/* BUN BONS Usage Steps Section */}
         {product.id === 'heatless-5' && product.usageSteps && (
-          <BunBonsUsageSteps product={product} />
+          <BunBonsUsageSteps key={`bunbons-${product.id}`} product={product} />
         )}
 
-
-        {/* 3. The "Science & Soul" Ingredient Spotlight */}
-        <ScienceAndSoulSection product={product} />
+        {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
+        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && (
+          <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
+        )}
 
         {/* 4. The "From Our Community" Showcase */}
-        <CommunityShowcase product={product} />
+        <CommunityShowcase key={`community-${product.id}`} product={product} />
 
         
         </div>
@@ -439,7 +493,7 @@ export const ProductDetailPage = () => {
                   Complete Your Routine
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  {product.id.startsWith('heatless-') 
+                  {product.id.startsWith('heatless-') || product.id === 'dreamcurl-original'
                     ? "Enhance your heatless styling with complementary products from our collections"
                     : product.id.startsWith('curly-')
                     ? "Complete your curly hair care routine with our premium styling tools"
@@ -494,13 +548,44 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
 
   const heatlessProducts: Product[] = [
     {
+      id: "dreamcurl-original",
+      name: "DreamCurl™ Original Set",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
+      hairType: "Medium to Long",
+      featured: true,
+      description: [
+        "The Original Heatless Curler - by CURLEA",
+        "For bouncy, voluminous curls overnight. Designed for medium to long hair.",
+        "This isn't just a heatless curler. It's the one that redefined the category.",
+        "We invented the first curlers by size and engineered tools for how people actually sleep.",
+        "Developed with elongated, structured fibres that hold shape through the night without wires, foam or tension.",
+        "Exclusive vegan Peau de Soie fabric reduces friction and protects against overnight breakage.",
+        "No bunching. No pressure. No stiffness behind your ears.",
+        "Available in 4 colors: Mulberry, Candy, Latte, Olive",
+        "The curler that makes people say, 'What did you use?'"
+      ],
+      ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
+      size: "Original Size",
+      inStock: true,
+      colors: ["Mulberry", "Candy", "Latte", "Olive"],
+      video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+      ]
+    },
+    {
       id: "heatless-1",
       name: "Premium Heatless Curling Rod - Set of 4",
       price: "€29.99",
       image: product1Image,
       category: "Heatless Tools",
       hairType: "All Types",
-      featured: true,
+      featured: false,
       description: [
         "Create beautiful curls without heat damage",
         "Set of 4 different sized rods for various curl patterns",
@@ -663,11 +748,14 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
 
       // Check if it's a special product type
       const isHeatlessProduct = product.id.startsWith('heatless-');
+      const isDreamCurlProduct = product.id.startsWith('dreamcurl-');
       const isCurlyHairProduct = product.id.startsWith('curly-');
       
       // Import the appropriate video for special products
-    const specialVideo = isHeatlessProduct 
-      ? product.id === 'heatless-5'
+    const specialVideo = isHeatlessProduct || isDreamCurlProduct
+      ? product.id === 'dreamcurl-original'
+        ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href
+        : product.id === 'heatless-5'
         ? new URL('../assets/Heatless Hair Curling Rod/product5/Screen Recording 2025-10-07 143110.mp4', import.meta.url).href
         : product.id === 'heatless-6'
         ? new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href
@@ -736,7 +824,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
 
             <motion.div
               className={`relative rounded-2xl overflow-hidden shadow-2xl w-full ${
-                (isHeatlessProduct || isCurlyHairProduct) && specialVideo 
+                (isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo 
                   ? "aspect-[16/10] sm:aspect-[16/10] min-h-[250px] sm:min-h-[400px] md:min-h-[500px]" 
                   : "aspect-video"
               }`}
@@ -744,7 +832,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
               animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              {(isHeatlessProduct || isCurlyHairProduct) && specialVideo ? (
+              {(isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo ? (
                 <>
                   {/* Actual Video for Special Products */}
                   <video
@@ -1572,6 +1660,36 @@ const CommunityShowcase = ({ product }: { product: Product }) => {
           caption: 'The reversible design is genius! Love how it protects my heatless curls while keeping me comfortable all night.',
           likes: 1678
         }
+      ] : product.id === 'dreamcurl-original' ? [
+        // DreamCurl™ Original Set community posts
+        {
+          id: 1,
+          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result.png', import.meta.url).href,
+          username: '@dreamcurl_original',
+          caption: 'The original that started it all! These overnight curls are absolutely stunning. No heat, no damage, just beautiful results.',
+          likes: 3247
+        },
+        {
+          id: 2,
+          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result1.png', import.meta.url).href,
+          username: '@heatless_curl_queen',
+          caption: 'DreamCurl™ Original Set delivers exactly what it promises. Woke up with salon-quality curls that lasted all day!',
+          likes: 2892
+        },
+        {
+          id: 3,
+          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result2.png', import.meta.url).href,
+          username: '@curlea_community_original',
+          caption: 'This is the curler that redefined the category! The vegan Peau de Soie fabric feels incredible and the results speak for themselves.',
+          likes: 4156
+        },
+        {
+          id: 4,
+          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result3.png', import.meta.url).href,
+          username: '@original_curler_lover',
+          caption: 'Medium to long hair? This is your perfect match! The elongated structured fibres hold shape through the night beautifully.',
+          likes: 3834
+        }
       ] : [
     {
       id: 1,
@@ -2196,5 +2314,150 @@ const BunBonsUsageSteps = ({ product }: { product: Product }) => {
         </motion.div>
       </div>
     </motion.section>
+  );
+};
+
+// DreamCurl Image Gallery Component
+const DreamCurlImageGallery = ({ 
+  product, 
+  selectedColor, 
+  onColorSelect 
+}: { 
+  product: Product; 
+  selectedColor: string; 
+  onColorSelect: (color: string) => void;
+}) => {
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Placeholder image for DreamCurl
+  const placeholderImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href;
+
+  // Color-specific image mapping for DreamCurl™ Original Set
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'Mulberry': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+      'Olive': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+      'Candy': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+      'Latte': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || colorImageMap['Mulberry'];
+  };
+
+  // Get the current main image based on selected color or selected image index
+  const getCurrentMainImage = () => {
+    if (selectedColor) {
+      return getColorSpecificImage(selectedColor);
+    }
+    // Fallback to product's images array
+    const productImages = product.images && product.images.length > 0 
+      ? product.images 
+      : [product.image];
+    return productImages[selectedImageIndex];
+  };
+
+  // Get color from image index
+  const getColorFromIndex = (index: number) => {
+    const colorOrder = ['Mulberry', 'Olive', 'Candy', 'Latte'];
+    return colorOrder[index] || colorOrder[0];
+  };
+
+  const currentMainImage = getCurrentMainImage();
+
+  return (
+    <div className="space-y-4">
+      {/* Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <OptimizedImage
+          key={`${selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={`${product.name} - ${selectedColor || 'View'} ${selectedImageIndex + 1}`}
+          className="object-cover"
+          placeholderSrc={placeholderImage}
+          priority={true}
+          onError={(e) => {
+            console.error(`Failed to load image: ${currentMainImage}`);
+            if (e.currentTarget) {
+              e.currentTarget.src = placeholderImage;
+            }
+          }}
+        />
+        
+        {/* Navigation Arrows - always available */}
+        {product.colors && product.colors.length > 1 && (
+          <>
+            <button
+              onClick={() => {
+                const currentIndex = selectedColor 
+                  ? product.colors!.indexOf(selectedColor)
+                  : selectedImageIndex;
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : product.colors!.length - 1;
+                const prevColor = product.colors![prevIndex];
+                onColorSelect(prevColor);
+                setSelectedImageIndex(prevIndex);
+              }}
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              aria-label="Previous color"
+            >
+              <span className="text-lg sm:text-xl">←</span>
+            </button>
+            <button
+              onClick={() => {
+                const currentIndex = selectedColor 
+                  ? product.colors!.indexOf(selectedColor)
+                  : selectedImageIndex;
+                const nextIndex = currentIndex < product.colors!.length - 1 ? currentIndex + 1 : 0;
+                const nextColor = product.colors![nextIndex];
+                onColorSelect(nextColor);
+                setSelectedImageIndex(nextIndex);
+              }}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              aria-label="Next color"
+            >
+              <span className="text-lg sm:text-xl">→</span>
+            </button>
+          </>
+        )}
+      </motion.div>
+
+      {/* Thumbnail Gallery - show all color-specific images so customers can see available colors */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          {product.colors.map((color, index) => (
+            <button
+              key={color}
+              onClick={() => {
+                // Update both color selection and image index when clicking thumbnail
+                onColorSelect(color);
+                setSelectedImageIndex(index);
+              }}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+                selectedColor === color 
+                  ? 'ring-2 ring-primary scale-105' 
+                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
+            >
+              <OptimizedImage
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} Color`}
+                className="object-cover"
+                placeholderSrc={placeholderImage}
+                priority={index < 2}
+                onError={(e) => {
+                  console.error(`Failed to load color image: ${color}`);
+                  if (e.currentTarget) {
+                    e.currentTarget.src = placeholderImage;
+                  }
+                }}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };

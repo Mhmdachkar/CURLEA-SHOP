@@ -6,19 +6,19 @@ import categoryImage from "@/assets/category-curly.png";
 const categories = [
   {
     id: 1,
-    name: "Heatless Hair Curling Rod",
+    name: "Curlea® DreamCurl™ Collection",
     slug: "wavy",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=1000&fit=crop",
   },
   {
     id: 2,
-    name: "Curly Hair Collection",
+    name: "Curlea® Everyday Luxe Essentials ™ Collection",
     slug: "curly",
     image: categoryImage,
   },
   {
     id: 3,
-    name: "Straight Hair Collection",
+    name: "Curlea® Satin Rituals™ Collection",
     slug: "straight",
     image: "https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&h=1000&fit=crop",
   },
