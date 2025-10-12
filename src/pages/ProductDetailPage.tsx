@@ -27,9 +27,9 @@ export const ProductDetailPage = () => {
   const { selectProduct, selectColor, selectQuantity } = useEventProduct();
   const { showError, hideError } = useEventUI();
   
-  // Real-time state management
+  // State management - using regular useState for color to avoid conflicts
   const [quantity, setQuantity] = useRealtimeState(`product-${id}-quantity`, 1);
-  const [selectedColor, setSelectedColor] = useRealtimeState(`product-${id}-color`, "");
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
@@ -87,7 +87,7 @@ export const ProductDetailPage = () => {
     setError('');
     hideError();
     
-    // Reset selected color
+    // Reset selected color only when product changes
     if (product && product.colors && product.colors.length > 0) {
       const defaultColor = product.colors[0];
       setSelectedColor(defaultColor);
@@ -105,7 +105,7 @@ export const ProductDetailPage = () => {
     
     // Scroll to top when product changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [id, product?.id, setQuantity, setSelectedColor, setCurrentProduct, setGlobalColor, setGlobalQuantity, selectProduct, hideError]);
+  }, [product?.id]); // Only depend on product.id to prevent unnecessary resets
 
   // Aggressive image preloading for instant display
   useEffect(() => {
@@ -362,7 +362,7 @@ export const ProductDetailPage = () => {
               )}
             </div>
 
-    {/* Simple Color Selection for BUN BONS */}
+    {/* Enhanced Color Selection for BUN BONS */}
     {product.id === 'heatless-5' && product.colors && product.colors.length > 0 && (
       <motion.div
         className="mb-8"
@@ -372,32 +372,57 @@ export const ProductDetailPage = () => {
       >
         <div className="mb-4">
           <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+          {selectedColor && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedColor}
+            </span>
+          )}
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {product.colors.map((color, index) => (
             <motion.button
               key={color}
-              onClick={() => setSelectedColor(color)}
-              className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-200 ${
+              onClick={() => {
+                setSelectedColor(color);
+                setGlobalColor(color);
+                selectColor(color);
+              }}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
                 selectedColor === color
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-white text-gray-800 border border-gray-300 hover:border-gray-400'
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
             >
               {color}
+              {/* Selected indicator */}
+              {selectedColor === color && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
             </motion.button>
           ))}
         </div>
       </motion.div>
     )}
 
-    {/* Simple Color Selection for Bonnet */}
+    {/* Enhanced Color Selection for Bonnet */}
     {product.id === 'heatless-6' && product.colors && product.colors.length > 0 && (
       <motion.div
         className="mb-8"
@@ -407,25 +432,50 @@ export const ProductDetailPage = () => {
       >
         <div className="mb-4">
           <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+          {selectedColor && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedColor}
+            </span>
+          )}
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {product.colors.map((color, index) => (
             <motion.button
               key={color}
-              onClick={() => setSelectedColor(color)}
-              className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-200 ${
+              onClick={() => {
+                setSelectedColor(color);
+                setGlobalColor(color);
+                selectColor(color);
+              }}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
                 selectedColor === color
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-white text-gray-800 border border-gray-300 hover:border-gray-400'
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
             >
               {color}
+              {/* Selected indicator */}
+              {selectedColor === color && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
             </motion.button>
           ))}
         </div>
@@ -453,7 +503,7 @@ export const ProductDetailPage = () => {
               Add to Cart
             </motion.button>
 
-            {/* Color Selection for DreamCurl - Placed after Add to Cart */}
+            {/* Enhanced Color Selection for DreamCurl - Placed after Add to Cart */}
             {product.id === 'dreamcurl-original' && product.colors && product.colors.length > 0 && (
               <motion.div
                 className="mt-8"
@@ -463,25 +513,50 @@ export const ProductDetailPage = () => {
               >
                 <div className="mb-4">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Available Colors</span>
+                  {selectedColor && (
+                    <span className="ml-2 text-sm text-primary font-medium">
+                      Selected: {selectedColor}
+                    </span>
+                  )}
                 </div>
                 
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.colors.map((color, index) => (
                     <motion.button
                       key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`px-4 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide transition-all duration-200 rounded-full touch-manipulation ${
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setGlobalColor(color);
+                        selectColor(color);
+                      }}
+                      className={`relative px-4 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide transition-all duration-300 rounded-full touch-manipulation border-2 ${
                         selectedColor === color
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/60'
+                          ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25'
+                          : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/60 border-muted hover:border-primary/50'
                       }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ 
+                        scale: 1.05,
+                        y: -2,
+                        transition: { duration: 0.2 }
+                      }}
+                      whileTap={{ 
+                        scale: 0.95,
+                        transition: { duration: 0.1 }
+                      }}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 * index }}
                     >
                       {color}
+                      {/* Selected indicator */}
+                      {selectedColor === color && (
+                        <motion.div
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-background"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        />
+                      )}
                     </motion.button>
                   ))}
                 </div>
