@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   onError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
   priority?: boolean;
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  removeBlackBorders?: boolean;
 }
 
 // Image cache to prevent re-downloading
@@ -21,7 +22,8 @@ export const OptimizedImage = ({
   placeholderSrc,
   onError,
   priority = false,
-  objectFit = 'cover'
+  objectFit = 'cover',
+  removeBlackBorders = false
 }: OptimizedImageProps) => {
   const [isLoaded, setIsLoaded] = useState(imageCache.has(src));
   const [isInView, setIsInView] = useState(priority);
@@ -104,6 +106,10 @@ export const OptimizedImage = ({
     };
   }, [isInView, src, currentSrc, onError]);
 
+  // Check if this is the product-4.webp image that needs black border removal
+  const isProduct4Image = src.includes('product-4.webp');
+  const shouldRemoveBlackBorders = removeBlackBorders || isProduct4Image;
+
   return (
     <div ref={imgRef} className={`relative ${className}`}>
       {/* Minimal placeholder while loading */}
@@ -116,8 +122,14 @@ export const OptimizedImage = ({
         <img
           src={currentSrc}
           alt={alt}
-          className={`w-full h-full ${className}`}
-          style={{ objectFit }}
+          className={`w-full h-full ${className} ${shouldRemoveBlackBorders ? 'remove-black-borders' : ''}`}
+          style={{ 
+            objectFit,
+            ...(shouldRemoveBlackBorders && {
+              filter: 'contrast(1.1) brightness(1.05) saturate(1.1)',
+              clipPath: 'inset(2% 2% 2% 2%)', // Remove 2% from all edges to crop black borders
+            })
+          }}
           onLoad={() => {
             setIsLoaded(true);
             imageCache.set(src, true);

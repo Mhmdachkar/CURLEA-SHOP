@@ -725,84 +725,102 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
              new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
              new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
              new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
+             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href
            ]
          },
     {
-      id: "heatless-1",
-      name: "DreamCurl™ Short Set – Rose Gold Edition",
-      price: "€29.99",
+      id: "dreamcurl-short-set",
+      name: "DreamCurl™ Short Set",
+      price: "€24.99",
       image: product1Image,
-      category: "Heatless Tools",
+      category: "DreamCurl™ Collection",
       hairType: "All Types",
-      featured: false,
+      featured: true,
       description: [
+        "The Short Set Collection - Perfect for every hair type and style",
         "Create beautiful curls without heat damage",
-        "Set of 4 different sized rods for various curl patterns",
-        "Soft, flexible material that's gentle on hair",
-        "Easy to use and remove",
-        "Perfect for overnight styling"
+        "Professional heatless curling system designed for versatility",
+        "Soft, flexible material that's gentle on your hair",
+        "Easy to use and comfortable for overnight styling",
+        "Each set includes different sized rods for various curl patterns",
+        "Available in 4 luxurious colors: Rose Gold, Royal Purple, Olive Lux, Earl Grey",
+        "Reusable, easy to clean, and built to last",
+        "The perfect addition to your heat-free styling routine"
       ],
-      ingredients: ["Silicon Material", "Non-toxic Coating"],
+      ingredients: ["Premium Silicon", "Non-toxic Coating", "Flexible Material"],
       size: "Set of 4",
       inStock: true,
+      colors: ["Rose Gold", "Royal Purple", "Olive Lux", "Earl Grey"],
+      images: [
+        product1Image, // Rose Gold
+        product2Image, // Royal Purple
+        product3Image, // Olive Lux
+        product4Image  // Earl Grey
+      ]
     },
     {
-      id: "heatless-2", 
-      name: "DreamCurl™ Short Set – Royal Purple Edition",
-      price: "€24.99",
-      image: product2Image,
-      category: "Heatless Tools",
-      hairType: "All Types",
-      featured: false,
+      id: "dreamcurl-midi",
+      name: "DreamCurl™ Midi",
+      price: "€34.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
+      hairType: "Short to Long",
+      featured: true,
       description: [
-        "Extra large size for loose, beachy waves",
-        "Soft silicone material prevents hair damage",
-        "Comfortable to sleep in overnight",
-        "Creates natural-looking waves",
-        "Reusable and easy to clean"
+        "Immerse yourself in the ultimate blend of luxury and comfort with CURLEA, the undisputed leader in the world of heatless curlers, where every night's sleep feels like resting on a cloud.",
+        "Experience a new level of heatless hair styling with our 'Zero Heat' Heatless Curlers. At CURLEA, we get that your beauty sleep is crucial, especially when it comes to heatless overnight curls.",
+        "That's why each of our handcrafted curlers is made to be extra soft, using the finest fabrics to keep your hair safe from friction as you snooze peacefully.",
+        "You can count on us to prioritise your hair's health and your comfort all the way. With a wide-reaching influence in the social media community, CURLEA shines brightest among its imitators.",
+        "Crafted from the finest 100% vegan Peau De Soie fabric, CURLEA's iconic heatless curler helps you create bouncy and voluminous heatless overnight curls.",
+        "Tailored for short to long hair. Providing a tighter curl, our Midi size is the perfect choice for those in search of extended curl longevity.",
+        "Crafted with sustainably sourced, ultra-soft fibres, our heatless curlers provide a night of sheer luxury and hair protection while championing a greener, brighter future.",
+        "Elevate your hairstyle to new heights with CURLEA - your go-to for unmatched comfort, style, and luxury all in one.",
+        "This set will include: 2 Hair Ties, 1 Midi Heatless Curler, 1 Hair Clip"
       ],
-      ingredients: ["Premium Silicon", "Anti-slip Coating"],
-      size: "Large",
+      ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
+      size: "Midi Size",
       inStock: true,
+      colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
+      video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
+      ]
     },
     {
-      id: "heatless-3",
-      name: "DreamCurl™ Short Set – Olive Lux Edition",
-      price: "€19.99", 
-      image: product3Image,
-      category: "Heatless Tools",
+      id: "dreamcurl-jumbo",
+      name: "DreamCurl™ JUMBO SIZE",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
       hairType: "All Types",
-      featured: false,
+      featured: true,
       description: [
-        "Medium size for versatile curl options",
-        "Professional-grade silicone construction",
-        "Creates defined, long-lasting curls",
-        "Suitable for all hair lengths",
-        "Heat-free styling solution"
+        "Jumbo Heatless Curler - by CURLEA",
+        "For soft, voluminous waves with a looser curl shape. Designed for hair below the shoulders.",
+        "It's easy to assume Jumbo means it's made for longer hair. But in reality, Jumbo refers to the thickness of the curler - not the length of your hair.",
+        "This size was created for those who prefer a looser, more open curl shape, with soft volume and gentle movement instead of tight definition. Think less structure, more flow.",
+        "At CURLEA, we were the first to design curlers by size.",
+        "This is the curler that makes people say, 'What did you use?' And the one you'll feel proud to answer with: 'CURLEA.'",
+        "Each set includes: 1 Jumbo Size Heatless Curler, 2 Matching Hair Ties, 1 Hair Clip for easy wrapping"
       ],
-      ingredients: ["Medical-grade Silicon", "Smooth Finish"],
-      size: "Medium",
+      ingredients: ["100% Vegan Peau De Soie Fabric", "Elongated Structured Fibres", "Premium Memory Foam"],
+      size: "Jumbo Size",
       inStock: true,
-    },
-    {
-      id: "heatless-4",
-      name: "DreamCurl™ Short Set – Earl Grey Edition",
-      price: "€16.99",
-      image: product4Image,
-      category: "Heatless Tools", 
-      hairType: "All Types",
-      featured: false,
-      description: [
-        "Small size for tight, defined curls",
-        "Perfect for short to medium length hair",
-        "Lightweight and comfortable",
-        "Creates bouncy, springy curls",
-        "Ideal for quick styling"
-      ],
-      ingredients: ["Flexible Silicon", "Gentle Texture"],
-      size: "Small",
-      inStock: true,
+      colors: ["LATTE", "CANDY", "OLIVE", "MULBERRY"],
+      video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
+      ]
     },
     {
       id: "heatless-5",

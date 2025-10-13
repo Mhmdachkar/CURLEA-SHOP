@@ -1,10 +1,11 @@
-import { motion, useInView, AnimatePresence } from "framer-motion";
+﻿import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { QuickViewModal } from "@/components/QuickViewModal";
 import { OptimizedImage } from "@/components/OptimizedImage";
-import { ArrowLeft, Minus, Plus, Play, CheckCircle, Leaf, Users, Heart } from "lucide-react";
+import { ProductImage } from "@/components/ProductImage";
+import { ArrowLeft, Minus, Plus, Play, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
 import { getHeatlessCurlingRodProducts } from "./CategoryPage";
@@ -30,6 +31,7 @@ export const ProductDetailPage = () => {
   // State management - using regular useState for color to avoid conflicts
   const [quantity, setQuantity] = useRealtimeState(`product-${id}-quantity`, 1);
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
@@ -57,7 +59,7 @@ export const ProductDetailPage = () => {
     product = getCurlyHairCollectionProductById(id);
   }
   if (!product && (id?.startsWith('heatless-') || id?.startsWith('dreamcurl-'))) {
-    product = getHeatlessCurlingRodProducts().find(p => p.id === id);
+    product = getHeatlessCurlingRodProductById(id);
   }
 
   if (!product) {
@@ -95,6 +97,13 @@ export const ProductDetailPage = () => {
     } else {
       setSelectedColor('');
       setGlobalColor('');
+    }
+    
+    // Reset selected size for DreamCurl Short Set
+    if (product && product.id === 'dreamcurl-short-set') {
+      setSelectedSize('Original'); // Default size
+    } else {
+      setSelectedSize('');
     }
     
     // Update global product state
@@ -162,6 +171,14 @@ export const ProductDetailPage = () => {
       return;
     }
 
+    // For DreamCurl Short Set, require size selection
+    if (product.id === 'dreamcurl-short-set' && !selectedSize) {
+      const errorMsg = 'Please select a size';
+      setError(errorMsg);
+      showError(errorMsg);
+      return;
+    }
+
     // Clear any previous errors
     setError('');
     hideError();
@@ -173,6 +190,7 @@ export const ProductDetailPage = () => {
       price: product.price,
       image: product.image,
       selectedColor: selectedColor || undefined,
+      selectedSize: selectedSize || undefined,
       size: product.size,
     };
 
@@ -189,7 +207,7 @@ export const ProductDetailPage = () => {
 
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(product.price.replace('€', ''));
+      const priceNumber = parseFloat(product.price.replace('â‚¬', ''));
       (window as any).analytics.trackCart('add', {
         product_id: product.id,
         title: product.name,
@@ -205,34 +223,69 @@ export const ProductDetailPage = () => {
     openCart();
   };
 
-  // Get related products based on current product's collection
-  const getRelatedProducts = () => {
-    if (product.id.startsWith('heatless-') || product.id === 'dreamcurl-original') {
-      // If user is viewing a Heatless Hair Curling Rod or DreamCurl product:
-      // Show 1 from Heatless collection + 2 from Curly Hair Collection
-      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
-      const curlyProducts = getCurlyHairCollectionProducts();
-      
-      const oneHeatless = heatlessProducts.slice(0, 1);
-      const twoCurly = curlyProducts.slice(0, 2);
-      
-      return [...oneHeatless, ...twoCurly];
-    } else if (product.id.startsWith('curly-')) {
-      // If user is viewing a Curly Hair Collection product:
-      // Show 1 from Curly collection + 2 from Heatless Hair Curling Rod
-      const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
-      const heatlessProducts = getHeatlessCurlingRodProducts();
-      
-      const oneCurly = curlyProducts.slice(0, 1);
-      const twoHeatless = heatlessProducts.slice(0, 2);
-      
-      return [...oneCurly, ...twoHeatless];
-    } else {
-      // For other products, show products from the same category
-      return products
-        .filter(p => p.category === product.category && p.id !== product.id)
-        .slice(0, 3);
+  // Shuffle array helper function
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+    return shuffled;
+  };
+
+  // Get related products - always show exactly 3 products from different categories
+  const getRelatedProducts = () => {
+    // Get all available products from different collections
+    const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+    const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
+    const regularProducts = products.filter(p => 
+      p.id !== product.id && 
+      !p.id.startsWith('heatless-') && 
+      !p.id.startsWith('dreamcurl-') && 
+      !p.id.startsWith('curly-')
+    );
+
+    // Shuffle each collection
+    const shuffledHeatless = shuffleArray(heatlessProducts);
+    const shuffledCurly = shuffleArray(curlyProducts);
+    const shuffledRegular = shuffleArray(regularProducts);
+
+    // Build recommendations based on current product type
+    let recommendations: Product[] = [];
+
+    if (product.id.startsWith('heatless-') || product.id.startsWith('dreamcurl-')) {
+      // For heatless products: mix from other categories
+      if (shuffledHeatless.length > 0) recommendations.push(shuffledHeatless[0]);
+      if (shuffledCurly.length > 0) recommendations.push(shuffledCurly[0]);
+      if (shuffledRegular.length > 0) recommendations.push(shuffledRegular[0]);
+    } else if (product.id.startsWith('curly-')) {
+      // For curly products: mix from other categories
+      if (shuffledCurly.length > 0) recommendations.push(shuffledCurly[0]);
+      if (shuffledHeatless.length > 0) recommendations.push(shuffledHeatless[0]);
+      if (shuffledRegular.length > 0) recommendations.push(shuffledRegular[0]);
+    } else {
+      // For regular products: mix from all categories
+      if (shuffledRegular.length > 0) recommendations.push(shuffledRegular[0]);
+      if (shuffledHeatless.length > 0) recommendations.push(shuffledHeatless[0]);
+      if (shuffledCurly.length > 0) recommendations.push(shuffledCurly[0]);
+    }
+
+    // Ensure we always have exactly 3 recommendations
+    // If we don't have enough from the preferred mix, fill from all available
+    if (recommendations.length < 3) {
+      const allOtherProducts = shuffleArray([
+        ...heatlessProducts,
+        ...curlyProducts,
+        ...regularProducts
+      ].filter(p => !recommendations.find(r => r.id === p.id)));
+      
+      while (recommendations.length < 3 && allOtherProducts.length > 0) {
+        recommendations.push(allOtherProducts.shift()!);
+      }
+    }
+
+    // Shuffle final recommendations for variety
+    return shuffleArray(recommendations.slice(0, 3));
   };
 
   const relatedProducts = getRelatedProducts();
@@ -356,7 +409,7 @@ export const ProductDetailPage = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-sm font-medium text-primary">
-                    × {product.id === 'curly-clip-1' ? 9 * quantity : product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity} pieces in total
+                    Ã— {product.id === 'curly-clip-1' ? 9 * quantity : product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity} pieces in total
                   </span>
                 </motion.div>
               )}
@@ -422,8 +475,244 @@ export const ProductDetailPage = () => {
       </motion.div>
     )}
 
+    {/* Enhanced Color Selection for DreamCurl Short Set */}
+    {product.id === 'dreamcurl-short-set' && product.colors && product.colors.length > 0 && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+          {selectedColor && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedColor}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {product.colors.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => {
+                setSelectedColor(color);
+                setGlobalColor(color);
+                selectColor(color);
+              }}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                selectedColor === color
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+              }`}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {color}
+              {/* Selected indicator */}
+              {selectedColor === color && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
+    {/* Enhanced Size Selection for DreamCurl Short Set */}
+    {product.id === 'dreamcurl-short-set' && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
+          {selectedSize && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedSize}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => (
+            <motion.button
+              key={size}
+              onClick={() => setSelectedSize(size)}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                selectedSize === size
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+              }`}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {size}
+              {/* Selected indicator */}
+              {selectedSize === size && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
+    {/* Enhanced Color Selection for DreamCurl Midi */}
+    {product.id === 'dreamcurl-midi' && product.colors && product.colors.length > 0 && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+          {selectedColor && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedColor}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {product.colors.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => {
+                setSelectedColor(color);
+                setGlobalColor(color);
+                selectColor(color);
+              }}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                selectedColor === color
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+              }`}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {color}
+              {/* Selected indicator */}
+              {selectedColor === color && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
     {/* Enhanced Color Selection for Bonnet */}
     {product.id === 'heatless-6' && product.colors && product.colors.length > 0 && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+          {selectedColor && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedColor}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {product.colors.map((color, index) => (
+            <motion.button
+              key={color}
+              onClick={() => {
+                setSelectedColor(color);
+                setGlobalColor(color);
+                selectColor(color);
+              }}
+              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                selectedColor === color
+                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+              }`}
+              whileHover={{ 
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.1 }
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              {color}
+              {/* Selected indicator */}
+              {selectedColor === color && (
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    )}
+
+    {/* Enhanced Color Selection for DreamCurl JUMBO */}
+    {product.id === 'dreamcurl-jumbo' && product.colors && product.colors.length > 0 && (
       <motion.div
         className="mb-8"
         initial={{ opacity: 0, y: 20 }}
@@ -581,6 +870,27 @@ export const ProductDetailPage = () => {
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
+            ) : product.id === 'dreamcurl-short-set' ? (
+              <ShortSetImageGallery 
+                key={`shortset-gallery-${product.id}`}
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
+              />
+            ) : product.id === 'dreamcurl-midi' ? (
+              <MidiImageGallery 
+                key={`midi-gallery-${product.id}`}
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
+              />
+            ) : product.id === 'dreamcurl-jumbo' ? (
+              <JumboImageGallery 
+                key={`jumbo-gallery-${product.id}`}
+                product={product} 
+                selectedColor={selectedColor} 
+                onColorSelect={setSelectedColor}
+              />
             ) : product.id === 'heatless-5' ? (
               <BunBonsImageGallery 
                 key={`bunbons-gallery-${product.id}`}
@@ -596,15 +906,20 @@ export const ProductDetailPage = () => {
                 onColorSelect={setSelectedColor}
               />
             ) : (
-            <motion.img
+            <motion.div
               key={`product-img-${product.id}`}
-              src={product.image}
-              alt={product.name}
-              className="w-full h-auto rounded-lg"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
-            />
+            >
+              <ProductImage
+                src={product.image}
+                alt={product.name}
+                className="w-full h-auto rounded-lg"
+                priority={true}
+                productId={product.id}
+              />
+            </motion.div>
             )}
           </motion.div>
         </div>
@@ -612,9 +927,9 @@ export const ProductDetailPage = () => {
         {/* 1. The "Ritual in Motion" Video Section */}
         <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
 
-        {/* BUN BONS Usage Steps Section */}
-        {product.id === 'heatless-5' && product.usageSteps && (
-          <BunBonsUsageSteps key={`bunbons-${product.id}`} product={product} />
+        {/* Usage Steps Section - for all products with usageSteps */}
+        {product.usageSteps && (
+          <UsageStepsSection key={`usage-${product.id}`} product={product} />
         )}
 
         {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
@@ -622,9 +937,164 @@ export const ProductDetailPage = () => {
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
 
-        {/* 4. The "From Our Community" Showcase */}
-        <CommunityShowcase key={`community-${product.id}`} product={product} />
+        {/* 4. Real Results Community Section - using actual result photos */}
+        <RealResultsSection key={`results-${product.id}`} product={product} />
 
+        {/* Size Guide Section - Only for DreamCurl Short Set */}
+        {product.id === 'dreamcurl-short-set' && (
+          <motion.section
+            className="py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                className="text-center mb-16"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                  Choose Your Perfect Size
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  Find the ideal DreamCurl™ size for your hair length and desired curl style
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Short Set */}
+                <motion.div
+                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border-2 border-primary shadow-lg overflow-hidden group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                >
+                  <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold">
+                    YOU'RE HERE
+                  </div>
+                  <div className="text-center mb-6">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                      <span className="text-3xl font-bold text-white">S</span>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">Short Set</h3>
+                    <p className="text-sm text-muted-foreground">Compact & Versatile</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="text-sm text-muted-foreground">Short to medium hair (shoulder length and above)</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="text-sm text-muted-foreground">Tighter, bouncier curls with more definition</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="text-sm text-muted-foreground">4-6 hours or overnight</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="text-sm text-muted-foreground">Want long-lasting, defined curls with maximum hold</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Original/Midi Set */}
+                <motion.div
+                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                >
+                  <div className="text-center mb-6">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-white">M</span>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">Midi Set</h3>
+                    <p className="text-sm text-muted-foreground">Balanced & Popular</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="text-sm text-muted-foreground">Medium to long hair (shoulder to mid-back)</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="text-sm text-muted-foreground">Medium curls with beautiful bounce and volume</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="text-sm text-muted-foreground">6-8 hours for best results</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="text-sm text-muted-foreground">Want versatile curls that last all day</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Original Set */}
+                <motion.div
+                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                >
+                  <div className="text-center mb-6">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-white">O</span>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">Original Set</h3>
+                    <p className="text-sm text-muted-foreground">Soft & Voluminous</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="text-sm text-muted-foreground">Long to very long hair (mid-back and beyond)</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="text-sm text-muted-foreground">Soft, loose waves with natural flow</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="text-sm text-muted-foreground">6-8 hours or overnight</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="text-sm text-muted-foreground">Want effortless, beachy waves with volume</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              <motion.div
+                className="text-center mt-12 p-6 bg-primary/10 rounded-2xl border border-primary/20"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <p className="text-sm text-muted-foreground mb-2">
+                  💡 <strong>Pro Tip:</strong> For tighter curls on longer hair, choose the Short Set. For looser waves on shorter hair, go with the Midi or Original Set.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Still unsure? The Short Set offers the most versatility for all hair types and lengths!
+                </p>
+              </motion.div>
+            </div>
+          </motion.section>
+        )}
         
         </div>
 
@@ -727,93 +1197,160 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       inStock: true,
       colors: ["Mulberry", "Candy", "Latte", "Olive"],
       video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
+      usageSteps: [
+        "Start with clean, slightly damp hair (70-80% dry works best)",
+        "Part your hair down the middle and divide into two sections",
+        "Place the curler at the top of your head like a headband",
+        "Take one section and wrap it around the curler, working from top to ends",
+        "Secure the end with the attached scrunchie or hair tie",
+        "Repeat with the other section on the opposite side",
+        "Sleep comfortably or leave in for 6-8 hours",
+        "Gently unwind your hair and enjoy gorgeous, heat-free curls"
+      ],
       images: [
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href
       ]
     },
     {
-      id: "heatless-1",
-      name: "DreamCurl™ Short Set – Rose Gold Edition",
-      price: "€29.99",
+      id: "dreamcurl-short-set",
+      name: "DreamCurlâ„¢ Short Set",
+      price: "â‚¬24.99",
       image: product1Image,
-      category: "Heatless Tools",
+      category: "DreamCurl™ Collection",
       hairType: "All Types",
-      featured: false,
+      featured: true,
       description: [
+        "The Short Set Collection - Perfect for every hair type and style",
         "Create beautiful curls without heat damage",
-        "Set of 4 different sized rods for various curl patterns",
-        "Soft, flexible material that's gentle on hair",
-        "Easy to use and remove",
-        "Perfect for overnight styling"
+        "Professional heatless curling system designed for versatility",
+        "Soft, flexible material that's gentle on your hair",
+        "Easy to use and comfortable for overnight styling",
+        "Each set includes different sized rods for various curl patterns",
+        "Available in 4 luxurious colors: Rose Gold, Royal Purple, Olive Lux, Earl Grey",
+        "Reusable, easy to clean, and built to last",
+        "The perfect addition to your heat-free styling routine"
       ],
-      ingredients: ["Silicon Material", "Non-toxic Coating"],
+      ingredients: ["Premium Silicon", "Non-toxic Coating", "Flexible Material"],
       size: "Set of 4",
       inStock: true,
+      colors: ["Rose Gold", "Royal Purple", "Olive Lux", "Earl Grey"],
+      usageSteps: [
+        "Wash and partially dry your hair (60-70% dry recommended)",
+        "Divide hair into small sections based on desired curl tightness",
+        "Wrap each section around the appropriate rod size",
+        "Secure rods in place with the included clips or bands",
+        "Leave in for 4-6 hours or overnight for best results",
+        "Remove rods carefully by unwrapping in reverse order",
+        "Gently separate curls with fingers for natural definition",
+        "Set with light hairspray if desired for longer-lasting curls"
+      ],
+      images: [
+        product1Image, // Rose Gold
+        product2Image, // Royal Purple
+        product3Image, // Olive Lux
+        product4Image  // Earl Grey
+      ]
     },
     {
-      id: "heatless-2", 
-      name: "DreamCurl™ Short Set – Royal Purple Edition",
-      price: "€24.99",
-      image: product2Image,
-      category: "Heatless Tools",
-      hairType: "All Types",
-      featured: false,
+      id: "dreamcurl-midi",
+      name: "DreamCurlâ„¢ Midi",
+      price: "â‚¬34.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
+      hairType: "Short to Long",
+      featured: true,
       description: [
-        "Extra large size for loose, beachy waves",
-        "Soft silicone material prevents hair damage",
-        "Comfortable to sleep in overnight",
-        "Creates natural-looking waves",
-        "Reusable and easy to clean"
+        "Immerse yourself in the ultimate blend of luxury and comfort with CURLEA, the undisputed leader in the world of heatless curlers, where every night's sleep feels like resting on a cloud.",
+        "Experience a new level of heatless hair styling with our 'Zero Heat' Heatless Curlers. At CURLEA, we get that your beauty sleep is crucial, especially when it comes to heatless overnight curls.",
+        "That's why each of our handcrafted curlers is made to be extra soft, using the finest fabrics to keep your hair safe from friction as you snooze peacefully.",
+        "You can count on us to prioritise your hair's health and your comfort all the way. With a wide-reaching influence in the social media community, CURLEA shines brightest among its imitators.",
+        "Crafted from the finest 100% vegan Peau De Soie fabric, CURLEA's iconic heatless curler helps you create bouncy and voluminous heatless overnight curls.",
+        "Tailored for short to long hair. Providing a tighter curl, our Midi size is the perfect choice for those in search of extended curl longevity.",
+        "Crafted with sustainably sourced, ultra-soft fibres, our heatless curlers provide a night of sheer luxury and hair protection while championing a greener, brighter future.",
+        "Elevate your hairstyle to new heights with CURLEA - your go-to for unmatched comfort, style, and luxury all in one.",
+        "This set will include: 2 Hair Ties, 1 Midi Heatless Curler, 1 Hair Clip"
       ],
-      ingredients: ["Premium Silicon", "Anti-slip Coating"],
-      size: "Large",
+      ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
+      size: "Midi Size",
       inStock: true,
+      colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
+      video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
+      usageSteps: [
+        "Begin with clean, lightly damp hair (70-75% dry is ideal)",
+        "Create a center part and separate hair into two equal sections",
+        "Position the Midi curler at the crown like a headband",
+        "Wrap one section tightly around the curler from roots to ends",
+        "Fasten securely with the included hair tie",
+        "Repeat on the other side for balanced curls",
+        "Sleep peacefully or wait 6-8 hours for perfect curls",
+        "Carefully unwind and enjoy bouncy, defined curls"
+      ],
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
+      ]
     },
     {
-      id: "heatless-3",
-      name: "DreamCurl™ Short Set – Olive Lux Edition",
-      price: "€19.99", 
-      image: product3Image,
-      category: "Heatless Tools",
+      id: "dreamcurl-jumbo",
+      name: "DreamCurl™ JUMBO SIZE",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
       hairType: "All Types",
-      featured: false,
+      featured: true,
       description: [
-        "Medium size for versatile curl options",
-        "Professional-grade silicone construction",
-        "Creates defined, long-lasting curls",
-        "Suitable for all hair lengths",
-        "Heat-free styling solution"
+        "Jumbo Heatless Curler - by CURLEA",
+        "For soft, voluminous waves with a looser curl shape. Designed for hair below the shoulders.",
+        "It's easy to assume Jumbo means it's made for longer hair. But in reality, Jumbo refers to the thickness of the curler - not the length of your hair.",
+        "This size was created for those who prefer a looser, more open curl shape, with soft volume and gentle movement instead of tight definition. Think less structure, more flow.",
+        "At CURLEA, we were the first to design curlers by size.",
+        "We built tools around how people actually sleep. We developed the first-ever styling mist made specifically for heatless curls, and we studied the science of curl formation without heat to perfect every detail.",
+        "We spent years developing our internal structure from scratch using elongated, structured fibres that hold their shape through the night without needing wires, foam or tension. It doesn't bunch up. It doesn't flatten out. It's not repurposed filler from cheap toys or pillows.",
+        "We tested the exact gram weight per centimetre to achieve what no other curler could: lasting shape and unmatched sleep comfort.",
+        "No bunching. No pressure. No stiffness behind your ears.",
+        "The outer layer is our exclusive vegan Peau de Soie fabric - a high grade, glide-safe material that reduces friction and protects against overnight breakage.",
+        "It doesn't just feel good. It helps your hair form shape, stay shiny, and look healthier over time.",
+        "This size creates rounded, blown-out waves with more body at the root and a softer finish through the ends.",
+        "If your hair is fine, doesn't usually hold a curl, or tends to drop quickly, we recommend choosing the Original size. As your curl relaxes, it will naturally fall into that looser, Jumbo-style shape without starting too wide to begin with.",
+        "Each set includes: 1 Jumbo Size Heatless Curler, 2 Matching Hair Ties, 1 Hair Clip for easy wrapping",
+        "This is the curler that makes people say, 'What did you use?' And the one you'll feel proud to answer with: 'CURLEA.'",
+        "Because this isn't just about heatless curls. It's about choosing the brand that invented them - and perfected them."
       ],
-      ingredients: ["Medical-grade Silicon", "Smooth Finish"],
-      size: "Medium",
+      ingredients: ["100% Vegan Peau De Soie Fabric", "Elongated Structured Fibres", "Premium Memory Foam"],
+      size: "Jumbo Size",
       inStock: true,
-    },
-    {
-      id: "heatless-4",
-      name: "DreamCurl™ Short Set – Earl Grey Edition",
-      price: "€16.99",
-      image: product4Image,
-      category: "Heatless Tools", 
-      hairType: "All Types",
-      featured: false,
-      description: [
-        "Small size for tight, defined curls",
-        "Perfect for short to medium length hair",
-        "Lightweight and comfortable",
-        "Creates bouncy, springy curls",
-        "Ideal for quick styling"
+      colors: ["LATTE", "CANDY", "OLIVE", "MULBERRY"],
+      usageSteps: [
+        "Start with slightly damp hair (60-70% dry) for best curl formation",
+        "Place the jumbo curler on top of your head at the crown",
+        "Divide hair into two even sections",
+        "Wrap each section around the curler in opposite directions",
+        "Secure with the matching hair ties at the bottom",
+        "Clip sections in place using the included hair clip",
+        "Sleep comfortably or leave in for 6-8 hours minimum",
+        "Gently unwrap and finger-comb for soft, voluminous waves"
       ],
-      ingredients: ["Flexible Silicon", "Gentle Texture"],
-      size: "Small",
-      inStock: true,
+      video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
+      ]
     },
     {
       id: "heatless-5",
       name: "BUN BONS - Heatless Curling System",
-      price: "€89.99",
+      price: "â‚¬89.99",
       image: product5Image,
       category: "Heatless Tools",
       hairType: "All Types",
@@ -850,13 +1387,13 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "heatless-6",
       name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€39.99",
+      price: "â‚¬39.99",
       image: product6Image,
       category: "Heatless Tools",
       hairType: "All Types",
       featured: true,
       description: [
-        "For all overnight heatless styling enthusiasts, the Eternal Muse Reversible Bonnet is a must-have addition to your bedtime routine",
+        "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine",
         "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
         "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
         "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
@@ -864,11 +1401,21 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
         "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
         "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
         "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
-        "Upgrade your hair care regimen with the Eternal Muse Reversible Bonnet - an elegant addition to your bedtime attire"
+        "Upgrade your hair care regimen with the CURLEA Reversible Bonnet - an elegant addition to your bedtime attire"
       ],
       ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
       size: "XL Size",
       colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
+      usageSteps: [
+        "Style your hair in your preferred heatless curls or protective style",
+        "Gather all hair and ensure curlers or styles are secure",
+        "Place the bonnet over your head, covering all hair completely",
+        "Adjust the elastic band for a comfortable, secure fit",
+        "Sleep peacefully - the bonnet protects your style overnight",
+        "Remove bonnet gently in the morning",
+        "Unwrap curlers if applicable and style as desired",
+        "Enjoy preserved, frizz-free hair with enhanced shine"
+      ],
       inStock: true,
     }
   ];
@@ -911,6 +1458,10 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     const specialVideo = isHeatlessProduct || isDreamCurlProduct
       ? product.id === 'dreamcurl-original'
         ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href
+        : product.id === 'dreamcurl-midi'
+        ? new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href
+        : product.id === 'dreamcurl-jumbo'
+        ? new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href
         : product.id === 'heatless-5'
         ? new URL('../assets/Heatless Hair Curling Rod/product5/Screen Recording 2025-10-07 143110.mp4', import.meta.url).href
         : product.id === 'heatless-6'
@@ -1623,367 +2174,6 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
   );
 };
 
-// 4. The "From Our Community" Showcase
-const CommunityShowcase = ({ product }: { product: Product }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  // Mock community content - in production, this would come from an API
-      const communityPosts = product.id.startsWith('curly-') ? [
-        // Different photos for different curly hair products
-        ...(product.id === 'curly-clip-1' ? [
-          {
-            id: 1,
-            image: new URL('../assets/curly hair collection/product1/real result.png', import.meta.url).href,
-            username: '@curlygirl_maria',
-            caption: 'These hair clips are absolutely amazing! Perfect hold and so comfortable.',
-            likes: 1247
-          },
-          {
-            id: 2,
-            image: new URL('../assets/curly hair collection/product1/real result2.png', import.meta.url).href,
-            username: '@wavyhairdaily',
-            caption: 'Love how secure these clips hold my hair! Perfect for any occasion.',
-            likes: 892
-          },
-          {
-            id: 3,
-            image: new URL('../assets/curly hair collection/product1/real result3.png', import.meta.url).href,
-            username: '@naturalbeauty_sofia',
-            caption: 'Amazing quality and comfort. These clips are a game changer!',
-            likes: 2156
-          }
-        ] : product.id === 'curly-scarf-1' ? [
-          // Photos for satin scarf product
-          {
-            id: 1,
-            image: new URL('../assets/curly hair collection/product2/result.png', import.meta.url).href,
-            username: '@satinhair_grace',
-            caption: 'These satin hair bands are so elegant! Perfect for protecting my curls while sleeping.',
-            likes: 1834
-          },
-          {
-            id: 2,
-            image: new URL('../assets/curly hair collection/product2/result1.png', import.meta.url).href,
-            username: '@curlyprotect_lisa',
-            caption: 'Love how soft and gentle these are on my hair. No more breakage!',
-            likes: 1298
-          },
-          {
-            id: 3,
-            image: new URL('../assets/curly hair collection/product2/result2.png', import.meta.url).href,
-            username: '@haircare_queen',
-            caption: 'The turban wrap style is my favorite! So fashionable and comfortable.',
-            likes: 2156
-          },
-          {
-            id: 4,
-            image: new URL('../assets/curly hair collection/product2/result3.png', import.meta.url).href,
-            username: '@satinlover_emma',
-            caption: 'These scarves have transformed my hair routine. Highly recommend!',
-            likes: 1673
-          },
-          {
-            id: 5,
-            image: new URL('../assets/curly hair collection/product2/result4.png', import.meta.url).href,
-            username: '@curlystyle_anna',
-            caption: 'Amazing results! My hair looks so healthy and styled beautifully with these scarves.',
-            likes: 1923
-          },
-          {
-            id: 6,
-            image: new URL('../assets/curly hair collection/product2/result5.png', import.meta.url).href,
-            username: '@hairgoals_sarah',
-            caption: 'Perfect for both styling and protection. These scarves are a must-have!',
-            likes: 1547
-          }
-        ] : product.id === 'curly-claw-1' ? [
-          // Photos for claw clips product
-          {
-            id: 1,
-            image: new URL('../assets/curly hair collection/product3/result.png', import.meta.url).href,
-            username: '@geometric_hair_anna',
-            caption: 'These geometric claw clips are so stylish! Perfect for creating elegant updos.',
-            likes: 1456
-          },
-          {
-            id: 2,
-            image: new URL('../assets/curly hair collection/product3/result2.png', import.meta.url).href,
-            username: '@fashion_clips_jenny',
-            caption: 'Love the neutral color and matte finish. So sophisticated!',
-            likes: 1189
-          },
-          {
-            id: 3,
-            image: new URL('../assets/curly hair collection/product3/result.png', import.meta.url).href,
-            username: '@hair_accessories_luna',
-            caption: 'The 16-piece set gives me so many styling options. Absolutely love them!',
-            likes: 2034
-          },
-          {
-            id: 4,
-            image: new URL('../assets/curly hair collection/product3/result2.png', import.meta.url).href,
-            username: '@style_queen_emma',
-            caption: 'Perfect for thick hair! These clips hold everything in place beautifully.',
-            likes: 1678
-          },
-          {
-            id: 5,
-            image: new URL('../assets/curly hair collection/product3/result1.png', import.meta.url).href,
-            username: '@claw_clips_lover',
-            caption: 'The geometric design is so unique! Love how they add a modern touch to any hairstyle.',
-            likes: 1423
-          },
-          {
-            id: 6,
-            image: new URL('../assets/curly hair collection/product3/result3.png', import.meta.url).href,
-            username: '@hair_styling_pro',
-            caption: 'These clips are perfect for creating professional-looking updos. Highly recommend!',
-            likes: 1891
-          },
-          {
-            id: 7,
-            image: new URL('../assets/curly hair collection/product3/result4.png', import.meta.url).href,
-            username: '@beauty_enthusiast_rose',
-            caption: 'The matte finish looks so elegant! Perfect for both casual and formal occasions.',
-            likes: 1567
-          },
-          {
-            id: 8,
-            image: new URL('../assets/curly hair collection/product3/result5.png', import.meta.url).href,
-            username: '@hair_accessories_queen',
-            caption: 'With 16 pieces in the set, I can create so many different styles. Amazing value!',
-            likes: 2134
-          }
-        ] : [])
-      ] : product.id === 'heatless-5' ? [
-        // BUN BONS community posts
-        {
-          id: 1,
-          image: new URL('../assets/Heatless Hair Curling Rod/product5/result1.webp', import.meta.url).href,
-          username: '@bunbons_lover',
-          caption: 'Beautiful overnight curls with BUN BONS! Slept so comfortably and woke up with perfect waves.',
-          likes: 1247
-        },
-        {
-          id: 2,
-          image: new URL('../assets/Heatless Hair Curling Rod/product5/result2.webp', import.meta.url).href,
-          username: '@heatless_queen',
-          caption: 'The revolutionary curling system works like magic! No heat damage, just gorgeous curls.',
-          likes: 892
-        },
-        {
-          id: 3,
-          image: new URL('../assets/Heatless Hair Curling Rod/product5/result3.jpg', import.meta.url).href,
-          username: '@curlea_community',
-          caption: 'BUN BONS transformed my styling routine. The Peau de Soie layer is so luxurious!',
-          likes: 2156
-        },
-        {
-          id: 4,
-          image: new URL('../assets/Heatless Hair Curling Rod/product5/result4.jpg', import.meta.url).href,
-          username: '@blowout_style',
-          caption: 'Achieved salon-quality blowout waves overnight! This system is absolutely incredible.',
-          likes: 1834
-        }
-      ] : product.id === 'heatless-6' ? [
-        // Bonnet community posts
-        {
-          id: 1,
-          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_gseekhgseekhgsee.png', import.meta.url).href,
-          username: '@luxury_sleep_stylist',
-          caption: 'This is THE bonnet that changed everything! The Peau de Soie fabric is incredibly soft and my hair has never looked better in the morning.',
-          likes: 2156
-        },
-        {
-          id: 2,
-          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_2u8z0f2u8z0f2u8z.png', import.meta.url).href,
-          username: '@bonnet_lover',
-          caption: 'The Peau de Soie bonnet is pure luxury! Slept so comfortably and woke up with perfectly preserved curls.',
-          likes: 1456
-        },
-        {
-          id: 3,
-          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_syu8posyu8posyu8.png', import.meta.url).href,
-          username: '@silk_sleep_queen',
-          caption: 'This XL bonnet fits over everything! No more bed head or frizz - just beautiful, protected hair every morning.',
-          likes: 1234
-        },
-        {
-          id: 4,
-          image: new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_x4i4fxx4i4fxx4i4.png', import.meta.url).href,
-          username: '@curlea_community',
-          caption: 'The reversible design is genius! Love how it protects my heatless curls while keeping me comfortable all night.',
-          likes: 1678
-        }
-      ] : product.id === 'dreamcurl-original' ? [
-        // DreamCurl™ Original Set community posts
-        {
-          id: 1,
-          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result.png', import.meta.url).href,
-          username: '@dreamcurl_original',
-          caption: 'The original that started it all! These overnight curls are absolutely stunning. No heat, no damage, just beautiful results.',
-          likes: 3247
-        },
-        {
-          id: 2,
-          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result1.png', import.meta.url).href,
-          username: '@heatless_curl_queen',
-          caption: 'DreamCurl™ Original Set delivers exactly what it promises. Woke up with salon-quality curls that lasted all day!',
-          likes: 2892
-        },
-        {
-          id: 3,
-          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result2.png', import.meta.url).href,
-          username: '@curlea_community_original',
-          caption: 'This is the curler that redefined the category! The vegan Peau de Soie fabric feels incredible and the results speak for themselves.',
-          likes: 4156
-        },
-        {
-          id: 4,
-          image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result3.png', import.meta.url).href,
-          username: '@original_curler_lover',
-          caption: 'Medium to long hair? This is your perfect match! The elongated structured fibres hold shape through the night beautifully.',
-          likes: 3834
-        }
-      ] : [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=400&h=400&fit=crop',
-      username: '@curlygirl_maria',
-      caption: 'The definition is incredible! My curls have never looked this good.',
-      likes: 1247
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop',
-      username: '@wavyhairdaily',
-      caption: 'Finally found my holy grail product. The shine is everything!',
-      likes: 892
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop',
-      username: '@naturalbeauty_sofia',
-      caption: 'My hair has never felt so healthy. This product changed everything!',
-      likes: 2156
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop',
-      username: '@curlyqueen_anna',
-      caption: 'The texture is perfect and the scent is divine. Obsessed!',
-      likes: 743
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=400&fit=crop',
-      username: '@hairgoals_sarah',
-      caption: 'Game changer! My routine is so much easier now.',
-      likes: 1834
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop',
-      username: '@curlyjourney_lisa',
-      caption: 'The results speak for themselves. Thank you Curlea!',
-      likes: 967
-    }
-  ];
-
-  return (
-    <motion.section
-      ref={ref}
-      className="relative py-24 px-6 bg-background"
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            Real Results from the Curlea Community
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            See how our community is transforming their hair with {product.name}.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {communityPosts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.9 }}
-              transition={{ delay: 0.4 + index * 0.1, duration: 0.6, ease: "easeOut" }}
-              whileHover={{ scale: 1.05, y: -10 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.open('#', '_blank')} // In production, link to actual post
-            >
-              {/* Image */}
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src={post.image}
-                  alt={post.username}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              {/* Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                <p className="text-sm font-medium mb-2">{post.username}</p>
-                <p className="text-sm opacity-90 mb-3 line-clamp-2">{post.caption}</p>
-                <div className="flex items-center gap-2 text-sm opacity-80">
-                  <Heart className="w-4 h-4" />
-                  <span>{post.likes.toLocaleString()} likes</span>
-                </div>
-              </div>
-
-              {/* Floating users icon */}
-              <motion.div
-                className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                initial={{ scale: 0 }}
-                animate={isInView ? { scale: 1 } : { scale: 0 }}
-                transition={{ delay: 0.8 + index * 0.1, duration: 0.4 }}
-              >
-                <Users className="w-5 h-5 text-white" />
-              </motion.div>
-            </motion.div>
-            ))}
-          </div>
-
-        {/* Call to action */}
-        <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          <p className="text-lg text-muted-foreground mb-6">
-            Join thousands of satisfied customers and share your own transformation.
-          </p>
-          <motion.button
-            className="px-8 py-4 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Share Your Results
-          </motion.button>
-        </motion.div>
-        </div>
-    </motion.section>
-  );
-};
-
 // Curly Hair Collection Image Gallery Component
 const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -2040,12 +2230,9 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
     new URL('../assets/curly hair collection/product3/ppp19.avif', import.meta.url).href,
     new URL('../assets/curly hair collection/product3/ppp20.avif', import.meta.url).href,
     new URL('../assets/curly hair collection/product3/ppp21.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/product3/ppp22.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/product3/ppp23.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/product3/ppp24.avif', import.meta.url).href,
-    new URL('../assets/curly hair collection/product3/ppp25.avif', import.meta.url).href,
   ];
 
+  const placeholderImage = new URL('../assets/placeholder.svg', import.meta.url).href;
 
   return (
     <div className="space-y-4">
@@ -2056,103 +2243,85 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <motion.img
-          key={selectedImageIndex}
+        <OptimizedImage
           src={curlyHairImages[selectedImageIndex]}
           alt={`${product.name} - View ${selectedImageIndex + 1}`}
-          className="w-full h-full object-cover"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          className="object-cover"
+          placeholderSrc={placeholderImage}
+          priority={true}
           onError={(e) => {
             console.error(`Failed to load image: ${curlyHairImages[selectedImageIndex]}`);
-            e.currentTarget.src = '/placeholder-image.jpg'; // Fallback image
+            if (e.currentTarget) {
+              e.currentTarget.src = placeholderImage;
+            }
           }}
         />
         
+        {/* Navigation Arrows */}
+        {curlyHairImages.length > 1 && (
+          <>
+            <button
+              onClick={() => setSelectedImageIndex((prev) => 
+                prev > 0 ? prev - 1 : curlyHairImages.length - 1
+              )}
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setSelectedImageIndex((prev) => 
+                prev < curlyHairImages.length - 1 ? prev + 1 : 0
+              )}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              aria-label="Next image">
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </>
+        )}
+
         {/* Image Counter */}
-        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs sm:text-sm">
           {selectedImageIndex + 1} / {curlyHairImages.length}
-      </div>
+        </div>
       </motion.div>
 
-      {/* Enhanced Image Gallery with Smart Pagination */}
-      <div className="space-y-4">
-        {/* Main Navigation Controls */}
-        <div className="flex items-center justify-between">
-          <motion.button
-            onClick={() => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : curlyHairImages.length - 1)}
-            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Previous
-          </motion.button>
-
-          <div className="text-sm text-muted-foreground font-medium">
-            {selectedImageIndex + 1} of {curlyHairImages.length}
-    </div>
-
-          <motion.button
-            onClick={() => setSelectedImageIndex(prev => prev < curlyHairImages.length - 1 ? prev + 1 : 0)}
-            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Next
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </motion.button>
-        </div>
-
-        {/* Smart Thumbnail Display - Show 6 images with pagination */}
-        <div className="grid grid-cols-6 gap-2">
-          {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((image, index) => {
-            const actualIndex = thumbnailStartIndex + index;
-            return (
-              <motion.button
-                key={actualIndex}
-                onClick={() => setSelectedImageIndex(actualIndex)}
-                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                  selectedImageIndex === actualIndex
-                    ? 'border-primary shadow-lg scale-105'
-                    : 'border-transparent hover:border-primary/50'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <img
-                  src={image}
-                  alt={`${product.name} thumbnail ${actualIndex + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    console.error(`Failed to load thumbnail: ${image}`);
-                    e.currentTarget.src = '/placeholder-thumbnail.jpg';
-                  }}
-                />
-                {selectedImageIndex === actualIndex && (
-                  <motion.div
-                    className="absolute inset-0 bg-primary/20"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
+      {/* Thumbnail Gallery with Pagination */}
+      {curlyHairImages.length > 6 && (
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-6 gap-2">
+            {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((imgSrc, index) => {
+              const actualIndex = thumbnailStartIndex + index;
+              return (
+                <button
+                  key={actualIndex}
+                  onClick={() => setSelectedImageIndex(actualIndex)}
+                  className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+                    selectedImageIndex === actualIndex
+                      ? 'ring-2 ring-primary scale-105'
+                      : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+                  }`}
+                >
+                  <OptimizedImage
+                    src={imgSrc}
+                    alt={`Thumbnail ${actualIndex + 1}`}
+                    className="object-cover"
+                    placeholderSrc={placeholderImage}
+                    priority={false}
+                    onError={(e) => {
+                      console.error(`Failed to load thumbnail: ${imgSrc}`);
+                      if (e.currentTarget) {
+                        e.currentTarget.src = placeholderImage;
+                      }
+                    }}
                   />
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        {/* Thumbnail Pagination Controls */}
-        {curlyHairImages.length > 6 && (
-          <div className="flex items-center justify-center gap-4">
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between">
             <motion.button
               onClick={() => {
                 const newStart = thumbnailStartIndex > 0 ? thumbnailStartIndex - 6 : Math.max(0, curlyHairImages.length - 6);
@@ -2162,7 +2331,7 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              ← Previous Set
+              <ChevronLeft className="w-4 h-4 inline mr-1" /> Previous Set
             </motion.button>
 
             <div className="text-xs text-muted-foreground">
@@ -2178,12 +2347,11 @@ const CurlyHairCollectionImageGallery = ({ product }: { product: Product }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Next Set →
+              Next Set <ChevronRight className="w-4 h-4 inline ml-1" />
             </motion.button>
           </div>
-        )}
-      </div>
-
+        </div>
+      )}
     </div>
   );
 };
@@ -2212,40 +2380,32 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
   };
 
   // Get the current main image based on selected color
-  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('MULBERRY');
-  
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('LATTE');
 
   return (
     <div className="space-y-4">
-      {/* Simple Main Image Display */}
+      {/* Main Image Display */}
       <motion.div
         className="relative aspect-square rounded-lg overflow-hidden bg-muted"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <img
+        <ProductImage
           key={`${selectedColor}-${currentMainImage}`}
           src={currentMainImage}
           alt={`${product.name} - ${selectedColor} Color`}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            console.error(`Failed to load image: ${currentMainImage}`);
-            e.currentTarget.src = '/placeholder-image.jpg';
-          }}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
         />
-        
       </motion.div>
 
-      {/* Simple Color Thumbnail Grid */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <span className="text-sm text-muted-foreground">Available Colors</span>
-        </div>
-
-        <div className="grid grid-cols-5 gap-2">
-          {product.colors?.map((color, index) => (
-            <motion.button
+      {/* Thumbnail Gallery - show all color images */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="grid grid-cols-5 gap-2 sm:gap-3">
+          {product.colors.map((color, index) => (
+            <button
               key={color}
               onClick={() => onColorSelect(color)}
               className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
@@ -2253,11 +2413,6 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
                   ? 'border-primary shadow-lg'
                   : 'border-gray-200 hover:border-primary/50'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
             >
               <img
                 src={getColorSpecificImage(color)}
@@ -2272,66 +2427,60 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
               {selectedColor === color && (
                 <div className="absolute inset-0 bg-primary/20" />
               )}
-            </motion.button>
+            </button>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
 // Bonnet Image Gallery Component - Simplified
 const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
-  // Import images for Bonnet product (3 images mapped to 3 colors)
+  // Import images for Bonnet product
   const bonnetImages = [
     new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
-    new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp4.webp', import.meta.url).href,
-    new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp4.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp', import.meta.url).href,
   ];
 
-  // Color-specific image mapping - simple and clean
+  // Color-specific image mapping
   const getColorSpecificImage = (color: string) => {
     const colorImageMap = {
-      'CANDY & MARSHMALLOW': bonnetImages[0], // candy&marchmello.webp
-      'LATTE & MARSHMALLOW': bonnetImages[1], // latte&marchmello.webp4.webp
-      'OLIVE & LATTE': bonnetImages[2], // olive&latte.webp4.webp
+      'CANDY & MARSHMALLOW': bonnetImages[0],
+      'LATTE & MARSHMALLOW': bonnetImages[1],
+      'OLIVE & LATTE': bonnetImages[2],
     };
     return colorImageMap[color as keyof typeof colorImageMap] || bonnetImages[0];
   };
 
   // Get the current main image based on selected color
-  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('CANDY & MARSHMALLOW');
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : bonnetImages[0];
 
   return (
     <div className="space-y-4">
-      {/* Simple Main Image Display */}
+      {/* Main Image Display */}
       <motion.div
         className="relative aspect-square rounded-lg overflow-hidden bg-muted"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <img
+        <ProductImage
           key={`${selectedColor}-${currentMainImage}`}
           src={currentMainImage}
           alt={`${product.name} - ${selectedColor} Color`}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            console.error(`Failed to load image: ${currentMainImage}`);
-            e.currentTarget.src = '/placeholder-image.jpg';
-          }}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
         />
       </motion.div>
 
-      {/* Simple Color Thumbnail Grid */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <span className="text-sm text-muted-foreground">Available Colors</span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2">
-          {product.colors?.map((color, index) => (
-            <motion.button
+      {/* Thumbnail Gallery - show all color images */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          {product.colors.map((color, index) => (
+            <button
               key={color}
               onClick={() => onColorSelect(color)}
               className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
@@ -2339,11 +2488,6 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
                   ? 'border-primary shadow-lg'
                   : 'border-gray-200 hover:border-primary/50'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
             >
               <img
                 src={getColorSpecificImage(color)}
@@ -2358,20 +2502,507 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
               {selectedColor === color && (
                 <div className="absolute inset-0 bg-primary/20" />
               )}
-            </motion.button>
+            </button>
           ))}
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+// Short Set Image Gallery Component - for DreamCurlâ„¢ Short Set
+const ShortSetImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // Import images for Short Set product (4 images mapped to 4 colors)
+  const shortSetImages = [
+    new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href, // Rose Gold
+    new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href, // Royal Purple
+    new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href, // Olive Lux
+    new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href, // Earl Grey
+  ];
+
+  // Color-specific image mapping
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'Rose Gold': shortSetImages[0],     // product-1.webp
+      'Royal Purple': shortSetImages[1],  // product-2.webp
+      'Olive Lux': shortSetImages[2],     // product-3.webp
+      'Earl Grey': shortSetImages[3],     // product-4.webp
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || shortSetImages[0];
+  };
+
+  // Get the current main image based on selected color
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('Rose Gold');
+
+  return (
+    <div className="space-y-4">
+      {/* Simple Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ProductImage
+          key={`${selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={`${product.name} - ${selectedColor} Color`}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
+        />
+      </motion.div>
+
+      {/* Thumbnail Gallery (original photos) */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="space-y-4">
+          <div className="text-center">
+            <span className="text-sm text-muted-foreground">Available Colors</span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {product.colors.map((color, index) => (
+              <motion.button
+                key={color}
+                onClick={() => onColorSelect(color)}
+                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                  selectedColor === color
+                    ? 'border-primary shadow-lg'
+                    : 'border-gray-200 hover:border-primary/50'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <ProductImage
+                  src={getColorSpecificImage(color)}
+                  alt={`${product.name} - ${color} color preview`}
+                  className="w-full h-full"
+                  productId={product.id}
+                />
+                {selectedColor === color && (
+                  <div className="absolute inset-0 bg-primary/20" />
+                )}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Midi Image Gallery Component - for DreamCurlâ„¢ Midi
+const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // State to track if guide image is being viewed
+  const [isViewingGuide, setIsViewingGuide] = useState(false);
+
+  // Import images for Midi product (5 color images + 1 guide image)
+  const midiColorImages = [
+    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,        // CANDY
+    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,        // LATTE
+    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,   // MARSHMALLOW
+    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,       // MULBERRY
+    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,        // OLIVE
+  ];
+
+  const guideImage = new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href;
+
+  // Color-specific image mapping
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'CANDY': midiColorImages[0],         // midi_candy.webp
+      'LATTE': midiColorImages[1],         // midi_latte.webp
+      'MARSHMALLOW': midiColorImages[2],   // midi_marshmello.webp
+      'MULBERRY': midiColorImages[3],      // midi_purple.webp
+      'OLIVE': midiColorImages[4],         // midi_olive.webp
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || midiColorImages[3]; // Default to MULBERRY
+  };
+
+  // Get the current main image based on selected color or guide view
+  const currentMainImage = isViewingGuide 
+    ? guideImage 
+    : selectedColor 
+      ? getColorSpecificImage(selectedColor) 
+      : getColorSpecificImage('MULBERRY');
+
+  // Handle clicking on guide image
+  const handleGuideClick = () => {
+    setIsViewingGuide(true);
+  };
+
+  // Handle clicking on color image
+  const handleColorClick = (color: string) => {
+    setIsViewingGuide(false);
+    onColorSelect(color);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Simple Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ProductImage
+          key={`${isViewingGuide ? 'guide' : selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={isViewingGuide ? `${product.name} - Usage Guide` : `${product.name} - ${selectedColor} Color`}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
+        />
+      </motion.div>
+
+      {/* Thumbnail Gallery - show all images (colors + guide) */}
+      <div className="flex flex-col gap-3">
+        <div className="text-center">
+          <span className="text-sm text-muted-foreground">Product Gallery</span>
+        </div>
+        <div className="grid grid-cols-6 gap-2">
+          {/* Color thumbnails */}
+          {product.colors && product.colors.map((color, index) => (
+            <button
+              key={color}
+              onClick={() => handleColorClick(color)}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+                !isViewingGuide && selectedColor === color 
+                  ? 'ring-2 ring-primary scale-105' 
+                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
+            >
+              <ProductImage
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} Color`}
+                className="object-cover"
+                productId={product.id}
+              />
+            </button>
+          ))}
+          
+          {/* Guide image */}
+          <button
+            onClick={handleGuideClick}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+              isViewingGuide
+                ? 'ring-2 ring-primary scale-105'
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+            }`}
+          >
+            <ProductImage
+              src={guideImage}
+              alt={`${product.name} - Usage Guide`}
+              className="object-cover"
+              productId={product.id}
+            />
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-// BUN BONS Usage Steps Component
-const BunBonsUsageSteps = ({ product }: { product: Product }) => {
+// Jumbo Image Gallery Component - for DreamCurl™ JUMBO SIZE
+const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // State to track if guide image is being viewed
+  const [isViewingGuide, setIsViewingGuide] = useState(false);
+
+  // Import images for Jumbo product (4 color images + 1 guide image)
+  const jumboColorImages = [
+    new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,        // LATTE
+    new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,        // CANDY
+    new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,  // OLIVE
+    new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,       // MULBERRY
+  ];
+
+  const guideImage = new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href;
+
+  // Color-specific image mapping
+  const getColorSpecificImage = (color: string) => {
+    const colorImageMap = {
+      'LATTE': jumboColorImages[0],         // latte_jumbo.webp
+      'CANDY': jumboColorImages[1],         // candy_jumbo.webp
+      'OLIVE': jumboColorImages[2],         // olive_jumbo.webp4.webp
+      'MULBERRY': jumboColorImages[3],      // purple_jumbo.webp
+    };
+    return colorImageMap[color as keyof typeof colorImageMap] || jumboColorImages[0]; // Default to LATTE
+  };
+
+  // Get the current main image based on selected color or guide view
+  const currentMainImage = isViewingGuide 
+    ? guideImage 
+    : selectedColor 
+      ? getColorSpecificImage(selectedColor) 
+      : getColorSpecificImage('LATTE');
+
+  // Handle clicking on guide image
+  const handleGuideClick = () => {
+    setIsViewingGuide(true);
+  };
+
+  // Handle clicking on color image
+  const handleColorClick = (color: string) => {
+    setIsViewingGuide(false);
+    onColorSelect(color);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Simple Main Image Display */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ProductImage
+          key={`${isViewingGuide ? 'guide' : selectedColor}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={isViewingGuide ? `${product.name} - Usage Guide` : `${product.name} - ${selectedColor} Color`}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
+        />
+      </motion.div>
+
+      {/* Thumbnail Gallery - show all images (colors + guide) */}
+      <div className="flex flex-col gap-3">
+        <div className="text-center">
+          <span className="text-sm text-muted-foreground">Product Gallery</span>
+        </div>
+        <div className="grid grid-cols-5 gap-2">
+          {/* Color thumbnails */}
+          {product.colors && product.colors.map((color, index) => (
+            <button
+              key={color}
+              onClick={() => handleColorClick(color)}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+                !isViewingGuide && selectedColor === color 
+                  ? 'ring-2 ring-primary scale-105' 
+                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
+            >
+              <ProductImage
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} Color`}
+                className="object-cover"
+                productId={product.id}
+              />
+            </button>
+          ))}
+          
+          {/* Guide image */}
+          <button
+            onClick={handleGuideClick}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+              isViewingGuide
+                ? 'ring-2 ring-primary scale-105'
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+            }`}
+          >
+            <ProductImage
+              src={guideImage}
+              alt={`${product.name} - Usage Guide`}
+              className="object-cover"
+              productId={product.id}
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Real Results Community Section - using actual result photos
+const RealResultsSection = ({ product }: { product: Product }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Get result images based on product type
+  const getResultImages = () => {
+    if (product.id === 'dreamcurl-original') {
+      return [
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result1.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result2.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result3.png', import.meta.url).href,
+      ];
+    } else if (product.id === 'heatless-5') { // BUN BONS
+      return [
+        new URL('../assets/Heatless Hair Curling Rod/product5/result1.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product5/result2.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product5/result3.jpg', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product5/result4.jpg', import.meta.url).href,
+      ];
+    } else if (product.id === 'heatless-6') { // PEAU DE SOIE | XL OVERNIGHT BONNET
+      return [
+        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_2u8z0f2u8z0f2u8z.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_gseekhgseekhgsee.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_syu8posyu8posyu8.png', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_x4i4fxx4i4fxx4i4.png', import.meta.url).href,
+      ];
+    } else if (product.id.startsWith('curly-')) {
+      if (product.id === 'curly-clip-1') {
+        // Product1 uses "real result" naming with space
+        return [
+          new URL('../assets/curly hair collection/product1/real result.png', import.meta.url).href,
+          new URL('../assets/curly hair collection/product1/real result2.png', import.meta.url).href,
+          new URL('../assets/curly hair collection/product1/real result3.png', import.meta.url).href,
+        ];
+      } else {
+        // Product2 and Product3 use "result" naming
+        const productFolder = product.id === 'curly-scarf-1' ? 'product2' : 'product3';
+        return [
+          new URL(`../assets/curly hair collection/${productFolder}/result.png`, import.meta.url).href,
+          new URL(`../assets/curly hair collection/${productFolder}/result1.png`, import.meta.url).href,
+          new URL(`../assets/curly hair collection/${productFolder}/result2.png`, import.meta.url).href,
+          new URL(`../assets/curly hair collection/${productFolder}/result3.png`, import.meta.url).href,
+          new URL(`../assets/curly hair collection/${productFolder}/result4.png`, import.meta.url).href,
+          new URL(`../assets/curly hair collection/${productFolder}/result5.png`, import.meta.url).href,
+        ];
+      }
+    }
+    return [];
+  };
+
+  const resultImages = getResultImages();
+
+  // Don't show section if no result images available
+  if (resultImages.length === 0) return null;
+
+  const getTitle = () => {
+    if (product.id === 'dreamcurl-original') return "Real Results from DreamCurl™ Users";
+    if (product.id === 'heatless-5') return "BUN BONS Success Stories";
+    if (product.id === 'heatless-6') return "PEAU DE SOIE Bonnet Results";
+    if (product.id.startsWith('curly-')) return "Real Results from Our Community";
+    return "Real Results from Our Community";
+  };
+
+  const getSubtitle = () => {
+    if (product.id === 'dreamcurl-original') return "See the beautiful, heat-free curls our customers achieve with DreamCurl™ Original Set";
+    if (product.id === 'heatless-5') return "Discover how BUN BONS transforms hair overnight with these amazing before and after results";
+    if (product.id === 'heatless-6') return "See how our PEAU DE SOIE XL Overnight Bonnet protects and preserves beautiful hairstyles";
+    if (product.id.startsWith('curly-')) return "Real customers sharing their amazing hair transformations";
+    return "Real customers sharing their amazing results";
+  };
+
+  return (
+    <motion.section
+      ref={ref}
+      className="relative py-24 px-6 bg-gradient-to-b from-background to-muted/20"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            {getTitle()}
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            {getSubtitle()}
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          {resultImages.map((imageSrc, index) => (
+            <motion.div
+              key={index}
+              className="relative group"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ delay: 0.1 * index, duration: 0.6 }}
+              whileHover={{ scale: 1.05, y: -10 }}
+            >
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-muted shadow-lg">
+                <img
+                  src={imageSrc}
+                  alt={`Real result ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  onError={(e) => {
+                    console.error(`Failed to load result image: ${imageSrc}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Success badge */}
+                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+                  ✓ Real Result
+                </div>
+              </div>
+              
+              {/* Caption */}
+              <motion.div
+                className="mt-4 text-center"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ delay: 0.1 * index + 0.3, duration: 0.6 }}
+              >
+                <p className="text-sm text-muted-foreground font-medium">
+                  Customer Result #{index + 1}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {product.id === 'dreamcurl-original' && "Heat-free overnight curls"}
+                  {product.id === 'heatless-5' && "BUN BONS transformation"}
+                  {product.id === 'heatless-6' && "Protected overnight styling"}
+                  {product.id.startsWith('curly-') && "Amazing hair styling"}
+                </p>
+              </motion.div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          className="text-center mt-12"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+            Join thousands of satisfied customers who have transformed their hair with our premium products. 
+            Share your results with us using #CurleaResults!
+          </p>
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+};
+
+// Universal Usage Steps Component
+const UsageStepsSection = ({ product }: { product: Product }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   if (!product.usageSteps) return null;
+
+  // Get appropriate title and subtitle based on product
+  const getTitle = () => {
+    if (product.id === 'heatless-5') return "How to Use BUN BONS";
+    if (product.id === 'heatless-6') return "How to Use Your Bonnet";
+    if (product.id.startsWith('dreamcurl-')) return `How to Use ${product.name}`;
+    if (product.id.startsWith('curly-')) return `How to Use ${product.name}`;
+    return `How to Use ${product.name}`;
+  };
+
+  const getSubtitle = () => {
+    if (product.id === 'heatless-5') return "Follow these simple steps to achieve beautiful, blowout-style waves with your BUN BONS heatless curling system.";
+    if (product.id === 'heatless-6') return "Follow these simple steps to protect and preserve your hairstyle overnight with maximum comfort.";
+    if (product.id.startsWith('dreamcurl-')) return "Follow these simple steps to achieve gorgeous, heat-free curls overnight.";
+    return "Follow these simple steps to get the best results from your product.";
+  };
 
   return (
     <motion.section
@@ -2389,10 +3020,10 @@ const BunBonsUsageSteps = ({ product }: { product: Product }) => {
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-            How to Use BUN BONS
+            {getTitle()}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Follow these simple steps to achieve beautiful, blowout-style waves with your BUN BONS heatless curling system.
+            {getSubtitle()}
           </p>
         </motion.div>
 
@@ -2408,65 +3039,30 @@ const BunBonsUsageSteps = ({ product }: { product: Product }) => {
             >
               <div className="flex items-start gap-4">
                 <motion.div
-                  className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg"
+                  className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg"
                   initial={{ scale: 0 }}
                   animate={isInView ? { scale: 1 } : { scale: 0 }}
                   transition={{ delay: 0.1 * index + 0.2, type: "spring", stiffness: 200 }}
                 >
                   {index + 1}
                 </motion.div>
-                
                 <div className="flex-1">
-                  <p className="text-foreground leading-relaxed">
-                    {step}
-                  </p>
+                  <p className="text-base leading-relaxed text-foreground/90">{step}</p>
                 </div>
               </div>
-              
-              {/* Decorative element */}
-              <motion.div
-                className="absolute top-4 right-4 w-8 h-8 bg-primary/10 rounded-full"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-                transition={{ delay: 0.1 * index + 0.4, duration: 0.3 }}
-              />
             </motion.div>
           ))}
         </div>
 
-        {/* Pro Tips Section */}
         <motion.div
-          className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          className="text-center mt-12"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4 text-primary">Pro Tips</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
-                  <Leaf className="w-8 h-8 text-primary" />
-                </div>
-                <h4 className="font-semibold mb-2">Best Results</h4>
-                <p className="text-sm text-muted-foreground">Use on 80-90% dry hair for optimal curl formation</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
-                  <Users className="w-8 h-8 text-primary" />
-                </div>
-                <h4 className="font-semibold mb-2">Comfort</h4>
-                <p className="text-sm text-muted-foreground">Sleep comfortably with the protective Peau de Soie bonnet</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
-                  <Heart className="w-8 h-8 text-primary" />
-                </div>
-                <h4 className="font-semibold mb-2">Long-lasting</h4>
-                <p className="text-sm text-muted-foreground">Enjoy beautiful waves that last for days</p>
-              </div>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            ðŸ’¡ Tip: For best results, always follow the recommended wait time and handle your hair gently
+          </p>
         </motion.div>
       </div>
     </motion.section>
@@ -2484,11 +3080,15 @@ const DreamCurlImageGallery = ({
   onColorSelect: (color: string) => void;
 }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isViewingGuide, setIsViewingGuide] = useState(false);
 
   // Placeholder image for DreamCurl
   const placeholderImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href;
+  
+  // Guide image for DreamCurlâ„¢ Original Set
+  const guideImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href;
 
-  // Color-specific image mapping for DreamCurl™ Original Set
+  // Color-specific image mapping for DreamCurlâ„¢ Original Set
   const getColorSpecificImage = (color: string) => {
     const colorImageMap = {
       'Mulberry': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
@@ -2499,8 +3099,11 @@ const DreamCurlImageGallery = ({
     return colorImageMap[color as keyof typeof colorImageMap] || colorImageMap['Mulberry'];
   };
 
-  // Get the current main image based on selected color or selected image index
+  // Get the current main image based on selected color, guide view, or selected image index
   const getCurrentMainImage = () => {
+    if (isViewingGuide) {
+      return guideImage;
+    }
     if (selectedColor) {
       return getColorSpecificImage(selectedColor);
     }
@@ -2517,6 +3120,17 @@ const DreamCurlImageGallery = ({
     return colorOrder[index] || colorOrder[0];
   };
 
+  // Handle clicking on guide image
+  const handleGuideClick = () => {
+    setIsViewingGuide(true);
+  };
+
+  // Handle clicking on color image
+  const handleColorClick = (color: string) => {
+    setIsViewingGuide(false);
+    onColorSelect(color);
+  };
+
   const currentMainImage = getCurrentMainImage();
 
   return (
@@ -2529,9 +3143,9 @@ const DreamCurlImageGallery = ({
         transition={{ duration: 0.5 }}
       >
         <OptimizedImage
-          key={`${selectedColor}-${currentMainImage}`}
+          key={`${isViewingGuide ? 'guide' : selectedColor}-${currentMainImage}`}
           src={currentMainImage}
-          alt={`${product.name} - ${selectedColor || 'View'} ${selectedImageIndex + 1}`}
+          alt={isViewingGuide ? `${product.name} - Usage Guide` : `${product.name} - ${selectedColor || 'View'} ${selectedImageIndex + 1}`}
           className="object-cover"
           placeholderSrc={placeholderImage}
           priority={true}
@@ -2559,7 +3173,7 @@ const DreamCurlImageGallery = ({
               className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Previous color"
             >
-              <span className="text-lg sm:text-xl">←</span>
+              <span className="text-lg sm:text-xl">â†</span>
             </button>
             <button
               onClick={() => {
@@ -2574,46 +3188,72 @@ const DreamCurlImageGallery = ({
               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Next color"
             >
-              <span className="text-lg sm:text-xl">→</span>
+              <span className="text-lg sm:text-xl">â†’</span>
             </button>
           </>
         )}
       </motion.div>
 
-      {/* Thumbnail Gallery - show all color-specific images so customers can see available colors */}
-      {product.colors && product.colors.length > 0 && (
-        <div className="grid grid-cols-4 gap-2 sm:gap-3">
-          {product.colors.map((color, index) => (
-            <button
-              key={color}
-              onClick={() => {
-                // Update both color selection and image index when clicking thumbnail
-                onColorSelect(color);
-                setSelectedImageIndex(index);
+      {/* Thumbnail Gallery - show all color-specific images + guide image */}
+      <div className="grid grid-cols-5 gap-2 sm:gap-3">
+        {/* Color thumbnails */}
+        {product.colors && product.colors.map((color, index) => (
+          <button
+            key={color}
+            onClick={() => {
+              // Update both color selection and image index when clicking thumbnail
+              handleColorClick(color);
+              setSelectedImageIndex(index);
+            }}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+              !isViewingGuide && selectedColor === color 
+                ? 'ring-2 ring-primary scale-105' 
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+            }`}
+          >
+            <OptimizedImage
+              src={getColorSpecificImage(color)}
+              alt={`${product.name} - ${color} Color`}
+              className="object-cover"
+              placeholderSrc={placeholderImage}
+              priority={index < 2}
+              onError={(e) => {
+                console.error(`Failed to load color image: ${color}`);
+                if (e.currentTarget) {
+                  e.currentTarget.src = placeholderImage;
+                }
               }}
-              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-                selectedColor === color 
-                  ? 'ring-2 ring-primary scale-105' 
-                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-              }`}
-            >
-              <OptimizedImage
-                src={getColorSpecificImage(color)}
-                alt={`${product.name} - ${color} Color`}
-                className="object-cover"
-                placeholderSrc={placeholderImage}
-                priority={index < 2}
-                onError={(e) => {
-                  console.error(`Failed to load color image: ${color}`);
-                  if (e.currentTarget) {
-                    e.currentTarget.src = placeholderImage;
-                  }
-                }}
-              />
-            </button>
-          ))}
-        </div>
-      )}
+            />
+          </button>
+        ))}
+        
+        {/* Guide image */}
+        <button
+          onClick={handleGuideClick}
+          className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+            isViewingGuide
+              ? 'ring-2 ring-primary scale-105'
+              : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+          }`}
+        >
+          <OptimizedImage
+            src={guideImage}
+            alt={`${product.name} - Usage Guide`}
+            className="object-cover"
+            placeholderSrc={placeholderImage}
+            priority={false}
+            onError={(e) => {
+              console.error(`Failed to load guide image`);
+              if (e.currentTarget) {
+                e.currentTarget.src = placeholderImage;
+              }
+            }}
+          />
+        </button>
+      </div>
     </div>
   );
 };
+
+export default ProductDetailPage;
+

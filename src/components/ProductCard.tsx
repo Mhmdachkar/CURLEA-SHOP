@@ -5,6 +5,7 @@ import { ShoppingBag, Eye } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { OptimizedImage } from "./OptimizedImage";
+import { ProductImage } from "./ProductImage";
 
 interface ProductCardProps extends Product {
   onClick?: () => void;
@@ -79,13 +80,11 @@ export const ProductCard = ({ id, name, price, image, onClick, onQuickView, ...p
           transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
           className="w-full h-full"
         >
-          <OptimizedImage
+          <ProductImage
             src={image}
             alt={name}
-            width={400}
-            height={400}
-            quality={85}
             className="w-full h-full"
+            productId={id}
           />
         </motion.div>
         

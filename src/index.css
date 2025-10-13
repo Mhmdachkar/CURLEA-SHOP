@@ -28,6 +28,45 @@ img {
   image-rendering: crisp-edges;
 }
 
+/* Remove black borders from specific product images */
+.remove-black-borders {
+  filter: contrast(1.1) brightness(1.05) saturate(1.1);
+  clip-path: inset(2% 2% 2% 2%);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Additional CSS for product-4.webp specifically */
+img[src*="product-4.webp"] {
+  filter: contrast(1.1) brightness(1.05) saturate(1.1);
+  clip-path: inset(2% 2% 2% 2%);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Enhanced black border removal with multiple techniques */
+img[src*="product-4.webp"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 2%, transparent 98%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Alternative approach using mix-blend-mode for stubborn black borders */
+@media (min-width: 768px) {
+  img[src*="product-4.webp"] {
+    mix-blend-mode: multiply;
+    background: white;
+  }
+}
+
 /* Custom gradients for seamless product display */
 @layer utilities {
   .bg-gradient-radial {
