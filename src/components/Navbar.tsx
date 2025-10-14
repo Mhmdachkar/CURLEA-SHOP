@@ -190,7 +190,7 @@ const MobileMenu = styled(motion.div)`
   right: 0;
   bottom: 0;
   background-color: ${({ theme }) => theme.colors.background};
-  z-index: ${({ theme }) => theme.zIndex.sticky};
+  z-index: ${({ theme }) => theme.zIndex.mobileMenu};
   padding: ${({ theme }) => theme.spacing['2xl']} ${({ theme }) => theme.spacing.lg};
   padding-top: 6rem;
   overflow-y: auto;

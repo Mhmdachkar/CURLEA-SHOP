@@ -134,8 +134,10 @@ export const zIndex = {
   fixed: 1200,
   modalBackdrop: 1300,
   modal: 1400,
-  popover: 1500,
-  tooltip: 1600,
+  drawer: 1500,
+  popover: 1600,
+  tooltip: 1700,
+  mobileMenu: 1800,
 } as const;
 
 export const touchTargets = {

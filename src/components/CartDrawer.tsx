@@ -1,7 +1,305 @@
 import React from 'react';
+import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart, CartItem } from '@/contexts/CartContext';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { useCart, CartItem } from '@/contexts/CartContext';
+
+/* ============================================
+   STYLED COMPONENTS - MOBILE FIRST
+   ============================================ */
+
+const Backdrop = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: ${({ theme }) => theme.zIndex.modalBackdrop};
+`;
+
+const Drawer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 28rem;
+  background-color: ${({ theme }) => theme.colors.card};
+  box-shadow: ${({ theme }) => theme.shadows.xl};
+  z-index: ${({ theme }) => theme.zIndex.drawer};
+  display: flex;
+  flex-direction: column;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const Title = styled.h2`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.foreground};
+`;
+
+const CloseButton = styled.button`
+  padding: ${({ theme }) => theme.spacing.sm};
+  background: none;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  transition: ${({ theme }) => theme.transitions.fast};
+  min-width: ${({ theme }) => theme.touchTargets.min};
+  min-height: ${({ theme }) => theme.touchTargets.min};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.muted};
+    color: ${({ theme }) => theme.colors.foreground};
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+`;
+
+const Content = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: ${({ theme }) => theme.spacing.lg};
+  -webkit-overflow-scrolling: touch;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`;
+
+const EmptyIcon = styled(ShoppingBag)`
+  width: 4rem;
+  height: 4rem;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const EmptyTitle = styled.h3`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const EmptyDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`;
+
+const ItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const CartItemCard = styled(motion.div)`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+const ProductImage = styled.div`
+  width: 4rem;
+  height: 4rem;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.muted};
+  flex-shrink: 0;
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const ProductDetails = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ProductName = styled.h3`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.foreground};
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+`;
+
+const ProductVariant = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ProductPrice = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.foreground};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const QuantityControls = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const QuantityRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const QuantityButton = styled.button`
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  transition: ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.muted};
+    color: ${({ theme }) => theme.colors.foreground};
+  }
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+`;
+
+const QuantityDisplay = styled.span`
+  width: 2rem;
+  text-align: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.foreground};
+`;
+
+const RemoveButton = styled.button`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.destructive || '#dc2626'};
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.destructive || '#b91c1c'};
+  }
+`;
+
+const Footer = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: ${({ theme }) => theme.spacing.lg};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const TotalRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const TotalLabel = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.foreground};
+`;
+
+const TotalAmount = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.foreground};
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const CheckoutButton = styled.button`
+  width: 100%;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryForeground};
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.md};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  min-height: ${({ theme }) => theme.touchTargets.comfortable};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary};
+    opacity: 0.9;
+  }
+`;
+
+const ClearButton = styled.button`
+  width: 100%;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  background: none;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.sm};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+  min-height: ${({ theme }) => theme.touchTargets.min};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.foreground};
+    background-color: ${({ theme }) => theme.colors.muted};
+  }
+`;
+
+/* ============================================
+   CART DRAWER COMPONENT
+   ============================================ */
 
 export const CartDrawer = () => {
   const { state, updateQuantity, removeFromCart, clearCart, closeCart } = useCart();
@@ -96,8 +394,7 @@ export const CartDrawer = () => {
       {state.isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-black/50 z-40"
+          <Backdrop
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -105,118 +402,101 @@ export const CartDrawer = () => {
           />
 
           {/* Drawer */}
-          <motion.div
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+          <Drawer
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold">Shopping Cart</h2>
-              <button
-                onClick={closeCart}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <Header>
+              <Title>Shopping Cart</Title>
+              <CloseButton onClick={closeCart}>
+                <X />
+              </CloseButton>
+            </Header>
 
             {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <Content>
               {state.items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <ShoppingBag className="w-16 h-16 text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">Your cart is empty</h3>
-                  <p className="text-gray-500">Add some products to get started!</p>
-                </div>
+                <EmptyState>
+                  <EmptyIcon />
+                  <EmptyTitle>Your cart is empty</EmptyTitle>
+                  <EmptyDescription>Add some products to get started!</EmptyDescription>
+                </EmptyState>
               ) : (
-                <div className="space-y-4">
+                <ItemsList>
                   {state.items.map((item) => (
-                    <motion.div
+                    <CartItemCard
                       key={`${item.id}-${item.selectedColor || 'default'}`}
-                      className="flex gap-4 p-4 border rounded-lg"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                     >
                       {/* Product Image */}
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                        <img
+                      <ProductImage>
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="w-full h-full object-cover"
                         />
-                      </div>
+                      </ProductImage>
 
                       {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm line-clamp-2">{item.name}</h3>
+                      <ProductDetails>
+                        <ProductName>{item.name}</ProductName>
                         {item.selectedColor && (
-                          <p className="text-xs text-gray-600 mt-1">Color: {item.selectedColor}</p>
+                          <ProductVariant>Color: {item.selectedColor}</ProductVariant>
                         )}
                         {item.size && (
-                          <p className="text-xs text-gray-600">Size: {item.size}</p>
+                          <ProductVariant>Size: {item.size}</ProductVariant>
                         )}
-                        <p className="text-sm font-medium text-gray-900 mt-1">{item.price}</p>
-                      </div>
+                        <ProductPrice>{item.price}</ProductPrice>
+                      </ProductDetails>
 
                       {/* Quantity Controls */}
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="flex items-center gap-2">
-                          <button
+                      <QuantityControls>
+                        <QuantityRow>
+                          <QuantityButton
                             onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
-                            className="w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-100 transition-colors"
                           >
-                            <Minus className="w-3 h-3" />
-                          </button>
-                          <span className="w-8 text-center text-sm">{item.quantity}</span>
-                          <button
+                            <Minus />
+                          </QuantityButton>
+                          <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                          <QuantityButton
                             onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
-                            className="w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-100 transition-colors"
                           >
-                            <Plus className="w-3 h-3" />
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => handleRemoveFromCart(item)}
-                          className="text-xs text-red-600 hover:text-red-800 transition-colors"
-                        >
+                            <Plus />
+                          </QuantityButton>
+                        </QuantityRow>
+                        <RemoveButton onClick={() => handleRemoveFromCart(item)}>
                           Remove
-                        </button>
-                      </div>
-                    </motion.div>
+                        </RemoveButton>
+                      </QuantityControls>
+                    </CartItemCard>
                   ))}
-                </div>
+                </ItemsList>
               )}
-            </div>
+            </Content>
 
             {/* Footer */}
             {state.items.length > 0 && (
-              <div className="border-t p-6 space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total:</span>
-                  <span className="text-lg font-semibold">{formatPrice(calculateTotal())}</span>
-                </div>
+              <Footer>
+                <TotalRow>
+                  <TotalLabel>Total:</TotalLabel>
+                  <TotalAmount>{formatPrice(calculateTotal())}</TotalAmount>
+                </TotalRow>
                 
-                <div className="space-y-2">
-                  <button 
-                    onClick={handleCheckout}
-                    className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                  >
+                <ButtonGroup>
+                  <CheckoutButton onClick={handleCheckout}>
                     Checkout
-                  </button>
-                  <button
-                    onClick={handleClearCart}
-                    className="w-full text-gray-600 py-2 rounded-lg font-medium hover:text-gray-800 transition-colors"
-                  >
+                  </CheckoutButton>
+                  <ClearButton onClick={handleClearCart}>
                     Clear Cart
-                  </button>
-                </div>
-              </div>
+                  </ClearButton>
+                </ButtonGroup>
+              </Footer>
             )}
-          </motion.div>
+          </Drawer>
         </>
       )}
     </AnimatePresence>

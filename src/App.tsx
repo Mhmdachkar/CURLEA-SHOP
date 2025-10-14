@@ -35,6 +35,7 @@ const App = () => (
             <RealtimeSync />
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<CollectionPage />} />
               <Route path="/collection" element={<CollectionPage />} />
               <Route path="/category/:category" element={<CategoryPage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />

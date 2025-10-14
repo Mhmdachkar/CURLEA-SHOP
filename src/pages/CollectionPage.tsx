@@ -7,203 +7,8 @@ import { QuickViewModal } from "@/components/QuickViewModal";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { Navbar } from "@/components/Navbar";
 import getTheWavyLook from "@/assets/getthewavylook.png";
-import { Product } from "@/data/products";
+import { Product, products } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
-
-// Updated Product interface now supports video and images arrays
-
-// Import products from the two main categories only
-const getAllProducts = (): Product[] => {
-  // DreamCurl™ Collection products
-  const dreamcurlProducts: Product[] = [
-           {
-             id: "dreamcurl-original",
-             name: "DreamCurl™ Original Set",
-             price: "€39.99",
-             image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-             category: "DreamCurl™ Collection",
-             hairType: "Medium to Long",
-             featured: true,
-             description: [
-               "The Original Heatless Curler - by CURLEA",
-               "For bouncy, voluminous curls overnight. Designed for medium to long hair.",
-               "This isn't just a heatless curler. It's the one that redefined the category.",
-               "We invented the first curlers by size and engineered tools for how people actually sleep.",
-               "Developed with elongated, structured fibres that hold shape through the night without wires, foam or tension.",
-               "Exclusive vegan Peau de Soie fabric reduces friction and protects against overnight breakage.",
-               "No bunching. No pressure. No stiffness behind your ears.",
-               "Available in 4 colors: Mulberry, Candy, Latte, Olive",
-               "The curler that makes people say, 'What did you use?'"
-             ],
-             ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
-             size: "Original Size",
-             inStock: true,
-             colors: ["Mulberry", "Candy", "Latte", "Olive"],
-             video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
-           images: [
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href
-           ]
-           },
-    {
-      id: "dreamcurl-short-set",
-      name: "DreamCurl™ Short Set",
-      price: "€24.99",
-      image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
-      hairType: "All Types",
-      featured: true,
-      description: [
-        "The Short Set Collection - Perfect for every hair type and style",
-        "Create beautiful curls without heat damage",
-        "Professional heatless curling system designed for versatility",
-        "Soft, flexible material that's gentle on your hair",
-        "Easy to use and comfortable for overnight styling",
-        "Each set includes different sized rods for various curl patterns",
-        "Available in 4 luxurious colors: Rose Gold, Royal Purple, Olive Lux, Earl Grey",
-        "Reusable, easy to clean, and built to last",
-        "The perfect addition to your heat-free styling routine"
-      ],
-      ingredients: ["Premium Silicon", "Non-toxic Coating", "Flexible Material"],
-      size: "Set of 4",
-      inStock: true,
-      colors: ["Rose Gold", "Royal Purple", "Olive Lux", "Earl Grey"],
-      images: [
-        new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href
-      ]
-    },
-    {
-      id: "dreamcurl-midi",
-      name: "DreamCurl™ Midi",
-      price: "€34.99",
-      image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
-      hairType: "Short to Long",
-      featured: true,
-      description: [
-        "**Midi Size** - Perfect for tighter curls with extended longevity",
-        "**100% Vegan Peau De Soie Fabric** - Ultra-soft, friction-free material",
-        "**Suitable for Short to Long Hair** - Versatile sizing for all lengths",
-        "**Zero Heat Technology** - Sleep comfortably without damage",
-        "**Complete Set Includes:** 2 Hair Ties, 1 Midi Curler, 1 Hair Clip",
-        "**Overnight Results** - Wake up to bouncy, defined curls"
-      ],
-      ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
-      size: "Midi Size",
-      inStock: true,
-      colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
-      video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
-      images: [
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
-      ]
-    },
-    {
-      id: "dreamcurl-jumbo",
-      name: "DreamCurl™ JUMBO SIZE",
-      price: "€39.99",
-      image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
-      hairType: "All Types",
-      featured: true,
-      description: [
-        "Jumbo Heatless Curler - by CURLEA",
-        "For soft, voluminous waves with a looser curl shape. Designed for hair below the shoulders.",
-        "At CURLEA, we were the first to design curlers by size.",
-        "This is the curler that makes people say, 'What did you use?' And the one you'll feel proud to answer with: 'CURLEA.'",
-        "Each set includes: 1 Jumbo Size Heatless Curler, 2 Matching Hair Ties, 1 Hair Clip for easy wrapping"
-      ],
-      ingredients: ["100% Vegan Peau De Soie Fabric", "Elongated Structured Fibres", "Premium Memory Foam"],
-      size: "Jumbo Size",
-      inStock: true,
-      colors: ["LATTE", "CANDY", "OLIVE", "MULBERRY"],
-      video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
-      images: [
-        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
-      ]
-    }
-  ];
-
-  // Curly Hair Collection products
-  const curlyHairProducts: Product[] = [
-    {
-      id: "curly-clip-1",
-      name: "Comfortable Curved Resin Hair Clip with Duckbill Grip and Strong Teeth New Flat Circular Hollow Design for Hair Styling",
-      price: "€15.99",
-      image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
-      category: "Hair Accessories",
-    hairType: "Curly",
-      featured: true,
-      description: [
-        "Comfortable curved design with duckbill grip",
-        "Strong teeth for secure hold without damage",
-        "Flat circular hollow design for better styling",
-        "Perfect for curly hair styling and management",
-        "**Sold as complete set - includes 9 pieces total**",
-        "Durable construction for long-lasting use"
-      ],
-      ingredients: ["High-Quality Resin", "Non-slip Coating"],
-      size: "9-Piece Set",
-      inStock: true,
-    },
-    {
-      id: "curly-scarf-1",
-      name: "MIO Elegant Scarf Soft Satin Elastic Hair Band Solid Color Fashion Ribbon Bow Hair Scrunchies Headdress Hair Ties for Women",
-      price: "€12.99",
-      image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
-      category: "Hair Accessories",
-    hairType: "Curly",
-      featured: false,
-      description: [
-        "Elegant satin scarf with soft elastic hair band",
-        "Solid color fashion ribbon bow design",
-        "Versatile hair scrunchies and headdress",
-        "Perfect for women's hair styling",
-        "**Comes in 7-piece set (quantity × 7)**",
-        "Soft material prevents hair breakage"
-      ],
-      ingredients: ["Premium Satin", "Elastic Band", "Fashion Ribbon"],
-      size: "7-Piece Set",
-      inStock: true,
-    },
-    {
-      id: "curly-claw-1",
-      name: "HC027D Fashion Solid Elegant Neutral Geometric Flower Hair Claw Clips Large Matte Hair Claw Clamps for Woman Girls Thick Hair",
-      price: "€18.99",
-      image: new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
-      category: "Hair Accessories",
-      hairType: "Curly",
-      featured: false,
-      description: [
-        "Fashion solid elegant neutral geometric flower design",
-        "Large matte hair claw clips for thick hair",
-        "Perfect for women and girls with thick hair",
-        "Strong grip for secure hold",
-        "**Comes as complete set - includes 16 pieces total**",
-        "Versatile styling for various hair lengths"
-      ],
-      ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
-      size: "16-Piece Set",
-      inStock: true,
-    }
-  ];
-
-  return [...dreamcurlProducts, ...curlyHairProducts];
-};
 
 
 export const CollectionPage = () => {
@@ -219,10 +24,8 @@ export const CollectionPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const allProducts = getAllProducts();
-
-  // Display all products at once
-  const displayedProducts = allProducts;
+  // Display all products from the products.ts file
+  const displayedProducts = products;
 
   return (
     <div className="min-h-screen">
@@ -267,9 +70,6 @@ export const CollectionPage = () => {
         {/* Hero Section with Rotating Images */}
         <HeroSectionWithRotation />
 
-        {/* Shop the Look Section */}
-        <ShopTheLookSection />
-
         {/* Beautiful Animated Title Section */}
         <BeautifulAnimatedTitle />
 
@@ -281,6 +81,9 @@ export const CollectionPage = () => {
           addToCart={addToCart}
           openCart={openCart}
         />
+
+        {/* Shop the Look Section - Moved to bottom */}
+        <ShopTheLookSection />
       </div>
 
       {/* Quick View Modal */}
