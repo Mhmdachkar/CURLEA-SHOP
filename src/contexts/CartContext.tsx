@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 
 export interface CartItem {
   id: string;
@@ -116,11 +116,46 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
   }
 };
 
+// Load cart from localStorage
+const loadCartFromStorage = (): CartState => {
+  if (typeof window === 'undefined') {
+    return { items: [], isOpen: false };
+  }
+  
+  try {
+    const savedCart = localStorage.getItem('curlea-cart');
+    if (savedCart) {
+      const parsed = JSON.parse(savedCart);
+      return {
+        items: parsed.items || [],
+        isOpen: false, // Always start with cart closed
+      };
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+  }
+  
+  return { items: [], isOpen: false };
+};
+
+// Save cart to localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem('curlea-cart', JSON.stringify({ items }));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(cartReducer, {
-    items: [],
-    isOpen: false,
-  });
+  const [state, dispatch] = useReducer(cartReducer, loadCartFromStorage());
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    saveCartToStorage(state.items);
+  }, [state.items]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     dispatch({

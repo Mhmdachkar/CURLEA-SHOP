@@ -197,3 +197,4 @@ The application is **production-ready** and fully responsive. To continue develo
 **Quality:** ⭐⭐⭐⭐⭐  
 **Production Ready:** YES
 
+

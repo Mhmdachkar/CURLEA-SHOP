@@ -924,10 +924,16 @@ const ProductGridWithCursorFollower = ({
     }
   };
 
+  // Group products into repeating pattern: 1 big + 1 medium + 3 small
+  const groupedProducts = [];
+  for (let i = 0; i < displayedProducts.length; i += 5) {
+    groupedProducts.push(displayedProducts.slice(i, i + 5));
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 relative">
       {/* Custom Cursor */}
-          <motion.div
+      <motion.div
         className="fixed pointer-events-none z-50 mix-blend-difference"
         animate={{
           x: mousePosition.x - 20,
@@ -956,37 +962,388 @@ const ProductGridWithCursorFollower = ({
             </motion.div>
           )}
         </motion.div>
-        </motion.div>
-
-          <motion.div
-        ref={gridRef}
-            layout
-            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHoveringGrid(true)}
-        onMouseLeave={() => {
-          setIsHoveringGrid(false);
-          setHoveredProduct(null);
-        }}
-        style={{ cursor: isHoveringGrid ? 'none' : 'auto' }}
-          >
-            <AnimatePresence mode="popLayout">
-              {displayedProducts.map((product, index) => (
-            <ProductCard3D
-                  key={product.id}
-              product={product}
-              index={index}
-              setQuickViewProduct={setQuickViewProduct}
-              navigate={navigate}
-              onHover={(isHovering) => setHoveredProduct(isHovering ? product.id : null)}
-              addToCart={addToCart}
-              openCart={openCart}
-            />
-          ))}
-        </AnimatePresence>
       </motion.div>
 
+      {/* Main Product Layout - Repeating Pattern */}
+      <div className="space-y-8">
+        {groupedProducts.map((group, groupIndex) => (
+          <motion.div
+            key={groupIndex}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6"
+            ref={groupIndex === 0 ? gridRef : undefined}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsHoveringGrid(true)}
+            onMouseLeave={() => {
+              setIsHoveringGrid(false);
+              setHoveredProduct(null);
+            }}
+            style={{ cursor: isHoveringGrid ? 'none' : 'auto' }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: groupIndex * 0.2 }}
+          >
+            {/* Big Card - 6 columns on large screens */}
+            {group[0] && (
+              <div className="lg:col-span-6">
+                <FeaturedProductCard
+                  product={group[0]}
+                  setQuickViewProduct={setQuickViewProduct}
+                  navigate={navigate}
+                  addToCart={addToCart}
+                  openCart={openCart}
+                  onHover={(isHovering) => setHoveredProduct(isHovering ? group[0].id : null)}
+                />
+              </div>
+            )}
+
+            {/* Right Side - 6 columns */}
+            <div className="lg:col-span-6 grid grid-cols-1 gap-4">
+              {/* Medium Card - Full width of right side */}
+              {group[1] && (
+                <div>
+                  <MediumProductCard
+                    product={group[1]}
+                    setQuickViewProduct={setQuickViewProduct}
+                    navigate={navigate}
+                    addToCart={addToCart}
+                    openCart={openCart}
+                    onHover={(isHovering) => setHoveredProduct(isHovering ? group[1].id : null)}
+                  />
+                </div>
+              )}
+
+              {/* 3 Small Cards - Grid */}
+              {group.slice(2, 5).length > 0 && (
+                <div className="grid grid-cols-3 gap-4">
+                  {group.slice(2, 5).map((product, index) => (
+                    <ProductCard3D
+                      key={product.id}
+                      product={product}
+                      index={index}
+                      setQuickViewProduct={setQuickViewProduct}
+                      navigate={navigate}
+                      onHover={(isHovering) => setHoveredProduct(isHovering ? product.id : null)}
+                      addToCart={addToCart}
+                      openCart={openCart}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
+  );
+};
+
+// Featured Product Card Component
+const FeaturedProductCard = ({ 
+  product, 
+  setQuickViewProduct, 
+  navigate,
+  addToCart,
+  openCart,
+  onHover
+}: {
+  product: Product;
+  setQuickViewProduct: (product: Product | null) => void;
+  navigate: (path: string) => void;
+  addToCart: (item: any) => void;
+  openCart: () => void;
+  onHover: (isHovering: boolean) => void;
+}) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const deltaX = (e.clientX - centerX) / (rect.width / 2);
+    const deltaY = (e.clientY - centerY) / (rect.height / 2);
+    
+    setMousePosition({ x: deltaX, y: deltaY });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 });
+    onHover(false);
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="group relative bg-card rounded-lg overflow-hidden h-full"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${mousePosition.y * -5}deg) rotateY(${mousePosition.x * 5}deg) translateZ(0)`,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+        {/* Enhanced Image Container */}
+        <div className="absolute inset-2 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+            style={{
+              filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
+              imageRendering: 'auto' as const,
+            }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        
+        {/* Subtle Border for Definition */}
+        <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
+        
+        {/* Enhanced Overlay Buttons */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 p-4"
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.button
+            onClick={() => setQuickViewProduct(product)}
+            className="bg-white/95 backdrop-blur-sm text-black font-semibold rounded-xl px-6 py-3 flex items-center gap-2 hover:bg-white transition-all duration-200 shadow-xl group"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Eye className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-sm sm:text-base">Quick View</span>
+          </motion.button>
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product);
+              
+              // Track add to cart event
+              if (typeof window !== 'undefined' && (window as any).analytics) {
+                const priceNumber = parseFloat(product.price.replace('€', ''));
+                (window as any).analytics.trackCart('add', {
+                  product_id: product.id,
+                  title: product.name,
+                  price: priceNumber,
+                  quantity: 1,
+                  total_value: priceNumber,
+                });
+              }
+              
+              openCart();
+            }}
+            className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-semibold rounded-xl px-6 py-3 flex items-center gap-2 hover:bg-primary transition-all duration-200 shadow-xl group"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-sm sm:text-base">Add to Cart</span>
+          </motion.button>
+        </motion.div>
+      </div>
+
+      <div className="p-4 sm:p-6 md:p-8">
+        <h3
+          className="font-semibold text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 cursor-pointer hover:text-primary transition-colors line-clamp-2"
+          onClick={() => {
+            // Track product view
+            if (typeof window !== 'undefined' && (window as any).analytics) {
+              (window as any).analytics.track('ProductViewed', {
+                product_id: product.id,
+                product_name: product.name,
+                price: product.price,
+                category: product.category,
+                page: 'Collection'
+              });
+            }
+            navigate(`/product/${product.id}`);
+          }}
+        >
+          {product.name}
+        </h3>
+        <p className="text-xl sm:text-2xl md:text-3xl font-light text-muted-foreground mb-3">
+          {product.price}
+        </p>
+        <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
+          {product.description[0]}
+        </p>
+        {product.colors && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground">Colors:</span>
+            {product.colors.slice(0, 3).map((color, index) => (
+              <span key={index} className="text-xs bg-muted px-2 py-1 rounded-full">
+                {color}
+              </span>
+            ))}
+            {product.colors.length > 3 && (
+              <span className="text-xs text-muted-foreground">
+                +{product.colors.length - 3} more
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// Medium Product Card Component
+const MediumProductCard = ({ 
+  product, 
+  setQuickViewProduct, 
+  navigate,
+  addToCart,
+  openCart,
+  onHover
+}: {
+  product: Product;
+  setQuickViewProduct: (product: Product | null) => void;
+  navigate: (path: string) => void;
+  addToCart: (item: any) => void;
+  openCart: () => void;
+  onHover: (isHovering: boolean) => void;
+}) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const deltaX = (e.clientX - centerX) / (rect.width / 2);
+    const deltaY = (e.clientY - centerY) / (rect.height / 2);
+    
+    setMousePosition({ x: deltaX, y: deltaY });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 });
+    onHover(false);
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+      className="group relative bg-card rounded-lg overflow-hidden h-full"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${mousePosition.y * -3}deg) rotateY(${mousePosition.x * 3}deg) translateZ(0)`,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+        {/* Enhanced Image Container */}
+        <div className="absolute inset-2 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+            style={{
+              filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
+              imageRendering: 'auto' as const,
+            }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        
+        {/* Subtle Border for Definition */}
+        <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
+        
+        {/* Enhanced Overlay Buttons */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-3"
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.button
+            onClick={() => setQuickViewProduct(product)}
+            className="bg-white/95 backdrop-blur-sm text-black font-semibold rounded-lg px-4 py-2 flex items-center gap-1.5 hover:bg-white transition-all duration-200 shadow-lg group"
+            whileHover={{ scale: 1.05, y: -1 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Eye className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            <span className="text-xs sm:text-sm">View</span>
+          </motion.button>
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product);
+              
+              // Track add to cart event
+              if (typeof window !== 'undefined' && (window as any).analytics) {
+                const priceNumber = parseFloat(product.price.replace('€', ''));
+                (window as any).analytics.trackCart('add', {
+                  product_id: product.id,
+                  title: product.name,
+                  price: priceNumber,
+                  quantity: 1,
+                  total_value: priceNumber,
+                });
+              }
+              
+              openCart();
+            }}
+            className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-semibold rounded-lg px-4 py-2 flex items-center gap-1.5 hover:bg-primary transition-all duration-200 shadow-lg group"
+            whileHover={{ scale: 1.05, y: -1 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Plus className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            <span className="text-xs sm:text-sm">Add</span>
+          </motion.button>
+        </motion.div>
+      </div>
+
+      <div className="p-3 sm:p-4">
+        <h3
+          className="font-semibold text-sm sm:text-base mb-1 cursor-pointer hover:text-primary transition-colors line-clamp-2"
+          onClick={() => {
+            // Track product view
+            if (typeof window !== 'undefined' && (window as any).analytics) {
+              (window as any).analytics.track('ProductViewed', {
+                product_id: product.id,
+                product_name: product.name,
+                price: product.price,
+                category: product.category,
+                page: 'Collection'
+              });
+            }
+            navigate(`/product/${product.id}`);
+          }}
+        >
+          {product.name}
+        </h3>
+        <p className="text-base sm:text-lg font-light text-muted-foreground">
+          {product.price}
+        </p>
+      </div>
+    </motion.div>
   );
 };
 
@@ -1032,9 +1389,7 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                     delay: index * 0.1,
                     layout: { duration: 0.4 },
                   }}
-                  className={`group relative bg-card rounded-lg overflow-hidden ${
-                    product.featured ? "col-span-1 md:col-span-2" : ""
-                  }`}
+                  className="group relative bg-card rounded-lg overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={handleMouseLeave}
@@ -1043,37 +1398,47 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
         transformStyle: "preserve-3d",
       }}
                 >
-                  <div className="relative aspect-square overflow-hidden bg-muted">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center center',
-                        display: 'block'
-                      }}
-                    />
+                  <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+                    {/* Enhanced Image Container */}
+                    <div className="absolute inset-1.5 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+                        style={{
+                          filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
+                          imageRendering: 'auto' as const,
+                        }}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
                     
-                    {/* Overlay Buttons */}
+                    {/* Subtle Border for Definition */}
+                    <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
+                    
+                    {/* Enhanced Overlay Buttons */}
                     <motion.div
-                      className="absolute inset-0 bg-black/40 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 p-2 sm:p-0"
+                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col items-end justify-between p-2"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     >
+                      {/* Top Row - Quick View Button */}
                       <motion.button
                         onClick={() => setQuickViewProduct(product)}
-                        className="px-3 py-2 sm:px-6 sm:py-3 bg-white text-black font-medium rounded-md flex items-center gap-1 sm:gap-2 hover:bg-white/90 transition-colors text-xs sm:text-sm touch-target"
-                        whileHover={{ scale: 1.05 }}
+                        className="bg-white/95 backdrop-blur-sm text-black font-medium rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200 flex items-center gap-1.5 group"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        }}
                       >
-                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Quick View</span>
-                        <span className="sm:hidden">View</span>
+                        <Eye className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-semibold hidden sm:block">View</span>
                       </motion.button>
+                      
+                      {/* Bottom Row - Add to Cart Button */}
                       <motion.button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1093,13 +1458,15 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                           
                           openCart();
                         }}
-                        className="px-3 py-2 sm:px-6 sm:py-3 bg-primary text-primary-foreground font-medium rounded-md flex items-center gap-1 sm:gap-2 hover:bg-primary/90 transition-colors text-xs sm:text-sm touch-target"
-                        whileHover={{ scale: 1.05 }}
+                        className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-medium rounded-full p-2 shadow-lg hover:bg-primary transition-all duration-200 flex items-center gap-1.5 group"
+                        whileHover={{ scale: 1.1, rotate: -5 }}
                         whileTap={{ scale: 0.95 }}
+                        style={{
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        }}
                       >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Add to Cart</span>
-                        <span className="sm:hidden">Add</span>
+                        <Plus className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-semibold hidden sm:block">Add</span>
                       </motion.button>
                     </motion.div>
                   </div>

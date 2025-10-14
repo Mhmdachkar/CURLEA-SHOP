@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion, useMotionValue, AnimatePresence } from "framer-motion";
-import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
@@ -174,7 +174,8 @@ const IconsContainer = styled.div<{ $isScrolled: boolean }>`
   gap: ${({ theme }) => theme.spacing.sm};
   color: ${({ $isScrolled, theme }) =>
     $isScrolled ? theme.colors.foreground : '#ffffff'};
-  z-index: ${({ theme }) => theme.zIndex.sticky + 1};
+  z-index: ${({ theme }) => theme.zIndex.sticky + 10};
+  position: relative;
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
     gap: ${({ theme }) => theme.spacing.md};
@@ -199,6 +200,8 @@ const IconButton = styled(motion.button)`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   transition: ${({ theme }) => theme.transitions.fast};
   position: relative;
+  z-index: 10;
+  pointer-events: auto;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -482,12 +485,6 @@ export const Navbar = () => {
 
           {/* Right Icons */}
           <IconsContainer $isScrolled={isScrolled}>
-            <MagneticButton>
-              <Search />
-            </MagneticButton>
-            <MagneticButton>
-              <User />
-            </MagneticButton>
             <MagneticButton onClick={openCart}>
               <>
                 <ShoppingBag />
@@ -534,6 +531,30 @@ export const Navbar = () => {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Mobile Menu Header with Close Button */}
+              <div className="flex items-center justify-between mb-8">
+                <motion.h2 
+                  className="text-2xl font-bold text-foreground"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  Menu
+                </motion.h2>
+                <motion.button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Close menu"
+                >
+                  <X className="w-6 h-6" />
+                </motion.button>
+              </div>
+              
               <MobileMenuList>
                 {navLinks.map((link, index) => (
                   <MobileMenuLink
@@ -541,7 +562,7 @@ export const Navbar = () => {
                     onClick={() => handleNavClick(link.href)}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {link.label}

@@ -228,3 +228,4 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   }
 `;
 
+
