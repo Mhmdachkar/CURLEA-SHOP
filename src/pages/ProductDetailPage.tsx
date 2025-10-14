@@ -1253,6 +1253,11 @@ export const ProductDetailPage = () => {
         
         </div>
 
+        {/* Video Section - Show if product has video */}
+        {product.video && (
+          <RitualInMotionSection product={product} />
+        )}
+
         {/* Complete Your Routine Section */}
         {relatedProducts.length > 0 && (
           <motion.section 

@@ -240,6 +240,17 @@ const HamburgerButton = styled(IconButton)`
   }
 `;
 
+const MobileMenuBackdrop = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: ${({ theme }) => theme.zIndex.mobileMenu - 1};
+  backdrop-filter: blur(4px);
+`;
+
 const MobileMenu = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -252,6 +263,9 @@ const MobileMenu = styled(motion.div)`
   padding-top: 6rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  
+  /* Ensure mobile menu is above everything */
+  isolation: isolate;
 `;
 
 const MobileMenuList = styled.div`
@@ -505,27 +519,37 @@ export const Navbar = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <MobileMenu
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            <MobileMenuList>
-              {navLinks.map((link, index) => (
-                <MobileMenuLink
-                  key={link.label}
-                  onClick={() => handleNavClick(link.href)}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {link.label}
-                </MobileMenuLink>
-              ))}
-            </MobileMenuList>
-          </MobileMenu>
+          <>
+            <MobileMenuBackdrop
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <MobileMenu
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MobileMenuList>
+                {navLinks.map((link, index) => (
+                  <MobileMenuLink
+                    key={link.label}
+                    onClick={() => handleNavClick(link.href)}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {link.label}
+                  </MobileMenuLink>
+                ))}
+              </MobileMenuList>
+            </MobileMenu>
+          </>
         )}
       </AnimatePresence>
     </>
