@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion, useMotionValue, AnimatePresence } from "framer-motion";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
@@ -99,11 +99,68 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   text-shadow: ${({ $isScrolled }) =>
     $isScrolled ? 'none' : '0 1px 4px rgba(0, 0, 0, 0.2)'};
   white-space: nowrap;
+  overflow: hidden;
+
+  /* Beautiful white line hover effect */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffffff, transparent);
+    transform: translateX(-50%);
+    transition: ${({ theme }) => theme.transitions.fast};
+    opacity: 0;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Subtle glow effect on hover */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: ${({ theme }) => theme.transitions.fast};
+    opacity: 0;
+    border-radius: 50%;
+  }
 
   &:hover {
     color: ${({ $isScrolled, theme }) =>
       $isScrolled ? theme.colors.accent : '#ffffff'};
     opacity: 1;
+    text-shadow: ${({ $isScrolled }) =>
+      $isScrolled ? 'none' : '0 0 12px rgba(255, 255, 255, 0.4)'};
+
+    &::after {
+      width: 100%;
+      opacity: 1;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    }
+
+    &::before {
+      width: 120%;
+      height: 120%;
+      opacity: 1;
+    }
+  }
+
+  /* Active state for current page */
+  &[data-active="true"] {
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.accent : '#ffffff'};
+    
+    &::after {
+      width: 100%;
+      opacity: 1;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
   }
 
   @media ${({ theme }) => theme.mediaQueries.desktop} {
@@ -219,10 +276,30 @@ const MobileMenuLink = styled(motion.button)`
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   transition: ${({ theme }) => theme.transitions.fast};
+  position: relative;
+  overflow: hidden;
+
+  /* Mobile hover effect with left border */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(180deg, ${({ theme }) => theme.colors.accent}, transparent);
+    transition: ${({ theme }) => theme.transitions.fast};
+    opacity: 0;
+  }
 
   &:hover {
     color: ${({ theme }) => theme.colors.accent};
     padding-left: ${({ theme }) => theme.spacing.md};
+
+    &::before {
+      width: 4px;
+      opacity: 1;
+    }
   }
 `;
 
@@ -231,7 +308,7 @@ const MobileMenuLink = styled(motion.button)`
    ============================================ */
 
 const navLinks = [
-  { label: "Shop", href: "/collection" },
+  { label: "Shop", href: "/shop" },
   { label: "Our Story", href: "#our-story" },
   { label: "Collections", href: "#collections" },
   { label: "Contact", href: "#contact" },
@@ -292,6 +369,7 @@ const MagneticButton = ({ children, onClick }: MagneticButtonProps) => {
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { itemCount, openCart } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -367,17 +445,25 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <DesktopNav $isScrolled={isScrolled}>
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.label}
-                $isScrolled={isScrolled}
-                onClick={() => handleNavClick(link.href)}
-                whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.href;
+              return (
+                <NavLink
+                  key={link.label}
+                  $isScrolled={isScrolled}
+                  onClick={() => handleNavClick(link.href)}
+                  data-active={isActive}
+                  whileHover={{ 
+                    y: -2,
+                    transition: { type: "spring", stiffness: 300 }
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </DesktopNav>
 
           {/* Right Icons */}
