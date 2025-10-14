@@ -17,24 +17,28 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   // Prevent background scrolling when modal is open
   useEffect(() => {
     if (product) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      
       // Disable body scroll
       document.body.style.overflow = 'hidden';
       // Prevent touch scrolling on mobile
       document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
-    } else {
-      // Re-enable body scroll when modal is closed
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      
+      // Cleanup function to restore scroll position
+      return () => {
+        // Re-enable body scroll when modal is closed
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
     }
-
-    // Cleanup function to ensure scroll is re-enabled
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    };
   }, [product]);
 
   const handleAddToCart = () => {
@@ -129,30 +133,30 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                     {product.price}
                   </p>
 
-                  <div className="space-y-3 mb-8 flex-1">
+                  <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
                     {product.description.length > 0 ? (
                       <>
                         {product.description.slice(0, 4).map((desc, index) => (
-                          <div key={index} className="flex items-start gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
-                            <p className="text-muted-foreground">
+                          <div key={index} className="flex items-start gap-2 sm:gap-3">
+                            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
+                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                               {desc}
                             </p>
                           </div>
                         ))}
                         {product.description.length > 4 && (
-                          <div className="flex items-start gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
-                            <p className="text-muted-foreground italic">
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
+                            <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed">
                               ... and {product.description.length - 4} more features
                             </p>
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="flex items-start gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
-                        <p className="text-muted-foreground">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
+                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                           Premium quality product with excellent features
                         </p>
                       </div>

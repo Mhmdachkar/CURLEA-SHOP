@@ -87,12 +87,12 @@ const getAllProducts = (): Product[] => {
       hairType: "Short to Long",
       featured: true,
       description: [
-        "Immerse yourself in the ultimate blend of luxury and comfort with CURLEA, the undisputed leader in the world of heatless curlers, where every night's sleep feels like resting on a cloud.",
-        "Experience a new level of heatless hair styling with our 'Zero Heat' Heatless Curlers. At CURLEA, we get that your beauty sleep is crucial, especially when it comes to heatless overnight curls.",
-        "That's why each of our handcrafted curlers is made to be extra soft, using the finest fabrics to keep your hair safe from friction as you snooze peacefully.",
-        "Crafted from the finest 100% vegan Peau De Soie fabric, CURLEA's iconic heatless curler helps you create bouncy and voluminous heatless overnight curls.",
-        "Tailored for short to long hair. Providing a tighter curl, our Midi size is the perfect choice for those in search of extended curl longevity.",
-        "This set will include: 2 Hair Ties, 1 Midi Heatless Curler, 1 Hair Clip"
+        "**Midi Size** - Perfect for tighter curls with extended longevity",
+        "**100% Vegan Peau De Soie Fabric** - Ultra-soft, friction-free material",
+        "**Suitable for Short to Long Hair** - Versatile sizing for all lengths",
+        "**Zero Heat Technology** - Sleep comfortably without damage",
+        "**Complete Set Includes:** 2 Hair Ties, 1 Midi Curler, 1 Hair Clip",
+        "**Overnight Results** - Wake up to bouncy, defined curls"
       ],
       ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
       size: "Midi Size",

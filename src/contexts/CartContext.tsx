@@ -7,7 +7,10 @@ export interface CartItem {
   image: string;
   quantity: number;
   selectedColor?: string;
+  selectedSize?: string;
   size?: string;
+  category?: string;
+  hairType?: string;
 }
 
 interface CartState {
@@ -41,14 +44,15 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'ADD_TO_CART': {
       const existingItem = state.items.find(item => 
         item.id === action.payload.id && 
-        item.selectedColor === action.payload.selectedColor
+        item.selectedColor === action.payload.selectedColor &&
+        item.selectedSize === action.payload.selectedSize
       );
 
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id && item.selectedColor === action.payload.selectedColor
+            item.id === action.payload.id && item.selectedColor === action.payload.selectedColor && item.selectedSize === action.payload.selectedSize
               ? { ...item, quantity: item.quantity + action.payload.quantity }
               : item
           ),

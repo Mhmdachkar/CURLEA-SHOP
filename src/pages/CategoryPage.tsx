@@ -8,7 +8,7 @@ import { getProductsByHairType, getCurlyHairCollectionProducts, Product } from "
 import { useCart } from "@/contexts/CartContext";
 
 // Import hero images for different categories
-import heatlessHeroImage from "@/assets/Heatless Hair Curling Rod/hero.png";
+import heatlessHeroImage from "@/assets/hero-2.png";
 import curlyHeroImage from "@/assets/curly hair collection/hero.png";
 
 export const CategoryPage = () => {
@@ -41,15 +41,6 @@ export const CategoryPage = () => {
     );
   }
 
-  // Get products for this category
-  const categoryProducts = normalizedCategory === 'wavy' 
-    ? getHeatlessCurlingRodProducts() // Special products for heatless curling rods
-    : normalizedCategory === 'curly'
-    ? getCurlyHairCollectionProducts() // Special products for curly hair collection
-    : getProductsByHairType(
-        normalizedCategory.charAt(0).toUpperCase() + normalizedCategory.slice(1)
-      );
-
   // Category configuration
   const categoryConfig = {
     wavy: {
@@ -67,13 +58,116 @@ export const CategoryPage = () => {
       accentColor: "text-amber-600"
     },
     straight: {
-      title: "Straight Hair Collection",
-      subtitle: "Achieve smooth, sleek perfection with our straight hair essentials",
+      title: "Curlea® Satin Rituals™ Collection",
+      subtitle: "Coming Soon - Achieve smooth, sleek perfection",
       description: "Transform your straight hair with our premium collection designed for smoothness and shine. From smoothing treatments to lightweight styling products, achieve the sleek look you desire.",
       gradient: "from-slate-500/10 via-gray-500/20 to-zinc-500/10", 
-      accentColor: "text-slate-600"
+      accentColor: "text-slate-600",
+      comingSoon: true
     }
   };
+
+  // Handle Coming Soon category
+  if (normalizedCategory === 'straight') {
+    const config = categoryConfig[normalizedCategory as keyof typeof categoryConfig];
+    return (
+      <div className="min-h-screen bg-white relative">
+        <Navbar />
+        
+        {/* Hero Section with Coming Soon */}
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+          {/* Background with gradient */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`} />
+          
+          {/* Content */}
+          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div
+                className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-full px-8 py-4 border border-white/30 mb-8"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <motion.div
+                  className="w-3 h-3 bg-white rounded-full"
+                  animate={{ 
+                    scale: [1, 1.3, 1],
+                    opacity: [0.7, 1, 0.7]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <span className="text-white font-semibold text-lg">Coming Soon</span>
+                <motion.div
+                  className="w-3 h-3 bg-white rounded-full"
+                  animate={{ 
+                    scale: [1, 1.3, 1],
+                    opacity: [0.7, 1, 0.7]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.3
+                  }}
+                />
+              </motion.div>
+              
+              <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 ${config.accentColor}`}>
+                {config.title}
+              </h1>
+              
+              <p className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                {config.subtitle}
+              </p>
+              
+              <p className="text-base sm:text-lg text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+                {config.description}
+              </p>
+              
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <button
+                  onClick={() => navigate("/collection")}
+                  className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold"
+                >
+                  Explore Available Collections
+                </button>
+                <button
+                  onClick={() => navigate("/")}
+                  className="px-8 py-4 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-semibold"
+                >
+                  Back to Home
+                </button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+        
+        <Footer />
+      </div>
+    );
+  }
+
+  // Get products for this category
+  const categoryProducts = normalizedCategory === 'wavy' 
+    ? getHeatlessCurlingRodProducts() // Special products for heatless curling rods
+    : normalizedCategory === 'curly'
+    ? getCurlyHairCollectionProducts() // Special products for curly hair collection
+    : getProductsByHairType(
+        normalizedCategory.charAt(0).toUpperCase() + normalizedCategory.slice(1)
+      );
 
   const config = categoryConfig[normalizedCategory as keyof typeof categoryConfig];
 
@@ -98,10 +192,10 @@ export const CategoryPage = () => {
       <Navbar />
       {/* Hero Section */}
       <motion.section
-        className={`relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden ${
+        className={`relative overflow-hidden ${
           (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
             ? 'bg-center bg-no-repeat' 
-            : `bg-gradient-to-br ${config.gradient}`
+            : `bg-gradient-to-br ${config.gradient} py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8`
         }`}
         style={(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? {
           backgroundImage: normalizedCategory === 'wavy' 
@@ -110,9 +204,11 @@ export const CategoryPage = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
-          minHeight: '70vh',
+          minHeight: '100vh',
           width: '100%',
-          objectFit: 'contain'
+          imageRendering: '-webkit-optimize-contrast',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden'
         } : {}}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -180,7 +276,11 @@ export const CategoryPage = () => {
           <div className="absolute inset-0 bg-black/30" />
         )}
         
-        <div className="max-w-7xl mx-auto text-center relative z-10">
+        <div className={`max-w-7xl mx-auto text-center relative z-10 ${
+          (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+            ? 'h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8'
+            : ''
+        }`}>
           {/* Animated Title with Word-by-Word Reveal */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -857,30 +957,6 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
         "Remove the bonnet and carefully unwind each curler in reverse order",
         "Gently separate the curls with your fingers and enjoy your beautiful blowout-style waves"
       ],
-      inStock: true,
-    },
-    {
-      id: "heatless-6",
-      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€39.99",
-      image: product6Image,
-      category: "Heatless Tools",
-      hairType: "All Types",
-      featured: true,
-      description: [
-        "For all overnight heatless styling enthusiasts, the Eternal Muse Reversible Bonnet is a must-have addition to your bedtime routine",
-        "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
-        "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
-        "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
-        "This luxurious sleep cap ensures maximum comfort all night long",
-        "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
-        "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
-        "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
-        "Upgrade your hair care regimen with the Eternal Muse Reversible Bonnet - an elegant addition to your bedtime attire"
-      ],
-      ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
-      size: "XL Size",
-      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
       inStock: true,
     }
   ];

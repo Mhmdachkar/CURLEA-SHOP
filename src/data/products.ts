@@ -14,6 +14,13 @@ export interface Product {
   inStock?: boolean;
   video?: string;
   images?: string[];
+  sizeOptions?: {
+    [key: string]: {
+      price: string;
+      image: string;
+      description: string[];
+    };
+  };
 }
 
 export const products: Product[] = [
@@ -49,151 +56,6 @@ export const products: Product[] = [
           ]
         },
   {
-    id: "1",
-    name: "Hydrating Argan Oil Serum",
-    price: "€42.00",
-    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&h=600&fit=crop",
-    category: "Serum",
-    hairType: "All Types",
-    description: [
-      "Enhances natural curls and shine",
-      "Lightweight hydration without residue",
-      "Sulfate-free and paraben-free formula",
-      "Luxurious texture with instant absorption",
-      "Suitable for all hair types",
-    ],
-    ingredients: ["Argan Oil", "Keratin", "Vitamin E", "Natural Oils"],
-    size: "100ml",
-    inStock: true,
-  },
-  {
-    id: "2",
-    name: "Curl Defining Cream",
-    price: "€38.00",
-    image: "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=600&h=600&fit=crop",
-    category: "Styling",
-    hairType: "Curly",
-    featured: true,
-    description: [
-      "Defines and enhances natural curl pattern",
-      "Provides long-lasting hold without stiffness",
-      "Moisturizes while styling",
-      "Reduces frizz and flyaways",
-      "Lightweight, non-greasy formula",
-    ],
-    ingredients: ["Shea Butter", "Coconut Oil", "Aloe Vera", "Natural Gums"],
-    size: "150ml",
-    inStock: true,
-  },
-  {
-    id: "3",
-    name: "Intensive Hair Mask",
-    price: "€45.00",
-    image: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=600&h=600&fit=crop",
-    category: "Treatment",
-    hairType: "All Types",
-    description: [
-      "Deep conditioning treatment for damaged hair",
-      "Repairs split ends and strengthens strands",
-      "Restores natural moisture balance",
-      "Leaves hair silky smooth and manageable",
-      "Recommended for weekly use",
-    ],
-    ingredients: ["Keratin", "Argan Oil", "Hyaluronic Acid", "Proteins"],
-    size: "250ml",
-    inStock: true,
-  },
-  {
-    id: "4",
-    name: "Smoothing Shampoo",
-    price: "€32.00",
-    image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&h=600&fit=crop",
-    category: "Shampoo",
-    hairType: "Straight",
-    description: [
-      "Gentle cleansing for all hair types",
-      "Sulfate-free formula preserves natural oils",
-      "Adds shine and smoothness",
-      "Safe for color-treated hair",
-      "Refreshing botanical scent",
-    ],
-    ingredients: ["Coconut Surfactants", "Aloe Vera", "Vitamin B5", "Natural Extracts"],
-    size: "300ml",
-    inStock: true,
-  },
-  {
-    id: "5",
-    name: "Nourishing Conditioner",
-    price: "€34.00",
-    image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&h=600&fit=crop",
-    category: "Conditioner",
-    hairType: "Wavy",
-    description: [
-      "Rich conditioning for wavy and curly hair",
-      "Detangles without weighing hair down",
-      "Enhances natural wave pattern",
-      "Provides thermal protection",
-      "Leaves hair soft and touchable",
-    ],
-    ingredients: ["Shea Butter", "Argan Oil", "Silk Proteins", "Panthenol"],
-    size: "300ml",
-    inStock: true,
-  },
-  {
-    id: "6",
-    name: "Volumizing Spray",
-    price: "€28.00",
-    image: "https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=600&h=600&fit=crop",
-    category: "Styling",
-    hairType: "All Types",
-    description: [
-      "Adds volume and body to fine hair",
-      "Lightweight formula doesn't weigh down",
-      "Provides flexible hold",
-      "Enhances natural texture",
-      "Easy to apply and style",
-    ],
-    ingredients: ["Sea Salt", "Aloe Vera", "Natural Polymers", "Vitamins"],
-    size: "200ml",
-    inStock: true,
-  },
-  {
-    id: "7",
-    name: "Repair & Shine Oil",
-    price: "€48.00",
-    image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&h=600&fit=crop",
-    category: "Serum",
-    hairType: "Curly",
-    description: [
-      "Intensive repair for damaged hair",
-      "Adds brilliant shine and luster",
-      "Protects against heat damage",
-      "Suitable for daily use",
-      "Non-greasy, fast-absorbing formula",
-    ],
-    ingredients: ["Argan Oil", "Jojoba Oil", "Vitamin E", "Antioxidants"],
-    size: "50ml",
-    inStock: true,
-  },
-  {
-    id: "8",
-    name: "Deep Cleanse Shampoo",
-    price: "€35.00",
-    image: "https://images.unsplash.com/photo-1570554886111-e80fcca6a029?w=600&h=600&fit=crop",
-    category: "Shampoo",
-    hairType: "All Types",
-    description: [
-      "Deep cleansing for product buildup",
-      "Removes impurities and excess oils",
-      "Refreshes scalp and hair",
-      "Safe for all hair types",
-      "Recommended for weekly use",
-    ],
-    ingredients: ["Tea Tree Oil", "Mint Extract", "Natural Surfactants", "Botanicals"],
-    size: "300ml",
-    inStock: true,
-  },
-  {
     id: "curly-clip-1",
     name: "Curved Resin Hair Clip - Duckbill Grip & Strong Teeth",
     price: "€15.99",
@@ -210,12 +72,53 @@ export const products: Product[] = [
       "Suitable for women and girls of all ages",
       "Available in colorful options and customized sizes",
       "Versatile accessory for various hair styling needs",
-      "Sold as complete set - includes 9 pieces total",
-      "Full collection provides variety for all styling needs"
+      "Choose from 9-piece complete set or 4-piece sets with different styles"
     ],
     ingredients: ["High-Quality Resin", "Durable Plastic", "Strong Grip Teeth"],
     size: "9-Piece Set",
     inStock: true,
+    sizeOptions: {
+      "9-piece-complete": {
+        price: "€15.99",
+        image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+        description: [
+          "Complete 9-piece set with all clip sizes and styles",
+          "Perfect for comprehensive hair styling needs",
+          "Includes various sizes for different hair types",
+          "Best value for money option"
+        ]
+      },
+      "4-piece-type1": {
+        price: "€8.99",
+        image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
+        description: [
+          "4-piece set - Type 1 style",
+          "Specific clip designs for targeted styling",
+          "Ideal for specific hair styling preferences",
+          "Compact set for focused needs"
+        ]
+      },
+      "4-piece-type2": {
+        price: "€8.99",
+        image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
+        description: [
+          "4-piece set - Type 2 style",
+          "Different clip designs for varied styling",
+          "Perfect for specific styling requirements",
+          "Compact set with unique designs"
+        ]
+      },
+      "4-piece-type3": {
+        price: "€8.99",
+        image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
+        description: [
+          "4-piece set - Type 3 style",
+          "Specialized clip designs for unique styling",
+          "Great for specific hair styling needs",
+          "Compact set with distinctive styles"
+        ]
+      }
+    }
   },
   {
     id: "curly-scarf-1",
@@ -302,12 +205,53 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
         "Suitable for women and girls of all ages",
         "Available in colorful options and customized sizes",
         "Versatile accessory for various hair styling needs",
-        "Sold as complete set - includes 9 pieces total",
-        "Full collection provides variety for all styling needs"
+        "Choose from 9-piece complete set or 4-piece sets with different styles"
       ],
       ingredients: ["High-Quality Resin", "Durable Plastic", "Strong Grip Teeth"],
       size: "9-Piece Set",
       inStock: true,
+      sizeOptions: {
+        "9-piece-complete": {
+          price: "€15.99",
+          image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+          description: [
+            "Complete 9-piece set with all clip sizes and styles",
+            "Perfect for comprehensive hair styling needs",
+            "Includes various sizes for different hair types",
+            "Best value for money option"
+          ]
+        },
+        "4-piece-type1": {
+          price: "€8.99",
+          image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
+          description: [
+            "4-piece set - Type 1 style",
+            "Specific clip designs for targeted styling",
+            "Ideal for specific hair styling preferences",
+            "Compact set for focused needs"
+          ]
+        },
+        "4-piece-type2": {
+          price: "€8.99",
+          image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
+          description: [
+            "4-piece set - Type 2 style",
+            "Different clip designs for varied styling",
+            "Perfect for specific styling requirements",
+            "Compact set with unique designs"
+          ]
+        },
+        "4-piece-type3": {
+          price: "€8.99",
+          image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
+          description: [
+            "4-piece set - Type 3 style",
+            "Specialized clip designs for unique styling",
+            "Great for specific hair styling needs",
+            "Compact set with distinctive styles"
+          ]
+        }
+      }
     },
     {
     id: "curly-scarf-1",
@@ -353,6 +297,30 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       ],
       ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
       size: "16-Piece Set",
+      inStock: true,
+    },
+    {
+      id: "heatless-6",
+      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: true,
+      description: [
+        "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine",
+        "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
+        "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
+        "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
+        "This luxurious sleep cap ensures maximum comfort all night long",
+        "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
+        "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
+        "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
+        "Upgrade your hair care regimen with the CURLEA Reversible Bonnet - an elegant addition to your bedtime attire"
+      ],
+      ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
+      size: "XL Size",
+      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
       inStock: true,
     }
   ];

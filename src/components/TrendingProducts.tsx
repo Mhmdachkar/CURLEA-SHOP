@@ -41,13 +41,13 @@ export const TrendingProducts = () => {
   };
 
   return (
-    <section ref={ref} className="py-12 sm:py-16 lg:py-20 xl:py-24 container-fluid bg-background">
+    <section ref={ref} className="py-8 sm:py-12 lg:py-16 container-fluid bg-background">
       <div className="max-w-7xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="fluid-text-3xl sm:fluid-text-4xl lg:fluid-text-5xl font-bold text-center mb-8 sm:mb-12 lg:mb-16"
+          className="fluid-text-3xl sm:fluid-text-4xl lg:fluid-text-5xl font-bold text-center mb-6 sm:mb-8 lg:mb-10"
         >
           Trending Now
         </motion.h2>

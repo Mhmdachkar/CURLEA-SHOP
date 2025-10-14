@@ -49,6 +49,11 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         <p className="text-xs text-muted-foreground mt-1">
           {item.category} • {item.hairType}
         </p>
+        {item.selectedSize && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Size: <span className="font-medium text-primary">{item.size}</span>
+          </p>
+        )}
         <p className="text-sm font-semibold text-primary mt-1">
           {item.price}
         </p>
