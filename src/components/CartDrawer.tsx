@@ -17,6 +17,80 @@ export const CartDrawer = () => {
     return `€${price.toFixed(2)}`;
   };
 
+  const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {
+    updateQuantity(item.id, newQuantity, item.selectedColor, item.selectedSize);
+    
+    // Track analytics
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(item.price.replace('€', ''));
+      (window as any).analytics.trackCart('update', {
+        product_id: item.id,
+        title: item.name,
+        price: priceNumber,
+        quantity: newQuantity,
+        variant_id: item.selectedSize || item.selectedColor || undefined,
+        variant_title: item.selectedSize || item.selectedColor || undefined,
+        total_value: priceNumber * newQuantity,
+        cart_total: calculateTotal(),
+      });
+    }
+  };
+
+  const handleRemoveFromCart = (item: CartItem) => {
+    const priceNumber = parseFloat(item.price.replace('€', ''));
+    const newCartTotal = calculateTotal() - (priceNumber * item.quantity);
+    
+    removeFromCart(item.id, item.selectedColor, item.selectedSize);
+    
+    // Track analytics
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      (window as any).analytics.trackCart('remove', {
+        product_id: item.id,
+        title: item.name,
+        price: priceNumber,
+        quantity: item.quantity,
+        variant_id: item.selectedSize || item.selectedColor || undefined,
+        variant_title: item.selectedSize || item.selectedColor || undefined,
+        cart_total: newCartTotal,
+      });
+    }
+  };
+
+  const handleCheckout = () => {
+    // Track checkout start
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      (window as any).analytics.trackCart('checkout_start', {
+        cart_total: calculateTotal(),
+        items_count: state.items.reduce((total, item) => total + item.quantity, 0),
+      });
+    }
+    
+    // Note: In production, this would redirect to actual checkout page
+    alert('Checkout functionality coming soon!');
+  };
+
+  const handleClearCart = () => {
+    if (confirm('Are you sure you want to clear your cart?')) {
+      // Track each removal for analytics before clearing
+      state.items.forEach(item => {
+        if (typeof window !== 'undefined' && (window as any).analytics) {
+          const priceNumber = parseFloat(item.price.replace('€', ''));
+          (window as any).analytics.trackCart('remove', {
+            product_id: item.id,
+            title: item.name,
+            price: priceNumber,
+            quantity: item.quantity,
+            variant_id: item.selectedSize || item.selectedColor || undefined,
+            variant_title: item.selectedSize || item.selectedColor || undefined,
+            cart_total: 0,
+          });
+        }
+      });
+      
+      clearCart();
+    }
+  };
+
   return (
     <AnimatePresence>
       {state.isOpen && (
@@ -92,21 +166,21 @@ export const CartDrawer = () => {
                       <div className="flex flex-col items-end gap-2">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
                             className="w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-100 transition-colors"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="w-8 text-center text-sm">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
                             className="w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-100 transition-colors"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => handleRemoveFromCart(item)}
                           className="text-xs text-red-600 hover:text-red-800 transition-colors"
                         >
                           Remove
@@ -127,11 +201,14 @@ export const CartDrawer = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <button className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                  <button 
+                    onClick={handleCheckout}
+                    className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                  >
                     Checkout
                   </button>
                   <button
-                    onClick={clearCart}
+                    onClick={handleClearCart}
                     className="w-full text-gray-600 py-2 rounded-lg font-medium hover:text-gray-800 transition-colors"
                   >
                     Clear Cart

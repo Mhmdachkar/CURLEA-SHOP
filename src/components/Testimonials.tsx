@@ -1,6 +1,204 @@
-import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import styled from "styled-components";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Star } from "lucide-react";
+
+/* ============================================
+   STYLED COMPONENTS - MOBILE FIRST
+   ============================================ */
+
+const Section = styled.section`
+  position: relative;
+  padding: ${({ theme }) => theme.spacing['2xl']} ${({ theme }) => theme.spacing.lg};
+  background-color: ${({ theme }) => theme.colors.muted};
+  opacity: 0.3;
+  overflow: hidden;
+  width: 100%;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing['3xl']} ${({ theme }) => theme.spacing.xl};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    padding: ${({ theme }) => theme.spacing['4xl']} ${({ theme }) => theme.spacing['2xl']};
+  }
+`;
+
+const Container = styled(motion.div)`
+  max-width: ${({ theme }) => theme.breakpoints.desktopLarge}px;
+  margin: 0 auto;
+  width: 100%;
+`;
+
+const Header = styled(motion.div)`
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    margin-bottom: ${({ theme }) => theme.spacing['3xl']};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    margin-bottom: ${({ theme }) => theme.spacing['4xl']};
+  }
+`;
+
+const Title = styled.h2`
+  font-family: ${({ theme }) => theme.typography.fontFamily.serif};
+  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.foreground};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    font-size: ${({ theme }) => theme.typography.fontSize['5xl']};
+    margin-bottom: ${({ theme }) => theme.spacing.lg};
+  }
+`;
+
+const Subtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  max-width: 90%;
+  margin: 0 auto;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+    max-width: 40rem;
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    grid-template-columns: repeat(3, 1fr);
+    gap: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const TestimonialCard = styled(motion.div)`
+  background-color: ${({ theme }) => theme.colors.card};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  box-shadow: ${({ theme }) => theme.shadows.elegant};
+  transition: ${({ theme }) => theme.transitions.smooth};
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: ${({ theme }) => theme.shadows.lift};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing.xl};
+    border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  }
+`;
+
+const StarsContainer = styled.div`
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    margin-bottom: ${({ theme }) => theme.spacing.lg};
+  }
+`;
+
+const StarIcon = styled(Star)`
+  width: 1rem;
+  height: 1rem;
+  fill: ${({ theme }) => theme.colors.accent};
+  color: ${({ theme }) => theme.colors.accent};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+`;
+
+const Content = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  font-style: italic;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  flex-grow: 1;
+
+  &::before {
+    content: '"';
+  }
+
+  &::after {
+    content: '"';
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+    margin-bottom: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const AuthorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const Avatar = styled(motion.img)`
+  width: 3rem;
+  height: 3rem;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  object-fit: cover;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+`;
+
+const AuthorInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+`;
+
+const AuthorName = styled.div`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.foreground};
+  letter-spacing: 0.025em;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
+const AuthorRole = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
+`;
+
+/* ============================================
+   DATA
+   ============================================ */
 
 const testimonials = [
   {
@@ -26,6 +224,10 @@ const testimonials = [
   },
 ];
 
+/* ============================================
+   TESTIMONIALS COMPONENT
+   ============================================ */
+
 export const Testimonials = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -36,64 +238,54 @@ export const Testimonials = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={sectionRef} className="py-32 bg-muted/30 relative overflow-hidden">
-      <motion.div 
-        className="max-w-7xl mx-auto px-6"
-        style={{ opacity }}
-      >
-        <motion.div
-          className="text-center mb-20"
+    <Section ref={sectionRef}>
+      <Container style={{ opacity }}>
+        <Header
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-4">
-            Loved by Thousands
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <Title>Loved by Thousands</Title>
+          <Subtitle>
             Discover why our community continues to choose Curlea for their haircare journey
-          </p>
-        </motion.div>
+          </Subtitle>
+        </Header>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <Grid>
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <TestimonialCard
               key={testimonial.name}
-              className="bg-card p-8 rounded-2xl shadow-elegant hover-lift"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -8 }}
             >
-              <div className="flex gap-1 mb-6">
+              <StarsContainer>
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-accent text-accent" />
+                  <StarIcon key={i} />
                 ))}
-              </div>
+              </StarsContainer>
               
-              <p className="text-muted-foreground mb-8 leading-relaxed italic">
-                "{testimonial.content}"
-              </p>
+              <Content>{testimonial.content}</Content>
               
-              <div className="flex items-center gap-4">
-                <motion.img
+              <AuthorContainer>
+                <Avatar
                   src={testimonial.image}
                   alt={testimonial.name}
-                  className="w-12 h-12 rounded-full object-cover"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
                 />
-                <div>
-                  <div className="font-semibold tracking-wide">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                </div>
-              </div>
-            </motion.div>
+                <AuthorInfo>
+                  <AuthorName>{testimonial.name}</AuthorName>
+                  <AuthorRole>{testimonial.role}</AuthorRole>
+                </AuthorInfo>
+              </AuthorContainer>
+            </TestimonialCard>
           ))}
-        </div>
-      </motion.div>
-    </section>
+        </Grid>
+      </Container>
+    </Section>
   );
 };

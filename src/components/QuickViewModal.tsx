@@ -10,7 +10,7 @@ interface QuickViewModalProps {
 }
 
 export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
-  const { addToCart, openCart } = useCart();
+  const { addToCart, openCart, state: cartState } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
 
@@ -44,9 +44,32 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   const handleAddToCart = () => {
     if (!product) return;
     
+    // Calculate current cart total
+    const currentCartTotal = cartState.items.reduce((total, item) => {
+      const price = parseFloat(item.price.replace('€', ''));
+      return total + (price * item.quantity);
+    }, 0);
+    
     // Add multiple quantities to cart
     for (let i = 0; i < quantity; i++) {
       addToCart(product);
+    }
+    
+    // Track add to cart event
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(product.price.replace('€', ''));
+      const newCartTotal = currentCartTotal + (priceNumber * quantity);
+      
+      (window as any).analytics.trackCart('add', {
+        product_id: product.id,
+        title: product.name,
+        price: priceNumber,
+        quantity: quantity,
+        variant_id: undefined,
+        variant_title: undefined,
+        total_value: priceNumber * quantity,
+        cart_total: newCartTotal,
+      });
     }
     
     setIsAdded(true);

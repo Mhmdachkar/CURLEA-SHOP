@@ -1,8 +1,234 @@
 import { useState, useEffect } from "react";
-import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Search, User, ShoppingBag } from "lucide-react";
+import styled from "styled-components";
+import { motion, useMotionValue, AnimatePresence } from "framer-motion";
+import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
+
+/* ============================================
+   STYLED COMPONENTS - MOBILE FIRST
+   ============================================ */
+
+const NavContainer = styled(motion.nav)<{ $isScrolled: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: ${({ theme }) => theme.zIndex.sticky};
+  width: 100%;
+  transition: ${({ theme }) => theme.transitions.smooth};
+  background-color: ${({ $isScrolled, theme }) =>
+    $isScrolled ? `${theme.colors.background}f2` : 'transparent'};
+  backdrop-filter: ${({ $isScrolled }) => ($isScrolled ? 'blur(12px)' : 'none')};
+  box-shadow: ${({ $isScrolled, theme }) =>
+    $isScrolled ? theme.shadows.md : 'none'};
+`;
+
+const NavInner = styled.div`
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing.lg};
+    gap: ${({ theme }) => theme.spacing.lg};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    max-width: ${({ theme }) => theme.breakpoints.desktopLarge}px;
+    padding: ${({ theme }) => theme.spacing.xl} ${({ theme }) => theme.spacing['2xl']};
+  }
+`;
+
+const Logo = styled(motion.a)<{ $isScrolled: boolean }>`
+  font-family: ${({ theme }) => theme.typography.fontFamily.serif};
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
+  color: ${({ $isScrolled, theme }) =>
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: ${({ theme }) => theme.touchTargets.min};
+  min-height: ${({ theme }) => theme.touchTargets.min};
+  text-shadow: ${({ $isScrolled }) =>
+    $isScrolled ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.3)'};
+  z-index: ${({ theme }) => theme.zIndex.sticky + 1};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  }
+`;
+
+const DesktopNav = styled.div<{ $isScrolled: boolean }>`
+  display: none;
+  
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.lg};
+    position: relative;
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.foreground : '#ffffff'};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    gap: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
+  background: none;
+  border: none;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: inherit;
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  position: relative;
+  transition: ${({ theme }) => theme.transitions.fast};
+  text-shadow: ${({ $isScrolled }) =>
+    $isScrolled ? 'none' : '0 1px 4px rgba(0, 0, 0, 0.2)'};
+  white-space: nowrap;
+
+  &:hover {
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.accent : '#ffffff'};
+    opacity: 1;
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
+const IconsContainer = styled.div<{ $isScrolled: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  color: ${({ $isScrolled, theme }) =>
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
+  z-index: ${({ theme }) => theme.zIndex.sticky + 1};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    gap: ${({ theme }) => theme.spacing.md};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    gap: ${({ theme }) => theme.spacing.lg};
+  }
+`;
+
+const IconButton = styled(motion.button)`
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing.sm};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: ${({ theme }) => theme.touchTargets.min};
+  min-height: ${({ theme }) => theme.touchTargets.min};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  transition: ${({ theme }) => theme.transitions.fast};
+  position: relative;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+
+    @media ${({ theme }) => theme.mediaQueries.tablet} {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+`;
+
+const CartBadge = styled(motion.div)`
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryForeground};
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  padding: 0 0.25rem;
+`;
+
+const HamburgerButton = styled(IconButton)`
+  display: flex;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    display: none;
+  }
+`;
+
+const MobileMenu = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: ${({ theme }) => theme.colors.background};
+  z-index: ${({ theme }) => theme.zIndex.sticky};
+  padding: ${({ theme }) => theme.spacing['2xl']} ${({ theme }) => theme.spacing.lg};
+  padding-top: 6rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+`;
+
+const MobileMenuList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  width: 100%;
+`;
+
+const MobileMenuLink = styled(motion.button)`
+  background: none;
+  border: none;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.foreground};
+  text-align: left;
+  padding: ${({ theme }) => theme.spacing.md} 0;
+  cursor: pointer;
+  min-height: ${({ theme }) => theme.touchTargets.comfortable};
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  transition: ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.accent};
+    padding-left: ${({ theme }) => theme.spacing.md};
+  }
+`;
+
+/* ============================================
+   NAVIGATION DATA
+   ============================================ */
 
 const navLinks = [
   { label: "Shop", href: "/collection" },
@@ -11,192 +237,26 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-export const Navbar = () => {
-  const navigate = useNavigate();
-  const { itemCount, openCart } = useCart();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+/* ============================================
+   MAGNETIC BUTTON COMPONENT
+   ============================================ */
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+interface MagneticButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+}
 
-  return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "bg-background/95 backdrop-blur-md shadow-md"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="container-fluid py-3 sm:py-4 flex items-center justify-between">
-        {/* Logo */}
-        <motion.a
-          href="/"
-          className={`fluid-text-2xl sm:fluid-text-3xl font-bold tracking-tight touch-target ${
-            isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
-          }`}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 400 }}
-        >
-          Curlea
-        </motion.a>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <motion.button
-            className={`p-2 rounded-lg transition-colors touch-target ${
-              isScrolled ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <motion.div
-              animate={{ rotate: isMobileMenuOpen ? 45 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </motion.div>
-          </motion.button>
-        </div>
-
-        {/* Center Navigation */}
-        <div
-          className={`hidden md:flex items-center gap-4 lg:gap-8 relative ${
-            isScrolled ? "text-foreground" : "text-white drop-shadow"
-          }`}
-        >
-          {navLinks.map((link, index) => (
-            <motion.div
-              key={link.label}
-              className={`relative text-sm font-medium tracking-wide transition-colors cursor-pointer ${
-                isScrolled ? "hover:text-accent" : "hover:text-white"
-              } ${hoveredIndex === index ? "opacity-100" : "opacity-90 hover:opacity-100"}`}
-              onClick={() => {
-                if (link.href.startsWith("/")) {
-                  navigate(link.href);
-                } else {
-                  window.location.hash = link.href;
-                }
-              }}
-              onHoverStart={() => {
-                setHoveredLink(link.label);
-                setHoveredIndex(index);
-              }}
-              onHoverEnd={() => {
-                setHoveredLink(null);
-                setHoveredIndex(null);
-              }}
-              whileHover={{ y: -2 }}
-            >
-              {link.label}
-            </motion.div>
-          ))}
-          
-          {/* Animated Underline */}
-          {hoveredIndex !== null && (
-            <motion.div
-              layoutId="nav-underline"
-              className={`absolute bottom-0 h-0.5 ${
-                isScrolled ? "bg-accent" : "bg-white"
-              }`}
-              initial={false}
-              transition={{
-                type: "spring",
-                stiffness: 380,
-                damping: 30,
-              }}
-              style={{
-                left: `${hoveredIndex * 25}%`,
-                width: "15%",
-              }}
-            />
-          )}
-        </div>
-
-        {/* Right Icons */}
-        <div className={`flex items-center gap-2 sm:gap-3 lg:gap-6 ${isScrolled ? "text-foreground" : "text-white drop-shadow"}`}>
-          <MagneticButton>
-            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-          </MagneticButton>
-          <MagneticButton>
-            <User className="w-4 h-4 sm:w-5 sm:h-5" />
-          </MagneticButton>
-          <MagneticButton onClick={openCart}>
-            <div className="relative">
-              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
-              <AnimatePresence>
-                {itemCount > 0 && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold"
-                  >
-                    {itemCount > 99 ? '99+' : itemCount}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </MagneticButton>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden bg-background/95 backdrop-blur-md border-t border-border/20"
-          >
-            <div className="px-4 py-4 space-y-3">
-              {navLinks.map((link, index) => (
-                <motion.a
-                  key={link.label}
-                  href={link.href}
-                  className="block fluid-text-lg font-medium text-foreground hover:text-accent transition-colors py-3 touch-target"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
-  );
-};
-
-// Magnetic Button Component
-const MagneticButton = ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => {
+const MagneticButton = ({ children, onClick }: MagneticButtonProps) => {
+  const { isMobile, isTablet } = useBreakpoint();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Disable magnetic effect on mobile/tablet for better performance
+  const isMagneticEnabled = !isMobile && !isTablet;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isMagneticEnabled) return;
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -206,22 +266,182 @@ const MagneticButton = ({ children, onClick }: { children: React.ReactNode; onCl
   };
 
   const handleMouseLeave = () => {
+    if (!isMagneticEnabled) return;
     x.set(0);
     y.set(0);
   };
 
   return (
-    <motion.div
-      className="cursor-pointer relative"
+    <IconButton
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      style={{ x, y }}
+      style={isMagneticEnabled ? { x, y } : {}}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 300, damping: 15 }}
     >
       {children}
-    </motion.div>
+    </IconButton>
+  );
+};
+
+/* ============================================
+   NAVBAR COMPONENT
+   ============================================ */
+
+export const Navbar = () => {
+  const navigate = useNavigate();
+  const { itemCount, openCart } = useCart();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close mobile menu on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  const handleNavClick = (href: string) => {
+    setIsMobileMenuOpen(false);
+    
+    if (href.startsWith("/")) {
+      navigate(href);
+    } else if (href.startsWith("#")) {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  return (
+    <>
+      <NavContainer
+        $isScrolled={isScrolled}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <NavInner>
+          {/* Logo */}
+          <Logo
+            $isScrolled={isScrolled}
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            Curlea
+          </Logo>
+
+          {/* Desktop Navigation */}
+          <DesktopNav $isScrolled={isScrolled}>
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.label}
+                $isScrolled={isScrolled}
+                onClick={() => handleNavClick(link.href)}
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </DesktopNav>
+
+          {/* Right Icons */}
+          <IconsContainer $isScrolled={isScrolled}>
+            <MagneticButton>
+              <Search />
+            </MagneticButton>
+            <MagneticButton>
+              <User />
+            </MagneticButton>
+            <MagneticButton onClick={openCart}>
+              <>
+                <ShoppingBag />
+                <AnimatePresence>
+                  {itemCount > 0 && (
+                    <CartBadge
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 500 }}
+                    >
+                      {itemCount > 99 ? '99+' : itemCount}
+                    </CartBadge>
+                  )}
+                </AnimatePresence>
+              </>
+            </MagneticButton>
+            <HamburgerButton
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              whileTap={{ scale: 0.95 }}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </HamburgerButton>
+          </IconsContainer>
+        </NavInner>
+      </NavContainer>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <MobileMenu
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MobileMenuList>
+              {navLinks.map((link, index) => (
+                <MobileMenuLink
+                  key={link.label}
+                  onClick={() => handleNavClick(link.href)}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {link.label}
+                </MobileMenuLink>
+              ))}
+            </MobileMenuList>
+          </MobileMenu>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

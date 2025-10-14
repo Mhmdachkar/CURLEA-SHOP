@@ -1,8 +1,187 @@
-import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
+import styled from "styled-components";
+import { motion, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import categoryImage from "@/assets/category-curly.png";
 import dreamcurlHeroImage from "@/assets/hero-2.png";
+
+/* ============================================
+   STYLED COMPONENTS - MOBILE FIRST
+   ============================================ */
+
+const Section = styled.section`
+  padding: ${({ theme }) => theme.spacing['2xl']} 0;
+  width: 100%;
+  overflow: hidden;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing['3xl']} 0;
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    padding: ${({ theme }) => theme.spacing['4xl']} 0;
+  }
+`;
+
+const Grid = styled(motion.div)`
+  display: grid;
+  grid-template-columns: 1fr;
+  height: clamp(40vh, 50vh, 60vh);
+  width: 100%;
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    grid-template-columns: repeat(3, 1fr);
+    height: clamp(50vh, 60vh, 70vh);
+  }
+`;
+
+const CategoryCard = styled(motion.div)<{ $comingSoon?: boolean }>`
+  position: relative;
+  overflow: hidden;
+  cursor: ${({ $comingSoon }) => ($comingSoon ? 'default' : 'pointer')};
+  width: 100%;
+  height: 100%;
+`;
+
+const ImageContainer = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const CategoryImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+`;
+
+const GradientOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    transparent 100%
+  );
+`;
+
+const ComingSoonOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ComingSoonBadge = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const PulsingDot = styled(motion.div)`
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #ffffff;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+`;
+
+const ComingSoonText = styled.span`
+  color: #ffffff;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
+const TextOverlay = styled(motion.div)<{ $comingSoon?: boolean }>`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: ${({ theme }) => theme.spacing.md};
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing.lg};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    padding: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const CategoryTitle = styled.h3<{ $comingSoon?: boolean }>`
+  font-family: ${({ theme }) => theme.typography.fontFamily.serif};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  text-align: center;
+  color: ${({ $comingSoon }) => ($comingSoon ? 'rgba(255, 255, 255, 0.7)' : '#ffffff')};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+    margin-bottom: ${({ theme }) => theme.spacing.md};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktopLarge} {
+    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  }
+`;
+
+const ExploreButton = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: rgba(255, 255, 255, 0.8);
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  min-height: ${({ theme }) => theme.touchTargets.min};
+  justify-content: center;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #ffffff;
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
+const HoverBorder = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  border: 4px solid ${({ theme }) => theme.colors.accent};
+  pointer-events: none;
+`;
+
+/* ============================================
+   DATA
+   ============================================ */
 
 const categories = [
   {
@@ -28,151 +207,148 @@ const categories = [
   },
 ];
 
+/* ============================================
+   CATEGORY SECTION COMPONENT
+   ============================================ */
+
 export const CategorySection = () => {
   const navigate = useNavigate();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const { isMobile, isTablet } = useBreakpoint();
 
   const handleCategoryClick = (categorySlug: string, comingSoon: boolean) => {
     if (!comingSoon) {
       navigate(`/category/${categorySlug}`);
     }
-    // If coming soon, do nothing - just show the elegant state
   };
 
+  // Disable hover effects on mobile/tablet for performance
+  const shouldUseHoverEffects = !isMobile && !isTablet;
+
   return (
-    <section ref={ref} className="py-12 sm:py-16 lg:py-20 xl:py-24">
-      <motion.div
+    <Section ref={ref}>
+      <Grid
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 0.8 }}
-        className="grid grid-cols-1 md:grid-cols-3 h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh]"
       >
         {categories.map((category, index) => (
-          <motion.div
+          <CategoryCard
             key={category.id}
+            $comingSoon={category.comingSoon}
             initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: index * 0.2 }}
-            className="relative overflow-hidden cursor-pointer group"
-            onMouseEnter={() => setHoveredId(category.id)}
-            onMouseLeave={() => setHoveredId(null)}
+            onMouseEnter={() => shouldUseHoverEffects && setHoveredId(category.id)}
+            onMouseLeave={() => shouldUseHoverEffects && setHoveredId(null)}
             onClick={() => handleCategoryClick(category.slug, category.comingSoon)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={shouldUseHoverEffects && !category.comingSoon ? { scale: 1.02 } : {}}
+            whileTap={!category.comingSoon ? { scale: 0.98 } : {}}
           >
             {/* Image with Ken Burns Effect */}
-            <motion.div
-              className="absolute inset-0"
-              animate={{
+            <ImageContainer
+              animate={shouldUseHoverEffects ? {
                 scale: hoveredId === category.id ? 1.1 : 1,
                 opacity: hoveredId !== null && hoveredId !== category.id ? 0.4 : 1,
-              }}
+              } : {}}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <img
+              <CategoryImage
                 src={category.image}
                 alt={category.name}
-                className="w-full h-full object-cover"
+                loading="lazy"
               />
-            </motion.div>
+            </ImageContainer>
 
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            <GradientOverlay />
 
             {/* Coming Soon Overlay */}
             {category.comingSoon && (
-              <motion.div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+              <ComingSoonOverlay
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="text-center">
-                  <motion.div
-                    className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-6 py-3 border border-white/30"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                  >
-                    <motion.div
-                      className="w-2 h-2 bg-white rounded-full"
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                        opacity: [0.7, 1, 0.7]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    />
-                    <span className="text-white font-semibold text-sm sm:text-base">Coming Soon</span>
-                    <motion.div
-                      className="w-2 h-2 bg-white rounded-full"
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                        opacity: [0.7, 1, 0.7]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 0.3
-                      }}
-                    />
-                  </motion.div>
-                </div>
-              </motion.div>
+                <ComingSoonBadge
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <PulsingDot
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.7, 1, 0.7]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  <ComingSoonText>Coming Soon</ComingSoonText>
+                  <PulsingDot
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.7, 1, 0.7]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.3
+                    }}
+                  />
+                </ComingSoonBadge>
+              </ComingSoonOverlay>
             )}
 
             {/* Text Overlay */}
-            <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8"
-              animate={{
+            <TextOverlay
+              $comingSoon={category.comingSoon}
+              animate={shouldUseHoverEffects ? {
                 y: hoveredId === category.id ? -10 : 0,
-              }}
+              } : {}}
               transition={{ duration: 0.4 }}
             >
-              <h3 className={`fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl font-bold text-center mb-3 sm:mb-4 ${
-                category.comingSoon ? 'text-white/70' : 'text-white'
-              }`}>
+              <CategoryTitle $comingSoon={category.comingSoon}>
                 {category.name}
-              </h3>
+              </CategoryTitle>
               
               {/* Explore Button - Only show if not coming soon */}
               {!category.comingSoon && (
-                <motion.div
-                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors touch-target"
+                <ExploreButton
                   initial={{ opacity: 0, y: 10 }}
-                  animate={{ 
+                  animate={shouldUseHoverEffects ? { 
                     opacity: hoveredId === category.id ? 1 : 0.7,
                     y: hoveredId === category.id ? 0 : 10
-                  }}
+                  } : { opacity: 0.7, y: 10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <span className="fluid-text-sm font-medium">Explore Collection</span>
-                  <motion.div
-                    animate={{ x: hoveredId === category.id ? 5 : 0 }}
+                  <span>Explore Collection</span>
+                  <motion.span
+                    animate={shouldUseHoverEffects && hoveredId === category.id ? { x: 5 } : { x: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     →
-                  </motion.div>
-                </motion.div>
+                  </motion.span>
+                </ExploreButton>
               )}
-            </motion.div>
+            </TextOverlay>
 
             {/* Hover Border */}
-            <motion.div
-              className="absolute inset-0 border-4 border-accent pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: hoveredId === category.id ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.div>
+            {shouldUseHoverEffects && (
+              <HoverBorder
+                initial={{ opacity: 0 }}
+                animate={{ opacity: hoveredId === category.id ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+          </CategoryCard>
         ))}
-      </motion.div>
-    </section>
+      </Grid>
+    </Section>
   );
 };

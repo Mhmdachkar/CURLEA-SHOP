@@ -19,7 +19,7 @@ import { useRealtimeContext } from "@/contexts/RealtimeContext";
 export const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, openCart } = useCart();
+  const { addToCart, openCart, state: cartState } = useCart();
   
   // Real-time context for global state
   const { setCurrentProduct, setSelectedColor: setGlobalColor, setSelectedQuantity: setGlobalQuantity } = useRealtimeContext();
@@ -245,6 +245,12 @@ export const ProductDetailPage = () => {
       hairType: product.hairType,
     };
 
+    // Calculate current cart total
+    const currentCartTotal = cartState.items.reduce((total, item) => {
+      const price = parseFloat(item.price.replace('€', ''));
+      return total + (price * item.quantity);
+    }, 0);
+    
     // Add multiple quantities to cart
     for (let i = 0; i < quantity; i++) {
       addToCart(productToAdd);
@@ -259,6 +265,8 @@ export const ProductDetailPage = () => {
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
       const priceNumber = parseFloat(finalPrice.replace('€', ''));
+      const newCartTotal = currentCartTotal + (priceNumber * quantity);
+      
       (window as any).analytics.trackCart('add', {
         product_id: product.id,
         title: finalName,
@@ -267,6 +275,7 @@ export const ProductDetailPage = () => {
         variant_id: selectedSize || selectedColor || undefined,
         variant_title: selectedSize || selectedColor || undefined,
         total_value: priceNumber * quantity,
+        cart_total: newCartTotal,
       });
     }
     
@@ -1524,7 +1533,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "heatless-6",
       name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "â‚¬39.99",
+      price: "€39.99",
       image: product6Image,
       category: "Heatless Tools",
       hairType: "All Types",
@@ -1552,6 +1561,12 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
         "Remove bonnet gently in the morning",
         "Unwrap curlers if applicable and style as desired",
         "Enjoy preserved, frizz-free hair with enhanced shine"
+      ],
+      video: new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp4.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp4.webp', import.meta.url).href,
       ],
       inStock: true,
     }
@@ -1596,13 +1611,13 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     }
   }, [isInView, isVideoPlaying, product.id]);
 
-      // Check if it's a special product type
-      const isHeatlessProduct = product.id.startsWith('heatless-');
-      const isDreamCurlProduct = product.id.startsWith('dreamcurl-');
-      const isCurlyHairProduct = product.id.startsWith('curly-');
-      
-      // Import the appropriate video for special products
-    const specialVideo = isHeatlessProduct || isDreamCurlProduct
+  // Check if it's a special product type
+  const isHeatlessProduct = product.id.startsWith('heatless-');
+  const isDreamCurlProduct = product.id.startsWith('dreamcurl-');
+  const isCurlyHairProduct = product.id.startsWith('curly-');
+  
+  // Import the appropriate video for special products
+  const specialVideo = isHeatlessProduct || isDreamCurlProduct
       ? product.id === 'dreamcurl-original'
         ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href
         : product.id === 'dreamcurl-midi'
@@ -2649,8 +2664,8 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
   // Import images for Bonnet product
   const bonnetImages = [
     new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
-    new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp', import.meta.url).href,
-    new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp4.webp', import.meta.url).href,
+    new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp4.webp', import.meta.url).href,
   ];
 
   // Color-specific image mapping
@@ -3147,10 +3162,6 @@ const RealResultsSection = ({ product }: { product: Product }) => {
                 {/* Overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
-                {/* Success badge */}
-                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                  ✓ Real Result
-                </div>
               </div>
               
               {/* Caption */}

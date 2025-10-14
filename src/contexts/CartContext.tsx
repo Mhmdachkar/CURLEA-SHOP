@@ -20,8 +20,8 @@ interface CartState {
 
 type CartAction =
   | { type: 'ADD_TO_CART'; payload: CartItem }
-  | { type: 'REMOVE_FROM_CART'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'REMOVE_FROM_CART'; payload: { id: string; selectedColor?: string; selectedSize?: string } }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; selectedColor?: string; selectedSize?: string; quantity: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'TOGGLE_CART' }
   | { type: 'OPEN_CART' }
@@ -30,8 +30,8 @@ type CartAction =
 const CartContext = createContext<{
   state: CartState;
   addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (id: string, selectedColor?: string, selectedSize?: string) => void;
+  updateQuantity: (id: string, quantity: number, selectedColor?: string, selectedSize?: string) => void;
   clearCart: () => void;
   toggleCart: () => void;
   openCart: () => void;
@@ -68,14 +68,20 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'REMOVE_FROM_CART':
       return {
         ...state,
-        items: state.items.filter(item => item.id !== action.payload),
+        items: state.items.filter(item => 
+          !(item.id === action.payload.id && 
+            item.selectedColor === action.payload.selectedColor &&
+            item.selectedSize === action.payload.selectedSize)
+        ),
       };
 
     case 'UPDATE_QUANTITY':
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === action.payload.id
+          (item.id === action.payload.id &&
+           item.selectedColor === action.payload.selectedColor &&
+           item.selectedSize === action.payload.selectedSize)
             ? { ...item, quantity: action.payload.quantity }
             : item
         ).filter(item => item.quantity > 0),
@@ -123,17 +129,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (id: string) => {
+  const removeFromCart = (id: string, selectedColor?: string, selectedSize?: string) => {
     dispatch({
       type: 'REMOVE_FROM_CART',
-      payload: id,
+      payload: { id, selectedColor, selectedSize },
     });
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number, selectedColor?: string, selectedSize?: string) => {
     dispatch({
       type: 'UPDATE_QUANTITY',
-      payload: { id, quantity },
+      payload: { id, quantity, selectedColor, selectedSize },
     });
   };
 
