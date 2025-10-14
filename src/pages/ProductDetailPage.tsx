@@ -362,9 +362,38 @@ export const ProductDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 3D Background Effect - Matching Product Photo Style */}
+      <div className="fixed inset-0 -z-10">
+        {/* Base gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        {/* Floating geometric shapes for depth */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Large floating circles */}
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-3/4 -right-32 w-80 h-80 bg-gradient-to-br from-accent/5 to-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-muted/10 to-background/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+        
+        {/* Subtle grid pattern for texture */}
+        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }} />
+        </div>
+        
+        {/* Ambient lighting effects */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/3 to-transparent rounded-full blur-2xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-br from-accent/3 to-transparent rounded-full blur-2xl" />
+      </div>
+      
       <Navbar />
-      <div className="pt-24 pb-16">
+      <div className="pt-24 pb-16 relative z-10">
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
@@ -1063,17 +1092,28 @@ export const ProductDetailPage = () => {
             ) : (
             <motion.div
               key={`product-img-${product.id}`}
+              className="relative"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              <ProductImage
-              src={product.image}
-              alt={product.name}
-              className="w-full h-auto rounded-lg"
-                priority={true}
-                productId={product.id}
-            />
+              {/* Enhanced 3D container with depth */}
+              <div className="relative bg-white/90 dark:bg-white/10 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-white/30 dark:border-white/20">
+                {/* Inner glow effect */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
+                
+                {/* Product image with enhanced styling */}
+                <ProductImage
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-auto rounded-2xl shadow-xl"
+                  priority={true}
+                  productId={product.id}
+                />
+                
+                {/* Subtle border glow */}
+                <div className="absolute inset-2 rounded-2xl border border-white/50 dark:border-white/10 pointer-events-none" />
+              </div>
             </motion.div>
             )}
           </motion.div>
@@ -1253,10 +1293,6 @@ export const ProductDetailPage = () => {
         
         </div>
 
-        {/* Video Section - Show if product has video */}
-        {product.video && (
-          <RitualInMotionSection product={product} />
-        )}
 
         {/* Complete Your Routine Section */}
         {relatedProducts.length > 0 && (
@@ -1899,11 +1935,14 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="relative py-24 px-6 bg-background"
+      className="relative py-24 px-6"
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
     >
+      {/* Enhanced 3D section background */}
+      <div className="absolute inset-0 bg-white/80 dark:bg-white/5 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl" />
+      <div className="relative z-10">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-16"
@@ -2201,6 +2240,7 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </motion.section>
   );
