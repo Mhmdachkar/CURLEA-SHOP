@@ -326,9 +326,8 @@ const MobileMenuLink = styled(motion.button)`
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "Our Story", href: "#our-story" },
-  { label: "Collections", href: "#collections" },
-  { label: "Contact", href: "#contact" },
+  { label: "Heatless Hair Curling Rod", href: "/category/wavy" },
+  { label: "Curly Hair Collection", href: "/category/curly" },
 ];
 
 /* ============================================
