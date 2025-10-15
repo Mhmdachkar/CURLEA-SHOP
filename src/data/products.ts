@@ -177,36 +177,7 @@ export const products: Product[] = [
       new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
     ]
   },
-  {
-    id: "peau-de-soie-bonnet",
-    name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-    price: "€39.99",
-    image: new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
-    category: "Hair Accessories",
-    hairType: "All Types",
-    featured: true,
-    description: [
-      "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine",
-      "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
-      "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
-      "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
-      "This luxurious sleep cap ensures maximum comfort all night long",
-      "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
-      "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
-      "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
-      "Upgrade your hair care regimen with the CURLEA Reversible Bonnet - an elegant addition to your bedtime attire"
-    ],
-    ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
-    size: "XL Size",
-    colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
-    inStock: true,
-    video: new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href,
-    images: [
-      new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product6/latte&marchmello.webp4.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product6/olive&latte.webp4.webp', import.meta.url).href
-    ]
-  },
+  // Removed duplicate: peau-de-soie-bonnet (keep only curated curly collection version)
   {
     id: "curly-clip-1",
     name: "Curved Resin Hair Clip - Duckbill Grip & Strong Teeth",
@@ -465,30 +436,6 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       ],
       ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
       size: "16-Piece Set",
-      inStock: true,
-    },
-    {
-      id: "heatless-6",
-      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€39.99",
-      image: new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href,
-      category: "Hair Accessories",
-      hairType: "Curly",
-      featured: true,
-      description: [
-        "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine",
-        "This XL Overnight Bonnet fits even over our largest size JUMBO heatless curler and provides a protective barrier against breakage and frizz",
-        "Retains your hair's natural oils, resulting in healthy, shiny, and frizz-free hair each morning",
-        "Crafted from the finest vegan silk alternative french fabric known as Peau De Soie",
-        "This luxurious sleep cap ensures maximum comfort all night long",
-        "Fights frizz, infuses hair with moisture, preserves hairstyles, prevents bed head, and leaves your hair with a glossy shine",
-        "Suitable for all hair types, but especially beneficial for curly hair, thick hair, natural hair, or hair extensions",
-        "Wearing the Peau De Soie Bonnet overnight is a natural conditioning treatment that nourishes your hair",
-        "Upgrade your hair care regimen with the CURLEA Reversible Bonnet - an elegant addition to your bedtime attire"
-      ],
-      ingredients: ["Peau De Soie", "Vegan Silk Alternative", "French Fabric"],
-      size: "XL Size",
-      colors: ["CANDY & MARSHMALLOW", "LATTE & MARSHMALLOW", "OLIVE & LATTE"],
       inStock: true,
     }
   ];
