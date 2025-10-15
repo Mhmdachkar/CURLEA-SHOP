@@ -97,7 +97,7 @@ export const products: Product[] = [
       "The Perfect Middle Ground - DreamCurl™ Midi",
       "Ideal for medium-length hair that needs just the right amount of curl",
       "Not too big, not too small - just perfect for your styling needs",
-      "Available in 4 beautiful colors: Purple, Candy, Latte, Marshmallow",
+      "Available in 5 beautiful colors: Candy, Latte, Marshmallow, Mulberry, Olive",
       "Professional heatless curling technology",
       "Comfortable overnight styling without wires or tension",
       "Premium vegan Peau de Soie fabric for hair protection",
@@ -106,13 +106,15 @@ export const products: Product[] = [
     ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
     size: "Midi Size",
     inStock: true,
-    colors: ["Purple", "Candy", "Latte", "Marshmallow"],
+    colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
     video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
     images: [
-      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
       new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
     ]
   },
   {

@@ -88,7 +88,7 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1900]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -97,30 +97,41 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            className="fixed inset-0 z-[2000] flex items-center justify-center p-4 overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
+          <div className="relative w-full max-w-4xl">
+              {/* Close Button - Positioned inside viewport, clearly visible and clickable */}
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="absolute top-2 right-2 p-3 rounded-full bg-white text-foreground hover:bg-accent hover:text-white transition-all z-[100] pointer-events-auto shadow-2xl border-2 border-white"
+                style={{
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                }}
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
+
           <motion.div
-            className="bg-background rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
+            className="bg-background rounded-lg shadow-2xl w-full max-h-[90vh] overflow-hidden relative"
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
           >
-              {/* Close Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                }}
-                className="absolute -top-2 -right-2 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors z-50 pointer-events-auto shadow-lg border-2 border-background"
-                type="button"
-              >
-                <X className="w-5 h-5" />
-              </button>
 
               <div className="max-h-[90vh] overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
@@ -134,7 +145,11 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
+                    loading="eager"
+                    decoding="sync"
+                    fetchPriority="high"
+                    style={{ imageRendering: 'auto' as const, filter: 'contrast(1.03) saturate(1.06)' }}
                   />
                 </motion.div>
 
@@ -244,6 +259,7 @@ export const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                 </div>
               </div>
             </motion.div>
+          </div>
           </motion.div>
         </>
       )}

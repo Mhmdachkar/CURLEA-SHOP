@@ -28,7 +28,7 @@ export const CollectionPage = () => {
   const displayedProducts = products;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-card">
       <Navbar />
       {/* Signature Brand Loader */}
       <AnimatePresence>
@@ -66,7 +66,7 @@ export const CollectionPage = () => {
         )}
       </AnimatePresence>
 
-      <div className="bg-background">
+      <div className="bg-card">
         {/* Hero Section with Rotating Images */}
         <HeroSectionWithRotation />
 
@@ -348,7 +348,7 @@ const ShopTheLookSection = () => {
                   <motion.div 
                     className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden relative"
                     whileHover={{ rotateY: 5 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
                   >
                     <OptimizedImage
                       src={product.image}
@@ -359,7 +359,7 @@ const ShopTheLookSection = () => {
                       className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
                     />
                   </motion.div>
                   
@@ -381,7 +381,7 @@ const ShopTheLookSection = () => {
                   <motion.div
                     className="relative z-10"
                     whileHover={{ x: 4, scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
                   >
                     <ArrowRight className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
                   </motion.div>
@@ -550,7 +550,7 @@ const BeautifulAnimatedTitle = () => {
             <motion.div
               className="text-center"
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
@@ -575,7 +575,7 @@ const BeautifulAnimatedTitle = () => {
             <motion.div
               className="text-center"
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-accent mb-2"
@@ -600,7 +600,7 @@ const BeautifulAnimatedTitle = () => {
             <motion.div
               className="text-center"
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
                 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
@@ -1074,25 +1074,25 @@ const FeaturedProductCard = ({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="group relative bg-card rounded-lg overflow-hidden h-full"
+      transition={{ duration: 0.6, delay: 0.2, ease: [0.43, 0.13, 0.23, 0.96] }}
+      className="group relative bg-card rounded-lg overflow-hidden h-full shadow-lg hover:shadow-2xl transition-all duration-500"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform: `perspective(1000px) rotateX(${mousePosition.y * -5}deg) rotateY(${mousePosition.x * 5}deg) translateZ(0)`,
+        transform: `perspective(1000px) rotateX(${mousePosition.y * -1.5}deg) rotateY(${mousePosition.x * 1.5}deg) translateZ(0)`,
         transformStyle: "preserve-3d",
       }}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+      <div className="relative aspect-[4/3] overflow-hidden bg-card/60 rounded-lg">
         {/* Enhanced Image Container */}
         <div className="absolute inset-2 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+            className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
             style={{
               filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
               imageRendering: 'auto' as const,
@@ -1110,13 +1110,13 @@ const FeaturedProductCard = ({
           className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 p-4"
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
           <motion.button
             onClick={() => setQuickViewProduct(product)}
             className="bg-white/95 backdrop-blur-sm text-black font-semibold rounded-xl px-6 py-3 flex items-center gap-2 hover:bg-white transition-all duration-200 shadow-xl group"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
             style={{
               boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
             }}
@@ -1144,8 +1144,8 @@ const FeaturedProductCard = ({
               openCart();
             }}
             className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-semibold rounded-xl px-6 py-3 flex items-center gap-2 hover:bg-primary transition-all duration-200 shadow-xl group"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
             style={{
               boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
             }}
@@ -1238,25 +1238,25 @@ const MediumProductCard = ({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="group relative bg-card rounded-lg overflow-hidden h-full"
+      transition={{ duration: 0.6, delay: 0.3, ease: [0.43, 0.13, 0.23, 0.96] }}
+      className="group relative bg-card rounded-lg overflow-hidden h-full shadow-lg hover:shadow-2xl transition-all duration-500"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform: `perspective(1000px) rotateX(${mousePosition.y * -3}deg) rotateY(${mousePosition.x * 3}deg) translateZ(0)`,
+        transform: `perspective(1000px) rotateX(${mousePosition.y * -1}deg) rotateY(${mousePosition.x * 1}deg) translateZ(0)`,
         transformStyle: "preserve-3d",
       }}
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+      <div className="relative aspect-[16/9] overflow-hidden bg-card/60 rounded-lg">
         {/* Enhanced Image Container */}
         <div className="absolute inset-2 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+            className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
             style={{
               filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
               imageRendering: 'auto' as const,
@@ -1274,7 +1274,7 @@ const MediumProductCard = ({
           className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-3"
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
           <motion.button
             onClick={() => setQuickViewProduct(product)}
@@ -1381,30 +1381,31 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                 <motion.div
       ref={ref}
                   layout
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{
-                    duration: 0.5,
+                    duration: 0.6,
                     delay: index * 0.1,
                     layout: { duration: 0.4 },
+                    ease: [0.43, 0.13, 0.23, 0.96],
                   }}
-                  className="group relative bg-card rounded-lg overflow-hidden"
+                  className="group relative bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform: `perspective(1000px) rotateX(${mousePosition.y * -5}deg) rotateY(${mousePosition.x * 5}deg) translateZ(0)`,
+        transform: `perspective(1000px) rotateX(${mousePosition.y * -1}deg) rotateY(${mousePosition.x * 1}deg) translateZ(0)`,
         transformStyle: "preserve-3d",
       }}
                 >
-                  <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40 rounded-lg">
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-card/60">
                     {/* Enhanced Image Container */}
                     <div className="absolute inset-1.5 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-contain object-center transition-all duration-700 group-hover:scale-105"
+                        className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
                         style={{
                           filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
                           imageRendering: 'auto' as const,
@@ -1422,14 +1423,14 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                       className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col items-end justify-between p-2"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
                     >
                       {/* Top Row - Quick View Button */}
                       <motion.button
                         onClick={() => setQuickViewProduct(product)}
                         className="bg-white/95 backdrop-blur-sm text-black font-medium rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200 flex items-center gap-1.5 group"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.05, rotate: 2 }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                         }}
@@ -1459,8 +1460,8 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                           openCart();
                         }}
                         className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-medium rounded-full p-2 shadow-lg hover:bg-primary transition-all duration-200 flex items-center gap-1.5 group"
-                        whileHover={{ scale: 1.1, rotate: -5 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.05, rotate: -2 }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                         }}
@@ -1536,7 +1537,7 @@ const HeroTitle = ({ text }: { text: string }) => {
             <motion.span
               className="relative inline-block"
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               {word}
               <motion.div

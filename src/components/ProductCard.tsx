@@ -59,8 +59,8 @@ const ImageWrapper = styled(motion.div)`
 const Overlay = styled(motion.div)`
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.2), transparent);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,7 +72,7 @@ const Overlay = styled(motion.div)`
 `;
 
 const ActionButton = styled(motion.button)<{ $variant?: 'primary' | 'secondary' }>`
-  padding: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs};
   background-color: ${({ $variant, theme }) => 
     $variant === 'primary' ? theme.colors.accent : '#ffffff'};
   color: ${({ $variant, theme }) => 
@@ -80,12 +80,13 @@ const ActionButton = styled(motion.button)<{ $variant?: 'primary' | 'secondary' 
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.full};
   cursor: pointer;
-  min-width: ${({ theme }) => theme.touchTargets.min};
-  min-height: ${({ theme }) => theme.touchTargets.min};
+  min-width: 2.25rem;
+  min-height: 2.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: ${({ theme }) => theme.transitions.fast};
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 
   &:hover {
     background-color: ${({ $variant, theme }) => 
@@ -94,21 +95,27 @@ const ActionButton = styled(motion.button)<{ $variant?: 'primary' | 'secondary' 
   }
 
   svg {
-    width: 1rem;
-    height: 1rem;
+    width: 0.9rem;
+    height: 0.9rem;
 
     @media ${({ theme }) => theme.mediaQueries.tablet} {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1rem;
+      height: 1rem;
     }
   }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
-    padding: ${({ theme }) => theme.spacing.md};
+    padding: ${({ theme }) => theme.spacing.sm};
+    min-width: 2.5rem;
+    min-height: 2.5rem;
   }
 
   @media ${({ theme }) => theme.mediaQueries.desktop} {
-    padding: ${({ theme }) => theme.spacing.lg};
+    padding: ${({ theme }) => theme.spacing.md};
+  }
+
+  &:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
   }
 `;
 
@@ -244,23 +251,23 @@ export const ProductCard = ({
       layoutId={`product-${id}`}
       className="product-card"
       animate={is3DEnabled ? { 
-        x: mousePosition.x, 
-        y: mousePosition.y,
-        rotateX: mousePosition.y * 0.05,
-        rotateY: mousePosition.x * 0.05,
+        x: mousePosition.x * 0.5, 
+        y: mousePosition.y * 0.5,
+        rotateX: mousePosition.y * 0.02,
+        rotateY: mousePosition.x * 0.02,
       } : {}}
       transition={{ 
         type: "spring", 
-        stiffness: 150, 
-        damping: 15,
-        mass: 0.1 
+        stiffness: 200, 
+        damping: 25,
+        mass: 0.05 
       }}
       whileHover={is3DEnabled ? { 
-        y: -12,
-        transition: { duration: 0.3 }
+        y: -6,
+        transition: { duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }
       } : {
-        y: -4,
-        transition: { duration: 0.2 }
+        y: -2,
+        transition: { duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] }
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -271,9 +278,9 @@ export const ProductCard = ({
         <ImageWrapper
           layoutId={`product-img-${id}`}
           animate={{
-            scale: isHovered ? 1.1 : 1,
+            scale: isHovered ? 1.03 : 1,
           }}
-          transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 0.5, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
           <ProductImage
             src={image}
@@ -287,13 +294,12 @@ export const ProductCard = ({
         <Overlay
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
           <ActionButton
             $variant="secondary"
-            whileHover={{ scale: 1.1, rotate: 360 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleQuickView}
             aria-label={`Quick view ${name}`}
           >
@@ -302,9 +308,8 @@ export const ProductCard = ({
           
           <ActionButton
             $variant="primary"
-            whileHover={{ scale: 1.1, rotate: -360 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleAddToCart}
             aria-label={`Add ${name} to cart`}
           >
@@ -316,7 +321,7 @@ export const ProductCard = ({
         <ShimmerEffect
           initial={{ x: "-100%" }}
           animate={{ x: isHovered ? "100%" : "-100%" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
         />
       </ImageContainer>
 
@@ -337,7 +342,7 @@ export const ProductCard = ({
             ? "0 25px 50px -12px rgba(0,0,0,0.25), 0 0 30px rgba(201, 139, 95, 0.3)"
             : "0 0 0 rgba(0,0,0,0)",
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
       />
     </Card>
   );

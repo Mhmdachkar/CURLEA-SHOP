@@ -413,6 +413,9 @@ export const HeroSection = () => {
                 muted
                 loop
                 playsInline
+                preload="auto"
+                disablePictureInPicture
+                controlsList="nodownload noplaybackrate"
                 onError={() => setUseVideo(false)}
               >
                 <source src={slides[currentSlide].video} type="video/mp4" />

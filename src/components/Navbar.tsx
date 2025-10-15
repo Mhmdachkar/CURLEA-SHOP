@@ -48,7 +48,7 @@ const NavInner = styled.div`
 
 const Logo = styled(motion.a)<{ $isScrolled: boolean }>`
   font-family: ${({ theme }) => theme.typography.fontFamily.serif};
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
   color: ${({ $isScrolled, theme }) =>
@@ -64,7 +64,7 @@ const Logo = styled(motion.a)<{ $isScrolled: boolean }>`
   z-index: ${({ theme }) => theme.zIndex.sticky + 1};
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
-    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
   }
 `;
 
@@ -89,7 +89,7 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   background: none;
   border: none;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: inherit;
   cursor: pointer;
@@ -164,7 +164,7 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   }
 
   @media ${({ theme }) => theme.mediaQueries.desktop} {
-    font-size: ${({ theme }) => theme.typography.fontSize.base};
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
   }
 `;
 
@@ -191,7 +191,7 @@ const IconButton = styled(motion.button)`
   border: none;
   color: inherit;
   cursor: pointer;
-  padding: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,12 +208,12 @@ const IconButton = styled(motion.button)`
   }
 
   svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1rem;
+    height: 1rem;
 
     @media ${({ theme }) => theme.mediaQueries.tablet} {
-      width: 1.5rem;
-      height: 1.5rem;
+      width: 1.25rem;
+      height: 1.25rem;
     }
   }
 `;
@@ -282,7 +282,7 @@ const MobileMenuLink = styled(motion.button)`
   background: none;
   border: none;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.foreground};
   text-align: left;

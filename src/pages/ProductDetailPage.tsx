@@ -1753,10 +1753,16 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover sm:object-contain"
-                    controls={product.id === 'dreamcurl-midi' ? false : isVideoPlaying}
-                    muted={product.id === 'dreamcurl-midi' ? true : true}
-                    loop
+                    preload="auto"
                     playsInline
+                    webkit-playsinline="true"
+                    x5-playsinline="true"
+                    disablePictureInPicture
+                    controlsList="nodownload noplaybackrate"
+                    poster={specialVideo}
+                    controls={product.id === 'dreamcurl-midi' ? false : isVideoPlaying}
+                    muted
+                    loop
                     onPlay={() => setIsVideoPlaying(true)}
                     onPause={() => setIsVideoPlaying(false)}
                     onVolumeChange={(e) => {
