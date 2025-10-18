@@ -45,6 +45,10 @@ const Video = styled.video`
   height: 100%;
   object-fit: cover;
   object-position: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: auto;
 `;
 
 const HeroImage = styled(motion.img)`
@@ -367,6 +371,7 @@ export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [useVideo, setUseVideo] = useState(true);
   const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
   
   const { scrollYProgress } = useScroll({
@@ -374,10 +379,20 @@ export const HeroSection = () => {
     offset: ["start start", "end start"],
   });
 
-  // Disable parallax on mobile for performance
+  // Disable parallax on mobile for performance - REDUCED parallax
   const shouldUseParallax = !isMobile && !isTablet;
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", shouldUseParallax ? "50%" : "0%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", shouldUseParallax ? "20%" : "0%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.9, 0.6]);
+
+  // Force video to play immediately
+  useEffect(() => {
+    if (videoRef.current && useVideo) {
+      videoRef.current.play().catch(error => {
+        console.log('Video autoplay prevented:', error);
+        setUseVideo(false);
+      });
+    }
+  }, [currentSlide, useVideo]);
 
   // Auto-rotate slides
   useEffect(() => {
@@ -404,11 +419,17 @@ export const HeroSection = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
-          style={{ y: shouldUseParallax ? y : 0 }}
+          style={{ 
+            y: shouldUseParallax ? y : 0,
+            willChange: "auto",
+            backfaceVisibility: "hidden",
+            transform: "translateZ(0)"
+          }}
         >
           <MediaContainer>
             {useVideo ? (
               <Video
+                ref={videoRef}
                 autoPlay
                 muted
                 loop
@@ -417,6 +438,10 @@ export const HeroSection = () => {
                 disablePictureInPicture
                 controlsList="nodownload noplaybackrate"
                 onError={() => setUseVideo(false)}
+                onLoadedData={(e) => {
+                  const video = e.target as HTMLVideoElement;
+                  video.play().catch(() => setUseVideo(false));
+                }}
               >
                 <source src={slides[currentSlide].video} type="video/mp4" />
               </Video>

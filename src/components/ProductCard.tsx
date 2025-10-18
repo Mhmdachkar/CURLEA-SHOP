@@ -13,23 +13,32 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const Card = styled(motion.div)`
   position: relative;
-  background-color: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background-color: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 0;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  transition: ${({ theme }) => theme.transitions.smooth};
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   will-change: transform;
   transform-style: preserve-3d;
   perspective: 1000px;
+  
+  /* Sharp, clean texture */
+  background-image: 
+    linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.02) 100%),
+    linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.02) 100%);
+  background-size: 20px 20px;
 
   &:hover {
-    box-shadow: ${({ theme }) => theme.shadows.md};
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-color: #e0e0e0;
+    transform: translateY(-2px);
   }
 
-  @media ${({ theme }) => theme.mediaQueries.tablet} {
+  @media (max-width: 768px) {
     &:hover {
-      box-shadow: ${({ theme }) => theme.shadows.lg};
+      transform: translateY(-1px);
     }
   }
 `;
@@ -37,66 +46,88 @@ const Card = styled(motion.div)`
 const ImageContainer = styled(motion.div)`
   position: relative;
   aspect-ratio: 3 / 4;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: 0;
   overflow: hidden;
-  background-color: ${({ theme }) => theme.colors.muted};
-
-  @media ${({ theme }) => theme.mediaQueries.mobileLarge} {
-    aspect-ratio: 4 / 3;
-  }
+  background-color: #ffffff;
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
     aspect-ratio: 1 / 1;
-    margin-bottom: ${({ theme }) => theme.spacing.md};
   }
 `;
 
 const ImageWrapper = styled(motion.div)`
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  
+  /* High-resolution product display */
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    filter: brightness(1.03) contrast(1.08) saturate(1.05);
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
 `;
 
 const Overlay = styled(motion.div)`
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.2), transparent);
-  backdrop-filter: blur(2px);
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.95) 0%,
+    rgba(255,255,255,0.90) 50%,
+    rgba(255,255,255,0.95) 100%
+  );
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  @media ${({ theme }) => theme.mediaQueries.tablet} {
-    gap: ${({ theme }) => theme.spacing.md};
-  }
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 `;
 
 const ActionButton = styled(motion.button)<{ $variant?: 'primary' | 'secondary' }>`
-  padding: ${({ theme }) => theme.spacing.xs};
-  background-color: ${({ $variant, theme }) => 
-    $variant === 'primary' ? theme.colors.accent : '#ffffff'};
-  color: ${({ $variant, theme }) => 
-    $variant === 'primary' ? '#ffffff' : theme.colors.foreground};
-  border: none;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
+  padding: 12px;
+  background-color: ${({ $variant }) => 
+    $variant === 'primary' ? '#000000' : '#ffffff'};
+  color: ${({ $variant }) => 
+    $variant === 'primary' ? '#ffffff' : '#000000'};
+  border: 1px solid ${({ $variant }) => 
+    $variant === 'primary' ? '#000000' : '#e0e0e0'};
+  border-radius: 0;
   cursor: pointer;
-  min-width: 2.25rem;
-  min-height: 2.25rem;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: ${({ theme }) => theme.transitions.fast};
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  
+  /* Sharp, clean button design */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 
   &:hover {
-    background-color: ${({ $variant, theme }) => 
-      $variant === 'primary' ? theme.colors.primary : theme.colors.accent};
-    color: #ffffff;
+    background-color: ${({ $variant }) => 
+      $variant === 'primary' ? '#333333' : '#f8f8f8'};
+    border-color: ${({ $variant }) => 
+      $variant === 'primary' ? '#333333' : '#d0d0d0'};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
 
   svg {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.5;
 
     @media ${({ theme }) => theme.mediaQueries.tablet} {
       width: 1rem;
@@ -132,32 +163,32 @@ const ShimmerEffect = styled(motion.div)`
 `;
 
 const InfoContainer = styled(motion.div)`
-  padding: ${({ theme }) => theme.spacing.sm};
-
-  @media ${({ theme }) => theme.mediaQueries.tablet} {
-    padding: ${({ theme }) => theme.spacing.md};
-  }
-
-  @media ${({ theme }) => theme.mediaQueries.desktop} {
-    padding: ${({ theme }) => theme.spacing.lg};
-  }
+  padding: 16px 20px 20px 20px;
+  background-color: #ffffff;
+  text-align: center;
 `;
 
 const ProductName = styled(motion.h3)`
-  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.foreground};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  letter-spacing: 0.025em;
-  transition: ${({ theme }) => theme.transitions.fast};
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #000000;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  
+  /* Reference image typography style */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: color 0.2s ease;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 
   ${Card}:hover & {
-    color: ${({ theme }) => theme.colors.accent};
+    color: #000000;
   }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
@@ -171,15 +202,32 @@ const ProductName = styled(motion.h3)`
 `;
 
 const ProductPrice = styled(motion.p)`
-  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.light};
-  color: ${({ theme }) => theme.colors.mutedForeground};
-  letter-spacing: 0.05em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  
+  /* Reference image typography style */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+`;
 
-  @media ${({ theme }) => theme.mediaQueries.tablet} {
-    font-size: ${({ theme }) => theme.typography.fontSize.base};
-  }
+const BrandName = styled(motion.p)`
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #666666;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  
+  /* Reference image typography style */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 `;
 
 const HoverShadow = styled(motion.div)`
@@ -294,12 +342,15 @@ export const ProductCard = ({
         <Overlay
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <ActionButton
             $variant="secondary"
-            whileHover={{ scale: 1.02, y: -1 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleQuickView}
             aria-label={`Quick view ${name}`}
           >
@@ -308,8 +359,11 @@ export const ProductCard = ({
           
           <ActionButton
             $variant="primary"
-            whileHover={{ scale: 1.02, y: -1 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleAddToCart}
             aria-label={`Add ${name} to cart`}
           >
@@ -326,6 +380,7 @@ export const ProductCard = ({
       </ImageContainer>
 
       <InfoContainer layoutId={`product-info-${id}`}>
+        <BrandName>ZERO HEAT SET</BrandName>
         <ProductName layoutId={`product-name-${id}`}>
           {name}
         </ProductName>
@@ -334,15 +389,15 @@ export const ProductCard = ({
         </ProductPrice>
       </InfoContainer>
 
-      {/* Enhanced Hover Shadow with Glow */}
+      {/* Enhanced Hover Shadow with Black Glow */}
       <HoverShadow
         initial={{ boxShadow: "0 0 0 rgba(0,0,0,0)" }}
         animate={{
           boxShadow: isHovered
-            ? "0 25px 50px -12px rgba(0,0,0,0.25), 0 0 30px rgba(201, 139, 95, 0.3)"
+            ? "0 8px 30px rgba(0,0,0,0.12)"
             : "0 0 0 rgba(0,0,0,0)",
         }}
-        transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       />
     </Card>
   );

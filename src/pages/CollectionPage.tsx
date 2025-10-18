@@ -6,6 +6,7 @@ import { Eye, Plus, ArrowRight } from "lucide-react";
 import { QuickViewModal } from "@/components/QuickViewModal";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { Navbar } from "@/components/Navbar";
+import { ElegantProductCard } from "@/components/ElegantProductCard";
 import getTheWavyLook from "@/assets/getthewavylook.png";
 import { Product, products } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
@@ -16,6 +17,28 @@ export const CollectionPage = () => {
   const { addToCart, openCart } = useCart();
   const [showLoader, setShowLoader] = useState(true);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  
+  // Elegant section animations with professional timing
+  const sectionVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.25, 0.1, 0.25, 1] as any,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' as ScrollBehavior
+    });
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,7 +51,7 @@ export const CollectionPage = () => {
   const displayedProducts = products;
 
   return (
-    <div className="min-h-screen bg-card">
+    <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
       {/* Signature Brand Loader */}
       <AnimatePresence>
@@ -66,25 +89,27 @@ export const CollectionPage = () => {
         )}
       </AnimatePresence>
 
-      <div className="bg-card">
+      <motion.div 
+        className="bg-white"
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Hero Section with Rotating Images */}
         <HeroSectionWithRotation />
 
         {/* Beautiful Animated Title Section */}
         <BeautifulAnimatedTitle />
 
-        {/* Dynamic Product Grid with Cursor Follower */}
-        <ProductGridWithCursorFollower
+        {/* Elegant Product Grid */}
+        <ElegantProductGrid
           displayedProducts={displayedProducts}
-          setQuickViewProduct={setQuickViewProduct}
           navigate={navigate}
-          addToCart={addToCart}
-          openCart={openCart}
         />
 
         {/* Shop the Look Section - Moved to bottom */}
         <ShopTheLookSection />
-      </div>
+      </motion.div>
 
       {/* Quick View Modal */}
       <QuickViewModal
@@ -895,8 +920,58 @@ const InteractiveFilterBar = ({
   );
 };
 
-// Product Grid with Cursor Follower Component
-const ProductGridWithCursorFollower = ({ 
+// Elegant Product Grid Component - Simple & Clean
+const ElegantProductGrid = ({
+  displayedProducts,
+  navigate
+}: {
+  displayedProducts: Product[];
+  navigate: (path: string) => void;
+}) => {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, staggerChildren: 0.1 }}
+      >
+        {displayedProducts.map((product, index) => (
+          <motion.div
+            key={product.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: index * 0.05,
+              ease: [0.43, 0.13, 0.23, 0.96] 
+            }}
+          >
+            <ElegantProductCard
+              {...product}
+              onClick={() => {
+                // Track product view
+                if (typeof window !== 'undefined' && (window as any).analytics) {
+                  (window as any).analytics.track('ProductViewed', {
+                    product_id: product.id,
+                    product_name: product.name,
+                    price: product.price,
+                    category: product.category,
+                    page: 'Collection'
+                  });
+                }
+                navigate(`/product/${product.id}`);
+              }}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// Old Product Grid with Cursor Follower Component (keeping for reference)
+const ProductGridWithCursorFollowerOld = ({ 
   displayedProducts, 
   setQuickViewProduct, 
   navigate,
@@ -1601,7 +1676,7 @@ const HeroSubtitle = ({ text }: { text: string }) => {
 };
 
 
-// Hero Section with Rotating Images Component (using home page transition technique)
+// Enhanced Hero Section with Professional Animations
 const HeroSectionWithRotation = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
@@ -1613,13 +1688,15 @@ const HeroSectionWithRotation = () => {
     new URL('../assets/hero-3.png', import.meta.url).href,
   ];
 
+  // Optimized scroll-based parallax - REDUCED for smooth scrolling
   const { scrollYProgress } = useScroll({
     target: heroRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end start"]
   });
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.8], [1, 0.9, 0]);
+  
+  // Reduce parallax intensity to prevent rendering issues
+  const y = useTransform(scrollYProgress, [0, 1], [0, 30]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.9, 0.5]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -1640,14 +1717,14 @@ const HeroSectionWithRotation = () => {
       <AnimatePresence mode="sync">
             <motion.div
           key={currentImageIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: [0.25, 0.1, 0.25, 1] }}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 1.8, ease: [0.43, 0.13, 0.23, 0.96] }}
           className="absolute inset-0"
           style={{ 
             y,
-            willChange: "transform, opacity",
+            willChange: "auto",
             backfaceVisibility: "hidden",
             transform: "translateZ(0)"
           }}
@@ -1663,7 +1740,8 @@ const HeroSectionWithRotation = () => {
                 objectFit: 'cover',
                 objectPosition: 'center center',
                 willChange: "auto",
-                backfaceVisibility: "hidden"
+                backfaceVisibility: "hidden",
+                transform: "translateZ(0)"
               }}
             />
           </div>
@@ -1673,15 +1751,10 @@ const HeroSectionWithRotation = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Content with Optimized Parallax */}
+      {/* Content with Professional Fade */}
       <motion.div 
         className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6"
-        style={{ 
-          opacity,
-          willChange: "opacity",
-          backfaceVisibility: "hidden",
-          transform: "translateZ(0)"
-        }}
+        style={{ opacity }}
       >
         <motion.div
           className="text-center max-w-4xl"

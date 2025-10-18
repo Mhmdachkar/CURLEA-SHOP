@@ -87,6 +87,15 @@ export const ProductDetailPage = () => {
     }
   }, [product?.id, selectedSize]);
 
+  // Scroll to top instantly when page loads
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' as ScrollBehavior
+    });
+  }, []);
+
   // Reset all state when product ID changes (navigating between products)
   useEffect(() => {
     // Reset quantity
@@ -121,7 +130,11 @@ export const ProductDetailPage = () => {
     }
     
     // Scroll to top when product changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ 
+      top: 0, 
+      left: 0,
+      behavior: 'instant' as ScrollBehavior 
+    });
   }, [product?.id]); // Only depend on product.id to prevent unnecessary resets
 
   // Aggressive image preloading for instant display
@@ -393,7 +406,7 @@ export const ProductDetailPage = () => {
       </div>
       
       <Navbar />
-      <div className="pt-24 pb-16 relative z-10">
+      <div className="pt-24 pb-16 relative z-10" style={{ scrollBehavior: 'smooth' }}>
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
