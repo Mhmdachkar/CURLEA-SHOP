@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Service Worker Cache - Curlea</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Service Worker Cache</h1>
+        
+        <div class="status info">
+            <strong>ℹ️ Why am I here?</strong><br>
+            Your browser cached old CSS/JS files with wrong MIME types. This page will clear them.
+        </div>
+
+        <div id="status"></div>
+
+        <button onclick="clearAllCaches()">🗑️ Clear All Caches</button>
+        <button onclick="unregisterServiceWorker()">🔄 Unregister Service Worker</button>
+        <button onclick="clearEverything()">💥 Clear Everything & Reload</button>
+
+        <div class="steps">
+            <strong>Manual Steps (if buttons don't work):</strong>
+            <ol>
+                <li>Press <code>F12</code> to open Developer Tools</li>
+                <li>Go to the <strong>Application</strong> tab</li>
+                <li>In the left sidebar, click <strong>Service Workers</strong></li>
+                <li>Click <strong>Unregister</strong> next to the service worker</li>
+                <li>Click <strong>Clear storage</strong> in the left sidebar</li>
+                <li>Click <strong>Clear site data</strong></li>
+                <li>Hard refresh: <code>Ctrl+Shift+R</code> (Windows) or <code>Cmd+Shift+R</code> (Mac)</li>
+            </ol>
+        </div>
+
+        <button onclick="window.location.href='/'">← Back to Home</button>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        async function clearAllCaches() {
+            try {
+                showStatus('🔄 Clearing caches...', 'info');
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                showStatus(`✅ Successfully cleared ${cacheNames.length} cache(s)!`, 'success');
+                console.log('Cleared caches:', cacheNames);
+            } catch (error) {
+                showStatus('❌ Error clearing caches: ' + error.message, 'error');
+                console.error('Error clearing caches:', error);
+            }
+        }
+
+        async function unregisterServiceWorker() {
+            try {
+                showStatus('🔄 Unregistering service worker...', 'info');
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(reg => reg.unregister()));
+                showStatus(`✅ Successfully unregistered ${registrations.length} service worker(s)!`, 'success');
+                console.log('Unregistered service workers:', registrations);
+            } catch (error) {
+                showStatus('❌ Error unregistering service worker: ' + error.message, 'error');
+                console.error('Error unregistering service worker:', error);
+            }
+        }
+
+        async function clearEverything() {
+            try {
+                showStatus('🔄 Clearing everything...', 'info');
+                
+                // Clear caches
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                // Unregister service workers
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(reg => reg.unregister()));
+                
+                // Clear local storage
+                localStorage.clear();
+                
+                // Clear session storage
+                sessionStorage.clear();
+                
+                showStatus('✅ Everything cleared! Reloading in 2 seconds...', 'success');
+                
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 2000);
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+                console.error('Error clearing everything:', error);
+            }
+        }
+
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            showStatus('👋 Ready to clear cache. Click a button above to proceed.', 'info');
+        });
+    </script>
+</body>
+</html>
+

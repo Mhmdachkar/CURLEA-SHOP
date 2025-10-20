@@ -3,9 +3,9 @@
  * Provides offline support and performance optimization
  */
 
-const CACHE_NAME = 'curlea-luxe-v1.0.0';
-const STATIC_CACHE_NAME = 'curlea-static-v1.0.0';
-const DYNAMIC_CACHE_NAME = 'curlea-dynamic-v1.0.0';
+const CACHE_NAME = 'curlea-luxe-v2.0.0';
+const STATIC_CACHE_NAME = 'curlea-static-v2.0.0';
+const DYNAMIC_CACHE_NAME = 'curlea-dynamic-v2.0.0';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
