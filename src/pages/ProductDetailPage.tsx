@@ -494,12 +494,12 @@ export const ProductDetailPage = () => {
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           whileHover={{ x: -5 }}
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Shop
+          Back
         </motion.button>
       </div>
 
@@ -588,8 +588,8 @@ export const ProductDetailPage = () => {
                 </motion.button>
               </div>
               
-              {/* Pieces Total Display - hide for curly-clip-5 */}
-              {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && (
+              {/* Pieces Total Display - hide for curly-clip-5 and curly-clip-6 */}
+              {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && product.id !== 'curly-clip-6' && (
                 <motion.div
                   className="ml-4 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full"
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -1297,7 +1297,7 @@ export const ProductDetailPage = () => {
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
-            ) : product.id === 'curly-clip-1' ? (
+            ) : product.id === 'curly-clip-1' || product.id === 'curly-clip-6' ? (
               <CurlyHairCollectionImageGallery 
                 key={`hairclip-gallery-${product.id}`}
                 product={product}
@@ -1341,8 +1341,8 @@ export const ProductDetailPage = () => {
           </motion.div>
         </div>
 
-        {/* 1. The "Ritual in Motion" Video Section - Skip for SongMay product */}
-        {product.id !== 'songmay-hair-clips' && (
+        {/* 1. The "Ritual in Motion" Video Section - Skip for products without video */}
+        {product.id !== 'songmay-hair-clips' && product.id !== 'curly-clip-6' && (
         <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
         )}
 
@@ -2732,6 +2732,13 @@ const CurlyHairCollectionImageGallery = ({
     // Only show the 2 specified images in main gallery
     new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
     new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href,
+  ] : product.id === 'curly-clip-6' ? [
+    // Images for Cream Coffee Hair Scrunchies Vintage from product6 folder only
+    new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href,
   ] : [
     // Images for claw clips product
     new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
@@ -2839,8 +2846,32 @@ const CurlyHairCollectionImageGallery = ({
       </div>
       </motion.div>
 
-      {/* Thumbnail Gallery with Pagination */}
-      {curlyHairImages.length > 6 && (
+      {/* Thumbnail Gallery for curly-clip-6 - Always show thumbnails */}
+      {product.id === 'curly-clip-6' && curlyHairImages.length > 1 && (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          {curlyHairImages.map((imgSrc, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedImageIndex(index)}
+              className={`relative aspect-square rounded-xl overflow-hidden border transition-all duration-200 shadow-sm ${
+                selectedImageIndex === index
+                  ? 'border-primary/80 ring-1 ring-primary/20'
+                  : 'border-gray-200 hover:border-primary/40'
+              }`}
+            >
+              <OptimizedImage
+                src={imgSrc}
+                alt={`${product.name} thumbnail ${index + 1}`}
+                className="object-cover"
+                placeholderSrc={placeholderImage}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Thumbnail Gallery with Pagination - for other products */}
+      {product.id !== 'curly-clip-6' && curlyHairImages.length > 6 && (
         <div className="flex flex-col gap-2">
         <div className="grid grid-cols-6 gap-2">
             {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((imgSrc, index) => {
@@ -3584,6 +3615,14 @@ const RealResultsSection = ({ product }: { product: Product }) => {
           new URL('../assets/curly hair collection/product1/real result2.png', import.meta.url).href,
           new URL('../assets/curly hair collection/product1/real result3.png', import.meta.url).href,
         ];
+      } else if (product.id === 'curly-clip-6') {
+        // Product6 uses dedicated result folder with Gemini images
+        return [
+          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_40590g40590g4059.png', import.meta.url).href,
+          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_fdqmuwfdqmuwfdqm.png', import.meta.url).href,
+          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_pl32mkpl32mkpl32.png', import.meta.url).href,
+          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_wnl4uzwnl4uzwnl4.png', import.meta.url).href,
+        ];
       } else {
         // Product2 and Product3 use "result" naming
         const productFolder = product.id === 'curly-scarf-1' ? 'product2' : 'product3';
@@ -3606,19 +3645,19 @@ const RealResultsSection = ({ product }: { product: Product }) => {
   if (resultImages.length === 0) return null;
 
   const getTitle = () => {
-    if (product.id === 'dreamcurl-original') return "Real Results from DreamCurl™ Users";
-    if (product.id === 'heatless-5') return "BUN BONS Success Stories";
-    if (product.id === 'heatless-6') return "PEAU DE SOIE Bonnet Results";
-    if (product.id.startsWith('curly-')) return "Real Results from Our Community";
-    return "Real Results from Our Community";
+    if (product.id === 'dreamcurl-original') return "Transform Your Hair Journey";
+    if (product.id === 'heatless-5') return "Discover Your Perfect Style";
+    if (product.id === 'heatless-6') return "Unlock Your Hair's Potential";
+    if (product.id.startsWith('curly-')) return "Style That Speaks";
+    return "Your Beauty, Redefined";
   };
 
   const getSubtitle = () => {
-    if (product.id === 'dreamcurl-original') return "See the beautiful, heat-free curls our customers achieve with DreamCurl™ Original Set";
-    if (product.id === 'heatless-5') return "Discover how BUN BONS transforms hair overnight with these amazing before and after results";
-    if (product.id === 'heatless-6') return "See how our PEAU DE SOIE XL Overnight Bonnet protects and preserves beautiful hairstyles";
-    if (product.id.startsWith('curly-')) return "Real customers sharing their amazing hair transformations";
-    return "Real customers sharing their amazing results";
+    if (product.id === 'dreamcurl-original') return "Experience the premium quality that defines effortless elegance and timeless beauty";
+    if (product.id === 'heatless-5') return "Elevate your styling routine with professional-grade accessories designed for perfection";
+    if (product.id === 'heatless-6') return "Where luxury meets functionality - crafted for those who demand excellence";
+    if (product.id.startsWith('curly-')) return "Premium accessories that transform everyday styling into an art form";
+    return "Discover the difference that quality makes in your daily beauty ritual";
   };
 
   return (
@@ -3669,24 +3708,6 @@ const RealResultsSection = ({ product }: { product: Product }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
               </div>
-              
-              {/* Caption */}
-              <motion.div
-                className="mt-4 text-center"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ delay: 0.1 * index + 0.3, duration: 0.6 }}
-              >
-                <p className="text-sm text-muted-foreground font-medium">
-                  Customer Result #{index + 1}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {product.id === 'dreamcurl-original' && "Heat-free overnight curls"}
-                  {product.id === 'heatless-5' && "BUN BONS transformation"}
-                  {product.id === 'heatless-6' && "Protected overnight styling"}
-                  {product.id.startsWith('curly-') && "Amazing hair styling"}
-                </p>
-              </motion.div>
             </motion.div>
           ))}
         </div>

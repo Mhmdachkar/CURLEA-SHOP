@@ -61,13 +61,13 @@ const ImageWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 0;
   
   /* High-resolution product display */
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     filter: brightness(1.03) contrast(1.08) saturate(1.05);
     image-rendering: -webkit-optimize-contrast;

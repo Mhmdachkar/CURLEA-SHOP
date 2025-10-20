@@ -68,13 +68,13 @@ const ImageWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 0;
   
   /* Ensure product is well-lit and centrally placed */
   img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     filter: brightness(1.02) contrast(1.05);
   }
 `;

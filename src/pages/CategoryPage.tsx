@@ -659,7 +659,7 @@ export const CategoryPage = () => {
           </motion.div>
 
           {categoryProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
               <AnimatePresence mode="popLayout">
                 {categoryProducts.map((product, index) => (
                   <motion.div
@@ -682,9 +682,9 @@ export const CategoryPage = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     {/* Floating Product Image */}
-                    <div className="relative mb-6">
+                    <div className="relative mb-3 sm:mb-6 w-full">
                       <motion.div
-                        className="relative w-full max-w-xs mx-auto overflow-hidden"
+                        className="relative w-full mx-auto overflow-hidden aspect-square"
                         style={{
                           filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02))',
                         }}
@@ -696,7 +696,7 @@ export const CategoryPage = () => {
                         <OptimizedImage
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-auto object-contain"
+                          className="w-full h-full object-cover"
                           onError={(e) => {
                             try { (e.currentTarget as HTMLImageElement).src = CURLY_PLACEHOLDER; } catch {}
                           }}
@@ -715,51 +715,42 @@ export const CategoryPage = () => {
                         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-white/10 pointer-events-none" />
                       </motion.div>
 
-                      {/* Floating Category Badge */}
-                      <div className="absolute -top-2 -left-2">
+                      {/* Floating Category Badge - Hidden on mobile for cleaner look */}
+                      <div className="absolute -top-2 -left-2 hidden sm:block">
                         <span className="px-3 py-1 bg-white/40 backdrop-blur-sm text-xs font-semibold text-gray-700 rounded-full shadow-sm border border-white/20">
                           {product.category}
                         </span>
                       </div>
-
-                      {/* Floating Featured Badge */}
-                      {product.featured && (
-                        <div className="absolute -top-2 -right-2">
-                          <span className="px-3 py-1 bg-primary/80 backdrop-blur-sm text-primary-foreground text-xs font-semibold rounded-full shadow-sm border border-primary/15">
-                            Featured
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Elegant Product Info */}
-                    <div className="space-y-4 max-w-xs">
-                      <h3 className="font-bold text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2">
+                    <div className="space-y-2 sm:space-y-4 w-full px-1 sm:px-0">
+                      <h3 className="font-bold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2">
                         {product.name}
                       </h3>
-                      <p className={`text-sm font-light leading-relaxed ${(product.category === 'DreamCurl™ Collection' || product.category === 'Heatless Tools') ? 'text-black' : 'text-muted-foreground'}`}>
+                      <p className="text-[10px] sm:text-sm font-light leading-relaxed text-black line-clamp-2 sm:line-clamp-3 hidden sm:block">
                         {product.description[0]}
                       </p>
-                      <div className="flex items-center justify-center gap-4 pt-2">
-                        <span className="text-2xl font-bold text-primary">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 pt-1 sm:pt-2">
+                        <span className="text-sm sm:text-2xl font-bold text-primary">
                           {product.price}
                         </span>
-                        <span className="text-sm text-muted-foreground font-light">
+                        <span className="text-[10px] sm:text-sm text-muted-foreground font-light">
                           {product.size}
                         </span>
                       </div>
                       
-                      {/* Color Options Display */}
+                      {/* Color Options Display - Simplified on mobile */}
                       {product.colors && product.colors.length > 0 && (
-                        <div className="flex flex-wrap justify-center gap-2 pt-2">
-                          {product.colors.slice(0, 4).map((color, index) => (
-                            <span key={index} className="text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                        <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-1 sm:pt-2">
+                          {product.colors.slice(0, 2).map((color, index) => (
+                            <span key={index} className="text-[9px] sm:text-xs bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-muted-foreground">
                               {color}
                             </span>
                           ))}
-                          {product.colors.length > 4 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{product.colors.length - 4} more
+                          {product.colors.length > 2 && (
+                            <span className="text-[9px] sm:text-xs text-muted-foreground">
+                              +{product.colors.length - 2}
                             </span>
                           )}
                         </div>

@@ -72,11 +72,15 @@ export const CollectionPage = () => {
 
   useEffect(() => {
     console.log("CollectionPage: Component mounted, showLoader:", showLoader);
+    console.log("CollectionPage: Current URL:", window.location.pathname);
+    
+    // Ensure animation shows by setting showLoader to true
+    setShowLoader(true);
     
     const timer = setTimeout(() => {
-      console.log("CollectionPage: Hiding loader after 1800ms");
+      console.log("CollectionPage: Hiding loader after 4000ms");
       setShowLoader(false);
-    }, 1800);
+    }, 4000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -86,38 +90,28 @@ export const CollectionPage = () => {
   return (
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
-      {/* Signature Brand Loader */}
-      <AnimatePresence>
+      {/* Modern Elegant Brand Loader */}
+      <AnimatePresence mode="wait">
         {showLoader && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
-            <motion.div
-              className="absolute inset-0 flex"
-              initial={{ scaleX: 1 }}
-              exit={{ scaleX: 0 }}
-              transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-            >
-              <motion.div
-                className="w-1/2 bg-white"
-                exit={{ x: "-100%" }}
-                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-              />
-              <motion.div
-                className="w-1/2 bg-white"
-                exit={{ x: "100%" }}
-                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-              />
-            </motion.div>
-            
-            {/* Signature Brand Animation */}
-            <motion.div
-              className="z-10 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <CurleaBrandAnimation />
-            </motion.div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ 
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: '#000000',
+              zIndex: 99999,
+              width: '100vw',
+              height: '100vh',
+              overflow: 'hidden'
+            }}
+          >
+            <CurleaBrandAnimation />
           </motion.div>
         )}
       </AnimatePresence>
@@ -147,56 +141,161 @@ export const CollectionPage = () => {
   );
 };
 
-// Signature Brand Animation Component
+// Modern Elegant Brand Animation Component
 const CurleaBrandAnimation = () => {
-  const brandName = "Curlea";
-  
-  console.log("CurleaBrandAnimation: Rendering with brandName:", brandName);
+  const brandName = "CURLEA";
   
   return (
-    <div className="flex items-center justify-center">
-      {brandName.split("").map((letter, index) => (
-        <motion.span
-          key={index}
-          className="text-6xl md:text-8xl font-bold text-white drop-shadow-2xl"
-          initial={{ 
-            opacity: 0, 
-            y: 60, 
-            filter: "blur(10px)",
-            scale: 0.8
+    <div 
+      style={{ 
+        position: 'relative', 
+        zIndex: 100000,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)'
+      }}
+    >
+      {/* Animated Background Circles */}
+      <div style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'hidden' }}>
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: `${200 + i * 100}px`,
+              height: `${200 + i * 100}px`,
+              borderRadius: '50%',
+              border: `2px solid rgba(255,255,255,${0.1 - i * 0.015})`,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: 1, 
+              opacity: 1,
+              rotate: 360
+            }}
+            transition={{
+              duration: 2,
+              delay: i * 0.3,
+              ease: "easeOut"
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main Brand Text */}
+      <motion.div
+        style={{
+          fontSize: 'clamp(4rem, 12vw, 8rem)',
+          fontWeight: 300,
+          color: '#FFFFFF',
+          fontFamily: 'Georgia, serif',
+          letterSpacing: '0.3em',
+          textAlign: 'center',
+          position: 'relative',
+          zIndex: 10
+        }}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+      >
+        {brandName.split("").map((letter, index) => (
+          <motion.span
+            key={index}
+            style={{ 
+              display: 'inline-block',
+              marginRight: '0.1em',
+              position: 'relative'
+            }}
+            initial={{ 
+              opacity: 0, 
+              y: 100,
+              rotateX: 90
+            }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              rotateX: 0
+            }}
+            transition={{
+              duration: 0.8,
+              delay: 0.8 + index * 0.15,
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
+          >
+            {letter}
+            {/* Elegant underline effect */}
+            <motion.div
+              style={{
+                position: 'absolute',
+                bottom: '-10px',
+                left: 0,
+                right: 0,
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent, #FFFFFF, transparent)',
+                transformOrigin: 'left'
+              }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{
+                duration: 0.6,
+                delay: 1.2 + index * 0.15,
+                ease: "easeOut"
+              }}
+            />
+          </motion.span>
+        ))}
+      </motion.div>
+
+      {/* Subtitle */}
+      <motion.div
+        style={{
+          fontSize: '1.2rem',
+          color: 'rgba(255,255,255,0.7)',
+          fontFamily: 'Arial, sans-serif',
+          letterSpacing: '0.2em',
+          marginTop: '2rem',
+          textAlign: 'center'
+        }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 2, ease: "easeOut" }}
+      >
+        LUXURY HAIR CARE
+      </motion.div>
+
+      {/* Floating particles */}
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: '4px',
+            height: '4px',
+            background: 'rgba(255,255,255,0.6)',
+            borderRadius: '50%',
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
           }}
+          initial={{ opacity: 0, scale: 0 }}
           animate={{ 
-            opacity: 1, 
-            y: 0, 
-            filter: "blur(0px)",
-            scale: 1
-          }}
-          exit={{ 
-            opacity: 0, 
-            y: -30,
-            scale: 0.8
+            opacity: [0, 1, 0],
+            scale: [0, 1, 0],
+            y: [0, -50, -100]
           }}
           transition={{
-            duration: 0.8,
-            delay: index * 0.15,
-            ease: [0.43, 0.13, 0.23, 0.96],
+            duration: 3,
+            delay: Math.random() * 2,
+            repeat: Infinity,
+            ease: "easeOut"
           }}
-          style={{
-            textShadow: "0 0 30px rgba(255,255,255,0.5)"
-          }}
-        >
-          {letter === "C" ? (
-            <motion.span
-              initial={{ rotate: -10 }}
-              animate={{ rotate: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.15 }}
-            >
-              {letter}
-            </motion.span>
-          ) : (
-            letter
-          )}
-        </motion.span>
+        />
       ))}
     </div>
   );
@@ -253,6 +352,47 @@ const ShopTheLookSection = () => {
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Section Title */}
+        <motion.div
+          className="text-center mb-12 sm:mb-16 md:mb-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+        >
+          <motion.h2
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Curated For You
+          </motion.h2>
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            Discover our handpicked selection featuring bestselling favorites and must-have essentials
+          </motion.p>
+          
+          {/* Decorative line */}
+          <motion.div
+            className="flex items-center justify-center mt-6 sm:mt-8"
+            initial={{ opacity: 0, scale: 0 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-accent"></div>
+            <div className="mx-4 w-2 h-2 rounded-full bg-accent"></div>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-accent"></div>
+          </motion.div>
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
           {/* Model Image */}
           <motion.div
@@ -958,13 +1098,61 @@ const ElegantProductGrid = ({
   navigate: (path: string) => void;
 }) => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, staggerChildren: 0.1 }}
-      >
+    <motion.section 
+      className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true, margin: "-100px" }}
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Section Title */}
+        <motion.div
+          className="text-center mb-12 sm:mb-16 md:mb-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+        >
+          <motion.h2
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Our Complete Collection
+          </motion.h2>
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            Premium heatless curlers and styling accessories designed for beautiful, healthy hair
+          </motion.p>
+          
+          {/* Decorative line */}
+          <motion.div
+            className="flex items-center justify-center mt-6 sm:mt-8"
+            initial={{ opacity: 0, scale: 0 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary"></div>
+            <div className="mx-4 w-2 h-2 rounded-full bg-primary"></div>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-primary"></div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, staggerChildren: 0.1 }}
+        >
         {displayedProducts.map((product, index) => (
           <motion.div
             key={product.id}
@@ -994,8 +1182,9 @@ const ElegantProductGrid = ({
             />
           </motion.div>
         ))}
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+    </motion.section>
   );
 };
 
@@ -1192,11 +1381,11 @@ const FeaturedProductCard = ({
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-card/60 rounded-lg">
         {/* Enhanced Image Container */}
-        <div className="absolute inset-2 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+        <div className="absolute inset-0 rounded-lg overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
+            className="w-full h-full object-cover object-center transition-all duration-500 ease-out group-hover:scale-105"
             style={{
               filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
               imageRendering: 'auto' as const,

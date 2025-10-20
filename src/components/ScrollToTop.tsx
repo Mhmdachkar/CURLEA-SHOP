@@ -49,7 +49,14 @@ export const ScrollToTop = () => {
   useEffect(() => {
     // Only scroll to top if the pathname actually changed
     if (previousPathname.current !== pathname) {
-      // Add loading class to prevent scroll conflicts
+      // Don't interfere with CollectionPage animation
+      if (pathname === '/collection' || pathname === '/shop') {
+        // For collection/shop pages, let the page handle its own animation
+        previousPathname.current = pathname;
+        return;
+      }
+      
+      // Add loading class to prevent scroll conflicts for other pages
       document.documentElement.classList.add('page-loading');
       
       // Prevent all scroll events during transition

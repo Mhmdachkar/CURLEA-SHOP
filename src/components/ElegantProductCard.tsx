@@ -62,7 +62,7 @@ const ImageWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 0;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
@@ -71,7 +71,7 @@ const ImageWrapper = styled(motion.div)`
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     filter: brightness(1.03) contrast(1.08) saturate(1.05);
     transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
