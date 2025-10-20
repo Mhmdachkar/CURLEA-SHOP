@@ -389,7 +389,7 @@ export const ProductDetailPage = () => {
   // Get related products - always show exactly 3 products with smart cross-collection recommendations
   const getRelatedProducts = () => {
     // Get all available products from different collections
-    const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
     const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
     const regularProducts = products.filter(p => 
       p.id !== product.id && 
@@ -1343,7 +1343,7 @@ export const ProductDetailPage = () => {
 
         {/* 1. The "Ritual in Motion" Video Section - Skip for SongMay product */}
         {product.id !== 'songmay-hair-clips' && (
-          <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
+        <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
         )}
 
         {/* Usage Steps Section - for all products with usageSteps */}
@@ -1798,8 +1798,6 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
 
 // 1. The "Ritual in Motion" Video Section
 const RitualInMotionSection = ({ product }: { product: Product }) => {
-  // Disabled per request: hide the entire video section
-  return null;
   const ref = useRef(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
