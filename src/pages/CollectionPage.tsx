@@ -1148,15 +1148,10 @@ const ElegantProductGrid = ({
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2 sm:gap-6 lg:gap-8 xl:gap-10 w-full"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2 sm:gap-6 lg:gap-8 xl:gap-10 w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, staggerChildren: 0.1 }}
-          style={{ 
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '8px'
-          }}
         >
         {displayedProducts.map((product, index) => (
           <motion.div
