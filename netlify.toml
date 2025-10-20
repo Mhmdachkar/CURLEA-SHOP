@@ -33,6 +33,19 @@
   to = "/index.html"
   status = 200
 
+# Ensure CSS and JS files are served with correct MIME types
+[[redirects]]
+  from = "/assets/*.css"
+  to = "/assets/:splat.css"
+  status = 200
+  headers = { Content-Type = "text/css; charset=utf-8" }
+
+[[redirects]]
+  from = "/assets/*.js"
+  to = "/assets/:splat.js"
+  status = 200
+  headers = { Content-Type = "application/javascript; charset=utf-8" }
+
 # Security headers
 [[headers]]
   for = "/*"
@@ -73,6 +86,20 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Headers for CSS files
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "text/css; charset=utf-8"
+
+# Headers for JavaScript files
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "application/javascript; charset=utf-8"
 
 # Headers for HTML files
 [[headers]]
