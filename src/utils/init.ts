@@ -54,9 +54,20 @@ export const initPerformance = (): void => {
 
 // Initialize error monitoring
 export const initErrorMonitoring = (): void => {
-  // Global error handler
+  // Global error handler with better error management
   window.addEventListener('error', (event) => {
-    if (process.env.NODE_ENV === 'development') {
+    // Ignore common non-critical errors
+    const ignoredErrors = [
+      'NotFoundError: Failed to execute \'removeChild\'',
+      'AbortError: The play() request was interrupted',
+      'ResizeObserver loop limit exceeded'
+    ];
+    
+    const shouldIgnore = ignoredErrors.some(error => 
+      event.error?.message?.includes(error) || event.message?.includes(error)
+    );
+    
+    if (!shouldIgnore && process.env.NODE_ENV === 'development') {
       console.error('Global Error:', event.error);
     }
     // In production, send to error reporting service

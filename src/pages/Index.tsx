@@ -7,19 +7,17 @@ import { BrandStory } from "@/components/BrandStory";
 import { Testimonials } from "@/components/Testimonials";
 import { Newsletter } from "@/components/Newsletter";
 import { Footer } from "@/components/Footer";
+import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 
 const Index = () => {
-  // Scroll to top when page loads
-  React.useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant' as ScrollBehavior
-    });
-  }, []);
+  // Initialize advanced scroll system
+  useAdvancedScroll();
+  
+  // Ensure page loads at top
+  useScrollToTop([]);
 
   return (
-    <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
+    <div className="min-h-screen bg-white relative">
       <Navbar />
       <HeroSection />
       <BrandStory />

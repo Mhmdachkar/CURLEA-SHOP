@@ -9,6 +9,9 @@ interface ProductImageProps {
   productId?: string;
 }
 
+// Global placeholder (requested path)
+const DEFAULT_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
+
 export const ProductImage = ({ 
   src, 
   alt, 
@@ -27,6 +30,12 @@ export const ProductImage = ({
         className="w-full h-full"
         priority={priority}
         removeBlackBorders={needsBlackBorderRemoval}
+        onError={(e) => {
+          // Swap to placeholder on error
+          try {
+            (e.currentTarget as HTMLImageElement).src = DEFAULT_PLACEHOLDER;
+          } catch {}
+        }}
       />
       
       {/* Additional overlay for product-4.webp to ensure black borders are completely removed */}

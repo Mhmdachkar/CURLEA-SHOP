@@ -49,14 +49,41 @@ export const ScrollToTop = () => {
   useEffect(() => {
     // Only scroll to top if the pathname actually changed
     if (previousPathname.current !== pathname) {
+      // Add loading class to prevent scroll conflicts
+      document.documentElement.classList.add('page-loading');
+      
+      // Prevent all scroll events during transition
+      const preventScroll = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+      
+      window.addEventListener('scroll', preventScroll, { passive: false });
+      window.addEventListener('wheel', preventScroll, { passive: false });
+      window.addEventListener('touchmove', preventScroll, { passive: false });
+      
       // Elegant delay for page transition
       const timeoutId = setTimeout(() => {
         smoothScrollToTop();
+        // Remove loading class and event listeners after scroll starts
+        setTimeout(() => {
+          window.removeEventListener('scroll', preventScroll);
+          window.removeEventListener('wheel', preventScroll);
+          window.removeEventListener('touchmove', preventScroll);
+          document.documentElement.classList.remove('page-loading');
+        }, 300);
       }, 150);
 
       previousPathname.current = pathname;
 
-      return () => clearTimeout(timeoutId);
+      return () => {
+        clearTimeout(timeoutId);
+        window.removeEventListener('scroll', preventScroll);
+        window.removeEventListener('wheel', preventScroll);
+        window.removeEventListener('touchmove', preventScroll);
+        document.documentElement.classList.remove('page-loading');
+      };
     }
   }, [pathname]);
 

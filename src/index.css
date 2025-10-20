@@ -5,12 +5,67 @@
 /* Import Minimalist Cards CSS */
 @import './styles/minimalist-cards.css';
 
-/* Professional elegant smooth scrolling - OPTIMIZED */
+/* Advanced Scroll System - Professional & Elegant */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
-  /* Prevent scroll conflicts */
   overflow-x: hidden;
+  /* Enhanced smoothness with CSS custom easing */
+  scroll-snap-type: none;
+  /* Prevent scroll during load */
+  overscroll-behavior: none;
+}
+
+body {
+  /* Prevent scroll bounce and overscroll */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Elegant scroll momentum - Apple-style */
+html.is-scrolling {
+  scroll-behavior: smooth;
+}
+
+/* Prevent scroll conflicts during page loading */
+html.page-loading {
+  scroll-behavior: auto !important;
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html.page-loading body {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none !important;
+}
+
+/* Override smooth scroll for instant scroll calls */
+html.instant-scroll {
+  scroll-behavior: auto !important;
+}
+
+/* Prevent scroll restoration conflicts */
+html:not(.instant-scroll) {
+  /* Keep smooth scroll enabled */
+  scroll-behavior: smooth;
+}
+
+/* Enhanced scroll performance */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 * {
@@ -37,9 +92,48 @@ img {
 /* Optimize animations for smooth scrolling */
 .motion-div {
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+}
+
+/* Hero section during page loading - AGGRESSIVE LOCKDOWN */
+.hero-section.page-loading-hero {
+  will-change: auto !important;
+  transform: translateZ(0) !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.hero-section.page-loading-hero * {
+  will-change: auto !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+/* Completely disable all animations during page loading */
+html.page-loading .hero-section,
+html.page-loading .hero-section * {
+  animation: none !important;
+  transition: none !important;
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+}
+
+/* Hero section lockdown during page loading - Less aggressive */
+html.page-loading .hero-section {
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+html.page-loading .hero-section * {
+  transform: translateZ(0) !important;
+  will-change: auto !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 /* Custom elegant scrollbar */

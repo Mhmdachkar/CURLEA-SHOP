@@ -370,27 +370,92 @@ const MagneticCTAButton = () => {
 export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [useVideo, setUseVideo] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
   
+  // Always create scroll tracking but disable effects during page loading
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
+    layoutEffect: false,
   });
 
   // Disable parallax on mobile for performance - REDUCED parallax
   const shouldUseParallax = !isMobile && !isTablet;
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", shouldUseParallax ? "20%" : "0%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", (shouldUseParallax && !isPageLoading) ? "20%" : "0%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.9, 0.6]);
 
-  // Force video to play immediately
+  // Check if page is still loading and disable scroll effects
+  useEffect(() => {
+    const checkPageLoading = () => {
+      const isLoading = document.documentElement.classList.contains('page-loading');
+      setIsPageLoading(isLoading);
+    };
+
+    // Check immediately
+    checkPageLoading();
+
+    // Set up observer to watch for page-loading class changes
+    const observer = new MutationObserver(checkPageLoading);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    // Also check when component mounts to ensure proper state
+    const timeout = setTimeout(() => {
+      checkPageLoading();
+    }, 100);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  // Scroll prevention during page loading - Less aggressive
+  useEffect(() => {
+    if (!isPageLoading) return;
+
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    const heroElement = heroRef.current;
+    if (heroElement) {
+      // Only prevent wheel and touch events during page loading
+      heroElement.addEventListener('wheel', preventScroll, { passive: false });
+      heroElement.addEventListener('touchmove', preventScroll, { passive: false });
+    }
+
+    return () => {
+      if (heroElement) {
+        heroElement.removeEventListener('wheel', preventScroll);
+        heroElement.removeEventListener('touchmove', preventScroll);
+      }
+    };
+  }, [isPageLoading]);
+
+  // Force video to play immediately with better error handling
   useEffect(() => {
     if (videoRef.current && useVideo) {
-      videoRef.current.play().catch(error => {
-        console.log('Video autoplay prevented:', error);
-        setUseVideo(false);
-      });
+      const playVideo = async () => {
+        try {
+          await videoRef.current.play();
+        } catch (error) {
+          console.log('Video autoplay prevented:', error);
+          setUseVideo(false);
+        }
+      };
+      
+      // Add a small delay to ensure video element is ready
+      const timeout = setTimeout(playVideo, 100);
+      
+      return () => clearTimeout(timeout);
     }
   }, [currentSlide, useVideo]);
 
@@ -410,7 +475,9 @@ export const HeroSection = () => {
   }, [isMobile, isTablet]);
 
   return (
-    <HeroContainer ref={heroRef} className="hero-section">
+    <HeroContainer 
+      ref={heroRef}
+      className={`hero-section ${isPageLoading ? 'page-loading-hero' : ''}`}>
       {/* Background Video/Image Layer with Elegant Crossfade & Parallax */}
       <AnimatePresence mode="sync">
         <BackgroundLayer
@@ -420,7 +487,7 @@ export const HeroSection = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
           style={{ 
-            y: shouldUseParallax ? y : 0,
+            y: (shouldUseParallax && !isPageLoading) ? y : 0,
             willChange: "auto",
             backfaceVisibility: "hidden",
             transform: "translateZ(0)"
@@ -437,13 +504,24 @@ export const HeroSection = () => {
                 preload="auto"
                 disablePictureInPicture
                 controlsList="nodownload noplaybackrate"
-                onError={() => setUseVideo(false)}
+                onError={(e) => {
+                  console.error('Hero video error:', e);
+                  setUseVideo(false);
+                }}
                 onLoadedData={(e) => {
                   const video = e.target as HTMLVideoElement;
-                  video.play().catch(() => setUseVideo(false));
+                  video.play().catch((error) => {
+                    console.error('Hero video play error:', error);
+                    setUseVideo(false);
+                  });
+                }}
+                onCanPlay={() => {
+                  console.log('Hero video can play');
                 }}
               >
                 <source src={slides[currentSlide].video} type="video/mp4" />
+                <source src={slides[currentSlide].video} type="video/webm" />
+                <source src={slides[currentSlide].video} type="video/ogg" />
               </Video>
             ) : (
               <HeroImage
@@ -461,7 +539,7 @@ export const HeroSection = () => {
       </AnimatePresence>
 
       {/* Content */}
-      <ContentContainer style={{ opacity }}>
+      <ContentContainer style={{ opacity: isPageLoading ? 1 : opacity }}>
         <AnimatedTitle text={slides[currentSlide].title} key={`title-${currentSlide}`} />
         
         <Subtitle

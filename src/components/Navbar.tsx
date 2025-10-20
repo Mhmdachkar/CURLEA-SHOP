@@ -10,7 +10,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
    STYLED COMPONENTS - MOBILE FIRST
    ============================================ */
 
-const NavContainer = styled(motion.nav)<{ $isScrolled: boolean }>`
+const NavContainer = styled(motion.nav)<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -23,6 +23,13 @@ const NavContainer = styled(motion.nav)<{ $isScrolled: boolean }>`
   backdrop-filter: ${({ $isScrolled }) => ($isScrolled ? 'blur(12px)' : 'none')};
   box-shadow: ${({ $isScrolled, theme }) =>
     $isScrolled ? theme.shadows.md : 'none'};
+  
+  /* Force black text when on product detail page */
+  ${({ $isProductDetailPage }) => $isProductDetailPage && `
+    * {
+      color: #000000 !important;
+    }
+  `}
 `;
 
 const NavInner = styled.div`
@@ -46,13 +53,13 @@ const NavInner = styled.div`
   }
 `;
 
-const Logo = styled(motion.a)<{ $isScrolled: boolean }>`
+const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   font-family: ${({ theme }) => theme.typography.fontFamily.serif};
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
-  color: ${({ $isScrolled, theme }) =>
-    $isScrolled ? theme.colors.foreground : '#ffffff'};
+  color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
+    ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -62,13 +69,20 @@ const Logo = styled(motion.a)<{ $isScrolled: boolean }>`
   text-shadow: ${({ $isScrolled }) =>
     $isScrolled ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.3)'};
   z-index: ${({ theme }) => theme.zIndex.sticky + 1};
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+
+  /* Ensure black text when background is white */
+  @media (prefers-color-scheme: light) {
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.foreground : '#ffffff'};
+  }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
     font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
   }
 `;
 
-const DesktopNav = styled.div<{ $isScrolled: boolean }>`
+const DesktopNav = styled.div<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   display: none;
   
   @media ${({ theme }) => theme.mediaQueries.tablet} {
@@ -76,6 +90,13 @@ const DesktopNav = styled.div<{ $isScrolled: boolean }>`
     align-items: center;
     gap: ${({ theme }) => theme.spacing.lg};
     position: relative;
+    color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
+      ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
+    transition: color 0.3s ease;
+  }
+
+  /* Ensure black text when background is white */
+  @media (prefers-color-scheme: light) {
     color: ${({ $isScrolled, theme }) =>
       $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
@@ -95,7 +116,7 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   cursor: pointer;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   position: relative;
-  transition: ${({ theme }) => theme.transitions.fast};
+  transition: ${({ theme }) => theme.transitions.fast}, color 0.3s ease, text-shadow 0.3s ease;
   text-shadow: ${({ $isScrolled }) =>
     $isScrolled ? 'none' : '0 1px 4px rgba(0, 0, 0, 0.2)'};
   white-space: nowrap;
@@ -151,6 +172,17 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
     }
   }
 
+  /* Ensure black text when background is white */
+  @media (prefers-color-scheme: light) {
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.foreground : '#ffffff'};
+    
+    &:hover {
+      color: ${({ $isScrolled, theme }) =>
+        $isScrolled ? theme.colors.accent : '#ffffff'};
+    }
+  }
+
   /* Active state for current page */
   &[data-active="true"] {
     color: ${({ $isScrolled, theme }) =>
@@ -168,14 +200,21 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   }
 `;
 
-const IconsContainer = styled.div<{ $isScrolled: boolean }>`
+const IconsContainer = styled.div<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
-  color: ${({ $isScrolled, theme }) =>
-    $isScrolled ? theme.colors.foreground : '#ffffff'};
+  color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
+    ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
   z-index: ${({ theme }) => theme.zIndex.sticky + 10};
   position: relative;
+  transition: color 0.3s ease;
+
+  /* Ensure black text when background is white */
+  @media (prefers-color-scheme: light) {
+    color: ${({ $isScrolled, theme }) =>
+      $isScrolled ? theme.colors.foreground : '#ffffff'};
+  }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
     gap: ${({ theme }) => theme.spacing.md};
@@ -186,7 +225,7 @@ const IconsContainer = styled.div<{ $isScrolled: boolean }>`
   }
 `;
 
-const IconButton = styled(motion.button)`
+const IconButton = styled(motion.button)<{ $isProductDetailPage?: boolean }>`
   background: none;
   border: none;
   color: inherit;
@@ -203,6 +242,14 @@ const IconButton = styled(motion.button)`
   z-index: 10;
   pointer-events: auto;
 
+  /* Force white color for cart icon on product detail pages */
+  ${({ $isProductDetailPage }) => $isProductDetailPage && `
+    color: #ffffff !important;
+    svg {
+      color: #ffffff !important;
+    }
+  `}
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }
@@ -218,14 +265,15 @@ const IconButton = styled(motion.button)`
   }
 `;
 
-const CartBadge = styled(motion.div)`
+const CartBadge = styled(motion.div)<{ $isProductDetailPage?: boolean }>`
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
   min-width: 1.25rem;
   height: 1.25rem;
   background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.primaryForeground};
+  color: ${({ $isProductDetailPage }) => 
+    $isProductDetailPage ? '#ffffff !important' : 'inherit'};
   border-radius: ${({ theme }) => theme.borderRadius.full};
   display: flex;
   align-items: center;
@@ -233,6 +281,11 @@ const CartBadge = styled(motion.div)`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   padding: 0 0.25rem;
+
+  /* Force white text on product detail pages */
+  ${({ $isProductDetailPage }) => $isProductDetailPage && `
+    color: #ffffff !important;
+  `}
 `;
 
 const HamburgerButton = styled(IconButton)`
@@ -325,6 +378,7 @@ const MobileMenuLink = styled(motion.button)`
    ============================================ */
 
 const navLinks = [
+  { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
   { label: "Heatless Hair Curling Rod", href: "/category/wavy" },
   { label: "Curly Hair Collection", href: "/category/curly" },
@@ -337,9 +391,10 @@ const navLinks = [
 interface MagneticButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
+  $isProductDetailPage?: boolean;
 }
 
-const MagneticButton = ({ children, onClick }: MagneticButtonProps) => {
+const MagneticButton = ({ children, onClick, $isProductDetailPage }: MagneticButtonProps) => {
   const { isMobile, isTablet } = useBreakpoint();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -366,6 +421,7 @@ const MagneticButton = ({ children, onClick }: MagneticButtonProps) => {
 
   return (
     <IconButton
+      $isProductDetailPage={$isProductDetailPage}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
@@ -389,6 +445,9 @@ export const Navbar = () => {
   const { itemCount, openCart } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Check if we're on a product detail page
+  const isProductDetailPage = location.pathname.startsWith('/product/');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -440,6 +499,7 @@ export const Navbar = () => {
     <>
       <NavContainer
         $isScrolled={isScrolled}
+        $isProductDetailPage={isProductDetailPage}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -448,6 +508,7 @@ export const Navbar = () => {
           {/* Logo */}
           <Logo
             $isScrolled={isScrolled}
+            $isProductDetailPage={isProductDetailPage}
             href="/"
             onClick={(e) => {
               e.preventDefault();
@@ -460,7 +521,7 @@ export const Navbar = () => {
           </Logo>
 
           {/* Desktop Navigation */}
-          <DesktopNav $isScrolled={isScrolled}>
+          <DesktopNav $isScrolled={isScrolled} $isProductDetailPage={isProductDetailPage}>
             {navLinks.map((link) => {
               const isActive = location.pathname === link.href;
               return (
@@ -483,13 +544,14 @@ export const Navbar = () => {
           </DesktopNav>
 
           {/* Right Icons */}
-          <IconsContainer $isScrolled={isScrolled}>
-            <MagneticButton onClick={openCart}>
+          <IconsContainer $isScrolled={isScrolled} $isProductDetailPage={isProductDetailPage}>
+            <MagneticButton onClick={openCart} $isProductDetailPage={isProductDetailPage}>
               <>
                 <ShoppingBag />
                 <AnimatePresence>
                   {itemCount > 0 && (
                     <CartBadge
+                      $isProductDetailPage={isProductDetailPage}
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}

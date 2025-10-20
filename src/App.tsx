@@ -9,46 +9,57 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { RealtimeSync } from "@/components/RealtimeSync";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { registerServiceWorker } from "@/utils/serviceWorker";
 import Index from "./pages/Index";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CollectionPage } from "./pages/CollectionPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import NotFound from "./pages/NotFound";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <RealtimeProvider>
-          <CartProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter
-              future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true
-              }}
-            >
-            <ScrollToTop />
-            <RealtimeSync />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/shop" element={<CollectionPage />} />
-              <Route path="/collection" element={<CollectionPage />} />
-              <Route path="/category/:category" element={<CategoryPage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <CartDrawer />
-          </BrowserRouter>
-          </CartProvider>
-        </RealtimeProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  // Register Service Worker for offline support
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      registerServiceWorker();
+    }
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RealtimeProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true
+                }}
+              >
+              <ScrollToTop />
+              <RealtimeSync />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/shop" element={<CollectionPage />} />
+                <Route path="/collection" element={<CollectionPage />} />
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <CartDrawer />
+            </BrowserRouter>
+            </CartProvider>
+          </RealtimeProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;

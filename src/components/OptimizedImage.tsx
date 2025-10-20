@@ -15,6 +15,9 @@ interface OptimizedImageProps {
 // Image cache to prevent re-downloading
 const imageCache = new Map<string, boolean>();
 
+// Default placeholder (requested path)
+const DEFAULT_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
+
 export const OptimizedImage = ({
   src,
   alt,
@@ -69,12 +72,15 @@ export const OptimizedImage = ({
       return;
     }
 
-    // Use link preload for faster loading
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = src;
-    document.head.appendChild(link);
+    // Use link preload for faster loading (only for priority images)
+    let link: HTMLLinkElement | null = null;
+    if (priority) {
+      link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+    }
 
     const img = new Image();
     img.src = src;
@@ -85,12 +91,30 @@ export const OptimizedImage = ({
     img.onload = () => {
       imageCache.set(src, true); // Cache the loaded image
       setIsLoaded(true);
-      document.head.removeChild(link);
+      // Safely remove link if it exists
+      if (link && link.parentNode) {
+        try {
+          document.head.removeChild(link);
+        } catch (error) {
+          // Link might have been removed already, ignore error
+        }
+      }
     };
 
     img.onerror = () => {
-      console.error(`Failed to load image: ${src}`);
-      document.head.removeChild(link);
+      console.error(`Failed to preload image: ${src}`);
+      // Swap to placeholder and mark as loaded
+      const fallback = placeholderSrc || DEFAULT_PLACEHOLDER;
+      setCurrentSrc(fallback);
+      setIsLoaded(true);
+      // Safely remove link if it exists
+      if (link && link.parentNode) {
+        try {
+          document.head.removeChild(link);
+        } catch (error) {
+          // Link might have been removed already, ignore error
+        }
+      }
       if (onError && imgRef.current) {
         const syntheticEvent = {
           currentTarget: imgRef.current,
@@ -100,11 +124,16 @@ export const OptimizedImage = ({
     };
 
     return () => {
-      if (link.parentNode) {
-        document.head.removeChild(link);
+      // Safely remove link if it exists
+      if (link && link.parentNode) {
+        try {
+          document.head.removeChild(link);
+        } catch (error) {
+          // Link might have been removed already, ignore error
+        }
       }
     };
-  }, [isInView, src, currentSrc, onError]);
+  }, [isInView, src, currentSrc, onError, placeholderSrc]);
 
   // Check if this is the product-4.webp image that needs black border removal
   const isProduct4Image = src.includes('product-4.webp');
@@ -132,7 +161,14 @@ export const OptimizedImage = ({
           }}
           onLoad={() => {
             setIsLoaded(true);
-            imageCache.set(src, true);
+            imageCache.set(currentSrc, true);
+          }}
+          onError={(e) => {
+            const fallback = placeholderSrc || DEFAULT_PLACEHOLDER;
+            if ((e.currentTarget as HTMLImageElement).src !== fallback) {
+              (e.currentTarget as HTMLImageElement).src = fallback;
+            }
+            if (onError) onError(e);
           }}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"

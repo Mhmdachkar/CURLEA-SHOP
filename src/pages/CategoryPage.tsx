@@ -1,21 +1,28 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { QuickViewModal } from "@/components/QuickViewModal";
 import { ProductCard } from "@/components/ProductCard";
 import { Navbar } from "@/components/Navbar";
 import { getProductsByHairType, getCurlyHairCollectionProducts, Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
+import { useScrollToTop } from "@/hooks/useAdvancedScroll";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 // Import hero images for different categories
 import heatlessHeroImage from "@/assets/hero-2.png";
 import curlyHeroImage from "@/assets/curly hair collection/hero.png";
+
+// Placeholder requested path
+const CURLY_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
 
 export const CategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+
+  // Ensure page loads at top without scroll rendering
+  useScrollToTop([category]);
 
   // Validate and normalize category
   const validCategories = ['wavy', 'curly', 'straight'];
@@ -124,11 +131,11 @@ export const CategoryPage = () => {
                 {config.title}
               </h1>
               
-              <p className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <p className="text-xl sm:text-2xl text-black mb-8 max-w-2xl mx-auto">
                 {config.subtitle}
               </p>
               
-              <p className="text-base sm:text-lg text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg text-black mb-12 max-w-3xl mx-auto leading-relaxed">
                 {config.description}
               </p>
               
@@ -412,7 +419,7 @@ export const CategoryPage = () => {
               className={`fluid-text-lg lg:fluid-text-xl xl:fluid-text-2xl mb-6 sm:mb-8 max-w-4xl mx-auto leading-relaxed px-4 ${
                 (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
                   ? 'text-white/90 drop-shadow-md' 
-                  : 'text-muted-foreground'
+                  : 'text-black'
               }`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -449,7 +456,7 @@ export const CategoryPage = () => {
               className={`fluid-text-base lg:fluid-text-lg max-w-3xl mx-auto mb-8 sm:mb-12 px-4 ${
                 (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
                   ? 'text-white/80 drop-shadow-sm' 
-                  : 'text-muted-foreground'
+                  : 'text-black'
               }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -686,19 +693,12 @@ export const CategoryPage = () => {
                           transition: { duration: 0.3 }
                         }}
                       >
-                        <motion.img
+                        <OptimizedImage
                           src={product.image}
                           alt={product.name}
                           className="w-full h-auto object-contain"
-                          style={{
-                            filter: 'contrast(1.1) brightness(1.05) saturate(1.1)',
-                            mixBlendMode: 'normal',
-                            backgroundColor: 'transparent',
-                            backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%)',
-                          }}
-                          whileHover={{
-                            filter: 'contrast(1.15) brightness(1.08) saturate(1.15)',
-                            transition: { duration: 0.3 }
+                          onError={(e) => {
+                            try { (e.currentTarget as HTMLImageElement).src = CURLY_PLACEHOLDER; } catch {}
                           }}
                         />
                         
@@ -732,12 +732,12 @@ export const CategoryPage = () => {
                       )}
                     </div>
 
-                    {/* Minimalist Product Info */}
+                    {/* Elegant Product Info */}
                     <div className="space-y-4 max-w-xs">
                       <h3 className="font-bold text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2">
                         {product.name}
                       </h3>
-                      <p className="text-muted-foreground text-sm font-light leading-relaxed">
+                      <p className={`text-sm font-light leading-relaxed ${(product.category === 'DreamCurl™ Collection' || product.category === 'Heatless Tools') ? 'text-black' : 'text-muted-foreground'}`}>
                         {product.description[0]}
                       </p>
                       <div className="flex items-center justify-center gap-4 pt-2">
@@ -749,6 +749,21 @@ export const CategoryPage = () => {
                         </span>
                       </div>
                       
+                      {/* Color Options Display */}
+                      {product.colors && product.colors.length > 0 && (
+                        <div className="flex flex-wrap justify-center gap-2 pt-2">
+                          {product.colors.slice(0, 4).map((color, index) => (
+                            <span key={index} className="text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                              {color}
+                            </span>
+                          ))}
+                          {product.colors.length > 4 && (
+                            <span className="text-xs text-muted-foreground">
+                              +{product.colors.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -776,12 +791,6 @@ export const CategoryPage = () => {
           )}
         </div>
       </section>
-
-      {/* Quick View Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-      />
     </div>
   );
 };
@@ -797,38 +806,40 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
   const product6Image = new URL('../assets/Heatless Hair Curling Rod/product6/candy&marchmello.webp', import.meta.url).href;
 
   return [
-         {
-           id: "dreamcurl-original",
-           name: "DreamCurl™ Original Set",
-           price: "€39.99",
-           image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-           category: "DreamCurl™ Collection",
-           hairType: "Medium to Long",
-           featured: true,
-           description: [
-             "The Original Heatless Curler - by CURLEA",
-             "For bouncy, voluminous curls overnight. Designed for medium to long hair.",
-             "This isn't just a heatless curler. It's the one that redefined the category.",
-             "We invented the first curlers by size and engineered tools for how people actually sleep.",
-             "Developed with elongated, structured fibres that hold shape through the night without wires, foam or tension.",
-             "Exclusive vegan Peau de Soie fabric reduces friction and protects against overnight breakage.",
-             "No bunching. No pressure. No stiffness behind your ears.",
-             "Available in 4 colors: Mulberry, Candy, Latte, Olive",
-             "The curler that makes people say, 'What did you use?'"
-           ],
-           ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
-           size: "Original Size",
-           inStock: true,
-           colors: ["Mulberry", "Candy", "Latte", "Olive"],
-           video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
-           images: [
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
-             new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href
-           ]
-         },
+    // DreamCurl™ Original Set - First in the collection
+    {
+      id: "dreamcurl-original",
+      name: "DreamCurl™ Original Set",
+      price: "€39.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
+      hairType: "Medium to Long",
+      featured: true,
+      description: [
+        "The Original Heatless Curler - by CURLEA",
+        "For bouncy, voluminous curls overnight. Designed for medium to long hair.",
+        "This isn't just a heatless curler. It's the one that redefined the category.",
+        "We invented the first curlers by size and engineered tools for how people actually sleep.",
+        "Developed with elongated, structured fibres that hold shape through the night without wires, foam or tension.",
+        "Exclusive vegan Peau de Soie fabric reduces friction and protects against overnight breakage.",
+        "No bunching. No pressure. No stiffness behind your ears.",
+        "Available in 4 colors: Mulberry, Candy, Latte, Olive",
+        "The curler that makes people say, 'What did you use?'"
+      ],
+      ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
+      size: "Original Size",
+      inStock: true,
+      colors: ["Mulberry", "Candy", "Latte", "Olive"],
+      video: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href,
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/IMG-3641.webp', import.meta.url).href
+      ]
+    },
+    // DreamCurl™ Short Set - Second in the collection
     {
       id: "dreamcurl-short-set",
       name: "DreamCurl™ Short Set",
@@ -859,6 +870,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
         product4Image  // Earl Grey
       ]
     },
+    // DreamCurl™ Midi - Third in the collection
     {
       id: "dreamcurl-midi",
       name: "DreamCurl™ Midi",
@@ -892,6 +904,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
       ]
     },
+    // DreamCurl™ JUMBO SIZE - Fourth in the collection
     {
       id: "dreamcurl-jumbo",
       name: "DreamCurl™ JUMBO SIZE",
@@ -922,6 +935,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
         new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
       ]
     },
+    // BUN BONS - Heatless Curling System - Fifth and final product
     {
       id: "heatless-5",
       name: "BUN BONS - Heatless Curling System",

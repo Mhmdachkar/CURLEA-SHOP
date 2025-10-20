@@ -14,7 +14,6 @@ A sophisticated, mobile-first e-commerce platform for luxury haircare products, 
 ### 🛒 **E-Commerce Functionality**
 - **Shopping Cart**: Full cart management with context API
 - **Product Gallery**: Interactive image galleries with thumbnails
-- **Quick View Modal**: Instant product previews
 - **Color Selection**: Dynamic color variant handling
 - **Category Navigation**: Organized product collections
 

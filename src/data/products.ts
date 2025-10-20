@@ -119,62 +119,32 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-jumbo",
-    name: "DreamCurl™ Jumbo",
-    price: "€44.99",
-    image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
+    name: "DreamCurl™ JUMBO SIZE",
+    price: "€39.99",
+    image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
-    hairType: "Long",
-    featured: true,
-    description: [
-      "The Ultimate Curling Experience - DreamCurl™ Jumbo",
-      "Designed for long hair that demands maximum curl and volume",
-      "Extra-large size creates stunning, dramatic curls",
-      "Available in 4 premium colors: Purple, Candy, Latte, Olive",
-      "Perfect for special occasions and dramatic styling",
-      "Professional-grade heatless curling technology",
-      "Comfortable overnight wear with premium materials",
-      "Achieve salon-quality results at home"
-    ],
-    ingredients: ["Vegan Peau de Soie Fabric", "Elongated Structured Fibres", "Glide-Safe Material"],
-    size: "Jumbo Size",
-    inStock: true,
-    colors: ["Purple", "Candy", "Latte", "Olive"],
-    video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
-    images: [
-      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href
-    ]
-  },
-  {
-    id: "bun-bons",
-    name: "BUN BONS - Heatless Hair Styling Set",
-    price: "€29.99",
-    image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
-    category: "Heatless Tools",
     hairType: "All Types",
     featured: true,
     description: [
-      "Revolutionary Heatless Hair Styling - BUN BONS",
-      "Create beautiful buns and updos without heat damage",
-      "5 different styling tools for endless possibilities",
-      "Perfect for quick styling and special occasions",
-      "Easy-to-use design for all skill levels",
-      "Includes step-by-step styling guide",
-      "Professional results without professional tools",
-      "Versatile styling for all hair types and lengths"
+      "Jumbo Heatless Curler - by CURLEA",
+      "For soft, voluminous waves with a looser curl shape. Designed for hair below the shoulders.",
+      "It's easy to assume Jumbo means it's made for longer hair. But in reality, Jumbo refers to the thickness of the curler - not the length of your hair.",
+      "This size was created for those who prefer a looser, more open curl shape, with soft volume and gentle movement instead of tight definition. Think less structure, more flow.",
+      "At CURLEA, we were the first to design curlers by size.",
+      "This is the curler that makes people say, 'What did you use?' And the one you'll feel proud to answer with: 'CURLEA.'",
+      "Each set includes: 1 Jumbo Size Heatless Curler, 2 Matching Hair Ties, 1 Hair Clip for easy wrapping"
     ],
-    ingredients: ["High-Quality Plastic", "Flexible Design", "Non-Slip Grip"],
-    size: "5-Piece Set",
+    ingredients: ["100% Vegan Peau De Soie Fabric", "Elongated Structured Fibres", "Premium Memory Foam"],
+    size: "Jumbo Size",
     inStock: true,
-    video: new URL('../assets/Heatless Hair Curling Rod/product5/Screen Recording 2025-10-07 143110.mp4', import.meta.url).href,
+    colors: ["LATTE", "CANDY", "OLIVE", "MULBERRY"],
+    video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
     images: [
-      new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
-      new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
     ]
   },
   // Removed duplicate: peau-de-soie-bonnet (keep only curated curly collection version)
@@ -303,6 +273,169 @@ export const products: Product[] = [
       new URL('../assets/curly hair collection/product3/ppp2.jpg', import.meta.url).href,
       new URL('../assets/curly hair collection/product3/ppp3.jpg', import.meta.url).href,
       new URL('../assets/curly hair collection/product3/ppp4.jpg', import.meta.url).href
+    ]
+  },
+  {
+    id: "songmay-hair-clips",
+    name: "SongMay Woman Hair Clips",
+    price: "€18.99",
+    image: new URL('../assets/curly hair collection/product4/SongMay Woman Hair Clips.jpg', import.meta.url).href,
+    category: "Hair Accessories",
+    hairType: "Curly",
+    featured: true,
+    description: [
+      "Premium alloy construction with elegant gold finish for luxury styling",
+      "Large U-shaped design perfect for securing medium to long hair",
+      "Minimalist modern style that fits both casual and elegant outfits",
+      "Strong grip functionality - holds hair firmly without tugging or slipping",
+      "Fashion-forward Y2K and minimalist design trending accessory",
+      "Lightweight metal construction comfortable for all-day wear",
+      "Versatile styling for buns, half-updos, twists, or side-swept looks",
+      "High perceived value with premium metal build vs plastic clips",
+      "Perfect for retail display, packaging, and gifting presentation",
+      "Custom branding potential for private label opportunities"
+    ],
+    ingredients: ["Premium Alloy", "Gold Finish", "Lightweight Metal"],
+    size: "Large U-Shaped",
+    inStock: true,
+    colors: ["Gold", "Print"],
+    images: [
+      new URL('../assets/curly hair collection/product4/SongMay Woman Hair Clips.jpg', import.meta.url).href,
+      new URL('../assets/curly hair collection/product4/gold.jpg', import.meta.url).href,
+      new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href,
+      new URL('../assets/curly hair collection/product4/clip.jpg', import.meta.url).href,
+      new URL('../assets/curly hair collection/product4/gol2.jpg', import.meta.url).href,
+      new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href
+    ]
+  },
+  {
+    id: "heatless-5",
+    name: "BUN BONS - Heatless Curling System",
+    price: "€89.99",
+    image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+    category: "Heatless Tools",
+    hairType: "All Types",
+    featured: true,
+    description: [
+      "Experience overnight blowout-style volume with exceptional comfort and secure sleep",
+      "Innovation that transformed heatless hairstyling - created by CURLEA, named by our community",
+      "Unique curling system encased within a protective capsule",
+      "Thoughtfully designed to reduce friction, preserve shape, and leave hair smoother and shinier",
+      "Layered design creates curls while safeguarding hair from damage and friction",
+      "Inner elongated fiber fill holds form without applying pressure",
+      "Outer vegan Peau de Soie layer allows strands to glide smoothly, minimizing friction",
+      "Lightweight, refined, and luxurious styling experience with subtle gold-accent buttons",
+      "Perfect for those who love wrapping sections to achieve lift at the crown",
+      "Available in Original Size (fine to medium hair) and Jumbo Size (thick hair)"
+    ],
+    ingredients: ["Vegan Peau de Soie", "Elongated Fiber Fill", "Gold-accent Buttons"],
+    size: "3 Heatless Curlers + 3 Matching Mini Bonnets",
+    inStock: true,
+    colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE", "BUTTERMILK"],
+    usageSteps: [
+      "Start with clean, dry hair (80-90% dry for best results)",
+      "Divide your hair into 3-4 sections at the crown area",
+      "Take one BUN BONS curler and place it at the base of a section",
+      "Wrap your hair around the curler in a spiral motion, working from roots to ends",
+      "Secure the wrapped hair with the elegant gold-accent buttons",
+      "Repeat the process for all sections, using different sized curlers if needed",
+      "Cover everything with the coordinating Peau de Soie bonnet for protection",
+      "Sleep comfortably overnight or leave in for 4-6 hours during the day",
+      "Remove the bonnet and carefully unwind each curler in reverse order",
+      "Gently separate the curls with your fingers and enjoy your beautiful blowout-style waves"
+    ]
+  },
+  {
+    id: "dreamcurl-midi",
+    name: "DreamCurl™ Midi",
+    price: "€34.99",
+    image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+    category: "DreamCurl™ Collection",
+    hairType: "Short to Long",
+    featured: true,
+    description: [
+      "Immerse yourself in the ultimate blend of luxury and comfort with CURLEA, the undisputed leader in the world of heatless curlers, where every night's sleep feels like resting on a cloud.",
+      "Experience a new level of heatless hair styling with our 'Zero Heat' Heatless Curlers. At CURLEA, we get that your beauty sleep is crucial, especially when it comes to heatless overnight curls.",
+      "That's why each of our handcrafted curlers is made to be extra soft, using the finest fabrics to keep your hair safe from friction as you snooze peacefully.",
+      "You can count on us to prioritise your hair's health and your comfort all the way. With a wide-reaching influence in the social media community, CURLEA shines brightest among its imitators.",
+      "Crafted from the finest 100% vegan Peau De Soie fabric, CURLEA's iconic heatless curler helps you create bouncy and voluminous heatless overnight curls.",
+      "Tailored for short to long hair. Providing a tighter curl, our Midi size is the perfect choice for those in search of extended curl longevity.",
+      "Crafted with sustainably sourced, ultra-soft fibres, our heatless curlers provide a night of sheer luxury and hair protection while championing a greener, brighter future.",
+      "Elevate your hairstyle to new heights with CURLEA - your go-to for unmatched comfort, style, and luxury all in one.",
+      "This set will include: 2 Hair Ties, 1 Midi Heatless Curler, 1 Hair Clip"
+    ],
+    ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
+    size: "Midi Size",
+    inStock: true,
+    colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
+    video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
+    images: [
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
+    ]
+  },
+  {
+    id: "dreamcurl-jumbo",
+    name: "DreamCurl™ JUMBO SIZE",
+    price: "€39.99",
+    image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+    category: "DreamCurl™ Collection",
+    hairType: "All Types",
+    featured: true,
+    description: [
+      "Jumbo Heatless Curler - by CURLEA",
+      "For soft, voluminous waves with a looser curl shape. Designed for hair below the shoulders.",
+      "It's easy to assume Jumbo means it's made for longer hair. But in reality, Jumbo refers to the thickness of the curler - not the length of your hair.",
+      "This size was created for those who prefer a looser, more open curl shape, with soft volume and gentle movement instead of tight definition. Think less structure, more flow.",
+      "At CURLEA, we were the first to design curlers by size.",
+      "This is the curler that makes people say, 'What did you use?' And the one you'll feel proud to answer with: 'CURLEA.'",
+      "Each set includes: 1 Jumbo Size Heatless Curler, 2 Matching Hair Ties, 1 Hair Clip for easy wrapping"
+    ],
+    ingredients: ["100% Vegan Peau De Soie Fabric", "Elongated Structured Fibres", "Premium Memory Foam"],
+    size: "Jumbo Size",
+    inStock: true,
+    colors: ["LATTE", "CANDY", "OLIVE", "MULBERRY"],
+    video: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href,
+    images: [
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
+    ]
+  },
+  {
+    id: "curly-clip-5",
+    name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+    price: "€16.99",
+    image: new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
+    category: "Hair Accessories",
+    hairType: "Curly",
+    featured: true,
+    description: [
+      "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine.",
+      "Designed in XL size to comfortably fit even the largest JUMBO heatless curler.",
+      "Acts as a protective barrier to reduce breakage, frizz, and moisture loss.",
+      "Helps retain your hair’s natural oils for healthier, shinier mornings.",
+      "Made from luxurious vegan silk alternative French fabric known as Peau De Soie for maximum comfort.",
+      "Fights frizz and locks in moisture while you sleep.",
+      "Preserves your hairstyle and prevents bed head and tangles overnight.",
+      "Leaves your hair with a soft, glossy finish without any heat damage.",
+      "Ideal for all hair types, especially curly hair, thick hair, natural hair, and hair extensions.",
+      "Wearing the Peau De Soie CURLEA Bonnet overnight works as a natural conditioning treatment that nourishes your hair."
+    ],
+    ingredients: ["Premium Plastic", "Strong Grip Mechanism", "Durable Construction"],
+    size: "Multi-Piece Set",
+    inStock: true,
+    // Use exact option names requested
+    colors: ["candy&marchmello", "olive&latte"],
+    images: [
+      new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
     ]
   }
 ];
@@ -437,6 +570,60 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
       size: "16-Piece Set",
       inStock: true,
+    },
+    {
+      id: "songmay-hair-clips",
+      name: "SongMay Woman Hair Clips",
+      price: "€18.99",
+      image: new URL('../assets/curly hair collection/product4/SongMay Woman Hair Clips.jpg', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: true,
+      description: [
+        "Premium alloy construction with elegant gold finish for luxury styling",
+        "Large U-shaped design perfect for securing medium to long hair",
+        "Minimalist modern style that fits both casual and elegant outfits",
+        "Strong grip functionality - holds hair firmly without tugging or slipping",
+        "Fashion-forward Y2K and minimalist design trending accessory",
+        "Lightweight metal construction comfortable for all-day wear",
+        "Versatile styling for buns, half-updos, twists, or side-swept looks",
+        "High perceived value with premium metal build vs plastic clips",
+        "Perfect for retail display, packaging, and gifting presentation",
+        "Custom branding potential for private label opportunities"
+      ],
+      ingredients: ["Premium Alloy", "Gold Finish", "Lightweight Metal"],
+      size: "Large U-Shaped",
+      inStock: true,
+      colors: ["Gold", "Print"]
+    },
+    {
+      id: "curly-clip-5",
+      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
+      price: "€16.99",
+      image: new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: true,
+      description: [
+        "Elegant multi-color set designed to complement all hair shades and styles",
+        "Crafted from high-quality, durable materials for a secure and comfortable hold",
+        "Strong spring mechanism ensures all-day grip without slipping or tugging",
+        "Suitable for thick, curly, straight, or fine hair types",
+        "Lightweight yet sturdy — perfect for daily wear or special occasions",
+        "Smooth edges to prevent hair breakage and provide a snag-free experience",
+        "Versatile styling — ideal for half-up hairstyles, messy buns, and quick updos",
+        "Chic matte finish for a modern, stylish look",
+        "Perfect accessory for both casual and elegant outfits",
+        "Comes in a curated color palette to match any mood or outfit choice"
+      ],
+      ingredients: ["Premium Plastic", "Strong Grip Mechanism", "Durable Construction"],
+      size: "Multi-Piece Set",
+      inStock: true,
+      colors: ["candy&marchmello", "olive&latte"],
+      images: [
+        new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
+        new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
+      ]
     }
   ];
 };

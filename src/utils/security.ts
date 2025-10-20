@@ -12,7 +12,7 @@ export const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
-    "media-src 'self' https://cdn.pixabay.com blob:",
+    "media-src 'self' https://cdn.pixabay.com blob: data:",
     "connect-src 'self' https: blob:",
     "base-uri 'self'",
     "form-action 'self'",

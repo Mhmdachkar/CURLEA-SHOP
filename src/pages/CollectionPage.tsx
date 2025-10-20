@@ -3,7 +3,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Plus, ArrowRight } from "lucide-react";
-import { QuickViewModal } from "@/components/QuickViewModal";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { Navbar } from "@/components/Navbar";
 import { ElegantProductCard } from "@/components/ElegantProductCard";
@@ -16,7 +15,6 @@ export const CollectionPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [showLoader, setShowLoader] = useState(true);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   
   // Elegant section animations with professional timing
   const sectionVariants = {
@@ -33,15 +31,50 @@ export const CollectionPage = () => {
 
   // Scroll to top when page loads
   useEffect(() => {
+    // Add loading class to prevent scroll conflicts
+    document.documentElement.classList.add('page-loading');
+    
+    // Prevent all scroll events during loading
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+    
+    // Add event listeners to prevent scrolling
+    window.addEventListener('scroll', preventScroll, { passive: false });
+    window.addEventListener('wheel', preventScroll, { passive: false });
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+    
+    // Force immediate scroll to top
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: 'instant' as ScrollBehavior
     });
+    
+    // Remove loading class and event listeners after scroll is complete
+    const timeout = setTimeout(() => {
+      window.removeEventListener('scroll', preventScroll);
+      window.removeEventListener('wheel', preventScroll);
+      window.removeEventListener('touchmove', preventScroll);
+      document.documentElement.classList.remove('page-loading');
+    }, 200);
+    
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('scroll', preventScroll);
+      window.removeEventListener('wheel', preventScroll);
+      window.removeEventListener('touchmove', preventScroll);
+      document.documentElement.classList.remove('page-loading');
+    };
   }, []);
 
   useEffect(() => {
+    console.log("CollectionPage: Component mounted, showLoader:", showLoader);
+    
     const timer = setTimeout(() => {
+      console.log("CollectionPage: Hiding loader after 1800ms");
       setShowLoader(false);
     }, 1800);
     return () => clearTimeout(timer);
@@ -56,7 +89,7 @@ export const CollectionPage = () => {
       {/* Signature Brand Loader */}
       <AnimatePresence>
         {showLoader && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
             <motion.div
               className="absolute inset-0 flex"
               initial={{ scaleX: 1 }}
@@ -64,12 +97,12 @@ export const CollectionPage = () => {
               transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
             >
               <motion.div
-                className="w-1/2 bg-foreground"
+                className="w-1/2 bg-white"
                 exit={{ x: "-100%" }}
                 transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
               />
               <motion.div
-                className="w-1/2 bg-foreground"
+                className="w-1/2 bg-white"
                 exit={{ x: "100%" }}
                 transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
               />
@@ -110,12 +143,6 @@ export const CollectionPage = () => {
         {/* Shop the Look Section - Moved to bottom */}
         <ShopTheLookSection />
       </motion.div>
-
-      {/* Quick View Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-      />
     </div>
   );
 };
@@ -124,12 +151,14 @@ export const CollectionPage = () => {
 const CurleaBrandAnimation = () => {
   const brandName = "Curlea";
   
+  console.log("CurleaBrandAnimation: Rendering with brandName:", brandName);
+  
   return (
     <div className="flex items-center justify-center">
       {brandName.split("").map((letter, index) => (
         <motion.span
           key={index}
-          className="text-6xl md:text-8xl font-bold text-background drop-shadow-2xl"
+          className="text-6xl md:text-8xl font-bold text-white drop-shadow-2xl"
           initial={{ 
             opacity: 0, 
             y: 60, 
@@ -153,7 +182,7 @@ const CurleaBrandAnimation = () => {
             ease: [0.43, 0.13, 0.23, 0.96],
           }}
           style={{
-            textShadow: "0 0 30px rgba(0,0,0,0.3)"
+            textShadow: "0 0 30px rgba(255,255,255,0.5)"
           }}
         >
           {letter === "C" ? (
@@ -514,13 +543,13 @@ const BeautifulAnimatedTitle = () => {
             transition={{ delay: 0.8, duration: 1.0 }}
             className="mb-12"
           >
-            <motion.p
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light max-w-4xl mx-auto leading-relaxed"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: 1.0, duration: 1.2 }}
-            >
+              <motion.p
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-black font-light max-w-4xl mx-auto leading-relaxed"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: 1.0, duration: 1.2 }}
+              >
               <TypewriterText 
                 text="Discover our complete collection featuring the original DreamCurl™ heatless curlers and premium curly hair accessories. Professional styling made easy — protect your hair while you style."
                 speed={50}
@@ -1253,7 +1282,7 @@ const FeaturedProductCard = ({
         <p className="text-xl sm:text-2xl md:text-3xl font-light text-muted-foreground mb-3">
           {product.price}
         </p>
-        <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
+        <p className={`text-sm sm:text-base line-clamp-3 ${(product.category === 'DreamCurl™ Collection' || product.category === 'Heatless Tools') ? 'text-black' : 'text-muted-foreground'}`}>
           {product.description[0]}
         </p>
         {product.colors && (

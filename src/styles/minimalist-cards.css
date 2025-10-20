@@ -1,0 +1,256 @@
+/* Minimalist Product Cards - Gymshark Inspired */
+
+/* Import Inter font for Gymshark-style typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Minimalist Card Base Styles */
+.minimalist-card {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 0;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  
+  /* Sharp, clean texture */
+  background-image: 
+    linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.02) 100%),
+    linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.02) 100%);
+  background-size: 20px 20px;
+}
+
+.minimalist-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* Minimalist Image Container */
+.minimalist-image-container {
+  position: relative;
+  aspect-ratio: 3/4;
+  margin-bottom: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  
+  /* Pure white background with subtle texture */
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0,0,0,0.01) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0,0,0,0.01) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+}
+
+.minimalist-image-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.minimalist-image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: brightness(1.02) contrast(1.05);
+}
+
+/* Minimalist Overlay */
+.minimalist-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.95) 0%,
+    rgba(255,255,255,0.85) 50%,
+    rgba(255,255,255,0.95) 100%
+  );
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Minimalist Action Buttons */
+.minimalist-action-button {
+  padding: 12px;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.minimalist-action-button.primary {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.minimalist-action-button:hover {
+  background-color: #f8f8f8;
+  border-color: #d0d0d0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.minimalist-action-button.primary:hover {
+  background-color: #333333;
+  border-color: #333333;
+}
+
+.minimalist-action-button svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.5;
+}
+
+/* Minimalist Content Container */
+.minimalist-content-container {
+  padding: 16px 20px 20px 20px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+/* Reference Image Typography Style */
+.minimalist-product-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #000000;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: color 0.2s ease;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.minimalist-brand-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #666666;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.minimalist-price {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .minimalist-card:hover {
+    transform: translateY(-1px);
+  }
+  
+  .minimalist-image-container {
+    aspect-ratio: 4/3;
+  }
+  
+  .minimalist-product-title {
+    font-size: 16px;
+  }
+  
+  .minimalist-price {
+    font-size: 16px;
+  }
+  
+  .minimalist-brand-name {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .minimalist-image-container {
+    aspect-ratio: 1/1;
+  }
+  
+  .minimalist-product-title {
+    font-size: 20px;
+  }
+  
+  .minimalist-price {
+    font-size: 20px;
+  }
+  
+  .minimalist-brand-name {
+    font-size: 13px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .minimalist-card {
+    transition: none;
+  }
+  
+  .minimalist-card:hover {
+    transform: none;
+  }
+  
+  .minimalist-action-button {
+    transition: none;
+  }
+  
+  .minimalist-action-button:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .minimalist-card {
+    border: 2px solid #000000;
+  }
+  
+  .minimalist-action-button {
+    border: 2px solid #000000;
+  }
+  
+  .minimalist-product-title,
+  .minimalist-price {
+    color: #000000;
+  }
+  
+  .minimalist-brand-name {
+    color: #000000;
+  }
+}

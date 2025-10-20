@@ -1,10 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import styled from "styled-components";
 import { motion, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ProductCard } from "./ProductCard";
-import { QuickViewModal } from "./QuickViewModal";
-import { Product, getCurlyHairCollectionProducts } from "@/data/products";
+import { getCurlyHairCollectionProducts } from "@/data/products";
 import { getHeatlessCurlingRodProducts } from "@/pages/CategoryPage";
 
 /* ============================================
@@ -16,6 +15,7 @@ const Section = styled.section`
   background-color: ${({ theme }) => theme.colors.background};
   width: 100%;
   overflow: hidden;
+  position: relative; /* Fix for Framer Motion scroll offset calculation */
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
     padding: ${({ theme }) => theme.spacing['2xl']} ${({ theme }) => theme.spacing.xl};
@@ -102,7 +102,6 @@ export const TrendingProducts = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   // Get trending products: 3 from Heatless Hair Curling Rod and 3 from Curly Hair Collection
   const heatlessProducts = getHeatlessCurlingRodProducts().slice(0, 3);
@@ -130,18 +129,11 @@ export const TrendingProducts = () => {
               <ProductCard
                 {...product}
                 onClick={() => navigate(`/product/${product.id}`)}
-                onQuickView={(product) => setQuickViewProduct(product)}
               />
             </motion.div>
           ))}
         </Grid>
       </Container>
-
-      {/* Quick View Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-      />
     </Section>
   );
 };

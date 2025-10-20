@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { ShoppingBag, Eye } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { ProductImage } from "./ProductImage";
@@ -244,7 +244,6 @@ const HoverShadow = styled(motion.div)`
 
 interface ProductCardProps extends Product {
   onClick?: () => void;
-  onQuickView?: (product: Product) => void;
 }
 
 export const ProductCard = ({ 
@@ -253,7 +252,6 @@ export const ProductCard = ({
   price, 
   image, 
   onClick, 
-  onQuickView, 
   ...product 
 }: ProductCardProps) => {
   const { addToCart, openCart } = useCart();
@@ -286,37 +284,10 @@ export const ProductCard = ({
     openCart();
   };
 
-  const handleQuickView = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onQuickView) {
-      onQuickView({ id, name, price, image, ...product });
-    }
-  };
-
   return (
     <Card
       ref={cardRef}
-      layoutId={`product-${id}`}
       className="product-card"
-      animate={is3DEnabled ? { 
-        x: mousePosition.x * 0.5, 
-        y: mousePosition.y * 0.5,
-        rotateX: mousePosition.y * 0.02,
-        rotateY: mousePosition.x * 0.02,
-      } : {}}
-      transition={{ 
-        type: "spring", 
-        stiffness: 200, 
-        damping: 25,
-        mass: 0.05 
-      }}
-      whileHover={is3DEnabled ? { 
-        y: -6,
-        transition: { duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }
-      } : {
-        y: -2,
-        transition: { duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] }
-      }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
@@ -344,19 +315,6 @@ export const ProductCard = ({
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <ActionButton
-            $variant="secondary"
-            whileHover={{ 
-              scale: 1.05,
-              transition: { duration: 0.2 }
-            }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleQuickView}
-            aria-label={`Quick view ${name}`}
-          >
-            <Eye />
-          </ActionButton>
-          
           <ActionButton
             $variant="primary"
             whileHover={{ 
