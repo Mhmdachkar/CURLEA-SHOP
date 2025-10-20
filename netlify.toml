@@ -27,24 +27,20 @@
   # Minify HTML
   pretty_urls = true
 
-# Redirect rules for SPA routing
+# Redirect rules - Order matters! Specific rules first, then fallback
+# Ensure assets are NOT redirected (served directly)
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+# SPA fallback for all other routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Ensure CSS and JS files are served with correct MIME types
-[[redirects]]
-  from = "/assets/*.css"
-  to = "/assets/:splat.css"
-  status = 200
-  headers = { Content-Type = "text/css; charset=utf-8" }
-
-[[redirects]]
-  from = "/assets/*.js"
-  to = "/assets/:splat.js"
-  status = 200
-  headers = { Content-Type = "application/javascript; charset=utf-8" }
+  force = false
 
 # Security headers
 [[headers]]
