@@ -546,7 +546,7 @@ export const ProductDetailPage = () => {
                   className="flex items-start gap-2 sm:gap-3"
                 >
                   <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
-                  <p className={`text-sm sm:text-base lg:text-lg leading-relaxed ${item.includes('Sold as complete set') ? 'font-bold text-foreground' : (product && (product.category === 'DreamCurl™ Collection' || product.category === 'Heatless Tools')) ? 'text-black' : 'text-muted-foreground'}`}>
+                  <p className={`text-sm sm:text-base lg:text-lg leading-relaxed ${item.includes('Sold as complete set') ? 'font-bold text-foreground' : 'text-black'}`}>
                     {item.includes('**') ? (
                       <>
                         {item.split('**').map((part, partIndex) => 

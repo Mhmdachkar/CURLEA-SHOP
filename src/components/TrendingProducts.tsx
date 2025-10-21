@@ -92,14 +92,12 @@ const itemVariants = {
     opacity: 0, 
     y: 60,
     scale: 0.9,
-    rotateX: -10,
     filter: "blur(8px)"
   },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    rotateX: 0,
     filter: "blur(0px)",
     transition: {
       duration: 1.2,
@@ -127,17 +125,15 @@ const titleVariants = {
 
 const cardHoverVariants = {
   hover: {
-    y: -12,
-    scale: 1.02,
-    rotateX: 5,
+    y: -8,
+    scale: 1.01,
     transition: {
-      duration: 0.4,
+      duration: 0.3,
       ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
   tap: {
-    scale: 0.98,
-    rotateX: 0,
+    scale: 0.99,
     transition: {
       duration: 0.15,
     },
@@ -179,16 +175,9 @@ export const TrendingProducts = () => {
               variants={itemVariants}
               whileHover="hover"
               whileTap="tap"
-              style={{
-                transformOrigin: "center bottom",
-                transformStyle: "preserve-3d",
-              }}
             >
               <motion.div
                 variants={cardHoverVariants}
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
               >
                 <ProductCard
                   {...product}
