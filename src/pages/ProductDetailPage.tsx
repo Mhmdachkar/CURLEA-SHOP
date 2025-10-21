@@ -565,9 +565,25 @@ export const ProductDetailPage = () => {
               ))}
             </div>
 
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-sm font-medium">Quantity:</span>
+            {/* Enhanced Quantity Selector with Bundle Discount */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium">Quantity:</span>
+                {quantity >= 2 && product.id === 'curlea-comb' && (
+                  <motion.span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 text-xs font-semibold border border-green-500/20"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500 }}
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Save 10% - Buy 2 or more!
+                  </motion.span>
+                )}
+              </div>
+              
               <div className="flex items-center gap-3">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -577,7 +593,7 @@ export const ProductDetailPage = () => {
                 >
                   <Minus className="w-4 h-4" />
                 </motion.button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
+                <span className="w-12 text-center font-medium text-lg">{quantity}</span>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -586,12 +602,60 @@ export const ProductDetailPage = () => {
                 >
                   <Plus className="w-4 h-4" />
                 </motion.button>
+                
+                {/* Quick quantity buttons for bundles */}
+                {product.id === 'curlea-comb' && (
+                  <div className="flex items-center gap-2 ml-4 border-l border-border pl-4">
+                    <button
+                      onClick={() => setQuantity(2)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                        quantity === 2 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      Buy 2
+                    </button>
+                    <button
+                      onClick={() => setQuantity(3)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                        quantity === 3 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      Buy 3
+                    </button>
+                  </div>
+                )}
               </div>
               
-              {/* Pieces Total Display - hide for curly-clip-5 and curly-clip-6 */}
-              {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && product.id !== 'curly-clip-6' && (
+              {/* Price Breakdown */}
+              {quantity >= 2 && product.id === 'curlea-comb' && (
                 <motion.div
-                  className="ml-4 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full"
+                  className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Regular price:</span>
+                    <span className="line-through text-muted-foreground">€{(12.99 * quantity).toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
+                    <span>Bundle price:</span>
+                    <span>€{(12.99 * quantity * 0.9).toFixed(2)}</span>
+                  </div>
+                  <div className="text-xs text-green-600 dark:text-green-400 mt-2">
+                    You save €{(12.99 * quantity * 0.1).toFixed(2)}!
+                  </div>
+                </motion.div>
+              )}
+              
+              {/* Pieces Total Display - hide for curly-clip-5 and curly-clip-6 */}
+              {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && product.id !== 'curly-clip-6' && product.id !== 'curlea-comb' && (
+                <motion.div
+                  className="mt-3 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full inline-block"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
@@ -1352,12 +1416,17 @@ export const ProductDetailPage = () => {
         )}
 
         {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
-        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && (
+        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && (
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
 
         {/* 4. Real Results Community Section - using actual result photos */}
         <RealResultsSection key={`results-${product.id}`} product={product} />
+
+        {/* 5. Frequently Bought Together - Only for CURLEA Comb */}
+        {product.id === 'curlea-comb' && (
+          <FrequentlyBoughtTogetherSection key={`fbt-${product.id}`} product={product} />
+        )}
 
 
         {/* Size Guide Section - Only for DreamCurl Short Set */}
@@ -1827,7 +1896,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   // Check if it's a special product type
   const isHeatlessProduct = product.id.startsWith('heatless-');
   const isDreamCurlProduct = product.id.startsWith('dreamcurl-');
-  const isCurlyHairProduct = product.id.startsWith('curly-');
+  const isCurlyHairProduct = product.id.startsWith('curly-') || product.id === 'curlea-comb';
   
   // Video event handlers with robust error handling
   const handleVideoLoad = () => {
@@ -1887,6 +1956,8 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
           ? new URL('../assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4', import.meta.url).href
           : product.id === 'curly-claw-1'
           ? new URL('../assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4', import.meta.url).href
+          : product.id === 'curlea-comb'
+          ? new URL('../assets/curly hair collection/product7/Screen Recording 2025-10-21 013440.mp4', import.meta.url).href
           : null
         : null;
 
@@ -2732,14 +2803,18 @@ const CurlyHairCollectionImageGallery = ({
     // Only show the 2 specified images in main gallery
     new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
     new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href,
-  ] : product.id === 'curly-clip-6' ? [
-    // Images for Cream Coffee Hair Scrunchies Vintage from product6 folder only
-    new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
-    new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
-    new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
-    new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
-    new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href,
-  ] : [
+    ] : product.id === 'curly-clip-6' ? [
+      // Images for Cream Coffee Hair Scrunchies Vintage from product6 folder only
+      new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href,
+    ] : product.id === 'curlea-comb' ? [
+      // Images for CURLEA Comb from product7 folder
+      new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
+    ] : [
     // Images for claw clips product
     new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
     new URL('../assets/curly hair collection/product3/ppp2.jpg', import.meta.url).href,
@@ -2798,7 +2873,11 @@ const CurlyHairCollectionImageGallery = ({
     <div className="space-y-4">
       {/* Main Image Display */}
       <motion.div
-        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        className={`relative overflow-hidden ${
+          product.id === 'curlea-comb' 
+            ? 'aspect-[4/3] rounded-xl bg-transparent shadow-2xl transform -translate-y-2' 
+            : 'aspect-square rounded-lg bg-muted'
+        }`}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -2806,7 +2885,7 @@ const CurlyHairCollectionImageGallery = ({
         <OptimizedImage
           src={curlyHairImages[selectedImageIndex]}
           alt={`${product.name} - View ${selectedImageIndex + 1}`}
-          className="object-cover"
+          className={product.id === 'curlea-comb' ? 'w-full h-full object-contain' : 'object-cover'}
           placeholderSrc={placeholderImage}
           priority={true}
           onError={(e) => {
@@ -2824,7 +2903,11 @@ const CurlyHairCollectionImageGallery = ({
               onClick={() => setSelectedImageIndex((prev) => 
                 prev > 0 ? prev - 1 : curlyHairImages.length - 1
               )}
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${
+                product.id === 'curlea-comb'
+                  ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
+                  : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
+              }`}
               aria-label="Previous image"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -2833,7 +2916,11 @@ const CurlyHairCollectionImageGallery = ({
               onClick={() => setSelectedImageIndex((prev) => 
                 prev < curlyHairImages.length - 1 ? prev + 1 : 0
               )}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
+              className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${
+                product.id === 'curlea-comb'
+                  ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
+                  : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
+              }`}
               aria-label="Next image">
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -2841,7 +2928,11 @@ const CurlyHairCollectionImageGallery = ({
         )}
         
         {/* Image Counter */}
-        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs sm:text-sm">
+        <div className={`absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs sm:text-sm ${
+          product.id === 'curlea-comb'
+            ? 'bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg'
+            : 'bg-black/50 backdrop-blur-sm text-white'
+        }`}>
           {selectedImageIndex + 1} / {curlyHairImages.length}
       </div>
       </motion.div>
@@ -3572,6 +3663,135 @@ const SongMayImageGallery = ({ product, selectedColor, onColorSelect }: { produc
   );
 };
 
+// Frequently Bought Together Section
+const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  
+  // Define bundle products
+  const bundleProducts = [
+    {
+      id: "curlea-comb",
+      name: "CURLEA Comb",
+      price: "€12.99",
+      image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+    },
+    {
+      id: "dreamcurl-short-set",
+      name: "DreamCurl™ Short Set",
+      price: "€24.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
+    },
+    {
+      id: "curly-clip-1",
+      name: "Curved Resin Hair Clip",
+      price: "€15.99",
+      image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+    }
+  ];
+
+  const totalPrice = 53.97;
+  const bundlePrice = 48.57; // 10% off
+
+  return (
+    <motion.section
+      ref={ref}
+      className="py-16 px-6 bg-gradient-to-b from-muted/10 to-background"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Frequently Bought Together</h2>
+          <p className="text-muted-foreground">Complete your curl care routine and save 10%</p>
+        </motion.div>
+
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-200 shadow-xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {bundleProducts.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className="relative group cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                onClick={() => navigate(`/product/${item.id}`)}
+              >
+                <div className="bg-white aspect-square rounded-2xl overflow-hidden border border-gray-100 mb-4 shadow-sm">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-contain bg-white group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <div className="text-center">
+                  <h4 className="font-medium text-base mb-2 text-gray-900 tracking-tight">{item.name}</h4>
+                  <p className="text-lg font-semibold text-gray-800">{item.price}</p>
+                </div>
+                {index === 0 && (
+                  <div className="absolute -top-2 -right-2 bg-gray-900 text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
+                    This Item
+                  </div>
+                )}
+                {index < bundleProducts.length - 1 && (
+                  <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-2xl text-gray-400 z-10 font-light">
+                    +
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-200">
+            <div className="text-center md:text-left">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-sm text-gray-600 font-medium">Total:</span>
+                <span className="text-lg line-through text-gray-500 font-medium">€{totalPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-900">Bundle Price:</span>
+                <span className="text-2xl font-bold text-gray-900">€{bundlePrice.toFixed(2)}</span>
+                <span className="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full border border-gray-200">
+                  Save €{(totalPrice - bundlePrice).toFixed(2)}
+                </span>
+              </div>
+            </div>
+            
+            <motion.button
+              className="px-8 py-3 bg-gray-900 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-gray-800"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Add all products to cart
+                bundleProducts.forEach(item => {
+                  addToCart({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    quantity: 1
+                  });
+                });
+              }}
+            >
+              Add Bundle to Cart
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
 // Real Results Community Section - using actual result photos
 const RealResultsSection = ({ product }: { product: Product }) => {
   const ref = useRef(null);
@@ -3585,6 +3805,10 @@ const RealResultsSection = ({ product }: { product: Product }) => {
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result1.png', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result2.png', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result3.png', import.meta.url).href,
+      ];
+    } else if (product.id === 'curlea-comb') { // CURLEA Comb
+      return [
+        new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
       ];
     } else if (product.id === 'heatless-5') { // BUN BONS
       return [
@@ -3683,33 +3907,213 @@ const RealResultsSection = ({ product }: { product: Product }) => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className={`${
+          resultImages.length === 1 
+            ? 'grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto items-center' 
+            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'
+        }`}>
           {resultImages.map((imageSrc, index) => (
             <motion.div
               key={index}
               className="relative group"
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ delay: 0.1 * index, duration: 0.6 }}
-              whileHover={{ scale: 1.05, y: -10 }}
+              initial={{ 
+                opacity: 0, 
+                y: resultImages.length === 1 ? 80 : 30,
+                scale: resultImages.length === 1 ? 0.8 : 0.9,
+                rotateX: resultImages.length === 1 ? -15 : 0
+              }}
+              animate={isInView ? { 
+                opacity: 1, 
+                y: 0,
+                scale: 1,
+                rotateX: 0
+              } : { 
+                opacity: 0, 
+                y: resultImages.length === 1 ? 80 : 30,
+                scale: resultImages.length === 1 ? 0.8 : 0.9,
+                rotateX: resultImages.length === 1 ? -15 : 0
+              }}
+              transition={{ 
+                delay: resultImages.length === 1 ? 0.3 : 0.1 * index, 
+                duration: resultImages.length === 1 ? 1.2 : 0.6,
+                ease: resultImages.length === 1 ? [0.25, 0.46, 0.45, 0.94] : "easeOut"
+              }}
+              whileHover={{ 
+                scale: resultImages.length === 1 ? 1.08 : 1.05, 
+                y: resultImages.length === 1 ? -20 : -10,
+                rotateX: resultImages.length === 1 ? 5 : 0,
+                transition: { duration: 0.4, ease: "easeOut" }
+              }}
+              style={{
+                transformStyle: "preserve-3d",
+                perspective: resultImages.length === 1 ? "1000px" : "none"
+              }}
             >
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-muted shadow-lg">
-                <img
+              <div className={`relative ${
+                resultImages.length === 1 
+                  ? 'aspect-[16/10]' 
+                  : 'aspect-[3/4] rounded-2xl overflow-hidden bg-muted shadow-lg'
+              }`}>
+                <motion.img
                   src={imageSrc}
                   alt={`Real result ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  className={`w-full h-full ${
+                    resultImages.length === 1 
+                      ? 'object-contain drop-shadow-2xl' 
+                      : 'object-cover'
+                  }`}
+                  initial={resultImages.length === 1 ? { scale: 1.2, opacity: 0 } : {}}
+                  animate={resultImages.length === 1 ? { scale: 1, opacity: 1 } : {}}
+                  transition={resultImages.length === 1 ? { 
+                    delay: 0.5, 
+                    duration: 1.0, 
+                    ease: "easeOut" 
+                  } : {}}
+                  whileHover={{ 
+                    scale: resultImages.length === 1 ? 1.1 : 1.1,
+                    transition: { duration: 0.6, ease: "easeOut" }
+                  }}
+                  style={resultImages.length === 1 ? {
+                    filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.1))'
+                  } : {}}
                   onError={(e) => {
                     console.error(`Failed to load result image: ${imageSrc}`);
                     e.currentTarget.style.display = 'none';
                   }}
                 />
                 
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Regular overlay for multiple images only */}
+                {resultImages.length > 1 && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                )}
+                
+                {/* Floating glow effect for single image */}
+                {resultImages.length === 1 && (
+                  <motion.div
+                    className="absolute -inset-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 -z-10"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileHover={{ opacity: 1, scale: 1.2 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
+                )}
                 
               </div>
             </motion.div>
           ))}
+          
+          {/* Specifications Card - Only for single image products (CURLEA Comb) */}
+          {resultImages.length === 1 && product.id === 'curlea-comb' && (
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+            >
+              <div className="bg-gradient-to-br from-white/80 to-white/40 dark:from-black/20 dark:to-black/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-2xl">
+                <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  Why It Works
+                </h3>
+                
+                <div className="space-y-6">
+                  {/* Circular Cutouts */}
+                  <motion.div
+                    className="flex items-start gap-4 group"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                    transition={{ delay: 0.6, duration: 0.6 }}
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg mb-1 text-foreground">Circular Cutouts</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Thoughtfully placed between each tooth, allowing curls to bounce back to their natural spiral shape
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  {/* Wide-Set Teeth */}
+                  <motion.div
+                    className="flex items-start gap-4 group"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                    transition={{ delay: 0.7, duration: 0.6 }}
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg mb-1 text-foreground">Wide-Set Teeth</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Gently glide through curls without breaking or causing frizz, perfect for detangling
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  {/* Smooth Edges */}
+                  <motion.div
+                    className="flex items-start gap-4 group"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg mb-1 text-foreground">Smooth Edges</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Premium finish ensures comfortable grip and snag-free styling every time
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Specifications */}
+                <div className="mt-8 pt-6 border-t border-foreground/10">
+                  <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Specifications</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground mb-1">Material</p>
+                      <p className="font-medium text-foreground">Premium BPA-Free</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Teeth</p>
+                      <p className="font-medium text-foreground">12 Wide-Set</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Best For</p>
+                      <p className="font-medium text-foreground">2B-4C Hair</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Dimensions</p>
+                      <p className="font-medium text-foreground">8" × 2.5"</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 text-primary text-xs font-semibold">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Viral on Social Media
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold">
+                    ✓ In Stock
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         <motion.div

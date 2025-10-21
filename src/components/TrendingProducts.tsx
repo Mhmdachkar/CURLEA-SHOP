@@ -80,20 +80,66 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.3,
+      staggerChildren: 0.25,
+      delayChildren: 0.4,
+      duration: 0.8,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { 
+    opacity: 0, 
+    y: 60,
+    scale: 0.9,
+    rotateX: -10,
+    filter: "blur(8px)"
+  },
   visible: {
     opacity: 1,
     y: 0,
+    scale: 1,
+    rotateX: 0,
+    filter: "blur(0px)",
     transition: {
-      duration: 0.8,
-      ease: [0.43, 0.13, 0.23, 0.96] as const,
+      duration: 1.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 40,
+    scale: 0.95
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 1.0,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
+const cardHoverVariants = {
+  hover: {
+    y: -12,
+    scale: 1.02,
+    rotateX: 5,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+  tap: {
+    scale: 0.98,
+    rotateX: 0,
+    transition: {
+      duration: 0.15,
     },
   },
 };
@@ -103,36 +149,56 @@ export const TrendingProducts = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
 
-  // Get trending products: 3 from Heatless Hair Curling Rod and 3 from Curly Hair Collection
-  const heatlessProducts = getHeatlessCurlingRodProducts().slice(0, 3);
-  const curlyProducts = getCurlyHairCollectionProducts().slice(0, 3);
-  const trendingProducts = [...heatlessProducts, ...curlyProducts];
+  // Get specific trending products: DreamCurl™ Short Set, DreamCurl™ Midi, Curved Resin Hair Clip
+  const allProducts = [...getHeatlessCurlingRodProducts(), ...getCurlyHairCollectionProducts()];
+  const trendingProducts = allProducts.filter(product => 
+    product.id === 'dreamcurl-short-set' || 
+    product.id === 'dreamcurl-midi' || 
+    product.id === 'curly-clip-1'
+  );
 
   return (
     <Section ref={ref}>
       <Container>
-        <Title
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+        <motion.div
+          variants={titleVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
         >
-          Trending Now
-        </Title>
+          <Title>Trending Now</Title>
+        </motion.div>
 
         <Grid
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {trendingProducts.map((product) => (
-            <motion.div key={product.id} variants={itemVariants}>
-              <ProductCard
-                {...product}
-                onClick={() => navigate(`/product/${product.id}`)}
-              />
+          {trendingProducts.map((product, index) => (
+            <motion.div 
+              key={product.id} 
+              variants={itemVariants}
+              whileHover="hover"
+              whileTap="tap"
+              style={{
+                transformOrigin: "center bottom",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              <motion.div
+                variants={cardHoverVariants}
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <ProductCard
+                  {...product}
+                  onClick={() => navigate(`/product/${product.id}`)}
+                />
+              </motion.div>
             </motion.div>
           ))}
         </Grid>
+
       </Container>
     </Section>
   );

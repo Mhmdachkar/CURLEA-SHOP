@@ -439,34 +439,29 @@ export const products: Product[] = [
     ]
   },
   {
-    id: "curly-clip-6",
-    name: "Cream Coffee Hair Scrunchies Vintage",
-    price: "€14.99",
-    image: new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
+    id: "curlea-comb",
+    name: "CURLEA Comb",
+    price: "€12.99",
+    image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
     featured: true,
     description: [
-      "**COMES WITH FULL SET** - Complete collection for all your styling needs",
-      "Vintage French ties hair accessories made of soft cloth material",
-      "Perfect for party, holiday, or daily use with timeless appeal",
-      "Features elegant bowknot design for a sophisticated touch",
-      "Available in various colors as shown in the picture",
-      "Soft cloth material gentle on hair - prevents breakage and damage",
-      "Adds a stylish vintage touch to any hairstyle",
-      "Versatile accessories suitable for all occasions",
-      "Complete set provides variety for different looks and moods",
-      "Classic French-inspired design meets modern functionality"
+      "Are you tired of losing your curls' bounce and definition after brushing? Say hello to a game-changer that has taken the beauty world by storm—our specially designed curl comb!",
+      "Widely celebrated and going viral numerous times, this innovative tool is crafted to preserve your curls' integrity while achieving that effortlessly chic \"brushed out\" look.",
+      "Our comb is expertly designed to gently glide through your curls as they bounce back to their original spiral shape.",
+      "The secret lies in the thoughtfully placed circular cutouts between each tooth, allowing for smooth detangling without compromising your curls' natural shape.",
+      "It's not just a comb; it's your curls' new best friend, transforming the way you style and care for your hair.",
+      "Experience the difference and join the countless curl enthusiasts who have embraced this revolutionary tool.",
+      "Get ready to redefine your curl game!"
     ],
-    ingredients: ["Soft Cloth Material", "Vintage Design", "Bowknot Detail"],
-    size: "Full Set",
+    ingredients: ["Premium Materials", "Circular Cutouts Design", "Curl-Friendly Teeth"],
+    size: "One Size",
     inStock: true,
+    video: new URL('../assets/curly hair collection/product7/Screen Recording 2025-10-21 013440.mp4', import.meta.url).href,
     images: [
-      new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href
+      new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href
     ]
   }
 ];
@@ -657,34 +652,29 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       ]
     },
     {
-      id: "curly-clip-6",
-      name: "Cream Coffee Hair Scrunchies Vintage",
-      price: "€14.99",
-      image: new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
+      id: "curlea-comb",
+      name: "CURLEA Comb",
+      price: "€12.99",
+      image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       category: "Hair Accessories",
       hairType: "Curly",
       featured: true,
       description: [
-        "**COMES WITH FULL SET** - Complete collection for all your styling needs",
-        "Vintage French ties hair accessories made of soft cloth material",
-        "Perfect for party, holiday, or daily use with timeless appeal",
-        "Features elegant bowknot design for a sophisticated touch",
-        "Available in various colors as shown in the picture",
-        "Soft cloth material gentle on hair - prevents breakage and damage",
-        "Adds a stylish vintage touch to any hairstyle",
-        "Versatile accessories suitable for all occasions",
-        "Complete set provides variety for different looks and moods",
-        "Classic French-inspired design meets modern functionality"
+        "Are you tired of losing your curls' bounce and definition after brushing? Say hello to a game-changer that has taken the beauty world by storm—our specially designed curl comb!",
+        "Widely celebrated and going viral numerous times, this innovative tool is crafted to preserve your curls' integrity while achieving that effortlessly chic \"brushed out\" look.",
+        "Our comb is expertly designed to gently glide through your curls as they bounce back to their original spiral shape.",
+        "The secret lies in the thoughtfully placed circular cutouts between each tooth, allowing for smooth detangling without compromising your curls' natural shape.",
+        "It's not just a comb; it's your curls' new best friend, transforming the way you style and care for your hair.",
+        "Experience the difference and join the countless curl enthusiasts who have embraced this revolutionary tool.",
+        "Get ready to redefine your curl game!"
       ],
-      ingredients: ["Soft Cloth Material", "Vintage Design", "Bowknot Detail"],
-      size: "Full Set",
+      ingredients: ["Premium Materials", "Circular Cutouts Design", "Curl-Friendly Teeth"],
+      size: "One Size",
       inStock: true,
+      video: new URL('../assets/curly hair collection/product7/Screen Recording 2025-10-21 013440.mp4', import.meta.url).href,
       images: [
-        new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
-        new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
-        new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
-        new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
-        new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href
+        new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+        new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href
       ]
     }
   ];

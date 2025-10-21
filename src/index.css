@@ -5,6 +5,9 @@
 /* Import Minimalist Cards CSS */
 @import './styles/minimalist-cards.css';
 
+/* Import Mobile-First Responsive CSS */
+@import './styles/mobile-responsive.css';
+
 /* Advanced Scroll System - Professional & Elegant */
 html {
   scroll-behavior: smooth;

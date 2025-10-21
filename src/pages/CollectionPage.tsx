@@ -134,6 +134,12 @@ export const CollectionPage = () => {
           navigate={navigate}
         />
 
+        {/* Mobile-First Product Collection */}
+        <MobileFirstProductCollection
+          displayedProducts={displayedProducts}
+          navigate={navigate}
+        />
+
         {/* Shop the Look Section - Moved to bottom */}
         <ShopTheLookSection />
       </motion.div>
@@ -665,7 +671,7 @@ const BeautifulAnimatedTitle = () => {
             className="mb-8"
           >
             <motion.h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-black"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-50px" }}
@@ -684,7 +690,7 @@ const BeautifulAnimatedTitle = () => {
             className="mb-12"
           >
               <motion.p
-                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-black font-light max-w-4xl mx-auto leading-relaxed"
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-light max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -735,7 +741,7 @@ const BeautifulAnimatedTitle = () => {
 
           {/* Stats Section */}
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 max-w-2xl mx-auto"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 md:gap-12 max-w-2xl mx-auto px-4 sm:px-0"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -747,7 +753,7 @@ const BeautifulAnimatedTitle = () => {
               transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-2"
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -772,7 +778,7 @@ const BeautifulAnimatedTitle = () => {
               transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-accent mb-2"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-accent mb-2"
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -797,7 +803,7 @@ const BeautifulAnimatedTitle = () => {
               transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-2"
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -1086,106 +1092,6 @@ const InteractiveFilterBar = ({
             </div>
           </div>
         </motion.div>
-  );
-};
-
-// Elegant Product Grid Component - Simple & Clean
-const ElegantProductGrid = ({
-  displayedProducts,
-  navigate
-}: {
-  displayedProducts: Product[];
-  navigate: (path: string) => void;
-}) => {
-  return (
-    <motion.section 
-      className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true, margin: "-100px" }}
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Title */}
-        <motion.div
-          className="text-center mb-12 sm:mb-16 md:mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
-        >
-          <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Our Complete Collection
-          </motion.h2>
-          <motion.p
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Premium heatless curlers and styling accessories designed for beautiful, healthy hair
-          </motion.p>
-          
-          {/* Decorative line */}
-          <motion.div
-            className="flex items-center justify-center mt-6 sm:mt-8"
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary"></div>
-            <div className="mx-4 w-2 h-2 rounded-full bg-primary"></div>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-primary"></div>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2 sm:gap-6 lg:gap-8 xl:gap-10 w-full"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, staggerChildren: 0.1 }}
-        >
-        {displayedProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            className="w-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.6, 
-              delay: index * 0.05,
-              ease: [0.43, 0.13, 0.23, 0.96] 
-            }}
-          >
-            <ElegantProductCard
-              {...product}
-              onClick={() => {
-                // Track product view
-                if (typeof window !== 'undefined' && (window as any).analytics) {
-                  (window as any).analytics.track('ProductViewed', {
-                    product_id: product.id,
-                    product_name: product.name,
-                    price: product.price,
-                    category: product.category,
-                    page: 'Collection'
-                  });
-                }
-                navigate(`/product/${product.id}`);
-              }}
-            />
-          </motion.div>
-        ))}
-        </motion.div>
-      </div>
-    </motion.section>
   );
 };
 
@@ -1989,6 +1895,386 @@ const HeroSectionWithRotation = () => {
             </motion.div>
       </motion.div>
 
+    </motion.section>
+  );
+};
+
+// Elegant Product Grid Component
+const ElegantProductGrid = ({ 
+  displayedProducts, 
+  navigate 
+}: { 
+  displayedProducts: Product[]; 
+  navigate: (path: string) => void; 
+}) => {
+  return (
+    <motion.section
+      className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-background to-muted/10"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Mobile-First Product Grid */}
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          {displayedProducts.slice(0, 8).map((product, index) => (
+            <motion.div
+              key={product.id}
+              className="group cursor-pointer"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 0.1 * index, duration: 0.6 }}
+              whileHover={{ y: -5 }}
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
+                {/* Product Image */}
+                <div className="aspect-square relative overflow-hidden bg-white">
+                  <OptimizedImage
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {product.featured && (
+                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
+                      Featured
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Info */}
+                <div className="p-3 sm:p-4">
+                  <h3 className="font-semibold text-sm sm:text-base mb-2 text-black line-clamp-2 group-hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
+                  <p className="text-primary font-bold text-sm sm:text-base mb-3">
+                    {product.price}
+                  </p>
+                  
+                  {/* Add to Cart Button */}
+                  <motion.button
+                    className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors min-h-[40px] flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add to cart logic here
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add to Cart
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+};
+
+// Mobile-First Product Collection Component
+const MobileFirstProductCollection = ({ 
+  displayedProducts, 
+  navigate 
+}: { 
+  displayedProducts: Product[]; 
+  navigate: (path: string) => void; 
+}) => {
+  const [sortBy, setSortBy] = useState<string>('featured');
+  const [filterBy, setFilterBy] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(displayedProducts);
+
+  // Filter and sort products
+  useEffect(() => {
+    let filtered = [...displayedProducts];
+
+    // Apply category filter
+    if (filterBy !== 'all') {
+      filtered = filtered.filter(product => 
+        product.category.toLowerCase().includes(filterBy.toLowerCase()) ||
+        product.hairType.toLowerCase().includes(filterBy.toLowerCase())
+      );
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => parseFloat(a.price.replace('€', '')) - parseFloat(b.price.replace('€', '')));
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => parseFloat(b.price.replace('€', '')) - parseFloat(a.price.replace('€', '')));
+        break;
+      case 'name':
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'featured':
+      default:
+        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [displayedProducts, sortBy, filterBy]);
+
+  const categories = ['all', 'dreamcurl', 'curly', 'heatless', 'accessories'];
+
+  return (
+    <motion.section
+      className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-background to-muted/10"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Mobile-First Header */}
+        <motion.div
+          className="text-center mb-8 sm:mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-black">
+            Complete Collection
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explore our full range of premium hair care products
+          </p>
+        </motion.div>
+
+        {/* Mobile-First Filter/Sort Controls */}
+        <motion.div
+          className="mb-8 sm:mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          {/* Mobile Filter Button */}
+          <div className="flex justify-center mb-4 sm:hidden">
+            <motion.button
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 min-h-[44px] min-w-[120px]"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filter & Sort
+            </motion.button>
+          </div>
+
+          {/* Mobile Filter Modal */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                className="fixed inset-0 bg-black/50 z-50 flex items-end sm:hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowFilters(false)}
+              >
+                <motion.div
+                  className="bg-white rounded-t-2xl p-6 w-full max-h-[80vh] overflow-y-auto"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-black">Filter & Sort</h3>
+                    <button
+                      className="p-2 hover:bg-muted rounded-full transition-colors"
+                      onClick={() => setShowFilters(false)}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-3 text-black">Category</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {categories.map((category) => (
+                        <button
+                          key={category}
+                          className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 min-h-[44px] ${
+                            filterBy === category
+                              ? 'bg-primary text-primary-foreground shadow-md'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                          onClick={() => setFilterBy(category)}
+                        >
+                          {category === 'all' ? 'All Products' : category.charAt(0).toUpperCase() + category.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sort Options */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-3 text-black">Sort By</h4>
+                    <div className="space-y-2">
+                      {[
+                        { value: 'featured', label: 'Featured' },
+                        { value: 'price-low', label: 'Price: Low to High' },
+                        { value: 'price-high', label: 'Price: High to Low' },
+                        { value: 'name', label: 'Name A-Z' }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          className={`w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 min-h-[44px] text-left ${
+                            sortBy === option.value
+                              ? 'bg-primary text-primary-foreground shadow-md'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                          onClick={() => setSortBy(option.value)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <motion.button
+                    className="w-full px-6 py-4 bg-primary text-primary-foreground rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 min-h-[48px]"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowFilters(false)}
+                  >
+                    Apply Filters
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Desktop Filter Controls */}
+          <div className="hidden sm:flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center">
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 min-h-[40px] ${
+                    filterBy === category
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                  onClick={() => setFilterBy(category)}
+                >
+                  {category === 'all' ? 'All Products' : category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 rounded-lg border border-border bg-background text-foreground font-medium min-h-[40px] min-w-[160px] focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="name">Name A-Z</option>
+              </select>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Mobile-First Product Grid */}
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          {filteredProducts.map((product, index) => (
+            <motion.div
+              key={product.id}
+              className="group cursor-pointer"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 0.1 * index, duration: 0.6 }}
+              whileHover={{ y: -5 }}
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
+                {/* Product Image */}
+                <div className="aspect-square relative overflow-hidden bg-white">
+                  <OptimizedImage
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {product.featured && (
+                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
+                      Featured
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Info */}
+                <div className="p-3 sm:p-4">
+                  <h3 className="font-semibold text-sm sm:text-base mb-2 text-black line-clamp-2 group-hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
+                  <p className="text-primary font-bold text-sm sm:text-base mb-3">
+                    {product.price}
+                  </p>
+                  
+                  {/* Add to Cart Button */}
+                  <motion.button
+                    className="w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors min-h-[40px] flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add to cart logic here
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add to Cart
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Results Count */}
+        <motion.div
+          className="text-center mt-8 sm:mt-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Showing {filteredProducts.length} of {displayedProducts.length} products
+          </p>
+        </motion.div>
+      </div>
     </motion.section>
   );
 };
