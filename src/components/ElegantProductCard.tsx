@@ -61,12 +61,76 @@ const getColorOptions = (colors?: string[]): ColorOption[] => {
   }));
 };
 
+// Helper function to get color-specific image based on product ID and color
+const getColorVariantImage = (productId: string, colorName: string, defaultImage: string, images?: string[]): string => {
+  // Color to image mapping for specific products
+  const colorImageMap: Record<string, Record<string, string>> = {
+    'dreamcurl-short-set': {
+      'Rose Gold': new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
+      'Royal Purple': new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href,
+      'Olive Lux': new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href,
+      'Earl Grey': new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href
+    },
+    'dreamcurl-midi': {
+      'CANDY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
+      'MARSHMALLOW': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href
+    },
+    'dreamcurl-jumbo': {
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+      'CANDY': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href
+    },
+    'dreamcurl-original': {
+      'Mulberry': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+      'Candy': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+      'Latte': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+      'Olive': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+    },
+    'songmay-hair-clips': {
+      'Gold': new URL('../assets/curly hair collection/product4/gold2.jpg', import.meta.url).href,
+      'Print': new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href
+    },
+    'heatless-5': {
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
+      'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
+    },
+    'curly-clip-5': {
+      'candy&marchmello': new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
+      'olive&latte': new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
+    }
+  };
+
+  // Return color-specific image if available, otherwise return default
+  const productColorMap = colorImageMap[productId];
+  if (productColorMap && productColorMap[colorName]) {
+    return productColorMap[colorName];
+  }
+
+  // Fallback: try to map by color index if images array is available
+  if (images && images.length > 0) {
+    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Marshmallow', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
+    if (colorIndex >= 0 && colorIndex < images.length) {
+      return images[colorIndex];
+    }
+  }
+
+  return defaultImage;
+};
+
 export const ElegantProductCard = ({ 
   id, 
   name, 
   price, 
   image, 
   colors,
+  images,
   onClick,
   onAddToCart 
 }: ElegantProductCardProps) => {
@@ -79,6 +143,11 @@ export const ElegantProductCard = ({
     colorOptions.length > 0 ? colorOptions[0] : null
   );
 
+  // Get the current image based on selected color
+  const currentImage = activeColor 
+    ? getColorVariantImage(id, activeColor.name, image, images)
+    : image;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     
@@ -88,7 +157,7 @@ export const ElegantProductCard = ({
         id,
         name,
         price,
-        image,
+        image: currentImage,
         activeColor
       });
     } else {
@@ -97,7 +166,7 @@ export const ElegantProductCard = ({
         id,
         name,
         price,
-        image,
+        image: currentImage,
         quantity: 1,
         selectedColor: activeColor?.name
       });
@@ -115,9 +184,9 @@ export const ElegantProductCard = ({
       {/* 1. Product Image - 1:1 Aspect Ratio */}
       <div className="relative w-full aspect-square">
         <OptimizedImage
-          src={image}
+          src={currentImage}
           alt={name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
         />
       </div>
 
