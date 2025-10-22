@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
@@ -303,6 +303,31 @@ const ClearButton = styled.button`
 
 export const CartDrawer = () => {
   const { state, updateQuantity, removeFromCart, clearCart, closeCart } = useCart();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top whenever cart opens
+  useEffect(() => {
+    if (state.isOpen && contentRef.current) {
+      // Scroll main page to top first
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      });
+      
+      // Also scroll after animation completes (spring animation is ~400ms)
+      const timeoutId = setTimeout(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [state.isOpen]);
 
   const calculateTotal = () => {
     return state.items.reduce((total, item) => {
@@ -417,7 +442,7 @@ export const CartDrawer = () => {
             </Header>
 
             {/* Cart Items */}
-            <Content>
+            <Content ref={contentRef} data-cart-content>
               {state.items.length === 0 ? (
                 <EmptyState>
                   <EmptyIcon />

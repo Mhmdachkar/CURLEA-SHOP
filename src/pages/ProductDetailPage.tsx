@@ -212,7 +212,8 @@ export const ProductDetailPage = () => {
         console.log('Video metadata loaded for:', product.name);
       };
       video.onerror = (e) => {
-        console.error('Video preload error for:', product.name, e);
+        console.warn('Video preload error for:', product.name, e);
+        // Don't treat preload errors as critical - video might still work
       };
     }
   }, [product]);
@@ -1618,11 +1619,12 @@ export const ProductDetailPage = () => {
                 </p>
               </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 <AnimatePresence mode="popLayout">
-            {relatedProducts.map((relatedProduct, index) => (
-              <motion.div
-                key={relatedProduct.id}
+            {relatedProducts.slice(0, 3).map((relatedProduct, index) => (
+                    <motion.div
+                      key={relatedProduct.id}
+                      className="w-full min-w-0"
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1, duration: 0.6 }}
@@ -1906,10 +1908,18 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   };
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error('Video loading error:', e);
+    console.warn(`Video loading error for ${product.name}:`, e);
     setIsVideoLoading(false);
     setVideoError(true);
     setVideoLoaded(false);
+    
+    // Try to reload the video after a short delay
+    setTimeout(() => {
+      if (videoRef.current && specialVideo) {
+        console.log(`Retrying video load for ${product.name}: ${specialVideo}`);
+        videoRef.current.load();
+      }
+    }, 2000);
   };
 
   const handleVideoCanPlay = () => {
@@ -1971,14 +1981,16 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       }
       
       // Add error handling for video loading
-      videoRef.current.onerror = () => {
-        console.warn(`Video failed to load: ${specialVideo}`);
+      videoRef.current.onerror = (e) => {
+        console.warn(`Video failed to load: ${specialVideo}`, e);
+        setVideoError(true);
       };
       
       videoRef.current.play().catch((error) => {
         // Handle autoplay failure gracefully - don't log common browser restrictions
         if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
           console.warn('Video autoplay failed:', error.message);
+          setVideoError(true);
         }
       });
     }
