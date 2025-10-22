@@ -494,12 +494,12 @@ export const ProductDetailPage = () => {
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/collection?from=product')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           whileHover={{ x: -5 }}
         >
           <ArrowLeft className="w-5 h-5" />
-          Back
+          Back to Collection
         </motion.button>
       </div>
 

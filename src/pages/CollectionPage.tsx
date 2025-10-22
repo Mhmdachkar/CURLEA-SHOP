@@ -15,7 +15,14 @@ import { ShoppingBag } from "lucide-react";
 export const CollectionPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
-  const [showLoader, setShowLoader] = useState(true);
+  
+  // Check if coming from product detail page to skip animation
+  const [showLoader, setShowLoader] = useState(() => {
+    // Check if we're coming from a product detail page
+    const isFromProductDetail = window.location.search.includes('from=product') || 
+                                document.referrer.includes('/product/');
+    return !isFromProductDetail; // Only show loader if NOT coming from product detail
+  });
   
   // Elegant section animations with professional timing
   const sectionVariants = {
@@ -75,15 +82,15 @@ export const CollectionPage = () => {
     console.log("CollectionPage: Component mounted, showLoader:", showLoader);
     console.log("CollectionPage: Current URL:", window.location.pathname);
     
-    // Ensure animation shows by setting showLoader to true
-    setShowLoader(true);
-    
-    const timer = setTimeout(() => {
-      console.log("CollectionPage: Hiding loader after 4000ms");
-      setShowLoader(false);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Only show animation if not coming from product detail page
+    if (showLoader) {
+      const timer = setTimeout(() => {
+        console.log("CollectionPage: Hiding loader after 4000ms");
+        setShowLoader(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader]);
 
   // Display all products from the products.ts file
   const displayedProducts = products;
@@ -307,6 +314,16 @@ const ShopTheLookSection = () => {
   const navigate = useNavigate();
   const [hoveredHotspot, setHoveredHotspot] = useState<number | null>(null);
 
+  // Auto-hide mobile overlay after 3 seconds
+  useEffect(() => {
+    if (hoveredHotspot) {
+      const timer = setTimeout(() => {
+        setHoveredHotspot(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [hoveredHotspot]);
+
   // Define hotspots with precise positioning for each product
   const hotspots = [
     {
@@ -429,16 +446,25 @@ const ShopTheLookSection = () => {
                   }}
                 />
 
-                {/* Hotspot Circle - Mobile Optimized */}
+                {/* Hotspot Circle - Minimal Elegant Style */}
                 <motion.button
-                  className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white shadow-lg flex items-center justify-center cursor-pointer group touch-manipulation"
+                  className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group touch-manipulation"
                   onMouseEnter={() => setHoveredHotspot(hotspot.id)}
                   onMouseLeave={() => setHoveredHotspot(null)}
-                  onClick={() => navigate(`/product/${hotspot.productId}`)}
+                  onTouchStart={() => setHoveredHotspot(hotspot.id)}
+                  onClick={() => {
+                    // On mobile, if overlay is showing, navigate to product
+                    if (hoveredHotspot === hotspot.id) {
+                      navigate(`/product/${hotspot.productId}`);
+                    } else {
+                      // On desktop hover or first mobile tap, show overlay
+                      setHoveredHotspot(hotspot.id);
+                    }
+                  }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-foreground group-hover:text-accent transition-colors" />
+                  <ShoppingBag className="w-6 h-6 text-black" strokeWidth={1.6} />
                 </motion.button>
 
                 {/* Shop Now Overlay - Desktop */}
@@ -480,7 +506,13 @@ const ShopTheLookSection = () => {
                       <h3 className="font-bold text-xs sm:text-sm text-foreground mb-2 text-center leading-tight">
                         {hotspot.name}
                       </h3>
-                      <div className="bg-foreground text-background px-3 py-2 rounded-md text-center font-semibold text-xs sm:text-sm hover:bg-accent transition-colors cursor-pointer touch-manipulation">
+                      <p className="text-xs text-muted-foreground mb-3 text-center">
+                        {hotspot.description}
+                      </p>
+                      <div 
+                        className="bg-foreground text-background px-3 py-2 rounded-md text-center font-semibold text-xs sm:text-sm hover:bg-accent transition-colors cursor-pointer touch-manipulation"
+                        onClick={() => navigate(`/product/${hotspot.productId}`)}
+                      >
                         SHOP NOW
                       </div>
                     </motion.div>

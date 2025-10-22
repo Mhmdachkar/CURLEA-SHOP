@@ -124,11 +124,11 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
   return defaultImage;
 };
 
-export const ElegantProductCard = ({ 
-  id, 
-  name, 
-  price, 
-  image, 
+export const ElegantProductCard = ({
+  id,
+  name,
+  price,
+  image,
   colors,
   images,
   onClick,
@@ -185,7 +185,7 @@ export const ElegantProductCard = ({
       <div className="relative w-full aspect-square">
         <OptimizedImage
           src={currentImage}
-          alt={name}
+            alt={name}
           className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
         />
       </div>
@@ -196,7 +196,7 @@ export const ElegantProductCard = ({
         {/* Left Side: Title, Price, Colors */}
         <div className="flex-1 pr-2">
           <h3 className="text-base font-bold text-gray-900 line-clamp-2 mb-1">
-            {name}
+          {name}
           </h3>
           <p className="text-lg font-bold text-gray-900 mt-1">{price}</p>
           
@@ -231,7 +231,7 @@ export const ElegantProductCard = ({
         <div className="flex items-end">
           <motion.button
             type="button"
-            className="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-12 h-12 rounded-xl bg-white text-black shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex-shrink-0"
             aria-label="Add to cart"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

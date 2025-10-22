@@ -124,11 +124,11 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
   return defaultImage;
 };
 
-export const MinimalistProductCard = ({ 
-  id, 
-  name, 
-  price, 
-  image, 
+export const MinimalistProductCard = ({
+  id,
+  name,
+  price,
+  image,
   colors,
   images,
   onClick,
@@ -162,10 +162,10 @@ export const MinimalistProductCard = ({
       });
     } else {
       // Fallback to default cart behavior
-      addToCart({
-        id,
-        name,
-        price,
+    addToCart({
+      id,
+      name,
+      price,
         image: currentImage,
         quantity: 1,
         selectedColor: activeColor?.name
@@ -185,7 +185,7 @@ export const MinimalistProductCard = ({
       <div className="relative w-full aspect-square">
         <OptimizedImage
           src={currentImage}
-          alt={name}
+            alt={name}
           className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
         />
       </div>
@@ -231,7 +231,7 @@ export const MinimalistProductCard = ({
         <div className="flex items-end">
           <motion.button
             type="button"
-            className="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-12 h-12 rounded-xl bg-white text-black shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex-shrink-0"
             aria-label="Add to cart"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
