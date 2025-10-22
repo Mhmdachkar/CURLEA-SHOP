@@ -390,7 +390,7 @@ export const ProductDetailPage = () => {
   // Get related products - always show exactly 3 products with smart cross-collection recommendations
   const getRelatedProducts = () => {
     // Get all available products from different collections
-      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+    const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
     const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
     const regularProducts = products.filter(p => 
       p.id !== product.id && 
@@ -428,7 +428,7 @@ export const ProductDetailPage = () => {
       if (shuffledCurly.length > 0) recommendations.push(shuffledCurly[0]);
     }
 
-    // Ensure we always have exactly 3 recommendations
+    // Ensure we always have exactly 3 recommendations and no duplicates
     // If we don't have enough from the preferred mix, fill from all available
     if (recommendations.length < 3) {
       const allOtherProducts = shuffleArray([
@@ -442,8 +442,25 @@ export const ProductDetailPage = () => {
       }
     }
 
-    // Return exactly 3 recommendations without shuffling to maintain the order
-    return recommendations.slice(0, 3);
+    // Final check: ensure no duplicates and return exactly 3 unique products
+    const uniqueRecommendations = recommendations.filter((product, index, self) => 
+      index === self.findIndex(p => p.id === product.id)
+    );
+
+    // If we still don't have 3 unique products, fill with any remaining products
+    if (uniqueRecommendations.length < 3) {
+      const allProducts = [...heatlessProducts, ...curlyProducts, ...regularProducts];
+      const remainingProducts = allProducts.filter(p => 
+        !uniqueRecommendations.find(r => r.id === p.id)
+      );
+      
+      while (uniqueRecommendations.length < 3 && remainingProducts.length > 0) {
+        uniqueRecommendations.push(remainingProducts.shift()!);
+      }
+    }
+
+    // Return exactly 3 unique recommendations without shuffling to maintain the order
+    return uniqueRecommendations.slice(0, 3);
   };
 
   const relatedProducts = getRelatedProducts();
@@ -1619,7 +1636,7 @@ export const ProductDetailPage = () => {
                 </p>
               </motion.div>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 gap-4 md:gap-6">
                 <AnimatePresence mode="popLayout">
             {relatedProducts.slice(0, 3).map((relatedProduct, index) => (
                     <motion.div
@@ -1877,7 +1894,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   const [videoError, setVideoError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // Reset video state when product changes
+  // Reset video state when product changes with robust initialization
   useEffect(() => {
     setIsVideoPlaying(false);
     setIsVideoLoading(true);
@@ -1885,14 +1902,31 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setVideoLoaded(false);
     
     if (videoRef.current) {
+      // Pause and reset
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+      
       // Ensure DreamCurl Midi is always muted
       if (product.id === 'dreamcurl-midi') {
         videoRef.current.muted = true;
         videoRef.current.volume = 0;
       }
+      
+      // Force video to reload to ensure fresh start
+      try {
+        videoRef.current.load();
+      } catch (error) {
+        console.warn('Video load error during reset:', error);
+      }
     }
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.removeAttribute('src');
+      }
+    };
   }, [product.id]);
 
   // Check if it's a special product type
@@ -1913,18 +1947,60 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setVideoError(true);
     setVideoLoaded(false);
     
-    // Try to reload the video after a short delay
-    setTimeout(() => {
-      if (videoRef.current && specialVideo) {
-        console.log(`Retrying video load for ${product.name}: ${specialVideo}`);
-        videoRef.current.load();
+    // Multiple retry attempts with increasing delays
+    const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
+      if (attempt > maxAttempts) {
+        console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
+        return;
       }
-    }, 2000);
+      
+      const delay = attempt * 1500; // Increase delay with each attempt
+      setTimeout(() => {
+        if (videoRef.current && specialVideo) {
+          console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
+          
+          // Reset video element
+          videoRef.current.pause();
+          videoRef.current.removeAttribute('src');
+          videoRef.current.load();
+          
+          // Set source again
+          const source = videoRef.current.querySelector('source');
+          if (source) {
+            source.src = specialVideo;
+            videoRef.current.load();
+          }
+          
+          // If still fails, try next attempt
+          videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+        }
+      }, delay);
+    };
+    
+    retryVideo();
   };
 
   const handleVideoCanPlay = () => {
     setIsVideoLoading(false);
     setVideoLoaded(true);
+    setVideoError(false);
+    
+    // Auto-play when video is ready (with error handling)
+    if (videoRef.current && isInView) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsVideoPlaying(true);
+            console.log('Video autoplay successful for:', product.name);
+          })
+          .catch((error) => {
+            console.warn('Autoplay prevented for:', product.name, error);
+            setIsVideoPlaying(false);
+            // Autoplay was prevented, but video is still loaded and playable
+          });
+      }
+    }
   };
 
   const handleVideoLoadStart = () => {
@@ -4556,10 +4632,44 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
   };
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error('Video loading error:', e);
+    console.warn('Video loading error:', e);
     setIsVideoLoading(false);
     setVideoError(true);
     setVideoLoaded(false);
+    
+    // Multiple retry attempts with increasing delays
+    const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
+      if (attempt > maxAttempts) {
+        console.error(`Failed to load video after ${maxAttempts} attempts`);
+        return;
+      }
+      
+      const delay = attempt * 1500; // Increase delay with each attempt
+      setTimeout(() => {
+        if (videoRef.current) {
+          console.log(`Retry attempt ${attempt}/${maxAttempts} for Hair Accessories video`);
+          
+          // Reset video element
+          videoRef.current.pause();
+          videoRef.current.removeAttribute('src');
+          videoRef.current.load();
+          
+          // Set source again
+          const sources = videoRef.current.querySelectorAll('source');
+          sources.forEach((source, index) => {
+            if (index === 0) {
+              source.src = new URL('../assets/curly hair collection/product5/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href;
+            }
+          });
+          videoRef.current.load();
+          
+          // If still fails, try next attempt
+          videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+        }
+      }, delay);
+    };
+    
+    retryVideo();
   };
 
   const handleVideoCanPlay = () => {

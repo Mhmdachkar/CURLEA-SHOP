@@ -234,13 +234,48 @@ export const ProductCard = ({
         <div className="flex items-end">
           <motion.button
             type="button"
-            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex-shrink-0"
+            className="group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex-shrink-0 overflow-hidden"
             aria-label="Add to cart"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ 
+              scale: 1.1,
+              rotate: 5,
+              transition: { duration: 0.2, ease: "easeOut" }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { duration: 0.1 }
+            }}
             onClick={handleAddToCart}
           >
-            <CartIcon />
+            {/* Hover background effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            />
+            
+            {/* Icon with enhanced hover effects */}
+            <motion.div
+              className="relative z-10 text-black group-hover:text-white transition-colors duration-300"
+              whileHover={{ 
+                rotate: 360,
+                transition: { duration: 0.6, ease: "easeInOut" }
+              }}
+            >
+              <CartIcon />
+            </motion.div>
+            
+            {/* Subtle glow effect on hover */}
+            <motion.div
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100"
+              style={{
+                background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))',
+                filter: 'blur(8px)',
+                zIndex: -1
+              }}
+              transition={{ duration: 0.3 }}
+            />
           </motion.button>
         </div>
       </div>
