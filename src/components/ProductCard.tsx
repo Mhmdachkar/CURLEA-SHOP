@@ -131,10 +131,10 @@ export const ProductCard = ({
   image, 
   colors,
   images,
-  onClick,
+  onClick, 
   onAddToCart 
 }: ProductCardProps) => {
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
   
   const colorOptions = getColorOptions(colors);
   
@@ -171,6 +171,9 @@ export const ProductCard = ({
         selectedColor: activeColor?.name
       });
     }
+    
+    // Automatically open cart dashboard
+    openCart();
   };
 
   return (
@@ -185,7 +188,7 @@ export const ProductCard = ({
       <div className="relative w-full aspect-square">
         <OptimizedImage
           src={currentImage}
-          alt={name}
+            alt={name}
           className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
         />
       </div>
@@ -231,7 +234,7 @@ export const ProductCard = ({
         <div className="flex items-end">
           <motion.button
             type="button"
-            className="flex items-center justify-center w-12 h-12 rounded-xl bg-white text-black shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex-shrink-0"
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex-shrink-0"
             aria-label="Add to cart"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

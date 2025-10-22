@@ -448,7 +448,7 @@ const ShopTheLookSection = () => {
 
                 {/* Hotspot Circle - Minimal Elegant Style */}
                 <motion.button
-                  className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group touch-manipulation"
+                  className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group touch-manipulation"
                   onMouseEnter={() => setHoveredHotspot(hotspot.id)}
                   onMouseLeave={() => setHoveredHotspot(null)}
                   onTouchStart={() => setHoveredHotspot(hotspot.id)}

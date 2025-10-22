@@ -3663,37 +3663,95 @@ const SongMayImageGallery = ({ product, selectedColor, onColorSelect }: { produc
   );
 };
 
-// Frequently Bought Together Section
+// Frequently Bought Together Section - LIMITED TIME OFFER | STARTER KIT Style
 const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
+  const [selectedColor, setSelectedColor] = useState("MULBERRY");
+  const [selectedProducts, setSelectedProducts] = useState({
+    "dreamcurl-short-set": true,
+    "curlea-comb": true,
+    "curly-clip-1": true
+  });
   
-  // Define bundle products
+  // Define bundle products with real color options
   const bundleProducts = [
     {
-      id: "curlea-comb",
-      name: "CURLEA Comb",
-      price: "€12.99",
-      image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
-    },
-    {
       id: "dreamcurl-short-set",
-      name: "DreamCurl™ Short Set",
+      name: "DREAMCURL™ SHORT SET - ORIGINAL SIZE",
       price: "€24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
+      hasColorOptions: true,
+      colors: [
+        { name: "MULBERRY", image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href },
+        { name: "ROSE GOLD", image: new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href },
+        { name: "OLIVE LUX", image: new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href },
+        { name: "EARL GREY", image: new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href }
+      ]
+    },
+    {
+      id: "curlea-comb",
+      name: "CURLEA COMB - PROFESSIONAL STYLING",
+      price: "€12.99",
+      image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+      hasColorOptions: false
     },
     {
       id: "curly-clip-1",
-      name: "Curved Resin Hair Clip",
+      name: "CURVED RESIN HAIR CLIP - DUCKBILL GRIP",
       price: "€15.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
+      hasColorOptions: false
     }
   ];
 
-  const totalPrice = 53.97;
-  const bundlePrice = 48.57; // 10% off
+  // Calculate pricing based on selected products
+  const selectedProductIds = Object.keys(selectedProducts).filter(id => selectedProducts[id]);
+  const totalPrice = selectedProductIds.reduce((sum, id) => {
+    const product = bundleProducts.find(p => p.id === id);
+    return sum + parseFloat(product?.price.replace('€', '') || '0');
+  }, 0);
+  
+  const bundlePrice = totalPrice * 0.9; // 10% off
+  const savings = totalPrice - bundlePrice;
+
+  // Get selected product image based on color
+  const getSelectedProductImage = (productId: string) => {
+    if (productId === "dreamcurl-short-set") {
+      const product = bundleProducts.find(p => p.id === productId);
+      const colorOption = product?.colors?.find(c => c.name === selectedColor);
+      return colorOption?.image || product?.image;
+    }
+    const product = bundleProducts.find(p => p.id === productId);
+    return product?.image;
+  };
+
+  // Handle checkbox toggle
+  const handleCheckboxToggle = (productId: string) => {
+    setSelectedProducts(prev => ({
+      ...prev,
+      [productId]: !prev[productId]
+    }));
+  };
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    selectedProductIds.forEach(productId => {
+      const product = bundleProducts.find(p => p.id === productId);
+      if (product) {
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: getSelectedProductImage(productId),
+          quantity: 1
+        });
+      }
+    });
+    openCart(); // Automatically open cart dashboard
+  };
 
   return (
     <motion.section
@@ -3703,90 +3761,119 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          className="text-center mb-12"
+      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl text-center font-sans">
+        {/* Title */}
+        <motion.h2 
+          className="text-xl md:text-2xl font-bold uppercase mb-6 tracking-wider text-gray-900"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ delay: 0.2, duration: 0.6 }}
+          style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 700 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">Frequently Bought Together</h2>
-          <p className="text-muted-foreground">Complete your curl care routine and save 10%</p>
+          LIMITED TIME OFFER | STARTER KIT
+        </motion.h2>
+
+        {/* Images row */}
+        <motion.div 
+          className="flex items-center justify-center gap-6 mb-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          {selectedProductIds.map((productId, index) => {
+            const product = bundleProducts.find(p => p.id === productId);
+            if (!product) return null;
+            
+            return (
+              <div key={productId} className="flex items-center">
+                <img 
+                  src={getSelectedProductImage(productId)} 
+                  alt={product.name} 
+                  className="w-20 md:w-24 rounded-lg shadow-sm border border-gray-100" 
+                />
+                {index < selectedProductIds.length - 1 && (
+                  <span className="text-2xl font-bold text-gray-500 ml-6">+</span>
+                )}
+              </div>
+            );
+          })}
         </motion.div>
 
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-200 shadow-xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {bundleProducts.map((item, index) => (
-              <motion.div
-                key={item.id}
-                className="relative group cursor-pointer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-                transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-                whileHover={{ scale: 1.05, y: -5 }}
-                onClick={() => navigate(`/product/${item.id}`)}
-              >
-                <div className="bg-white aspect-square rounded-2xl overflow-hidden border border-gray-100 mb-4 shadow-sm">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-contain bg-white group-hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
-                <div className="text-center">
-                  <h4 className="font-medium text-base mb-2 text-gray-900 tracking-tight">{item.name}</h4>
-                  <p className="text-lg font-semibold text-gray-800">{item.price}</p>
-                </div>
-                {index === 0 && (
-                  <div className="absolute -top-2 -right-2 bg-gray-900 text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
-                    This Item
-                  </div>
-                )}
-                {index < bundleProducts.length - 1 && (
-                  <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-2xl text-gray-400 z-10 font-light">
-                    +
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
+        {/* Pricing */}
+        <motion.div 
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          <p className="text-lg font-semibold text-gray-800">
+            Total Price:{" "}
+            <span className="text-red-600 font-bold text-xl">€{bundlePrice.toFixed(2)}</span>{" "}
+            <span className="line-through text-gray-400 text-lg">€{totalPrice.toFixed(2)}</span>
+          </p>
+          <p className="text-gray-600 text-sm font-medium">You save: €{savings.toFixed(2)}</p>
+        </motion.div>
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-200">
-            <div className="text-center md:text-left">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-sm text-gray-600 font-medium">Total:</span>
-                <span className="text-lg line-through text-gray-500 font-medium">€{totalPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-900">Bundle Price:</span>
-                <span className="text-2xl font-bold text-gray-900">€{bundlePrice.toFixed(2)}</span>
-                <span className="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full border border-gray-200">
-                  Save €{(totalPrice - bundlePrice).toFixed(2)}
+        {/* Add to Cart */}
+        <motion.button 
+          className="border-2 border-gray-900 px-8 py-3 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-300 mb-8 tracking-wide uppercase text-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleAddToCart}
+          disabled={selectedProductIds.length === 0}
+          style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 700 }}
+        >
+          ADD TO CART
+        </motion.button>
+
+        {/* Items breakdown */}
+        <motion.div 
+          className="mt-8 text-left space-y-4"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 1.0, duration: 0.6 }}
+        >
+          {bundleProducts.map((product, index) => (
+            <div key={product.id}>
+              {/* Item */}
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-t border-gray-200 pt-4">
+                <div className="flex items-center space-x-3">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedProducts[product.id]}
+                    onChange={() => handleCheckboxToggle(product.id)}
+                    className="w-5 h-5 accent-gray-900 cursor-pointer" 
+                  />
+                  <span className="font-semibold text-gray-900 text-sm md:text-base" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 600 }}>
+                    {product.name}
+                  </span>
+                </div>
+                <span className="text-gray-700 font-medium text-sm md:text-base" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 500 }}>
+                  {product.price}
                 </span>
               </div>
+              
+              {/* Color options for DreamCurl Short Set */}
+              {product.hasColorOptions && selectedProducts[product.id] && (
+                <div className="ml-8 mt-3">
+                  <select
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    className="border-2 border-gray-300 rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white"
+                    style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 500 }}
+                  >
+                    {product.colors?.map(color => (
+                      <option key={color.name} value={color.name}>{color.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
-            
-            <motion.button
-              className="px-8 py-3 bg-gray-900 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-gray-800"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                // Add all products to cart
-                bundleProducts.forEach(item => {
-                  addToCart({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    image: item.image,
-                    quantity: 1
-                  });
-                });
-              }}
-            >
-              Add Bundle to Cart
-            </motion.button>
-          </div>
-        </div>
+          ))}
+        </motion.div>
       </div>
     </motion.section>
   );
