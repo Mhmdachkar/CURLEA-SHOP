@@ -1939,6 +1939,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setVideoError(false);
   };
 
+
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     // Only log if it's an actual video element error, not source element error
     if (e.target instanceof HTMLVideoElement) {
@@ -2052,6 +2053,9 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   // Auto-play video when section comes into view
   useEffect(() => {
     if (isInView && videoRef.current && !isVideoPlaying && specialVideo) {
+      // Set preload to auto once video is in view to start loading
+      videoRef.current.preload = 'auto';
+      
       // Ensure DreamCurl Midi is always muted
       if (product.id === 'dreamcurl-midi') {
         videoRef.current.muted = true;
@@ -2139,7 +2143,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover sm:object-contain"
-                    preload="auto"
+                    preload="none"
                     playsInline
                     webkit-playsinline="true"
                     x5-playsinline="true"
@@ -4702,6 +4706,13 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
     }
   };
 
+  // Set preload to auto when section comes into view
+  useEffect(() => {
+    if (isInView && videoRef.current) {
+      videoRef.current.preload = 'auto';
+    }
+  }, [isInView]);
+
   return (
     <motion.section
       ref={ref}
@@ -4736,7 +4747,7 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
             <video
               ref={videoRef}
               className="w-full h-full object-cover"
-              preload="auto"
+              preload="none"
               playsInline
               webkit-playsinline="true"
               x5-playsinline="true"
