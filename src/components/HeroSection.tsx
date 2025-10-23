@@ -251,19 +251,19 @@ const ScrollIndicatorDot = styled(motion.div)`
 const slides = [
   {
     image: hero1,
-    video: "https://cdn.pixabay.com/video/2023/05/02/161033-822263015_large.mp4",
+    video: null, // Removed broken external video URL
     title: "Embrace Your Natural Shine",
     subtitle: "Discover luxurious care for every hair type",
   },
   {
     image: hero2,
-    video: "https://cdn.pixabay.com/video/2022/02/17/108265-678761960_large.mp4",
+    video: null, // Removed broken external video URL
     title: "Curl Is Power",
     subtitle: "Embrace your natural form with confidence",
   },
   {
     image: hero3,
-    video: "https://cdn.pixabay.com/video/2021/08/25/86733-595229851_large.mp4",
+    video: null, // Removed broken external video URL
     title: "Define Your Beauty",
     subtitle: "Embrace your natural power",
   },

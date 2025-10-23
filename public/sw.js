@@ -93,6 +93,12 @@ async function handleRequest(request) {
   const url = new URL(request.url);
   
   try {
+    // Strategy 0: Network Only for video files (support partial responses/streaming)
+    if (isVideoRequest(request)) {
+      console.log('🎥 Service Worker: Video request - using network only', request.url);
+      return await fetch(request);
+    }
+    
     // Strategy 1: Cache First for static assets
     if (isStaticAsset(request)) {
       return await cacheFirstStrategy(request);
@@ -140,9 +146,15 @@ async function cacheFirstStrategy(request) {
   console.log('🌐 Service Worker: Fetching from network', request.url);
   const networkResponse = await fetch(request);
   
-  if (networkResponse.ok) {
+  // Only cache full responses (status 200), not partial responses (status 206)
+  // Partial responses are used for video streaming and shouldn't be cached
+  if (networkResponse.ok && networkResponse.status === 200) {
     const cache = await caches.open(STATIC_CACHE_NAME);
-    cache.put(request, networkResponse.clone());
+    try {
+      cache.put(request, networkResponse.clone());
+    } catch (error) {
+      console.warn('⚠️ Service Worker: Failed to cache response', request.url, error);
+    }
   }
   
   return networkResponse;
@@ -154,9 +166,14 @@ async function networkFirstStrategy(request) {
     console.log('🌐 Service Worker: Network first', request.url);
     const networkResponse = await fetch(request);
     
-    if (networkResponse.ok) {
+    // Only cache full responses (status 200), not partial responses (status 206)
+    if (networkResponse.ok && networkResponse.status === 200) {
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      try {
+        cache.put(request, networkResponse.clone());
+      } catch (error) {
+        console.warn('⚠️ Service Worker: Failed to cache response', request.url, error);
+      }
     }
     
     return networkResponse;
@@ -211,6 +228,13 @@ function isHtmlRequest(request) {
 function isImageRequest(request) {
   const url = new URL(request.url);
   return url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+}
+
+function isVideoRequest(request) {
+  const url = new URL(request.url);
+  return url.pathname.match(/\.(mp4|webm|ogg|mov|avi|mkv)$/i) ||
+         request.headers.get('accept')?.includes('video/') ||
+         request.headers.get('range'); // Range requests indicate video streaming
 }
 
 // Get offline fallback page
