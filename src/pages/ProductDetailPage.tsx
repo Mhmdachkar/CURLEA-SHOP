@@ -390,7 +390,7 @@ export const ProductDetailPage = () => {
   // Get related products - always show exactly 3 products with smart cross-collection recommendations
   const getRelatedProducts = () => {
     // Get all available products from different collections
-    const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
     const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
     const regularProducts = products.filter(p => 
       p.id !== product.id && 
@@ -586,7 +586,7 @@ export const ProductDetailPage = () => {
             {/* Enhanced Quantity Selector with Bundle Discount */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium">Quantity:</span>
+              <span className="text-sm font-medium">Quantity:</span>
                 {quantity >= 2 && product.id === 'curlea-comb' && (
                   <motion.span
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 text-xs font-semibold border border-green-500/20"
@@ -1441,10 +1441,8 @@ export const ProductDetailPage = () => {
         {/* 4. Real Results Community Section - using actual result photos */}
         <RealResultsSection key={`results-${product.id}`} product={product} />
 
-        {/* 5. Frequently Bought Together - Only for CURLEA Comb */}
-        {product.id === 'curlea-comb' && (
-          <FrequentlyBoughtTogetherSection key={`fbt-${product.id}`} product={product} />
-        )}
+        {/* 5. Frequently Bought Together (LIMITED TIME OFFER | STARTER KIT) - All Pages */}
+        <FrequentlyBoughtTogetherSection key={`fbt-${product.id}`} product={product} />
 
 
         {/* Size Guide Section - Only for DreamCurl Short Set */}
@@ -1639,8 +1637,8 @@ export const ProductDetailPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <AnimatePresence mode="popLayout">
             {relatedProducts.slice(0, 3).map((relatedProduct, index) => (
-                    <motion.div
-                      key={relatedProduct.id}
+              <motion.div
+                key={relatedProduct.id}
                       className="w-full min-w-0"
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -1942,42 +1940,46 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   };
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.warn(`Video loading error for ${product.name}:`, e);
-    setIsVideoLoading(false);
-    setVideoError(true);
-    setVideoLoaded(false);
-    
-    // Multiple retry attempts with increasing delays
-    const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
-      if (attempt > maxAttempts) {
-        console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
-        return;
-      }
+    // Only log if it's an actual video element error, not source element error
+    if (e.target instanceof HTMLVideoElement) {
+      console.warn(`Video loading error for ${product.name}:`, e);
+      setIsVideoLoading(false);
+      setVideoError(true);
+      setVideoLoaded(false);
       
-      const delay = attempt * 1500; // Increase delay with each attempt
-      setTimeout(() => {
-        if (videoRef.current && specialVideo) {
-          console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
-          
-          // Reset video element
-          videoRef.current.pause();
-          videoRef.current.removeAttribute('src');
-          videoRef.current.load();
-          
-          // Set source again
-          const source = videoRef.current.querySelector('source');
-          if (source) {
-            source.src = specialVideo;
-            videoRef.current.load();
-          }
-          
-          // If still fails, try next attempt
-          videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+      // Multiple retry attempts with increasing delays
+      const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
+        if (attempt > maxAttempts) {
+          console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
+          return;
         }
-      }, delay);
-    };
-    
-    retryVideo();
+        
+        const delay = attempt * 1500; // Increase delay with each attempt
+        setTimeout(() => {
+          if (videoRef.current && specialVideo) {
+            console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
+            
+            // Reset video element
+            videoRef.current.pause();
+            videoRef.current.removeAttribute('src');
+            videoRef.current.load();
+            
+            // Set source again
+            const source = videoRef.current.querySelector('source');
+            if (source) {
+              source.src = specialVideo;
+              videoRef.current.load();
+            }
+            
+            // If still fails, try next attempt
+            videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+          }
+        }, delay);
+      };
+      
+      retryVideo();
+    }
+    // Silently ignore source element errors as they're handled by fallback sources
   };
 
   const handleVideoCanPlay = () => {
@@ -2902,7 +2904,7 @@ const CurlyHairCollectionImageGallery = ({
       // Images for CURLEA Comb from product7 folder
       new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
-    ] : [
+  ] : [
     // Images for claw clips product
     new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
     new URL('../assets/curly hair collection/product3/ppp2.jpg', import.meta.url).href,
@@ -4159,7 +4161,7 @@ const RealResultsSection = ({ product }: { product: Product }) => {
                 
                 {/* Regular overlay for multiple images only */}
                 {resultImages.length > 1 && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 )}
                 
                 {/* Floating glow effect for single image */}
@@ -4175,10 +4177,10 @@ const RealResultsSection = ({ product }: { product: Product }) => {
               </div>
             </motion.div>
           ))}
-          
+              
           {/* Specifications Card - Only for single image products (CURLEA Comb) */}
           {resultImages.length === 1 && product.id === 'curlea-comb' && (
-            <motion.div
+              <motion.div
               className="relative"
               initial={{ opacity: 0, x: 50 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
@@ -4228,7 +4230,7 @@ const RealResultsSection = ({ product }: { product: Product }) => {
                         Gently glide through curls without breaking or causing frizz, perfect for detangling
                       </p>
                     </div>
-                  </motion.div>
+              </motion.div>
 
                   {/* Smooth Edges */}
                   <motion.div
@@ -4248,7 +4250,7 @@ const RealResultsSection = ({ product }: { product: Product }) => {
                         Premium finish ensures comfortable grip and snag-free styling every time
                       </p>
                     </div>
-                  </motion.div>
+            </motion.div>
                 </div>
 
                 {/* Specifications */}
@@ -4632,44 +4634,48 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
   };
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.warn('Video loading error:', e);
-    setIsVideoLoading(false);
-    setVideoError(true);
-    setVideoLoaded(false);
-    
-    // Multiple retry attempts with increasing delays
-    const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
-      if (attempt > maxAttempts) {
-        console.error(`Failed to load video after ${maxAttempts} attempts`);
-        return;
-      }
+    // Only log if it's an actual video element error, not source element error
+    if (e.target instanceof HTMLVideoElement) {
+      console.warn('Video loading error:', e);
+      setIsVideoLoading(false);
+      setVideoError(true);
+      setVideoLoaded(false);
       
-      const delay = attempt * 1500; // Increase delay with each attempt
-      setTimeout(() => {
-        if (videoRef.current) {
-          console.log(`Retry attempt ${attempt}/${maxAttempts} for Hair Accessories video`);
-          
-          // Reset video element
-          videoRef.current.pause();
-          videoRef.current.removeAttribute('src');
-          videoRef.current.load();
-          
-          // Set source again
-          const sources = videoRef.current.querySelectorAll('source');
-          sources.forEach((source, index) => {
-            if (index === 0) {
-              source.src = new URL('../assets/curly hair collection/product5/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href;
-            }
-          });
-          videoRef.current.load();
-          
-          // If still fails, try next attempt
-          videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+      // Multiple retry attempts with increasing delays
+      const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
+        if (attempt > maxAttempts) {
+          console.error(`Failed to load video after ${maxAttempts} attempts`);
+          return;
         }
-      }, delay);
-    };
-    
-    retryVideo();
+        
+        const delay = attempt * 1500; // Increase delay with each attempt
+        setTimeout(() => {
+          if (videoRef.current) {
+            console.log(`Retry attempt ${attempt}/${maxAttempts} for Hair Accessories video`);
+            
+            // Reset video element
+            videoRef.current.pause();
+            videoRef.current.removeAttribute('src');
+            videoRef.current.load();
+            
+            // Set source again
+            const sources = videoRef.current.querySelectorAll('source');
+            sources.forEach((source, index) => {
+              if (index === 0) {
+                source.src = new URL('../assets/curly hair collection/product5/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href;
+              }
+            });
+            videoRef.current.load();
+            
+            // If still fails, try next attempt
+            videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+          }
+        }, delay);
+      };
+      
+      retryVideo();
+    }
+    // Silently ignore source element errors as they're handled by fallback sources
   };
 
   const handleVideoCanPlay = () => {
