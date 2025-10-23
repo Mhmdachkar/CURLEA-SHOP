@@ -203,19 +203,8 @@ export const ProductDetailPage = () => {
     // Preload with priority
     preloadImagesWithPriority(highPriorityImages, lowPriorityImages);
 
-    // Preload video metadata for faster playback
-    if (product.video) {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.src = product.video;
-      video.onloadedmetadata = () => {
-        console.log('Video metadata loaded for:', product.name);
-      };
-      video.onerror = (e) => {
-        console.warn('Video preload error for:', product.name, e);
-        // Don't treat preload errors as critical - video might still work
-      };
-    }
+    // Video preloading is handled by the RitualInMotionSection component
+    // Removed separate video preload to prevent errors
   }, [product]);
 
   // Track product view when product loads
@@ -512,12 +501,12 @@ export const ProductDetailPage = () => {
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
-          onClick={() => navigate('/collection?from=product')}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           whileHover={{ x: -5 }}
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Collection
+          Back
         </motion.button>
       </div>
 
@@ -1434,7 +1423,7 @@ export const ProductDetailPage = () => {
         )}
 
         {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
-        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && (
+        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && (
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
 
