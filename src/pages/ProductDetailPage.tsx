@@ -1875,11 +1875,12 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
 const RitualInMotionSection = ({ product }: { product: Product }) => {
   const ref = useRef(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: false, margin: "-200px" }); // Changed to false and increased margin for earlier loading
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [loadAttempted, setLoadAttempted] = useState(false);
 
   // Reset video state when product changes with robust initialization
   useEffect(() => {
@@ -1887,6 +1888,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setIsVideoLoading(true);
     setVideoError(false);
     setVideoLoaded(false);
+    setLoadAttempted(false);
     
     if (videoRef.current) {
       // Pause and reset
@@ -1899,12 +1901,8 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
         videoRef.current.volume = 0;
       }
       
-      // Force video to reload to ensure fresh start
-      try {
-        videoRef.current.load();
-      } catch (error) {
-        console.warn('Video load error during reset:', error);
-      }
+      // Don't force load immediately - let intersection observer handle it
+      videoRef.current.preload = 'none';
     }
     
     // Cleanup function to prevent memory leaks
@@ -1912,6 +1910,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       if (videoRef.current) {
         videoRef.current.pause();
         videoRef.current.removeAttribute('src');
+        videoRef.current.load(); // Clear the video
       }
     };
   }, [product.id]);
@@ -2039,33 +2038,72 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
           : null
         : null;
 
-  // Auto-play video when section comes into view
+  // Progressive video loading when section comes into view
   useEffect(() => {
-    if (isInView && videoRef.current && !isVideoPlaying && specialVideo) {
-      // Set preload to auto once video is in view to start loading
-      videoRef.current.preload = 'auto';
+    if (isInView && videoRef.current && specialVideo && !loadAttempted) {
+      setLoadAttempted(true);
+      
+      const video = videoRef.current;
       
       // Ensure DreamCurl Midi is always muted
       if (product.id === 'dreamcurl-midi') {
-        videoRef.current.muted = true;
-        videoRef.current.volume = 0;
+        video.muted = true;
+        video.volume = 0;
       }
       
-      // Add error handling for video loading
-      videoRef.current.onerror = (e) => {
-        console.warn(`Video failed to load: ${specialVideo}`, e);
-        setVideoError(true);
+      // Progressive loading strategy
+      const loadVideo = async () => {
+        try {
+          // Start with metadata loading
+          video.preload = 'metadata';
+          
+          // Wait a bit for metadata to load
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          // Check if video has sufficient buffer
+          const checkBuffer = () => {
+            if (video.readyState >= 3) { // HAVE_FUTURE_DATA
+              setIsVideoLoading(false);
+              setVideoLoaded(true);
+              
+              // Try to play the video
+              const playPromise = video.play();
+              if (playPromise !== undefined) {
+                playPromise
+                  .then(() => {
+                    setIsVideoPlaying(true);
+                    console.log('Video autoplay successful for:', product.name);
+                  })
+                  .catch((error) => {
+                    if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+                      console.warn('Autoplay prevented for:', product.name, error);
+                    }
+                    setIsVideoPlaying(false);
+                  });
+              }
+            } else if (!videoError) {
+              // Check again in 500ms
+              setTimeout(checkBuffer, 500);
+            }
+          };
+          
+          // Start progressive loading to auto
+          video.preload = 'auto';
+          video.load();
+          
+          // Check buffer status
+          checkBuffer();
+          
+        } catch (error) {
+          console.warn('Video loading error:', error);
+          setVideoError(true);
+          setIsVideoLoading(false);
+        }
       };
       
-      videoRef.current.play().catch((error) => {
-        // Handle autoplay failure gracefully - don't log common browser restrictions
-        if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
-          console.warn('Video autoplay failed:', error.message);
-          setVideoError(true);
-        }
-      });
+      loadVideo();
     }
-  }, [isInView, isVideoPlaying, product.id, specialVideo]);
+  }, [isInView, specialVideo, loadAttempted, product.id, product.name, videoError]);
 
 
   return (
@@ -2131,14 +2169,13 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   {/* Actual Video for Special Products */}
                   <video
                     ref={videoRef}
-                    className="w-full h-full object-cover sm:object-contain"
+                    className="w-full h-full object-cover sm:object-contain bg-gray-900"
                     preload="none"
                     playsInline
                     webkit-playsinline="true"
                     x5-playsinline="true"
                     disablePictureInPicture
                     controlsList="nodownload noplaybackrate"
-                    poster={specialVideo}
                     controls={product.id === 'dreamcurl-midi' ? false : isVideoPlaying}
                     muted
                     loop
@@ -2157,8 +2194,6 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                     }}
                   >
                     <source src={specialVideo} type="video/mp4" />
-                    <source src={specialVideo} type="video/webm" />
-                    <source src={specialVideo} type="video/ogg" />
                     Your browser does not support the video tag.
                   </video>
                   
@@ -4613,11 +4648,12 @@ const HairClipImageGallery = ({ product, selectedSize, setSelectedSize }: { prod
 const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
   const ref = useRef(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: false, margin: "-200px" }); // Improved loading margin
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [loadAttempted, setLoadAttempted] = useState(false);
 
   // Video event handlers
   const handleVideoLoad = () => {
@@ -4695,12 +4731,67 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
     }
   };
 
-  // Set preload to auto when section comes into view
+  // Progressive video loading when section comes into view
   useEffect(() => {
-    if (isInView && videoRef.current) {
-      videoRef.current.preload = 'auto';
+    if (isInView && videoRef.current && !loadAttempted) {
+      setLoadAttempted(true);
+      
+      const video = videoRef.current;
+      const videoSource = new URL('../assets/curly hair collection/product5/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href;
+      
+      // Progressive loading strategy
+      const loadVideo = async () => {
+        try {
+          // Start with metadata loading
+          video.preload = 'metadata';
+          
+          // Wait a bit for metadata to load
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          // Check if video has sufficient buffer
+          const checkBuffer = () => {
+            if (video.readyState >= 3) { // HAVE_FUTURE_DATA
+              setIsVideoLoading(false);
+              setVideoLoaded(true);
+              
+              // Try to play the video
+              const playPromise = video.play();
+              if (playPromise !== undefined) {
+                playPromise
+                  .then(() => {
+                    setIsVideoPlaying(true);
+                    console.log('Hair Accessories video autoplay successful');
+                  })
+                  .catch((error) => {
+                    if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+                      console.warn('Autoplay prevented for Hair Accessories video:', error);
+                    }
+                    setIsVideoPlaying(false);
+                  });
+              }
+            } else if (!videoError) {
+              // Check again in 500ms
+              setTimeout(checkBuffer, 500);
+            }
+          };
+          
+          // Start progressive loading to auto
+          video.preload = 'auto';
+          video.load();
+          
+          // Check buffer status
+          checkBuffer();
+          
+        } catch (error) {
+          console.warn('Hair Accessories video loading error:', error);
+          setVideoError(true);
+          setIsVideoLoading(false);
+        }
+      };
+      
+      loadVideo();
     }
-  }, [isInView]);
+  }, [isInView, loadAttempted, videoError]);
 
   return (
     <motion.section
