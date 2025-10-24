@@ -2038,7 +2038,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
           : null
         : null;
 
-  // Progressive video loading when section comes into view
+  // Simplified video loading when section comes into view
   useEffect(() => {
     if (isInView && videoRef.current && specialVideo && !loadAttempted) {
       setLoadAttempted(true);
@@ -2051,59 +2051,45 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
         video.volume = 0;
       }
       
-      // Progressive loading strategy
-      const loadVideo = async () => {
-        try {
-          // Start with metadata loading
-          video.preload = 'metadata';
-          
-          // Wait a bit for metadata to load
-          await new Promise(resolve => setTimeout(resolve, 300));
-          
-          // Check if video has sufficient buffer
-          const checkBuffer = () => {
-            if (video.readyState >= 3) { // HAVE_FUTURE_DATA
-              setIsVideoLoading(false);
-              setVideoLoaded(true);
-              
-              // Try to play the video
-              const playPromise = video.play();
-              if (playPromise !== undefined) {
-                playPromise
-                  .then(() => {
-                    setIsVideoPlaying(true);
-                    console.log('Video autoplay successful for:', product.name);
-                  })
-                  .catch((error) => {
-                    if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
-                      console.warn('Autoplay prevented for:', product.name, error);
-                    }
-                    setIsVideoPlaying(false);
-                  });
-              }
-            } else if (!videoError) {
-              // Check again in 500ms
-              setTimeout(checkBuffer, 500);
+      // Simple and reliable loading strategy
+      video.preload = 'auto';
+      video.load();
+      
+      // Wait for video to be ready
+      const handleCanPlayThrough = () => {
+        setIsVideoLoading(false);
+        setVideoLoaded(true);
+        
+        // Try to play the video
+        video.play()
+          .then(() => {
+            setIsVideoPlaying(true);
+            console.log('Video autoplay successful for:', product.name);
+          })
+          .catch((error) => {
+            if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+              console.warn('Autoplay prevented for:', product.name, error);
             }
-          };
-          
-          // Start progressive loading to auto
-          video.preload = 'auto';
-          video.load();
-          
-          // Check buffer status
-          checkBuffer();
-          
-        } catch (error) {
-          console.warn('Video loading error:', error);
-          setVideoError(true);
-          setIsVideoLoading(false);
-        }
+            setIsVideoPlaying(false);
+            setIsVideoLoading(false);
+          });
       };
       
-      loadVideo();
+      // Set a timeout to hide loading state even if video doesn't fully load
+      const loadingTimeout = setTimeout(() => {
+        if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
+          setIsVideoLoading(false);
+        }
+      }, 3000); // Hide loading after 3 seconds max
+      
+      video.addEventListener('canplaythrough', handleCanPlayThrough);
+      
+      return () => {
+        video.removeEventListener('canplaythrough', handleCanPlayThrough);
+        clearTimeout(loadingTimeout);
+      };
     }
-  }, [isInView, specialVideo, loadAttempted, product.id, product.name, videoError]);
+  }, [isInView, specialVideo, loadAttempted, product.id, product.name]);
 
 
   return (
@@ -4731,67 +4717,52 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
     }
   };
 
-  // Progressive video loading when section comes into view
+  // Simplified video loading when section comes into view
   useEffect(() => {
     if (isInView && videoRef.current && !loadAttempted) {
       setLoadAttempted(true);
       
       const video = videoRef.current;
-      const videoSource = new URL('../assets/curly hair collection/product5/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href;
       
-      // Progressive loading strategy
-      const loadVideo = async () => {
-        try {
-          // Start with metadata loading
-          video.preload = 'metadata';
-          
-          // Wait a bit for metadata to load
-          await new Promise(resolve => setTimeout(resolve, 300));
-          
-          // Check if video has sufficient buffer
-          const checkBuffer = () => {
-            if (video.readyState >= 3) { // HAVE_FUTURE_DATA
-              setIsVideoLoading(false);
-              setVideoLoaded(true);
-              
-              // Try to play the video
-              const playPromise = video.play();
-              if (playPromise !== undefined) {
-                playPromise
-                  .then(() => {
-                    setIsVideoPlaying(true);
-                    console.log('Hair Accessories video autoplay successful');
-                  })
-                  .catch((error) => {
-                    if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
-                      console.warn('Autoplay prevented for Hair Accessories video:', error);
-                    }
-                    setIsVideoPlaying(false);
-                  });
-              }
-            } else if (!videoError) {
-              // Check again in 500ms
-              setTimeout(checkBuffer, 500);
+      // Simple and reliable loading strategy
+      video.preload = 'auto';
+      video.load();
+      
+      // Wait for video to be ready
+      const handleCanPlayThrough = () => {
+        setIsVideoLoading(false);
+        setVideoLoaded(true);
+        
+        // Try to play the video
+        video.play()
+          .then(() => {
+            setIsVideoPlaying(true);
+            console.log('Hair Accessories video autoplay successful');
+          })
+          .catch((error) => {
+            if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+              console.warn('Autoplay prevented for Hair Accessories video:', error);
             }
-          };
-          
-          // Start progressive loading to auto
-          video.preload = 'auto';
-          video.load();
-          
-          // Check buffer status
-          checkBuffer();
-          
-        } catch (error) {
-          console.warn('Hair Accessories video loading error:', error);
-          setVideoError(true);
-          setIsVideoLoading(false);
-        }
+            setIsVideoPlaying(false);
+            setIsVideoLoading(false);
+          });
       };
       
-      loadVideo();
+      // Set a timeout to hide loading state even if video doesn't fully load
+      const loadingTimeout = setTimeout(() => {
+        if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
+          setIsVideoLoading(false);
+        }
+      }, 3000); // Hide loading after 3 seconds max
+      
+      video.addEventListener('canplaythrough', handleCanPlayThrough);
+      
+      return () => {
+        video.removeEventListener('canplaythrough', handleCanPlayThrough);
+        clearTimeout(loadingTimeout);
+      };
     }
-  }, [isInView, loadAttempted, videoError]);
+  }, [isInView, loadAttempted]);
 
   return (
     <motion.section
