@@ -123,23 +123,6 @@ const titleVariants = {
   },
 };
 
-const cardHoverVariants = {
-  hover: {
-    y: -8,
-    scale: 1.01,
-    transition: {
-      duration: 0.3,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-  tap: {
-    scale: 0.99,
-    transition: {
-      duration: 0.15,
-    },
-  },
-};
-
 export const TrendingProducts = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -173,17 +156,11 @@ export const TrendingProducts = () => {
             <motion.div 
               key={product.id} 
               variants={itemVariants}
-              whileHover="hover"
-              whileTap="tap"
             >
-              <motion.div
-                variants={cardHoverVariants}
-              >
-                <ProductCard
-                  {...product}
-                  onClick={() => navigate(`/product/${product.id}`)}
-                />
-              </motion.div>
+              <ProductCard
+                {...product}
+                onClick={() => navigate(`/product/${product.id}`)}
+              />
             </motion.div>
           ))}
         </Grid>
