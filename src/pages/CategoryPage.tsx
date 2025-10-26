@@ -15,7 +15,7 @@ import curlyHeroImage1 from "@/assets/curly hair collection/hero1.png";
 import curlyHeroImage2 from "@/assets/curly hair collection/hero2.png";
 import curlyHeroImage3 from "@/assets/curly hair collection/hero3.png";
 
-// Curly hair collection hero images array
+// Curly hair collection hero images array - using new images or fallback to original
 const curlyHeroImages = [curlyHeroImage1, curlyHeroImage2, curlyHeroImage3];
 
 // Placeholder requested path
