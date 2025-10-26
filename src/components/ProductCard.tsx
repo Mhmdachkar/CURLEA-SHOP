@@ -4,6 +4,7 @@ import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { OptimizedImage } from "./OptimizedImage";
 import { Check } from "lucide-react";
+import { toast } from "sonner";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
@@ -59,7 +60,6 @@ const formatColorName = (color: string): string => {
     'MULBERRY': 'Mulberry',
     'OLIVE': 'Olive',
     'BUTTERMILK': 'Buttermilk',
-    'MARSHMALLOW': 'Marshmallow',
     'GOLD': 'Gold',
     'PRINT': 'Print',
     'ROSE GOLD': 'Rose Gold',
@@ -117,7 +117,6 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
     'dreamcurl-midi': {
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-      'MARSHMALLOW': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
       'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href
     },
@@ -154,7 +153,7 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
 
   // Fallback: try to map by color index if images array is available
   if (images && images.length > 0) {
-    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Marshmallow', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
+    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
     if (colorIndex >= 0 && colorIndex < images.length) {
       return images[colorIndex];
     }
@@ -212,6 +211,25 @@ export const ProductCard = ({
         selectedColor: activeColor?.name
       });
     }
+    
+    // Show beautiful success message
+    toast.success(
+      `Added to your cart! 🎉`,
+      {
+        duration: 3000,
+        style: {
+          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+          border: '2px solid #22c55e',
+          boxShadow: '0 10px 40px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)',
+          padding: '20px 24px',
+          borderRadius: '16px',
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#065f46',
+        },
+        icon: '✨',
+      }
+    );
     
     // Automatically open cart dashboard
     openCart();

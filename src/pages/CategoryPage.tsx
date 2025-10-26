@@ -11,6 +11,12 @@ import { OptimizedImage } from "@/components/OptimizedImage";
 // Import hero images for different categories
 import heatlessHeroImage from "@/assets/hero-4.png";
 import curlyHeroImage from "@/assets/curly hair collection/hero.png";
+import curlyHeroImage1 from "@/assets/curly hair collection/hero1.png";
+import curlyHeroImage2 from "@/assets/curly hair collection/hero2.png";
+import curlyHeroImage3 from "@/assets/curly hair collection/hero3.png";
+
+// Curly hair collection hero images array
+const curlyHeroImages = [curlyHeroImage1, curlyHeroImage2, curlyHeroImage3];
 
 // Placeholder requested path
 const CURLY_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
@@ -20,13 +26,25 @@ export const CategoryPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-
-  // Ensure page loads at top without scroll rendering
-  useScrollToTop([category]);
+  const [curlyHeroIndex, setCurlyHeroIndex] = useState(0);
 
   // Validate and normalize category
   const validCategories = ['wavy', 'curly', 'straight'];
   const normalizedCategory = category?.toLowerCase();
+
+  // Ensure page loads at top without scroll rendering
+  useScrollToTop([category]);
+
+  // Auto-advance curly hair hero images
+  useEffect(() => {
+    if (normalizedCategory === 'curly') {
+      const interval = setInterval(() => {
+        setCurlyHeroIndex((prevIndex) => (prevIndex + 1) % curlyHeroImages.length);
+      }, 4000); // Change image every 4 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [normalizedCategory]);
   
   if (!normalizedCategory || !validCategories.includes(normalizedCategory)) {
     return (
@@ -59,7 +77,7 @@ export const CategoryPage = () => {
     },
     curly: {
       title: "Curly Hair Collection", 
-      subtitle: "Stylish accessories designed for your beautiful curls",
+      subtitle: "",
       description: "Discover our curated collection of premium hair accessories specifically designed for curly hair. From comfortable hair clips to styling tools, each piece is crafted to enhance your natural curl pattern while providing comfort and style.",
       gradient: "from-amber-500/10 via-orange-500/20 to-red-500/10",
       accentColor: "text-amber-600"
@@ -202,23 +220,57 @@ export const CategoryPage = () => {
             ? 'bg-center bg-no-repeat' 
             : `bg-gradient-to-br ${config.gradient} py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8`
         }`}
-        style={(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? {
-          backgroundImage: normalizedCategory === 'wavy' 
-            ? `url(${heatlessHeroImage})`
-            : `url(${curlyHeroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-          minHeight: '100vh',
+        style={{
+          minHeight: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '100vh' : 'auto',
           width: '100%',
           imageRendering: '-webkit-optimize-contrast',
           WebkitBackfaceVisibility: 'hidden',
           backfaceVisibility: 'hidden'
-        } : {}}
+        }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
+        {/* Hero Background Images with Smooth Transitions */}
+        {(normalizedCategory === 'wavy' || normalizedCategory === 'curly') && (
+          <AnimatePresence mode="wait">
+            {/* For Curly Hair Collection - Multiple hero images with carousel */}
+            {normalizedCategory === 'curly' ? (
+              <motion.div
+                key={`curly-hero-${curlyHeroIndex}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ 
+                  duration: 1.2, 
+                  ease: [0.43, 0.13, 0.23, 0.96] 
+                }}
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${curlyHeroImages[curlyHeroIndex]})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            ) : (
+              /* For Wavy Category - Single hero image */
+              <motion.div
+                key="wavy-hero"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${heatlessHeroImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
+          </AnimatePresence>
+        )}
+
         {/* Floating Particles Effect for Hero Image */}
         {(normalizedCategory === 'wavy' || normalizedCategory === 'curly') && (
           <>
@@ -286,26 +338,38 @@ export const CategoryPage = () => {
             ? 'h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8'
             : ''
         }`}>
-          {/* Animated Title with Word-by-Word Reveal */}
+          {/* Animated Title with Word-by-Word Reveal - Sharp & Elegant */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
               <motion.h1 
-                className={`fluid-text-5xl lg:fluid-text-6xl xl:fluid-text-7xl font-bold mb-6 ${
+                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight ${
                   (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                    ? 'text-white drop-shadow-lg' 
+                    ? 'text-white' 
                     : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
                 }`}
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  fontWeight: 900,
+                  letterSpacing: '-0.04em',
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  filter: 'contrast(1.1) brightness(1.05)'
+                }}
+              initial={{ opacity: 0, y: 60, scale: 0.85, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
               transition={{ 
-                duration: 1.2, 
+                duration: 1.5, 
                 delay: 0.4, 
-                ease: [0.43, 0.13, 0.23, 0.96],
+                ease: [0.25, 0.46, 0.45, 0.94],
                 type: "spring",
-                stiffness: 100
+                stiffness: 120,
+                damping: 12
               }}
             >
               {config.title.split(' ').map((word, index) => (
@@ -412,68 +476,92 @@ export const CategoryPage = () => {
             </motion.h1>
           </motion.div>
 
-            {/* Animated Subtitle with Character Reveal */}
+            {/* Animated Subtitle with Elegant Transition */}
+            {config.subtitle && (
+              <motion.p 
+                className={`text-lg sm:text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed px-4 font-normal ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? 'text-white' 
+                    : 'text-gray-800'
+                }`}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 2px 15px rgba(0,0,0,0.4)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '-0.02em'
+                }}
+              initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ 
+                duration: 1.2, 
+                delay: 1.2, 
+                ease: [0.25, 0.46, 0.45, 0.94] 
+              }}
+            >
+              {config.subtitle.split('').map((char, index) => (
+                <motion.span
+                  key={index}
+                  className="inline-block"
+                  initial={{ opacity: 0, y: 20, rotateY: -90 }}
+                  animate={{ opacity: 1, y: 0, rotateY: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 1.3 + index * 0.025,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
+                  whileHover={{ 
+                    scale: 1.15, 
+                    color: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '#fbbf24' : undefined,
+                    textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                      ? '0 0 20px rgba(251,191,36,0.8)' 
+                      : 'none',
+                    transition: { duration: 0.25 } 
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </motion.p>
+            )}
+
+            {/* Animated Description with Staggered Lines - Sharp & Clean */}
             <motion.p 
-              className={`fluid-text-lg lg:fluid-text-xl xl:fluid-text-2xl mb-6 sm:mb-8 max-w-4xl mx-auto leading-relaxed px-4 ${
+              className={`text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 px-4 font-light ${
                 (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                  ? 'text-white/90 drop-shadow-md' 
-                  : 'text-black'
+                  ? 'text-white' 
+                  : 'text-gray-700'
               }`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+              style={{
+                textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                  ? '0 1px 8px rgba(0,0,0,0.3)' 
+                  : 'none',
+                fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                lineHeight: '1.7',
+                letterSpacing: '-0.01em'
+              }}
+            initial={{ opacity: 0, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, filter: 'blur(0px)' }}
             transition={{ 
               duration: 1.0, 
-              delay: 1.2, 
-              ease: [0.43, 0.13, 0.23, 0.96] 
-            }}
-          >
-            {config.subtitle.split('').map((char, index) => (
-              <motion.span
-                key={index}
-                className="inline-block"
-                initial={{ opacity: 0, y: 10, rotateY: -90 }}
-                animate={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 1.3 + index * 0.03,
-                  ease: [0.43, 0.13, 0.23, 0.96]
-                }}
-                whileHover={{ 
-                  scale: 1.1, 
-                  color: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '#fbbf24' : undefined,
-                  transition: { duration: 0.2 } 
-                }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </motion.p>
-
-            {/* Animated Description with Staggered Lines */}
-            <motion.p 
-              className={`fluid-text-base lg:fluid-text-lg max-w-3xl mx-auto mb-8 sm:mb-12 px-4 ${
-                (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                  ? 'text-white/80 drop-shadow-sm' 
-                  : 'text-black'
-              }`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ 
-              duration: 0.8, 
               delay: 1.8, 
-              ease: [0.43, 0.13, 0.23, 0.96] 
+              ease: [0.25, 0.46, 0.45, 0.94] 
             }}
           >
             {config.description.split('.').map((sentence, sentenceIndex) => (
               <motion.span
                 key={sentenceIndex}
-                className="block"
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
+                className="block mb-2"
+                initial={{ opacity: 0, x: -40, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                 transition={{
-                  duration: 0.6,
-                  delay: 1.9 + sentenceIndex * 0.2,
-                  ease: [0.43, 0.13, 0.23, 0.96]
+                  duration: 0.8,
+                  delay: 1.9 + sentenceIndex * 0.15,
+                  ease: [0.25, 0.46, 0.45, 0.94]
                 }}
               >
                 {sentence}{sentenceIndex < config.description.split('.').length - 1 ? '.' : ''}
@@ -481,54 +569,75 @@ export const CategoryPage = () => {
             ))}
           </motion.p>
 
-            {/* Animated Category Stats */}
+            {/* Animated Category Stats - Sharp & Professional */}
             <motion.div
-              className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 2.2 }}
+              className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 2.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {/* Stat 1: Products Count */}
             <motion.div 
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="text-center relative group"
+              initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
               transition={{ 
-                duration: 0.8, 
+                duration: 0.9, 
                 delay: 2.3,
-                ease: [0.43, 0.13, 0.23, 0.96]
+                ease: [0.25, 0.46, 0.45, 0.94],
+                type: "spring",
+                stiffness: 100,
+                damping: 10
               }}
               whileHover={{ 
-                scale: 1.1, 
-                transition: { duration: 0.3 } 
+                scale: 1.15, 
+                y: -8,
+                transition: { duration: 0.4, ease: "easeOut" } 
               }}
             >
               <motion.div 
-                className={`text-3xl font-bold relative ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
                 }`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  fontWeight: 900,
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '-0.05em'
+                }}
+                initial={{ scale: 0, rotateY: -180 }}
+                animate={{ scale: 1, rotateY: 0 }}
                 transition={{ 
-                  duration: 0.6, 
+                  duration: 0.8, 
                   delay: 2.4,
-                  ease: [0.43, 0.13, 0.23, 0.96]
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12
                 }}
               >
                 {categoryProducts.length}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg opacity-0"
-                  whileHover={{ opacity: 0.2 }}
-                  transition={{ duration: 0.3 }}
-                />
               </motion.div>
               <motion.div 
-                className={`text-sm ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
                 }`}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '0.1em'
+                }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 2.5 }}
+                transition={{ duration: 0.6, delay: 2.5 }}
               >
                 Products
               </motion.div>
@@ -536,45 +645,66 @@ export const CategoryPage = () => {
 
             {/* Stat 2: 100% Natural */}
             <motion.div 
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="text-center relative group"
+              initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
               transition={{ 
-                duration: 0.8, 
+                duration: 0.9, 
                 delay: 2.4,
-                ease: [0.43, 0.13, 0.23, 0.96]
+                ease: [0.25, 0.46, 0.45, 0.94],
+                type: "spring",
+                stiffness: 100,
+                damping: 10
               }}
               whileHover={{ 
-                scale: 1.1, 
-                transition: { duration: 0.3 } 
+                scale: 1.15, 
+                y: -8,
+                transition: { duration: 0.4, ease: "easeOut" } 
               }}
             >
               <motion.div 
-                className={`text-3xl font-bold relative ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
                 }`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  fontWeight: 900,
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '-0.05em'
+                }}
+                initial={{ scale: 0, rotateY: -180 }}
+                animate={{ scale: 1, rotateY: 0 }}
                 transition={{ 
-                  duration: 0.6, 
+                  duration: 0.8, 
                   delay: 2.5,
-                  ease: [0.43, 0.13, 0.23, 0.96]
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12
                 }}
               >
                 100%
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg opacity-0"
-                  whileHover={{ opacity: 0.2 }}
-                  transition={{ duration: 0.3 }}
-                />
               </motion.div>
               <motion.div 
-                className={`text-sm ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
                 }`}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '0.1em'
+                }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 2.6 }}
+                transition={{ duration: 0.6, delay: 2.6 }}
               >
                 Natural
               </motion.div>
@@ -582,51 +712,94 @@ export const CategoryPage = () => {
 
             {/* Stat 3: Premium Quality */}
             <motion.div 
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="text-center relative group"
+              initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
               transition={{ 
-                duration: 0.8, 
+                duration: 0.9, 
                 delay: 2.5,
-                ease: [0.43, 0.13, 0.23, 0.96]
+                ease: [0.25, 0.46, 0.45, 0.94],
+                type: "spring",
+                stiffness: 100,
+                damping: 10
               }}
               whileHover={{ 
-                scale: 1.1, 
-                transition: { duration: 0.3 } 
+                scale: 1.15, 
+                y: -8,
+                transition: { duration: 0.4, ease: "easeOut" } 
               }}
             >
               <motion.div 
-                className={`text-3xl font-bold relative ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white drop-shadow-md' : 'text-primary'
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
                 }`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  fontWeight: 900,
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '-0.05em'
+                }}
+                initial={{ scale: 0, rotateY: -180 }}
+                animate={{ scale: 1, rotateY: 0 }}
                 transition={{ 
-                  duration: 0.6, 
+                  duration: 0.8, 
                   delay: 2.6,
-                  ease: [0.43, 0.13, 0.23, 0.96]
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12
                 }}
               >
                 Premium
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg opacity-0"
-                  whileHover={{ opacity: 0.2 }}
-                  transition={{ duration: 0.3 }}
-                />
               </motion.div>
               <motion.div 
-                className={`text-sm ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white/80 drop-shadow-sm' : 'text-muted-foreground'
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
+                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
                 }`}
+                style={{
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
+                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                    : 'none',
+                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  letterSpacing: '0.1em'
+                }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 2.7 }}
+                transition={{ duration: 0.6, delay: 2.7 }}
               >
                 Quality
               </motion.div>
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Navigation Dots for Curly Hair Collection Hero Images */}
+        {normalizedCategory === 'curly' && (
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+            {curlyHeroImages.map((_, index) => (
+              <motion.button
+                key={index}
+                onClick={() => setCurlyHeroIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  curlyHeroIndex === index
+                    ? 'bg-white w-8'
+                    : 'bg-white/40 hover:bg-white/60'
+                }`}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              />
+            ))}
+          </div>
+        )}
       </motion.section>
 
       {/* Products Grid */}
@@ -882,12 +1055,11 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
       ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
       size: "Midi Size",
       inStock: true,
-      colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
+      colors: ["CANDY", "LATTE", "MULBERRY", "OLIVE"],
       video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
       images: [
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href

@@ -10,6 +10,7 @@ import getTheWavyLook from "@/assets/getthewavylook.png";
 import { Product, products } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 
 export const CollectionPage = () => {
@@ -1867,6 +1868,25 @@ const ElegantProductGrid = ({
       image: product.image,
       selectedColor: product.activeColor?.name
     });
+
+    // Show beautiful success message
+    toast.success(
+      `Added to your cart! 🎉`,
+      {
+        duration: 3000,
+        style: {
+          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+          border: '2px solid #22c55e',
+          boxShadow: '0 10px 40px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)',
+          padding: '20px 24px',
+          borderRadius: '16px',
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#065f46',
+        },
+        icon: '✨',
+      }
+    );
   };
 
   return (

@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { ProductImage } from "@/components/ProductImage";
-import { ArrowLeft, Minus, Plus, Play, Pause, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Play, Pause, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight, ShoppingBag, Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
 import { getHeatlessCurlingRodProducts } from "./CategoryPage";
@@ -15,6 +15,7 @@ import { useRealtimeState } from "@/hooks/useRealtimeState";
 import { useEventProduct, useEventUI, EVENTS } from "@/hooks/useEventSystem";
 import { useRealtimeContext } from "@/contexts/RealtimeContext";
 import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
+import { toast } from "sonner";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
@@ -288,15 +289,57 @@ export const ProductDetailPage = () => {
       finalName = `${product.name} - ${selectedSize.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
     }
     
-    // SongMay: use color-specific image for cart
-    if (product.id === 'songmay-hair-clips' && selectedColor) {
-      const color = selectedColor.toLowerCase();
-      if (color === 'gold') {
-        finalImage = new URL('../assets/curly hair collection/product4/gold2.jpg', import.meta.url).href;
-      } else if (color === 'print') {
-        finalImage = new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href;
+    // Use color-specific image if a color is selected
+    let cartColor = selectedColor; // Default to the selected color
+    if (selectedColor) {
+      const colorImageMap: Record<string, Record<string, string>> = {
+        'dreamcurl-short-set': {
+          'Rose Gold': new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
+          'Royal Purple': new URL('../assets/Heatless Hair Curling Rod/product-2.webp', import.meta.url).href,
+          'Olive Lux': new URL('../assets/Heatless Hair Curling Rod/product-3.webp', import.meta.url).href,
+          'Earl Grey': new URL('../assets/Heatless Hair Curling Rod/product-4.webp', import.meta.url).href
+        },
+        'dreamcurl-midi': {
+          'CANDY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
+          'LATTE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
+          'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
+          'OLIVE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href
+        },
+        'dreamcurl-jumbo': {
+          'LATTE': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
+          'CANDY': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/candy_jumbo.webp', import.meta.url).href,
+          'OLIVE': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
+          'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href
+        },
+        'dreamcurl-original': {
+          'Mulberry': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
+          'Candy': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+          'Latte': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+          'Olive': new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href
+        },
+        'songmay-hair-clips': {
+          'Gold': new URL('../assets/curly hair collection/product4/gold2.jpg', import.meta.url).href,
+          'Print': new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href
+        },
+        'heatless-5': {
+          'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+          'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
+          'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
+          'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
+          'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
+        }
+      };
+
+      const productColorMap = colorImageMap[product.id];
+      if (productColorMap && productColorMap[selectedColor]) {
+        finalImage = productColorMap[selectedColor];
       }
-      finalName = `${product.name} - ${selectedColor}`;
+
+      // SongMay special handling
+      if (product.id === 'songmay-hair-clips') {
+        finalName = `${product.name} - ${selectedColor}`;
+        cartColor = 'Gold & Print';
+      }
     }
     
     // Get the size description for cart display
@@ -310,6 +353,10 @@ export const ProductDetailPage = () => {
           default: return selectedSize.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         }
       }
+      // For SongMay clips, ensure "Set of 2 Clips" is shown in cart
+      if (product.id === 'songmay-hair-clips') {
+        return 'Set of 2 Clips';
+      }
       return product.size || 'Standard';
     };
 
@@ -318,7 +365,7 @@ export const ProductDetailPage = () => {
       name: finalName,
       price: finalPrice,
       image: finalImage,
-      selectedColor: selectedColor || undefined,
+      selectedColor: cartColor || undefined,
       selectedSize: selectedSize || undefined,
       size: getSizeDescription(),
       category: product.category,
@@ -358,6 +405,9 @@ export const ProductDetailPage = () => {
         cart_total: newCartTotal,
       });
     }
+    
+    // Show beautiful success message
+    toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart! 🎉`);
     
     // Open cart drawer
     openCart();
@@ -1788,7 +1838,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       ingredients: ["100% Vegan Peau De Soie Fabric", "Sustainably Sourced Ultra-Soft Fibres", "Glide-Safe Material"],
       size: "Midi Size",
       inStock: true,
-      colors: ["CANDY", "LATTE", "MARSHMALLOW", "MULBERRY", "OLIVE"],
+      colors: ["CANDY", "LATTE", "MULBERRY", "OLIVE"],
       video: new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href,
       usageSteps: [
         "Begin with clean, lightly damp hair (70-75% dry is ideal)",
@@ -1803,7 +1853,6 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       images: [
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_guide.webp', import.meta.url).href
@@ -2091,7 +2140,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
             console.log('Video autoplay successful for:', product.name);
           })
           .catch((error) => {
-            if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+        if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
               console.warn('Autoplay prevented for:', product.name, error);
             }
             setIsVideoPlaying(false);
@@ -3494,11 +3543,10 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
   // State to track if guide image is being viewed
   const [isViewingGuide, setIsViewingGuide] = useState(false);
 
-  // Import images for Midi product (5 color images + 1 guide image)
+  // Import images for Midi product (4 color images + 1 guide image)
   const midiColorImages = [
     new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,        // CANDY
     new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,        // LATTE
-    new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,   // MARSHMALLOW
     new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,       // MULBERRY
     new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href,        // OLIVE
   ];
@@ -3510,11 +3558,10 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
     const colorImageMap = {
       'CANDY': midiColorImages[0],         // midi_candy.webp
       'LATTE': midiColorImages[1],         // midi_latte.webp
-      'MARSHMALLOW': midiColorImages[2],   // midi_marshmello.webp
-      'MULBERRY': midiColorImages[3],      // midi_purple.webp
-      'OLIVE': midiColorImages[4],         // midi_olive.webp
+      'MULBERRY': midiColorImages[2],      // midi_purple.webp
+      'OLIVE': midiColorImages[3],         // midi_olive.webp
     };
-    return colorImageMap[color as keyof typeof colorImageMap] || midiColorImages[3]; // Default to MULBERRY
+    return colorImageMap[color as keyof typeof colorImageMap] || midiColorImages[2]; // Default to MULBERRY
   };
 
   // Get the current main image based on selected color or guide view
@@ -3582,15 +3629,15 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
           
           {/* Guide image */}
           <button
-            onClick={() => {}}
+            onClick={handleGuideClick}
             className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              false
+              isViewingGuide
                 ? 'ring-2 ring-primary scale-105'
                 : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
             }`}
           >
             <ProductImage
-              src={product.images?.[0] || ''}
+              src={guideImage}
               alt={`${product.name} - Usage Guide`}
               className="object-cover"
               productId={product.id}
@@ -3873,8 +3920,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           id: product.id,
           name: product.name,
           price: product.price,
-          image: getSelectedProductImage(productId),
-          quantity: 1
+          image: getSelectedProductImage(productId)
         });
       }
     });

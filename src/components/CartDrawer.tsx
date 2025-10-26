@@ -212,14 +212,14 @@ const QuantityDisplay = styled.span`
 
 const RemoveButton = styled.button`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.destructive || '#dc2626'};
+  color: #dc2626;
   background: none;
   border: none;
   cursor: pointer;
   transition: ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.destructive || '#b91c1c'};
+    color: #b91c1c;
   }
 `;
 
@@ -235,6 +235,9 @@ const TotalRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const TotalLabel = styled.span`
@@ -255,6 +258,8 @@ const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
+  margin-top: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const CheckoutButton = styled.button`
@@ -450,77 +455,75 @@ export const CartDrawer = () => {
                   <EmptyDescription>Add some products to get started!</EmptyDescription>
                 </EmptyState>
               ) : (
-                <ItemsList>
-                  {state.items.map((item) => (
-                    <CartItemCard
-                      key={`${item.id}-${item.selectedColor || 'default'}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                    >
-                      {/* Product Image */}
-                      <ProductImage>
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                        />
-                      </ProductImage>
+                <>
+                  <ItemsList>
+                    {state.items.map((item) => (
+                      <CartItemCard
+                        key={`${item.id}-${item.selectedColor || 'default'}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                      >
+                        {/* Product Image */}
+                        <ProductImage>
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                          />
+                        </ProductImage>
 
-                      {/* Product Details */}
-                      <ProductDetails>
-                        <ProductName>{item.name}</ProductName>
-                        {item.selectedColor && (
-                          <ProductVariant>Color: {item.selectedColor}</ProductVariant>
-                        )}
-                        {item.size && (
-                          <ProductVariant>Size: {item.size}</ProductVariant>
-                        )}
-                        <ProductPrice>{item.price}</ProductPrice>
-                      </ProductDetails>
+                        {/* Product Details */}
+                        <ProductDetails>
+                          <ProductName>{item.name}</ProductName>
+                          {item.selectedColor && (
+                            <ProductVariant>Color: {item.selectedColor}</ProductVariant>
+                          )}
+                          {item.size && (
+                            <ProductVariant>Size: {item.size}</ProductVariant>
+                          )}
+                          <ProductPrice>{item.price}</ProductPrice>
+                        </ProductDetails>
 
-                      {/* Quantity Controls */}
-                      <QuantityControls>
-                        <QuantityRow>
-                          <QuantityButton
-                            onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
-                          >
-                            <Minus />
-                          </QuantityButton>
-                          <QuantityDisplay>{item.quantity}</QuantityDisplay>
-                          <QuantityButton
-                            onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
-                          >
-                            <Plus />
-                          </QuantityButton>
-                        </QuantityRow>
-                        <RemoveButton onClick={() => handleRemoveFromCart(item)}>
-                          Remove
-                        </RemoveButton>
-                      </QuantityControls>
-                    </CartItemCard>
-                  ))}
-                </ItemsList>
+                        {/* Quantity Controls */}
+                        <QuantityControls>
+                          <QuantityRow>
+                            <QuantityButton
+                              onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
+                            >
+                              <Minus />
+                            </QuantityButton>
+                            <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                            <QuantityButton
+                              onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
+                            >
+                              <Plus />
+                            </QuantityButton>
+                          </QuantityRow>
+                          <RemoveButton onClick={() => handleRemoveFromCart(item)}>
+                            Remove
+                          </RemoveButton>
+                        </QuantityControls>
+                      </CartItemCard>
+                    ))}
+                  </ItemsList>
+
+                  {/* Checkout Button and Total */}
+                  <ButtonGroup>
+                    <CheckoutButton onClick={handleCheckout}>
+                      Checkout
+                    </CheckoutButton>
+                    <ClearButton onClick={handleClearCart}>
+                      Clear Cart
+                    </ClearButton>
+                  </ButtonGroup>
+
+                  <TotalRow>
+                    <TotalLabel>Total:</TotalLabel>
+                    <TotalAmount>{formatPrice(calculateTotal())}</TotalAmount>
+                  </TotalRow>
+                </>
               )}
             </Content>
-
-            {/* Footer */}
-            {state.items.length > 0 && (
-              <Footer>
-                <TotalRow>
-                  <TotalLabel>Total:</TotalLabel>
-                  <TotalAmount>{formatPrice(calculateTotal())}</TotalAmount>
-                </TotalRow>
-                
-                <ButtonGroup>
-                  <CheckoutButton onClick={handleCheckout}>
-                    Checkout
-                  </CheckoutButton>
-                  <ClearButton onClick={handleClearCart}>
-                    Clear Cart
-                  </ClearButton>
-                </ButtonGroup>
-              </Footer>
-            )}
           </Drawer>
         </>
       )}

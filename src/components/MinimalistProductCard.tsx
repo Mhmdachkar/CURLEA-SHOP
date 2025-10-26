@@ -93,7 +93,6 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
     'dreamcurl-midi': {
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_candy.webp', import.meta.url).href,
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_latte.webp', import.meta.url).href,
-      'MARSHMALLOW': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_marshmello.webp', import.meta.url).href,
       'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_olive.webp', import.meta.url).href
     },
@@ -130,7 +129,7 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
 
   // Fallback: try to map by color index if images array is available
   if (images && images.length > 0) {
-    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Marshmallow', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
+    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
     if (colorIndex >= 0 && colorIndex < images.length) {
       return images[colorIndex];
     }
