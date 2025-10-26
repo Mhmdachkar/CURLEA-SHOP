@@ -9,7 +9,7 @@ import { useScrollToTop } from "@/hooks/useAdvancedScroll";
 import { OptimizedImage } from "@/components/OptimizedImage";
 
 // Import hero images for different categories
-import heatlessHeroImage from "@/assets/hero-2.png";
+import heatlessHeroImage from "@/assets/hero-4.png";
 import curlyHeroImage from "@/assets/curly hair collection/hero.png";
 
 // Placeholder requested path
@@ -161,8 +161,6 @@ export const CategoryPage = () => {
             </motion.div>
           </div>
         </section>
-        
-        <Footer />
       </div>
     );
   }

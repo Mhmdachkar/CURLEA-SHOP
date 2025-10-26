@@ -50,8 +50,18 @@ export const ScrollToTop = () => {
     // Only scroll to top if the pathname actually changed
     if (previousPathname.current !== pathname) {
       // Don't interfere with CollectionPage animation
+      // Skip scroll animation when navigating TO collection/shop pages
       if (pathname === '/collection' || pathname === '/shop') {
         // For collection/shop pages, let the page handle its own animation
+        // Just scroll to top instantly without animation
+        window.scrollTo(0, 0);
+        previousPathname.current = pathname;
+        return;
+      }
+      
+      // Skip scroll animation when navigating FROM product detail TO collection/shop
+      if (previousPathname.current.startsWith('/product/') && (pathname === '/collection' || pathname === '/shop')) {
+        window.scrollTo(0, 0);
         previousPathname.current = pathname;
         return;
       }

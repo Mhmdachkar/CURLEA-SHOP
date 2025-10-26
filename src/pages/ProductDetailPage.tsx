@@ -1,6 +1,6 @@
 ﻿import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { ProductImage } from "@/components/ProductImage";
@@ -19,7 +19,23 @@ import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 export const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, openCart, state: cartState } = useCart();
+  
+  // Track where user came from for proper back navigation
+  // First check location.state, then fallback to document.referrer
+  const referrerPath = (location.state as { from?: string })?.from || (() => {
+    const referrer = document.referrer;
+    if (referrer && (referrer.includes('/shop') || referrer.includes('/collection'))) {
+      return '/shop';
+    } else if (referrer && referrer.includes('/category/')) {
+      const match = referrer.match(/\/category\/([^/?]+)/);
+      if (match) {
+        return `/category/${match[1]}`;
+      }
+    }
+    return '';
+  })();
   
   // Initialize advanced scroll system
   useAdvancedScroll();
@@ -501,7 +517,15 @@ export const ProductDetailPage = () => {
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            // If we know where the user came from, navigate there directly
+            // This prevents unwanted animations and re-renders
+            if (referrerPath) {
+              navigate(referrerPath, { replace: true });
+            } else {
+              navigate(-1);
+            }
+          }}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           whileHover={{ x: -5 }}
         >

@@ -97,7 +97,7 @@ export const products: Product[] = [
       "The Perfect Middle Ground - DreamCurl™ Midi",
       "Ideal for medium-length hair that needs just the right amount of curl",
       "Not too big, not too small - just perfect for your styling needs",
-      "Available in 5 beautiful colors: Candy, Latte, Marshmallow, Mulberry, Olive",
+      "Available in 4 beautiful colors: Candy, Latte, Mulberry, Olive",
       "Professional heatless curling technology",
       "Comfortable overnight styling without wires or tension",
       "Premium vegan Peau de Soie fabric for hair protection",
@@ -409,36 +409,6 @@ export const products: Product[] = [
     ]
   },
   {
-    id: "curly-clip-5",
-    name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-    price: "€16.99",
-    image: new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-    category: "Hair Accessories",
-    hairType: "Curly",
-    featured: true,
-    description: [
-      "For all overnight heatless styling enthusiasts, the CURLEA Reversible Bonnet is a must-have addition to your bedtime routine.",
-      "Designed in XL size to comfortably fit even the largest JUMBO heatless curler.",
-      "Acts as a protective barrier to reduce breakage, frizz, and moisture loss.",
-      "Helps retain your hair’s natural oils for healthier, shinier mornings.",
-      "Made from luxurious vegan silk alternative French fabric known as Peau De Soie for maximum comfort.",
-      "Fights frizz and locks in moisture while you sleep.",
-      "Preserves your hairstyle and prevents bed head and tangles overnight.",
-      "Leaves your hair with a soft, glossy finish without any heat damage.",
-      "Ideal for all hair types, especially curly hair, thick hair, natural hair, and hair extensions.",
-      "Wearing the Peau De Soie CURLEA Bonnet overnight works as a natural conditioning treatment that nourishes your hair."
-    ],
-    ingredients: ["Premium Plastic", "Strong Grip Mechanism", "Durable Construction"],
-    size: "Multi-Piece Set",
-    inStock: true,
-    // Use exact option names requested
-    colors: ["candy&marchmello", "olive&latte"],
-    images: [
-      new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
-    ]
-  },
-  {
     id: "curlea-comb",
     name: "CURLEA Comb",
     price: "€12.99",
@@ -621,35 +591,6 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       size: "Large U-Shaped",
       inStock: true,
       colors: ["Gold", "Print"]
-    },
-    {
-      id: "curly-clip-5",
-      name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€16.99",
-      image: new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-      category: "Hair Accessories",
-      hairType: "Curly",
-      featured: true,
-      description: [
-        "Elegant multi-color set designed to complement all hair shades and styles",
-        "Crafted from high-quality, durable materials for a secure and comfortable hold",
-        "Strong spring mechanism ensures all-day grip without slipping or tugging",
-        "Suitable for thick, curly, straight, or fine hair types",
-        "Lightweight yet sturdy — perfect for daily wear or special occasions",
-        "Smooth edges to prevent hair breakage and provide a snag-free experience",
-        "Versatile styling — ideal for half-up hairstyles, messy buns, and quick updos",
-        "Chic matte finish for a modern, stylish look",
-        "Perfect accessory for both casual and elegant outfits",
-        "Comes in a curated color palette to match any mood or outfit choice"
-      ],
-      ingredients: ["Premium Plastic", "Strong Grip Mechanism", "Durable Construction"],
-      size: "Multi-Piece Set",
-      inStock: true,
-      colors: ["candy&marchmello", "olive&latte"],
-      images: [
-        new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-        new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
-      ]
     },
     {
       id: "curlea-comb",

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { OptimizedImage } from "./OptimizedImage";
+import { Check } from "lucide-react";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
@@ -20,6 +21,24 @@ const CartIcon = () => (
       d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" 
     />
   </svg>
+);
+
+// Tooltip Component
+const ColorTooltip = ({ colorName, isVisible }: { colorName: string; isVisible: boolean }) => (
+  <AnimatePresence>
+    {isVisible && (
+      <motion.div
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 5 }}
+        transition={{ duration: 0.15 }}
+        className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none"
+      >
+        {colorName}
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+      </motion.div>
+    )}
+  </AnimatePresence>
 );
 
 interface ColorOption {
@@ -100,10 +119,6 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
       'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
-    },
-    'curly-clip-5': {
-      'candy&marchmello': new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-      'olive&latte': new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
     }
   };
 
@@ -142,6 +157,9 @@ export const MinimalistProductCard = ({
   const [activeColor, setActiveColor] = useState<ColorOption | null>(
     colorOptions.length > 0 ? colorOptions[0] : null
   );
+  
+  // Track which color swatch is being hovered for tooltip
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   // Get the current image based on selected color
   const currentImage = activeColor 
@@ -162,14 +180,13 @@ export const MinimalistProductCard = ({
       });
     } else {
       // Fallback to default cart behavior
-      addToCart({
-        id,
-        name,
-        price,
+    addToCart({
+      id,
+      name,
+      price,
         image: currentImage,
-        quantity: 1,
         selectedColor: activeColor?.name
-      });
+    });
     }
     
     // Automatically open cart dashboard
@@ -203,29 +220,81 @@ export const MinimalistProductCard = ({
           </h3>
           <p className="text-lg font-bold text-gray-900 mt-1">{price}</p>
           
-          {/* 3. Conditional Color Swatches */}
+          {/* 3. Enhanced Color Swatches */}
           {colorOptions.length > 0 && (
-            <div className="flex space-x-2 mt-3">
-              {colorOptions.map((color) => (
-                <button
-                  key={color.name}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveColor(color);
-                  }}
-                  className={`
-                    w-6 h-6 transition-all duration-150 flex-shrink-0
-                    ${color.bgClass}
-                    ${color.bgClass === 'bg-white' ? 'border border-gray-400' : ''}
-                    ${activeColor && activeColor.name === color.name 
-                      ? 'ring-2 ring-black ring-offset-1' 
-                      : ''
-                    }
-                  `}
-                  aria-label={`Select color ${color.name}`}
-                />
-              ))}
+            <div className="flex gap-2 mt-3 flex-wrap relative">
+              {colorOptions.map((color) => {
+                const isSelected = activeColor?.name === color.name;
+                const isHovered = hoveredColor === color.name;
+
+  return (
+                  <div key={color.name} className="relative">
+                    <motion.button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveColor(color);
+                      }}
+                      onMouseEnter={() => setHoveredColor(color.name)}
+                      onMouseLeave={() => setHoveredColor(null)}
+                      className={`
+                        relative w-8 h-8 rounded-full flex-shrink-0
+                        transition-all duration-200 ease-in-out
+                        cursor-pointer
+                        border-2 border-gray-200
+                        ${color.bgClass}
+                        ${isSelected 
+                          ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg' 
+                          : 'hover:scale-110 hover:shadow-md focus:ring-2 focus:ring-blue-600 focus:ring-offset-2'
+                        }
+                      `}
+                      whileHover={{ scale: isSelected ? 1 : 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label={`Select color ${color.name}`}
+                      aria-pressed={isSelected}
+                    >
+                      {/* Checkmark for selected state */}
+                      <AnimatePresence>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "backOut" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <Check 
+                              className={`w-4 h-4 ${
+                                color.bgClass === 'bg-white' || 
+                                color.bgClass === 'bg-amber-200' || 
+                                color.bgClass === 'bg-yellow-500'
+                                  ? 'text-gray-900' 
+                                  : 'text-white'
+                              } stroke-[3]`}
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                    
+                    {/* Tooltip - positioned absolutely relative to the wrapper */}
+                    {isHovered && !isSelected && (
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 5 }}
+                          transition={{ duration: 0.15 }}
+                          className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap"
+                        >
+                          {formatColorName(color.name)}
+                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                        </motion.div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -258,7 +327,7 @@ export const MinimalistProductCard = ({
             {/* Icon with enhanced hover effects */}
             <motion.div
               className="relative z-10 text-black group-hover:text-white transition-colors duration-300"
-              whileHover={{ 
+            whileHover={{ 
                 rotate: 360,
                 transition: { duration: 0.6, ease: "easeInOut" }
               }}

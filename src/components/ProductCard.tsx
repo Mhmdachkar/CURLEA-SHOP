@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { OptimizedImage } from "./OptimizedImage";
+import { Check } from "lucide-react";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
@@ -22,6 +23,24 @@ const CartIcon = () => (
   </svg>
 );
 
+// Tooltip Component
+const ColorTooltip = ({ colorName, isVisible }: { colorName: string; isVisible: boolean }) => (
+  <AnimatePresence>
+    {isVisible && (
+      <motion.div
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 5 }}
+        transition={{ duration: 0.15 }}
+        className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none"
+      >
+        {colorName}
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 interface ColorOption {
   name: string;
   bgClass: string;
@@ -31,6 +50,30 @@ interface ProductCardProps extends Product {
   onClick?: () => void;
   onAddToCart?: (product: { id: string; name: string; price: string; image: string; activeColor: ColorOption | null }) => void;
 }
+
+// Helper function to format color names for display
+const formatColorName = (color: string): string => {
+  const displayMap: Record<string, string> = {
+    'CANDY': 'Candy',
+    'LATTE': 'Latte',
+    'MULBERRY': 'Mulberry',
+    'OLIVE': 'Olive',
+    'BUTTERMILK': 'Buttermilk',
+    'MARSHMALLOW': 'Marshmallow',
+    'GOLD': 'Gold',
+    'PRINT': 'Print',
+    'ROSE GOLD': 'Rose Gold',
+    'ROYAL PURPLE': 'Royal Purple',
+    'OLIVE LUX': 'Olive Lux',
+    'EARL GREY': 'Earl Grey',
+    'CANDY&MARCHMELLO': 'Candy & Marshmallow',
+    'OLIVE&LATTE': 'Olive & Latte',
+    'candy&marchmello': 'Candy & Marshmallow',
+    'olive&latte': 'Olive & Latte'
+  };
+  
+  return displayMap[color.toUpperCase()] || color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+};
 
 // Helper function to convert product colors to color options
 const getColorOptions = (colors?: string[]): ColorOption[] => {
@@ -100,10 +143,6 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
       'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
-    },
-    'curly-clip-5': {
-      'candy&marchmello': new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
-      'olive&latte': new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href
     }
   };
 
@@ -142,6 +181,9 @@ export const ProductCard = ({
   const [activeColor, setActiveColor] = useState<ColorOption | null>(
     colorOptions.length > 0 ? colorOptions[0] : null
   );
+  
+  // Track which color swatch is being hovered for tooltip
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   // Get the current image based on selected color
   const currentImage = activeColor 
@@ -167,7 +209,6 @@ export const ProductCard = ({
         name,
         price,
         image: currentImage,
-        quantity: 1,
         selectedColor: activeColor?.name
       });
     }
@@ -203,29 +244,81 @@ export const ProductCard = ({
           </h3>
           <p className="text-lg font-bold text-gray-900 mt-1">{price}</p>
           
-          {/* 3. Conditional Color Swatches */}
+          {/* 3. Enhanced Color Swatches */}
           {colorOptions.length > 0 && (
-            <div className="flex space-x-2 mt-3">
-              {colorOptions.map((color) => (
-                <button
-                  key={color.name}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveColor(color);
-                  }}
-                  className={`
-                    w-6 h-6 transition-all duration-150 flex-shrink-0
-                    ${color.bgClass}
-                    ${color.bgClass === 'bg-white' ? 'border border-gray-400' : ''}
-                    ${activeColor && activeColor.name === color.name 
-                      ? 'ring-2 ring-black ring-offset-1' 
-                      : ''
-                    }
-                  `}
-                  aria-label={`Select color ${color.name}`}
-                />
-              ))}
+            <div className="flex gap-2 mt-3 flex-wrap relative">
+              {colorOptions.map((color, index) => {
+                const isSelected = activeColor?.name === color.name;
+                const isHovered = hoveredColor === color.name;
+                
+                return (
+                  <div key={color.name} className="relative">
+                    <motion.button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveColor(color);
+                      }}
+                      onMouseEnter={() => setHoveredColor(color.name)}
+                      onMouseLeave={() => setHoveredColor(null)}
+                      className={`
+                        relative w-8 h-8 rounded-full flex-shrink-0
+                        transition-all duration-200 ease-in-out
+                        cursor-pointer
+                        border-2 border-gray-200
+                        ${color.bgClass}
+                        ${isSelected 
+                          ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg' 
+                          : 'hover:scale-110 hover:shadow-md focus:ring-2 focus:ring-blue-600 focus:ring-offset-2'
+                        }
+                      `}
+                      whileHover={{ scale: isSelected ? 1 : 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label={`Select color ${color.name}`}
+                      aria-pressed={isSelected}
+                    >
+                      {/* Checkmark for selected state */}
+                      <AnimatePresence>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "backOut" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <Check 
+                              className={`w-4 h-4 ${
+                                color.bgClass === 'bg-white' || 
+                                color.bgClass === 'bg-amber-200' || 
+                                color.bgClass === 'bg-yellow-500'
+                                  ? 'text-gray-900' 
+                                  : 'text-white'
+                              } stroke-[3]`}
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                    
+                    {/* Tooltip - positioned absolutely relative to the wrapper */}
+                    {isHovered && !isSelected && (
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 5 }}
+                          transition={{ duration: 0.15 }}
+                          className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap"
+                        >
+                          {formatColorName(color.name)}
+                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                        </motion.div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

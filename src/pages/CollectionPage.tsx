@@ -84,11 +84,11 @@ export const CollectionPage = () => {
     
     // Only show animation if not coming from product detail page
     if (showLoader) {
-      const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
         console.log("CollectionPage: Hiding loader after 4000ms");
-        setShowLoader(false);
+      setShowLoader(false);
       }, 4000);
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
     }
   }, [showLoader]);
 
@@ -101,10 +101,10 @@ export const CollectionPage = () => {
       {/* Modern Elegant Brand Loader */}
       <AnimatePresence mode="wait">
         {showLoader && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
             style={{ 
               position: 'fixed',
@@ -118,8 +118,8 @@ export const CollectionPage = () => {
               height: '100vh',
               overflow: 'hidden'
             }}
-          >
-            <CurleaBrandAnimation />
+            >
+              <CurleaBrandAnimation />
           </motion.div>
         )}
       </AnimatePresence>
@@ -213,31 +213,31 @@ const CurleaBrandAnimation = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
       >
-        {brandName.split("").map((letter, index) => (
-          <motion.span
-            key={index}
+      {brandName.split("").map((letter, index) => (
+        <motion.span
+          key={index}
             style={{ 
               display: 'inline-block',
               marginRight: '0.1em',
               position: 'relative'
             }}
-            initial={{ 
-              opacity: 0, 
+          initial={{ 
+            opacity: 0, 
               y: 100,
               rotateX: 90
-            }}
-            animate={{ 
-              opacity: 1, 
-              y: 0,
+          }}
+          animate={{ 
+            opacity: 1, 
+            y: 0, 
               rotateX: 0
-            }}
-            transition={{
-              duration: 0.8,
+          }}
+          transition={{
+            duration: 0.8,
               delay: 0.8 + index * 0.15,
               ease: [0.25, 0.46, 0.45, 0.94]
             }}
-          >
-            {letter}
+            >
+              {letter}
             {/* Elegant underline effect */}
             <motion.div
               style={{
@@ -257,7 +257,7 @@ const CurleaBrandAnimation = () => {
                 ease: "easeOut"
               }}
             />
-          </motion.span>
+        </motion.span>
         ))}
       </motion.div>
 
@@ -355,7 +355,7 @@ const ShopTheLookSection = () => {
   return (
     <motion.section
       className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-muted/10 to-white overflow-hidden"
-      initial={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
@@ -381,7 +381,7 @@ const ShopTheLookSection = () => {
       />
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
         {/* Section Header - Mobile Optimized */}
-        <motion.div
+          <motion.div
           className="text-center mb-8 sm:mb-12 md:mb-16 px-2"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -397,7 +397,7 @@ const ShopTheLookSection = () => {
         </motion.div>
 
         {/* Interactive Image with Hotspots - Mobile Optimized */}
-        <motion.div
+            <motion.div
           className="relative max-w-4xl sm:max-w-5xl mx-auto rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -407,17 +407,17 @@ const ShopTheLookSection = () => {
           {/* Base Image */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[4/3] md:aspect-[16/10]">
             <img
-              src={getTheWavyLook}
+                src={getTheWavyLook}
               alt="Shop the Look - Hair Styling"
-              className="w-full h-full object-cover"
-            />
+                className="w-full h-full object-cover"
+              />
 
             {/* Interactive Hotspots */}
             {hotspots.map((hotspot, index) => (
-              <motion.div
+            <motion.div 
                 key={hotspot.id}
                 className="absolute"
-                style={{
+                  style={{
                   top: hotspot.top,
                   left: hotspot.left,
                   transform: "translate(-50%, -50%)"
@@ -470,7 +470,7 @@ const ShopTheLookSection = () => {
                 {/* Shop Now Overlay - Desktop */}
                 <AnimatePresence>
                   {hoveredHotspot === hotspot.id && (
-                    <motion.div
+                  <motion.div 
                       className="hidden md:block absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 min-w-[240px] border border-gray-100 z-10"
                       initial={{ opacity: 0, x: -10, scale: 0.9 }}
                       animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -488,15 +488,15 @@ const ShopTheLookSection = () => {
                       </p>
                       <div className="bg-foreground text-background px-4 py-2 rounded-md text-center font-semibold text-sm hover:bg-accent transition-colors cursor-pointer">
                         SHOP NOW
-                      </div>
+          </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-
+                  
                 {/* Shop Now Overlay - Mobile Optimized */}
                 <AnimatePresence>
                   {hoveredHotspot === hotspot.id && (
-                    <motion.div
+                  <motion.div
                       className="md:hidden absolute top-full mt-3 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-xl p-3 sm:p-4 min-w-[160px] sm:min-w-[180px] max-w-[200px] border border-gray-100 z-10"
                       initial={{ opacity: 0, y: -10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -515,27 +515,27 @@ const ShopTheLookSection = () => {
                       >
                         SHOP NOW
                       </div>
-                    </motion.div>
+                  </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </div>
         </motion.div>
 
         {/* CTA Below Image - Mobile Optimized */}
         <motion.div
           className="text-center mt-8 sm:mt-10 md:mt-12 px-4"
-          initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.8 }}
-        >
+            >
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
             Tap the circles to explore each product
           </p>
-        </motion.div>
-      </div>
+          </motion.div>
+          </div>
     </motion.section>
   );
 };
@@ -1865,7 +1865,6 @@ const ElegantProductGrid = ({
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1,
       selectedColor: product.activeColor?.name
     });
   };
@@ -1931,7 +1930,7 @@ const ElegantProductGrid = ({
           viewport={{ once: true }}
           transition={{ delay: 0.8, duration: 0.8 }}
         >
-          {displayedProducts.slice(0, 8).map((product, index) => (
+          {displayedProducts.map((product, index) => (
             <motion.div
               key={product.id}
               className="group cursor-pointer"
