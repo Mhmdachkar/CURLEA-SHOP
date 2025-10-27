@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Read products data
-const products = require('../src/data/products.ts');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Base URL - will transition from netlify to beauty domain
 const BASE_URL = process.env.BASE_URL || 'https://curlea.netlify.app';
