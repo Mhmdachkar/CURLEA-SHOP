@@ -6,9 +6,6 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import hero1 from "@/assets/hero-luxury-1.jpg";
 import hero2 from "@/assets/hero-luxury-2.jpg";
 import hero3 from "@/assets/hero-luxury-3.jpg";
-import video1 from "@/assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4";
-import video2 from "@/assets/curly hair collection/Download (3).mp4";
-import video3 from "@/assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4";
 
 /* ============================================
    STYLED COMPONENTS - MOBILE FIRST
@@ -41,17 +38,6 @@ const MediaContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: hidden;
-`;
-
-const Video = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  will-change: auto;
 `;
 
 const HeroImage = styled(motion.img)`
@@ -254,19 +240,16 @@ const ScrollIndicatorDot = styled(motion.div)`
 const slides = [
   {
     image: hero1,
-    video: video1,
     title: "Embrace Your Natural Shine",
     subtitle: "Discover luxurious care for every hair type",
   },
   {
     image: hero2,
-    video: video2,
     title: "Curl Is Power",
     subtitle: "Embrace your natural form with confidence",
   },
   {
     image: hero3,
-    video: video3,
     title: "Define Your Beauty",
     subtitle: "Embrace your natural power",
   },
@@ -372,10 +355,8 @@ const MagneticCTAButton = () => {
 
 export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [useVideo, setUseVideo] = useState(true);
   const [isPageLoading, setIsPageLoading] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
   
   // Always create scroll tracking but disable effects during page loading
@@ -443,25 +424,6 @@ export const HeroSection = () => {
     };
   }, [isPageLoading]);
 
-  // Force video to play immediately with better error handling
-  useEffect(() => {
-    if (videoRef.current && useVideo) {
-      const playVideo = async () => {
-        try {
-          await videoRef.current.play();
-        } catch (error) {
-          console.log('Video autoplay prevented:', error);
-          setUseVideo(false);
-        }
-      };
-      
-      // Add a small delay to ensure video element is ready
-      const timeout = setTimeout(playVideo, 100);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [currentSlide, useVideo]);
-
   // Auto-rotate slides
   useEffect(() => {
     const timer = setInterval(() => {
@@ -469,13 +431,6 @@ export const HeroSection = () => {
     }, 8000);
     return () => clearInterval(timer);
   }, []);
-
-  // Disable video on mobile for performance
-  useEffect(() => {
-    if (isMobile || isTablet) {
-      setUseVideo(false);
-    }
-  }, [isMobile, isTablet]);
 
   return (
     <HeroContainer 
@@ -497,51 +452,13 @@ export const HeroSection = () => {
           }}
         >
           <MediaContainer>
-            {useVideo ? (
-              <Video
-                ref={videoRef}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                disablePictureInPicture
-                controlsList="nodownload noplaybackrate"
-                onError={(e) => {
-                  console.error('Hero video error:', e);
-                  // Only disable video for this slide if there's an error
-                  if (slides[currentSlide].video) {
-                    setUseVideo(false);
-                  }
-                }}
-                onLoadedData={(e) => {
-                  const video = e.target as HTMLVideoElement;
-                  if (!video.src && !video.querySelector('source')) {
-                    setUseVideo(false);
-                    return;
-                  }
-                  video.play().catch((error) => {
-                    console.error('Hero video play error:', error);
-                    setUseVideo(false);
-                  });
-                }}
-                onCanPlay={() => {
-                  console.log('Hero video can play');
-                }}
-              >
-                {slides[currentSlide].video && (
-                  <source src={slides[currentSlide].video} type="video/mp4" />
-                )}
-              </Video>
-            ) : (
-              <HeroImage
+            <HeroImage
                 src={slides[currentSlide].image}
                 alt={slides[currentSlide].title}
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.02 }}
                 transition={{ duration: 12, ease: "easeOut" }}
               />
-            )}
           </MediaContainer>
 
           <GradientOverlay />
