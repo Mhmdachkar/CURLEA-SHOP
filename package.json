@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-sitemap.js",
     "build:dev": "vite build --mode development",
-    "build:prod": "vite build --mode production",
+    "build:prod": "vite build --mode production && node scripts/generate-sitemap.js",
     "build:netlify": "npm run build:prod && npm run optimize-assets",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -15,7 +15,8 @@
     "preview:build": "npm run build && npm run preview",
     "optimize-assets": "node scripts/optimize-assets.js",
     "deploy:check": "npm run build:prod",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

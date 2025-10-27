@@ -1,3 +1,35 @@
+# CURLEA - Luxury Hair Accessories
+# Optimized for curlea.netlify.app (transitioning to curlea.beauty)
+
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /collection
+Allow: /category/
+Allow: /product/
+
+# Block admin and API endpoints
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /.netlify/
+Disallow: /.git/
+
+# Block development files
+Disallow: /*.map$
+Disallow: /*.json$
+Disallow: /src/
+Disallow: /node_modules/
+
+# Block analytics tracking scripts
+Disallow: /analytics.js
+Disallow: /init-analytics.js
+
+# Block service worker files
+Disallow: /sw.js
+Disallow: /sw.js.map
+
+# Special rules for major search engines
 User-agent: Googlebot
 Allow: /
 
@@ -6,9 +38,12 @@ Allow: /
 
 User-agent: Twitterbot
 Allow: /
+Crawl-delay: 1
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap location
+Sitemap: https://curlea.netlify.app/sitemap.xml
+# Future domain transition
+Sitemap: https://curlea.beauty/sitemap.xml
