@@ -406,8 +406,20 @@ export const ProductDetailPage = () => {
       });
     }
     
-    // Show beautiful success message
-    toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart! 🎉`);
+    // Show toast notification
+    toast('Added to Cart', {
+      description: `${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart`,
+      duration: 4000,
+      icon: '🛍️',
+      style: {
+        backgroundColor: '#000',
+        color: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '8px',
+        fontSize: '14px',
+        padding: '16px',
+      },
+    });
     
     // Open cart drawer
     openCart();
@@ -576,11 +588,19 @@ export const ProductDetailPage = () => {
               navigate(-1);
             }
           }}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors relative z-[40] px-4 py-2 -ml-4"
           whileHover={{ x: -5 }}
+          style={{
+            position: 'relative',
+            left: 0,
+            marginTop: '1rem',
+            minHeight: '44px',
+            minWidth: '100px',
+            touchAction: 'manipulation'
+          }}
         >
           <ArrowLeft className="w-5 h-5" />
-          Back
+          <span className="select-none">Back</span>
         </motion.button>
       </div>
 
@@ -2002,46 +2022,72 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
 
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    // Only log if it's an actual video element error, not source element error
-    if (e.target instanceof HTMLVideoElement) {
-      console.warn(`Video loading error for ${product.name}:`, e);
-      setIsVideoLoading(false);
-      setVideoError(true);
-      setVideoLoaded(false);
+    if (!(e.target instanceof HTMLVideoElement)) return;
+    
+    // Clear loading state and set error
+    setIsVideoLoading(false);
+    setVideoError(true);
+    setVideoLoaded(false);
+
+    const videoElement = e.target;
+    console.warn(`Video loading error for ${product.name}:`, {
+      error: e,
+      src: videoElement.currentSrc,
+      networkState: videoElement.networkState,
+      readyState: videoElement.readyState
+    });
+    
+    // Multiple retry attempts with exponential backoff
+    const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
+      if (attempt > maxAttempts) {
+        console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
+        return;
+      }
       
-      // Multiple retry attempts with increasing delays
-      const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
-        if (attempt > maxAttempts) {
-          console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
-          return;
-        }
+      // Exponential backoff delay
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      
+      setTimeout(() => {
+        if (!videoRef.current || !specialVideo) return;
         
-        const delay = attempt * 1500; // Increase delay with each attempt
-        setTimeout(() => {
-          if (videoRef.current && specialVideo) {
-            console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
-            
-            // Reset video element
-            videoRef.current.pause();
-            videoRef.current.removeAttribute('src');
+        console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
+        
+        // Full reset of video element
+        videoRef.current.pause();
+        videoRef.current.removeAttribute('src');
+        videoRef.current.load();
+        
+        // Try to preload first
+        const preloadVideo = new Image();
+        preloadVideo.src = specialVideo;
+        preloadVideo.onload = () => {
+          if (!videoRef.current) return;
+          
+          // Set source and reload
+          const source = videoRef.current.querySelector('source');
+          if (source) {
+            source.src = specialVideo;
             videoRef.current.load();
             
-            // Set source again
-            const source = videoRef.current.querySelector('source');
-            if (source) {
-              source.src = specialVideo;
-              videoRef.current.load();
-            }
-            
-            // If still fails, try next attempt
-            videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+            // Only set error handler for actual failures
+            videoRef.current.onerror = () => {
+              // Use a different source URL pattern on failure
+              const fallbackUrl = specialVideo.replace('/videos/', '/fallback-videos/');
+              source.src = fallbackUrl;
+              videoRef.current?.load();
+              
+              // If still fails, try next attempt
+              videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
+            };
           }
-        }, delay);
-      };
-      
-      retryVideo();
-    }
-    // Silently ignore source element errors as they're handled by fallback sources
+        };
+        
+        preloadVideo.onerror = () => retryVideo(attempt + 1, maxAttempts);
+      }, delay);
+    };
+    
+    // Start retry process
+    retryVideo();
   };
 
   const handleVideoCanPlay = () => {
@@ -2086,29 +2132,28 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     }
   };
   
-  // Import the appropriate video for special products
-  const specialVideo = isHeatlessProduct || isDreamCurlProduct
+  // Use product.video if available, otherwise use fallback video logic
+  const specialVideo = product.video ? product.video : 
+    (isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) 
       ? product.id === 'dreamcurl-original'
-        ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/Screen Recording 2025-10-11 005227.mp4', import.meta.url).href
+        ? '/videos/dreamcurl-original-guide.mp4'
         : product.id === 'dreamcurl-midi'
-        ? new URL('../assets/Heatless Hair Curling Rod/midi_size/Screen Recording 2025-10-13 135516.mp4', import.meta.url).href
+        ? '/videos/dreamcurl-midi-guide.mp4'
         : product.id === 'dreamcurl-jumbo'
-        ? new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide (1).mp4', import.meta.url).href
+        ? '/videos/dreamcurl-jumbo-guide.mp4'
         : product.id === 'heatless-5'
-        ? new URL('../assets/Heatless Hair Curling Rod/product5/Screen Recording 2025-10-07 143110.mp4', import.meta.url).href
+        ? '/videos/bun-bons-guide.mp4'
         : product.id === 'heatless-6'
-        ? new URL('../assets/Heatless Hair Curling Rod/product6/Screen Recording 2025-10-06 223323.mp4', import.meta.url).href
-        : new URL('../assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4', import.meta.url).href
-      : isCurlyHairProduct
-        ? product.id === 'curly-clip-1'
-          ? new URL('../assets/curly hair collection/Download (3).mp4', import.meta.url).href
-          : product.id === 'curly-scarf-1'
-          ? new URL('../assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4', import.meta.url).href
-          : product.id === 'curly-claw-1'
-          ? new URL('../assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4', import.meta.url).href
-          : product.id === 'curlea-comb'
-          ? new URL('../assets/curly hair collection/product7/Screen Recording 2025-10-21 013440.mp4', import.meta.url).href
-          : null
+        ? '/videos/bonnet-guide.mp4'
+        : '/videos/heatless-guide.mp4'
+      : product.id === 'curly-clip-1'
+        ? '/videos/hair-clips-guide.mp4'
+        : product.id === 'curly-scarf-1'
+        ? '/videos/satin-scarves-guide.mp4'
+        : product.id === 'curly-claw-1'
+        ? '/videos/claw-clips-guide.mp4'
+        : product.id === 'curlea-comb'
+        ? '/videos/curlea-comb-guide.mp4'
         : null;
 
   // Simplified video loading when section comes into view

@@ -1,0 +1,49 @@
+/* Toast Styles */
+[data-sonner-toaster] {
+  --border-radius: 8px !important;
+  --font-family: 'Montserrat', -apple-system, system-ui, sans-serif !important;
+  --font-size: 14px !important;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-sonner-toast] {
+  background: #000 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 16px !important;
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size) !important;
+  border-radius: var(--border-radius) !important;
+  box-shadow: var(--shadow) !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  background: linear-gradient(to right, #000000, #1a1a1a) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-sonner-toast] [data-icon] {
+  font-size: 20px !important;
+  margin-right: 8px !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600 !important;
+  color: #fff !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-top: 4px !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  color: rgba(255, 255, 255, 0.6) !important;
+  opacity: 1 !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  color: #fff !important;
+}

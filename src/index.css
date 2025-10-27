@@ -8,6 +8,9 @@
 /* Import Mobile-First Responsive CSS */
 @import './styles/mobile-responsive.css';
 
+/* Import Toast Styles */
+@import './styles/toast.css';
+
 /* Advanced Scroll System - Professional & Elegant */
 html {
   scroll-behavior: smooth;

@@ -54,10 +54,10 @@ const NavInner = styled.div`
 `;
 
 const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
-  font-family: ${({ theme }) => theme.typography.fontFamily.serif};
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
+  font-family: "Montserrat", "Optima", ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-weight: 300;
+  text-transform: uppercase;
   color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
     ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
   text-decoration: none;
@@ -66,10 +66,42 @@ const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boo
   justify-content: center;
   min-width: ${({ theme }) => theme.touchTargets.min};
   min-height: ${({ theme }) => theme.touchTargets.min};
-  text-shadow: ${({ $isScrolled }) =>
-    $isScrolled ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.3)'};
   z-index: ${({ theme }) => theme.zIndex.sticky + 1};
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition: transform 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  
+  span {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+    mix-blend-mode: screen;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    &:hover::before {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0.5;
+    }
+  }
 
   /* Ensure black text when background is white */
   @media (prefers-color-scheme: light) {
@@ -77,8 +109,21 @@ const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boo
       $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
 
+  &:hover {
+    letter-spacing: 0.35em;
+    transform: scale(1.02);
+    text-shadow: ${({ $isScrolled }) =>
+      $isScrolled ? '0 2px 4px rgba(0, 0, 0, 0.15)' : '0 4px 16px rgba(0, 0, 0, 0.5)'};
+  }
+
   @media ${({ theme }) => theme.mediaQueries.tablet} {
-    font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+    letter-spacing: 0.3em;
+  }
+
+  @media ${({ theme }) => theme.mediaQueries.desktop} {
+    font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+    letter-spacing: 0.35em;
   }
 `;
 
@@ -514,10 +559,59 @@ export const Navbar = () => {
               e.preventDefault();
               navigate("/");
             }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400 }}
+            className="flex items-center justify-center gap-[0.25em]"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { 
+                duration: 0.4,
+                ease: [0.215, 0.61, 0.355, 1]
+              }
+            }}
           >
-            Curlea
+            {"CURLEA".split('').map((letter, index) => (
+              <motion.span
+                key={index}
+                style={{ display: 'inline-block' }}
+                initial={{ 
+                  opacity: 0,
+                  scale: 2,
+                  filter: "blur(20px)",
+                  y: Math.random() * 40 - 20
+                }}
+                animate={{ 
+                  opacity: 1,
+                  scale: 1,
+                  filter: "blur(0px)",
+                  y: 0
+                }}
+                transition={{
+                  duration: 1.2,
+                  delay: index * 0.15,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  opacity: {
+                    duration: 1.2,
+                    ease: "easeOut"
+                  },
+                  scale: {
+                    duration: 1.4,
+                    ease: "easeOut"
+                  },
+                  filter: {
+                    duration: 1,
+                    ease: "easeOut"
+                  }
+                }}
+                whileHover={{
+                  y: -5,
+                  textShadow: "0 4px 16px rgba(255, 255, 255, 0.4)",
+                  transition: { duration: 0.2 }
+                }}
+              >
+                {letter}
+              </motion.span>
+            ))}
           </Logo>
 
           {/* Desktop Navigation */}

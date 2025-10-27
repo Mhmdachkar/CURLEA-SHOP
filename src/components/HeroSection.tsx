@@ -6,6 +6,9 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import hero1 from "@/assets/hero-luxury-1.jpg";
 import hero2 from "@/assets/hero-luxury-2.jpg";
 import hero3 from "@/assets/hero-luxury-3.jpg";
+import video1 from "@/assets/Heatless Hair Curling Rod/69fb9b50593547f3899618d65d85cec5.HD-1080p-7.2Mbps-11546034.mp4";
+import video2 from "@/assets/curly hair collection/Download (3).mp4";
+import video3 from "@/assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4";
 
 /* ============================================
    STYLED COMPONENTS - MOBILE FIRST
@@ -251,19 +254,19 @@ const ScrollIndicatorDot = styled(motion.div)`
 const slides = [
   {
     image: hero1,
-    video: null, // Removed broken external video URL
+    video: video1,
     title: "Embrace Your Natural Shine",
     subtitle: "Discover luxurious care for every hair type",
   },
   {
     image: hero2,
-    video: null, // Removed broken external video URL
+    video: video2,
     title: "Curl Is Power",
     subtitle: "Embrace your natural form with confidence",
   },
   {
     image: hero3,
-    video: null, // Removed broken external video URL
+    video: video3,
     title: "Define Your Beauty",
     subtitle: "Embrace your natural power",
   },
@@ -506,10 +509,17 @@ export const HeroSection = () => {
                 controlsList="nodownload noplaybackrate"
                 onError={(e) => {
                   console.error('Hero video error:', e);
-                  setUseVideo(false);
+                  // Only disable video for this slide if there's an error
+                  if (slides[currentSlide].video) {
+                    setUseVideo(false);
+                  }
                 }}
                 onLoadedData={(e) => {
                   const video = e.target as HTMLVideoElement;
+                  if (!video.src && !video.querySelector('source')) {
+                    setUseVideo(false);
+                    return;
+                  }
                   video.play().catch((error) => {
                     console.error('Hero video play error:', error);
                     setUseVideo(false);
@@ -519,9 +529,9 @@ export const HeroSection = () => {
                   console.log('Hero video can play');
                 }}
               >
-                <source src={slides[currentSlide].video} type="video/mp4" />
-                <source src={slides[currentSlide].video} type="video/webm" />
-                <source src={slides[currentSlide].video} type="video/ogg" />
+                {slides[currentSlide].video && (
+                  <source src={slides[currentSlide].video} type="video/mp4" />
+                )}
               </Video>
             ) : (
               <HeroImage

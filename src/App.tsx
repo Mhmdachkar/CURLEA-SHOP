@@ -1,5 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -33,8 +32,21 @@ const App = () => {
         <TooltipProvider>
           <RealtimeProvider>
             <CartProvider>
-              <Toaster />
-              <SonnerToaster />
+              <Toaster 
+                theme="dark"
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: '#000',
+                    color: '#fff',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontSize: '14px',
+                    padding: '16px',
+                  },
+                  duration: 3000,
+                }}
+                closeButton
+              />
               <BrowserRouter
                 future={{
                   v7_startTransition: true,
