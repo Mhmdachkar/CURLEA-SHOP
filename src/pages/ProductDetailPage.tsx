@@ -1,9 +1,10 @@
-﻿import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { ProductImage } from "@/components/ProductImage";
+import { MediaShowcaseSection } from "@/components/MediaShowcaseSection";
 import { ArrowLeft, Minus, Plus, Play, Pause, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight, ShoppingBag, Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
@@ -374,7 +375,7 @@ export const ProductDetailPage = () => {
 
     // Calculate current cart total
     const currentCartTotal = cartState.items.reduce((total, item) => {
-      const price = parseFloat(item.price.replace('€', ''));
+      const price = parseFloat(item.price.replace('�', ''));
       return total + (price * item.quantity);
     }, 0);
     
@@ -391,7 +392,7 @@ export const ProductDetailPage = () => {
 
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(finalPrice.replace('€', ''));
+      const priceNumber = parseFloat(finalPrice.replace('�', ''));
       const newCartTotal = currentCartTotal + (priceNumber * quantity);
       
       (window as any).analytics.trackCart('add', {
@@ -410,7 +411,7 @@ export const ProductDetailPage = () => {
     toast('Added to Cart', {
       description: `${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart`,
       duration: 4000,
-      icon: '🛍️',
+      icon: '???',
       style: {
         backgroundColor: '#000',
         color: '#fff',
@@ -741,14 +742,14 @@ export const ProductDetailPage = () => {
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Regular price:</span>
-                    <span className="line-through text-muted-foreground">€{(12.99 * quantity).toFixed(2)}</span>
+                    <span className="line-through text-muted-foreground">�{(12.99 * quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
                     <span>Bundle price:</span>
-                    <span>€{(12.99 * quantity * 0.9).toFixed(2)}</span>
+                    <span>�{(12.99 * quantity * 0.9).toFixed(2)}</span>
                   </div>
                   <div className="text-xs text-green-600 dark:text-green-400 mt-2">
-                    You save €{(12.99 * quantity * 0.1).toFixed(2)}!
+                    You save �{(12.99 * quantity * 0.1).toFixed(2)}!
                   </div>
                 </motion.div>
               )}
@@ -762,7 +763,7 @@ export const ProductDetailPage = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-sm font-medium text-primary">
-                    × {(() => {
+                    � {(() => {
                       if (product.id === 'curly-clip-1') {
                         // Get piece count from selected size
                         const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize] 
@@ -1508,10 +1509,8 @@ export const ProductDetailPage = () => {
           </motion.div>
         </div>
 
-        {/* 1. The "Ritual in Motion" Video Section - Skip for products without video */}
-        {product.id !== 'songmay-hair-clips' && product.id !== 'curly-clip-6' && (
-        <RitualInMotionSection key={`ritual-${product.id}`} product={product} />
-        )}
+        {/* 1. The "Media Showcase" Section - Elegant 3-column layout */}
+        <MediaShowcaseSection key={`media-${product.id}`} product={product} />
 
         {/* Usage Steps Section - for all products with usageSteps */}
         {product.usageSteps && (
@@ -1522,9 +1521,6 @@ export const ProductDetailPage = () => {
         {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && (
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
-
-        {/* 4. Real Results Community Section - using actual result photos */}
-        <RealResultsSection key={`results-${product.id}`} product={product} />
 
         {/* 5. Frequently Bought Together (LIMITED TIME OFFER | STARTER KIT) - All Pages */}
         <FrequentlyBoughtTogetherSection key={`fbt-${product.id}`} product={product} />
@@ -1551,7 +1547,7 @@ export const ProductDetailPage = () => {
                   Choose Your Perfect Size
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Find the ideal DreamCurl™ size for your hair length and desired curl style
+                  Find the ideal DreamCurl� size for your hair length and desired curl style
                 </p>
               </motion.div>
 
@@ -1577,19 +1573,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="font-semibold text-sm mb-2">? Best For:</p>
                       <p className="text-sm text-muted-foreground">Short to medium hair (shoulder length and above)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Tighter, bouncier curls with more definition</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">4-6 hours or overnight</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want long-lasting, defined curls with maximum hold</p>
                     </div>
                   </div>
@@ -1613,19 +1609,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="font-semibold text-sm mb-2">? Best For:</p>
                       <p className="text-sm text-muted-foreground">Medium to long hair (shoulder to mid-back)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Medium curls with beautiful bounce and volume</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">6-8 hours for best results</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want versatile curls that last all day</p>
                     </div>
                   </div>
@@ -1649,19 +1645,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Best For:</p>
+                      <p className="font-semibold text-sm mb-2">? Best For:</p>
                       <p className="text-sm text-muted-foreground">Long to very long hair (mid-back and beyond)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Soft, loose waves with natural flow</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">6-8 hours or overnight</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">✓ Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want effortless, beachy waves with volume</p>
                     </div>
                   </div>
@@ -1676,7 +1672,7 @@ export const ProductDetailPage = () => {
                 viewport={{ once: true }}
               >
                 <p className="text-sm text-muted-foreground mb-2">
-                  💡 <strong>Pro Tip:</strong> For tighter curls on longer hair, choose the Short Set. For looser waves on shorter hair, go with the Midi or Original Set.
+                  ?? <strong>Pro Tip:</strong> For tighter curls on longer hair, choose the Short Set. For looser waves on shorter hair, go with the Midi or Original Set.
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   Still unsure? The Short Set offers the most versatility for all hair types and lengths!
@@ -1759,10 +1755,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
   const heatlessProducts: Product[] = [
     {
       id: "dreamcurl-original",
-      name: "DreamCurl™ Original Set",
-      price: "€39.99",
+      name: "DreamCurl� Original Set",
+      price: "�39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurl� Collection",
       hairType: "Medium to Long",
       featured: true,
       description: [
@@ -1801,10 +1797,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-short-set",
-      name: "DreamCurl™ Short Set",
-      price: "€24.99",
+      name: "DreamCurl� Short Set",
+      price: "�24.99",
       image: product1Image,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurl� Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -1841,10 +1837,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-midi",
-      name: "DreamCurl™ Midi",
-      price: "€34.99",
+      name: "DreamCurl� Midi",
+      price: "�34.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurl� Collection",
       hairType: "Short to Long",
       featured: true,
       description: [
@@ -1882,10 +1878,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-jumbo",
-      name: "DreamCurl™ JUMBO SIZE",
-      price: "€39.99",
+      name: "DreamCurl� JUMBO SIZE",
+      price: "�39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurl� Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -1924,17 +1920,17 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "€24.99",
+      price: "�24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurl� Collection",
       hairType: "Short to Medium",
       featured: true,
       description: [
         "Our 'Zero Heat' Curling Rod is made out of the finest Peau De Soie fabric to help you achieve frizz-free shiny curls.",
         "The Zero Heat set includes:",
-        "• 2 Scrunchies",
-        "• 1 Curling Rod",
-        "• 1 Hair Claw Clip",
+        "� 2 Scrunchies",
+        "� 1 Curling Rod",
+        "� 1 Hair Claw Clip",
         "We use sustainably grown materials to fill our Curling Rod which means that not only does it make our product extremely comfortable to sleep with, but it also takes us all a step closer to a cleaner and safer environment - now that's what I call a Win-Win!",
         "*Please note, we do our best to match the curler sets with our claw clips that we have in stock. If you wish to receive a specific colour please leave a note with your order and we'll do our best to accommodate",
         "Perfect for shorter hair or those who want tighter, more defined curls",
@@ -1954,7 +1950,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "heatless-6",
       name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€39.99",
+      price: "�39.99",
       image: product6Image,
       category: "Heatless Tools",
       hairType: "All Types",
@@ -3546,7 +3542,7 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
   );
 };
 
-// Short Set Image Gallery Component - for DreamCurlâ„¢ Short Set
+// Short Set Image Gallery Component - for DreamCurl™ Short Set
 const ShortSetImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // Import images for Short Set product (4 images mapped to 4 colors)
   const shortSetImages = [
@@ -3708,7 +3704,7 @@ const CurlyClip5ImageGallery = ({ product, selectedColor, onColorSelect }: { pro
   );
 };
 
-// Midi Image Gallery Component - for DreamCurlâ„¢ Midi
+// Midi Image Gallery Component - for DreamCurl™ Midi
 const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // State to track if guide image is being viewed
   const [isViewingGuide, setIsViewingGuide] = useState(false);
@@ -3819,7 +3815,7 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
   );
 };
 
-// Jumbo Image Gallery Component - for DreamCurl™ JUMBO SIZE
+// Jumbo Image Gallery Component - for DreamCurl� JUMBO SIZE
 const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // State to track if guide image is being viewed
   const [isViewingGuide, setIsViewingGuide] = useState(false);
@@ -4025,8 +4021,8 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   const bundleProducts = [
     {
       id: "dreamcurl-short-set",
-      name: "DREAMCURL™ SHORT SET - ORIGINAL SIZE",
-      price: "€24.99",
+      name: "DREAMCURL� SHORT SET - ORIGINAL SIZE",
+      price: "�24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       hasColorOptions: true,
       colors: [
@@ -4039,14 +4035,14 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     {
       id: "curlea-comb",
       name: "CURLEA COMB - PROFESSIONAL STYLING",
-      price: "€12.99",
+      price: "�12.99",
       image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       hasColorOptions: false
     },
     {
       id: "curly-clip-1",
       name: "CURVED RESIN HAIR CLIP - DUCKBILL GRIP",
-      price: "€15.99",
+      price: "�15.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
       hasColorOptions: false
     }
@@ -4056,7 +4052,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   const selectedProductIds = Object.keys(selectedProducts).filter(id => selectedProducts[id]);
   const totalPrice = selectedProductIds.reduce((sum, id) => {
     const product = bundleProducts.find(p => p.id === id);
-    return sum + parseFloat(product?.price.replace('€', '') || '0');
+    return sum + parseFloat(product?.price.replace('�', '') || '0');
   }, 0);
   
   const bundlePrice = totalPrice * 0.9; // 10% off
@@ -4152,10 +4148,10 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
         >
           <p className="text-lg font-semibold text-gray-800">
             Total Price:{" "}
-            <span className="text-red-600 font-bold text-xl">€{bundlePrice.toFixed(2)}</span>{" "}
-            <span className="line-through text-gray-400 text-lg">€{totalPrice.toFixed(2)}</span>
+            <span className="text-red-600 font-bold text-xl">�{bundlePrice.toFixed(2)}</span>{" "}
+            <span className="line-through text-gray-400 text-lg">�{totalPrice.toFixed(2)}</span>
           </p>
-          <p className="text-gray-600 text-sm font-medium">You save: €{savings.toFixed(2)}</p>
+          <p className="text-gray-600 text-sm font-medium">You save: �{savings.toFixed(2)}</p>
         </motion.div>
 
         {/* Add to Cart */}
@@ -4223,344 +4219,8 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   );
 };
 
-// Real Results Community Section - using actual result photos
+// Real Results Community Section - REMOVED
 const RealResultsSection = ({ product }: { product: Product }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  // Get result images based on product type
-  const getResultImages = () => {
-    if (product.id === 'dreamcurl-original') {
-      return [
-        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result1.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result2.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/result3.png', import.meta.url).href,
-      ];
-    } else if (product.id === 'curlea-comb') { // CURLEA Comb
-      return [
-        new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
-      ];
-    } else if (product.id === 'heatless-5') { // BUN BONS
-      return [
-        new URL('../assets/Heatless Hair Curling Rod/product5/result1.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product5/result2.webp', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product5/result3.jpg', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product5/result4.jpg', import.meta.url).href,
-      ];
-    } else if (product.id === 'heatless-6') { // PEAU DE SOIE | XL OVERNIGHT BONNET
-      return [
-        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_2u8z0f2u8z0f2u8z.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_gseekhgseekhgsee.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_syu8posyu8posyu8.png', import.meta.url).href,
-        new URL('../assets/Heatless Hair Curling Rod/product6/Gemini_Generated_Image_x4i4fxx4i4fxx4i4.png', import.meta.url).href,
-      ];
-    } else if (product.id === 'curly-clip-5') { // Premium Hair Claw Clips - Multi-Color Collection
-      return [
-        new URL('../assets/curly hair collection/product5/Gemini_Generated_Image_2u8z0f2u8z0f2u8z.png', import.meta.url).href,
-        new URL('../assets/curly hair collection/product5/Gemini_Generated_Image_gseekhgseekhgsee.png', import.meta.url).href,
-        new URL('../assets/curly hair collection/product5/Gemini_Generated_Image_syu8posyu8posyu8.png', import.meta.url).href,
-        new URL('../assets/curly hair collection/product5/Gemini_Generated_Image_x4i4fxx4i4fxx4i4.png', import.meta.url).href,
-      ];
-    } else if (product.id.startsWith('curly-')) {
-      if (product.id === 'curly-clip-1') {
-        // Product1 uses "real result" naming with space
-        return [
-          new URL('../assets/curly hair collection/product1/real result.png', import.meta.url).href,
-          new URL('../assets/curly hair collection/product1/real result2.png', import.meta.url).href,
-          new URL('../assets/curly hair collection/product1/real result3.png', import.meta.url).href,
-        ];
-      } else if (product.id === 'curly-clip-6') {
-        // Product6 uses dedicated result folder with Gemini images
-        return [
-          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_40590g40590g4059.png', import.meta.url).href,
-          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_fdqmuwfdqmuwfdqm.png', import.meta.url).href,
-          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_pl32mkpl32mkpl32.png', import.meta.url).href,
-          new URL('../assets/curly hair collection/product6/result/Gemini_Generated_Image_wnl4uzwnl4uzwnl4.png', import.meta.url).href,
-        ];
-      } else {
-        // Product2 and Product3 use "result" naming
-        const productFolder = product.id === 'curly-scarf-1' ? 'product2' : 'product3';
-        return [
-          new URL(`../assets/curly hair collection/${productFolder}/result.png`, import.meta.url).href,
-          new URL(`../assets/curly hair collection/${productFolder}/result1.png`, import.meta.url).href,
-          new URL(`../assets/curly hair collection/${productFolder}/result2.png`, import.meta.url).href,
-          new URL(`../assets/curly hair collection/${productFolder}/result3.png`, import.meta.url).href,
-          new URL(`../assets/curly hair collection/${productFolder}/result4.png`, import.meta.url).href,
-          new URL(`../assets/curly hair collection/${productFolder}/result5.png`, import.meta.url).href,
-        ];
-      }
-    }
-    return [];
-  };
-
-  const resultImages = getResultImages();
-
-  // Don't show section if no result images available
-  if (resultImages.length === 0) return null;
-
-  const getTitle = () => {
-    if (product.id === 'dreamcurl-original') return "Transform Your Hair Journey";
-    if (product.id === 'heatless-5') return "Discover Your Perfect Style";
-    if (product.id === 'heatless-6') return "Unlock Your Hair's Potential";
-    if (product.id.startsWith('curly-')) return "Style That Speaks";
-    return "Your Beauty, Redefined";
-  };
-
-  const getSubtitle = () => {
-    if (product.id === 'dreamcurl-original') return "Experience the premium quality that defines effortless elegance and timeless beauty";
-    if (product.id === 'heatless-5') return "Elevate your styling routine with professional-grade accessories designed for perfection";
-    if (product.id === 'heatless-6') return "Where luxury meets functionality - crafted for those who demand excellence";
-    if (product.id.startsWith('curly-')) return "Premium accessories that transform everyday styling into an art form";
-    return "Discover the difference that quality makes in your daily beauty ritual";
-  };
-
-  return (
-    <motion.section
-      ref={ref}
-      className="relative py-24 px-6 bg-gradient-to-b from-background to-muted/20"
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-            {getTitle()}
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {getSubtitle()}
-          </p>
-        </motion.div>
-
-        <div className={`${
-          resultImages.length === 1 
-            ? 'grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto items-center' 
-            : 'grid grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'
-        }`}>
-          {resultImages.map((imageSrc, index) => (
-            <motion.div
-              key={index}
-              className="relative group"
-              initial={{ 
-                opacity: 0, 
-                y: resultImages.length === 1 ? 80 : 30,
-                scale: resultImages.length === 1 ? 0.8 : 0.9,
-                rotateX: resultImages.length === 1 ? -15 : 0
-              }}
-              animate={isInView ? { 
-                opacity: 1, 
-                y: 0,
-                scale: 1,
-                rotateX: 0
-              } : { 
-                opacity: 0, 
-                y: resultImages.length === 1 ? 80 : 30,
-                scale: resultImages.length === 1 ? 0.8 : 0.9,
-                rotateX: resultImages.length === 1 ? -15 : 0
-              }}
-              transition={{ 
-                delay: resultImages.length === 1 ? 0.3 : 0.1 * index, 
-                duration: resultImages.length === 1 ? 1.2 : 0.6,
-                ease: resultImages.length === 1 ? [0.25, 0.46, 0.45, 0.94] : "easeOut"
-              }}
-              whileHover={{ 
-                scale: resultImages.length === 1 ? 1.08 : 1.05, 
-                y: resultImages.length === 1 ? -20 : -10,
-                rotateX: resultImages.length === 1 ? 5 : 0,
-                transition: { duration: 0.4, ease: "easeOut" }
-              }}
-              style={{
-                transformStyle: "preserve-3d",
-                perspective: resultImages.length === 1 ? "1000px" : "none"
-              }}
-            >
-              <div className={`relative ${
-                resultImages.length === 1 
-                  ? 'aspect-[16/10]' 
-                  : 'aspect-[3/4] rounded-2xl overflow-hidden bg-muted shadow-lg'
-              }`}>
-                <motion.img
-                  src={imageSrc}
-                  alt={`Real result ${index + 1}`}
-                  className={`w-full h-full ${
-                    resultImages.length === 1 
-                      ? 'object-contain drop-shadow-2xl' 
-                      : 'object-cover'
-                  }`}
-                  initial={resultImages.length === 1 ? { scale: 1.2, opacity: 0 } : {}}
-                  animate={resultImages.length === 1 ? { scale: 1, opacity: 1 } : {}}
-                  transition={resultImages.length === 1 ? { 
-                    delay: 0.5, 
-                    duration: 1.0, 
-                    ease: "easeOut" 
-                  } : {}}
-                  whileHover={{ 
-                    scale: resultImages.length === 1 ? 1.1 : 1.1,
-                    transition: { duration: 0.6, ease: "easeOut" }
-                  }}
-                  style={resultImages.length === 1 ? {
-                    filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15)) drop-shadow(0 10px 25px rgba(0, 0, 0, 0.1))'
-                  } : {}}
-                  onError={(e) => {
-                    console.error(`Failed to load result image: ${imageSrc}`);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                
-                {/* Regular overlay for multiple images only */}
-                {resultImages.length > 1 && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                )}
-                
-                {/* Floating glow effect for single image */}
-                {resultImages.length === 1 && (
-                  <motion.div
-                    className="absolute -inset-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 -z-10"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileHover={{ opacity: 1, scale: 1.2 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                  />
-                )}
-                
-              </div>
-            </motion.div>
-          ))}
-              
-          {/* Specifications Card - Only for single image products (CURLEA Comb) */}
-          {resultImages.length === 1 && product.id === 'curlea-comb' && (
-              <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            >
-              <div className="bg-gradient-to-br from-white/80 to-white/40 dark:from-black/20 dark:to-black/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-2xl">
-                <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                  Why It Works
-                </h3>
-                
-                <div className="space-y-6">
-                  {/* Circular Cutouts */}
-                  <motion.div
-                    className="flex items-start gap-4 group"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-                    transition={{ delay: 0.6, duration: 0.6 }}
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg mb-1 text-foreground">Circular Cutouts</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        Thoughtfully placed between each tooth, allowing curls to bounce back to their natural spiral shape
-                      </p>
-                    </div>
-                  </motion.div>
-
-                  {/* Wide-Set Teeth */}
-                  <motion.div
-                    className="flex items-start gap-4 group"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-                    transition={{ delay: 0.7, duration: 0.6 }}
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg mb-1 text-foreground">Wide-Set Teeth</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        Gently glide through curls without breaking or causing frizz, perfect for detangling
-                      </p>
-                    </div>
-              </motion.div>
-
-                  {/* Smooth Edges */}
-                  <motion.div
-                    className="flex items-start gap-4 group"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-                    transition={{ delay: 0.8, duration: 0.6 }}
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg mb-1 text-foreground">Smooth Edges</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        Premium finish ensures comfortable grip and snag-free styling every time
-                      </p>
-                    </div>
-            </motion.div>
-                </div>
-
-                {/* Specifications */}
-                <div className="mt-8 pt-6 border-t border-foreground/10">
-                  <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground mb-4">Specifications</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground mb-1">Material</p>
-                      <p className="font-medium text-foreground">Premium BPA-Free</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground mb-1">Teeth</p>
-                      <p className="font-medium text-foreground">12 Wide-Set</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground mb-1">Best For</p>
-                      <p className="font-medium text-foreground">2B-4C Hair</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground mb-1">Dimensions</p>
-                      <p className="font-medium text-foreground">8" × 2.5"</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Badge */}
-                <div className="mt-6 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 text-primary text-xs font-semibold">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    Viral on Social Media
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold">
-                    ✓ In Stock
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of satisfied customers who have transformed their hair with our premium products. 
-            Share your results with us using #CurleaResults!
-          </p>
-        </motion.div>
-      </div>
-    </motion.section>
-  );
 };
 
 // Universal Usage Steps Component
@@ -4643,7 +4303,7 @@ const UsageStepsSection = ({ product }: { product: Product }) => {
           transition={{ delay: 0.8, duration: 0.6 }}
         >
           <p className="text-sm text-muted-foreground">
-            💡 Tip: For best results, always follow the recommended wait time and handle your hair gently
+            ?? Tip: For best results, always follow the recommended wait time and handle your hair gently
           </p>
         </motion.div>
                 </div>
@@ -4718,7 +4378,7 @@ const DreamCurlImageGallery = ({
               className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Previous color"
             >
-              <span className="text-lg sm:text-xl">â†</span>
+              <span className="text-lg sm:text-xl">←</span>
             </button>
             <button
               onClick={() => {
@@ -4733,7 +4393,7 @@ const DreamCurlImageGallery = ({
               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Next color"
             >
-              <span className="text-lg sm:text-xl">â†' </span>
+              <span className="text-lg sm:text-xl">�' </span>
             </button>
           </>
         )}
