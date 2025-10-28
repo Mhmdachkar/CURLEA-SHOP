@@ -1231,6 +1231,56 @@ export const ProductDetailPage = () => {
               Add to Cart
             </motion.button>
 
+            {/* Color section under Add to Cart - copied style from DreamCurl™ Short Set */}
+            {product.id !== 'dreamcurl-short-set' && product.colors && product.colors.length > 0 && (
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="mb-4">
+                  <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                  {selectedColor && (
+                    <span className="ml-2 text-sm text-primary font-medium">
+                      Selected: {selectedColor}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map((color, index) => (
+                    <motion.button
+                      key={color}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setGlobalColor(color);
+                        selectColor(color);
+                      }}
+                      className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                        selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                      }`}
+                      whileHover={{ scale: 1.02, y: -1, transition: { duration: 0.2 } }}
+                      whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      {color}
+                      {selectedColor === color && (
+                        <motion.div
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        />
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             {/* Color Selection for curly-clip-5 - Right after Add to Cart */}
             {product.id === 'curly-clip-5' && product.colors && product.colors.length > 0 && (
               <motion.div
@@ -1455,6 +1505,13 @@ export const ProductDetailPage = () => {
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
+            ) : product.id === 'zero-heat-mini' ? (
+              <ZeroHeatMiniImageGallery
+                key={`zeroheatmini-gallery-${product.id}`}
+                product={product}
+                selectedColor={selectedColor}
+                onColorSelect={setSelectedColor}
+              />
             ) : product.id === 'heatless-6' ? (
               <BonnetImageGallery 
                 key={`bonnet-gallery-${product.id}`}
@@ -1484,22 +1541,15 @@ export const ProductDetailPage = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Enhanced 3D container with depth */}
-              <div className="relative bg-white/90 dark:bg-white/10 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-white/30 dark:border-white/20">
-                {/* Inner glow effect */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
-                
-                {/* Product image with enhanced styling */}
+              {/* Cleaner container for products without custom galleries */}
+              <div className="relative rounded-3xl">
                 <ProductImage
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-auto rounded-2xl shadow-xl"
+                  className={`w-full ${product.id === 'curlea-comb' ? 'h-[520px]' : 'h-auto'} object-contain rounded-2xl`}
                   priority={true}
                   productId={product.id}
                 />
-                
-                {/* Subtle border glow */}
-                <div className="absolute inset-2 rounded-2xl border border-white/50 dark:border-white/10 pointer-events-none" />
               </div>
             </motion.div>
             )}
@@ -1517,7 +1567,7 @@ export const ProductDetailPage = () => {
         )}
 
         {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
-        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && (
+        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && (
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
 
@@ -1917,6 +1967,36 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
         new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/olive_jumbo.webp4.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/purple_jumbo.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
+      ]
+    },
+    {
+      id: "zero-heat-mini",
+      name: "ZERO HEAT SET MINI SIZE",
+      price: "€24.99",
+      image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+      category: "DreamCurl™ Collection",
+      hairType: "Short to Medium",
+      featured: true,
+      description: [
+        "Our 'Zero Heat' Curling Rod is made out of the finest Peau De Soie fabric to help you achieve frizz-free shiny curls.",
+        "The Zero Heat set includes:",
+        "• 2 Scrunchies",
+        "• 1 Curling Rod",
+        "• 1 Hair Claw Clip",
+        "We use sustainably grown materials to fill our Curling Rod which means that not only does it make our product extremely comfortable to sleep with, but it also takes us all a step closer to a cleaner and safer environment - now that's what I call a Win-Win!",
+        "*Please note, we do our best to match the curler sets with our claw clips that we have in stock. If you wish to receive a specific colour please leave a note with your order and we'll do our best to accommodate",
+        "Perfect for shorter hair or those who want tighter, more defined curls",
+        "Compact design ideal for travel and everyday styling"
+      ],
+      ingredients: ["Finest Peau De Soie Fabric", "Sustainably Grown Materials", "Premium Fill"],
+      size: "Mini Size",
+      inStock: true,
+      colors: ["OLIVE", "LATTE", "CANDY"],
+      images: [
+        new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href
       ]
     },
     {
@@ -3097,7 +3177,7 @@ const CurlyHairCollectionImageGallery = ({
       <motion.div
         className={`relative overflow-hidden ${
           product.id === 'curlea-comb' 
-            ? 'aspect-[4/3] rounded-xl bg-transparent shadow-2xl transform -translate-y-2' 
+            ? 'aspect-[4/3] rounded-xl bg-transparent' 
             : 'aspect-square rounded-lg bg-muted'
         }`}
         initial={{ opacity: 0, scale: 0.95 }}
@@ -3107,7 +3187,7 @@ const CurlyHairCollectionImageGallery = ({
         <OptimizedImage
           src={curlyHairImages[selectedImageIndex]}
           alt={`${product.name} - View ${selectedImageIndex + 1}`}
-          className={product.id === 'curlea-comb' ? 'w-full h-full object-contain' : 'object-cover'}
+          className={product.id === 'curlea-comb' ? 'w-full h-[520px] object-contain' : 'object-cover'}
           placeholderSrc={placeholderImage}
           priority={true}
           onError={(e) => {
@@ -3284,13 +3364,12 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
       'CANDY': bunBonsImages[1],    // pppp2.webp
       'LATTE': bunBonsImages[0],    // pppp1.webp
       'OLIVE': bunBonsImages[2],    // pppp3.webp
-      'BUTTERMILK': bunBonsImages[4], // pppp5.webp
     };
     return colorImageMap[color as keyof typeof colorImageMap] || bunBonsImages[0];
   };
 
   // Get the current main image based on selected color
-  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('LATTE');
+  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : getColorSpecificImage('CANDY');
 
   return (
     <div className="space-y-4">
@@ -3341,6 +3420,100 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+// Zero Heat Mini Image Gallery Component - color-to-image mapping
+const ZeroHeatMiniImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
+  // Import images for Zero Heat Mini (3 colors + guide)
+  const miniImages = {
+    OLIVE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+    LATTE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
+    CANDY: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+    GUIDE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href,
+  } as const;
+
+  const getColorSpecificImage = (color: string) => {
+    const key = (color || 'OLIVE').toUpperCase() as keyof typeof miniImages;
+    return miniImages[key] || miniImages.OLIVE;
+  };
+
+  const [isViewingGuide, setIsViewingGuide] = useState(false);
+
+  const currentMainImage = isViewingGuide
+    ? miniImages.GUIDE
+    : selectedColor
+      ? getColorSpecificImage(selectedColor)
+      : miniImages.OLIVE;
+
+  const handleGuideClick = () => {
+    setIsViewingGuide(true);
+  };
+
+  const handleColorClick = (color: string) => {
+    setIsViewingGuide(false);
+    onColorSelect(color);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Main Image */}
+      <motion.div
+        className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ProductImage
+          key={`${selectedColor || 'OLIVE'}-${currentMainImage}`}
+          src={currentMainImage}
+          alt={`${product.name} - ${selectedColor || 'OLIVE'} Color`}
+          className="w-full h-full"
+          priority={true}
+          productId={product.id}
+        />
+      </motion.div>
+
+      {/* Thumbnails: colors + guide */}
+      <div className="flex flex-col gap-3">
+        <div className="text-center">
+          <span className="text-sm text-muted-foreground">Product Gallery</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {product.colors?.map((color) => (
+            <button
+              key={color}
+              onClick={() => handleColorClick(color)}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+                selectedColor === color ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
+            >
+              <ProductImage
+                src={getColorSpecificImage(color)}
+                alt={`${product.name} - ${color} Color`}
+                className="object-cover"
+                productId={product.id}
+              />
+            </button>
+          ))}
+
+          {/* Guide thumbnail */}
+          <button
+            onClick={handleGuideClick}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+              isViewingGuide ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+            }`}
+          >
+            <ProductImage
+              src={miniImages.GUIDE}
+              alt={`${product.name} - Usage Guide`}
+              className="object-cover"
+              productId={product.id}
+            />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

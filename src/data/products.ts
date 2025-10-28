@@ -146,6 +146,36 @@ export const products: Product[] = [
       new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide.webp', import.meta.url).href
     ]
   },
+  {
+    id: "zero-heat-mini",
+    name: "ZERO HEAT SET MINI SIZE",
+    price: "€24.99",
+    image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+    category: "DreamCurl™ Collection",
+    hairType: "Short to Medium",
+    featured: true,
+    description: [
+      "Our 'Zero Heat' Curling Rod is made out of the finest Peau De Soie fabric to help you achieve frizz-free shiny curls.",
+      "The Zero Heat set includes:",
+      "• 2 Scrunchies",
+      "• 1 Curling Rod",
+      "• 1 Hair Claw Clip",
+      "We use sustainably grown materials to fill our Curling Rod which means that not only does it make our product extremely comfortable to sleep with, but it also takes us all a step closer to a cleaner and safer environment - now that's what I call a Win-Win!",
+      "*Please note, we do our best to match the curler sets with our claw clips that we have in stock. If you wish to receive a specific colour please leave a note with your order and we'll do our best to accommodate",
+      "Perfect for shorter hair or those who want tighter, more defined curls",
+      "Compact design ideal for travel and everyday styling"
+    ],
+    ingredients: ["Finest Peau De Soie Fabric", "Sustainably Grown Materials", "Premium Fill"],
+    size: "Mini Size",
+    inStock: true,
+    colors: ["OLIVE", "LATTE", "CANDY"],
+    images: [
+      new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href
+    ]
+  },
   // Removed duplicate: peau-de-soie-bonnet (keep only curated curly collection version)
   {
     id: "curly-clip-1",
@@ -311,7 +341,7 @@ export const products: Product[] = [
     id: "heatless-5",
     name: "BUN BONS - Heatless Curling System",
     price: "€89.99",
-    image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+    image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
     category: "Heatless Tools",
     hairType: "All Types",
     featured: true,
@@ -330,7 +360,7 @@ export const products: Product[] = [
     ingredients: ["Vegan Peau de Soie", "Elongated Fiber Fill", "Gold-accent Buttons"],
     size: "3 Heatless Curlers + 3 Matching Mini Bonnets",
     inStock: true,
-    colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE", "BUTTERMILK"],
+    colors: ["MULBERRY", "CANDY", "LATTE", "OLIVE"],
     usageSteps: [
       "Start with clean, dry hair (80-90% dry for best results)",
       "Divide your hair into 3-4 sections at the crown area",

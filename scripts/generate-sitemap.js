@@ -25,6 +25,7 @@ const productPages = [
   '/product/dreamcurl-short-set',
   '/product/dreamcurl-midi',
   '/product/dreamcurl-jumbo',
+  '/product/zero-heat-mini',
   '/product/heatless-5',
   '/product/curly-clip-1',
   '/product/curly-scarf-1',
