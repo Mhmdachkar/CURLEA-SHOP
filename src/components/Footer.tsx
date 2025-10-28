@@ -222,7 +222,7 @@ export const Footer = () => {
             <ColumnTitle>Connect With Us</ColumnTitle>
             <SocialContainer>
               <SocialLink
-                href="#"
+                href="https://www.instagram.com/curlea.beauty?igsh=Z2hoMmhtZmV4b3Y5"
                 whileHover={{ scale: 1.1, y: -2 }}
                 transition={{ duration: 0.2 }}
               >

@@ -179,10 +179,22 @@ export const ElegantProductCard = ({
   
   const colorOptions = getColorOptions(colors);
   
-  // Set the first color as active, or null if no colors
-  const [activeColor, setActiveColor] = useState<ColorOption | null>(
-    colorOptions.length > 0 ? colorOptions[0] : null
-  );
+  // Set default active color (special cases for trending cards)
+  const getInitialColor = (): ColorOption | null => {
+    if (colorOptions.length === 0) return null;
+    // Prefer specific defaults for certain products
+    if (id === 'dreamcurl-short-set') {
+      const royalPurple = colorOptions.find(c => c.name.toLowerCase() === 'royal purple');
+      if (royalPurple) return royalPurple;
+    }
+    if (id === 'dreamcurl-midi') {
+      const candy = colorOptions.find(c => c.name.toUpperCase() === 'CANDY');
+      if (candy) return candy;
+    }
+    return colorOptions[0];
+  };
+
+  const [activeColor, setActiveColor] = useState<ColorOption | null>(getInitialColor());
   
   // Track which color swatch is being hovered for tooltip
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
