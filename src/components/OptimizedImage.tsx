@@ -141,9 +141,15 @@ export const OptimizedImage = ({
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Minimal placeholder while loading */}
+      {/* Image placeholder while loading */}
       {!isLoaded && !imageCache.has(src) && (
-        <div className="absolute inset-0 bg-muted/30" />
+        <img
+          src={placeholderSrc || DEFAULT_PLACEHOLDER}
+          alt={`${alt} placeholder`}
+          className={`absolute inset-0 w-full h-full ${className}`}
+          style={{ objectFit }}
+          aria-hidden
+        />
       )}
       
       {/* Actual image */}

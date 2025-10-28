@@ -1231,55 +1231,7 @@ export const ProductDetailPage = () => {
               Add to Cart
             </motion.button>
 
-            {/* Color section under Add to Cart - copied style from DreamCurl™ Short Set */}
-            {product.id !== 'dreamcurl-short-set' && product.colors && product.colors.length > 0 && (
-              <motion.div
-                className="mt-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="mb-4">
-                  <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-                  {selectedColor && (
-                    <span className="ml-2 text-sm text-primary font-medium">
-                      Selected: {selectedColor}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color, index) => (
-                    <motion.button
-                      key={color}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setGlobalColor(color);
-                        selectColor(color);
-                      }}
-                      className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                        selectedColor === color
-                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-                      }`}
-                      whileHover={{ scale: 1.02, y: -1, transition: { duration: 0.2 } }}
-                      whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                    >
-                      {color}
-                      {selectedColor === color && (
-                        <motion.div
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                        />
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+            {/* (Removed duplicate color section under Add to Cart) */}
 
             {/* Color Selection for curly-clip-5 - Right after Add to Cart */}
             {product.id === 'curly-clip-5' && product.colors && product.colors.length > 0 && (
