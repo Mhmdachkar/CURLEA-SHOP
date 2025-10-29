@@ -3136,14 +3136,7 @@ const CurlyHairCollectionImageGallery = ({
           src={curlyHairImages[selectedImageIndex]}
           alt={`${product.name} - View ${selectedImageIndex + 1}`}
           className={product.id === 'curlea-comb' ? 'w-full h-[520px] object-contain' : 'object-cover'}
-          placeholderSrc={placeholderImage}
           priority={true}
-          onError={(e) => {
-            console.error(`Failed to load image: ${curlyHairImages[selectedImageIndex]}`);
-            if (e.currentTarget) {
-              e.currentTarget.src = placeholderImage;
-            }
-          }}
         />
         
         {/* Navigation Arrows */}
@@ -3355,10 +3348,6 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
                 src={getColorSpecificImage(color)}
                 alt={`${product.name} - ${color} color preview`}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  console.error(`Failed to load color preview: ${color}`);
-                  e.currentTarget.src = '/placeholder-thumbnail.jpg';
-                }}
               />
               
               {selectedColor === color && (
@@ -3524,10 +3513,6 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
                 src={getColorSpecificImage(color)}
                 alt={`${product.name} - ${color} color preview`}
           className="w-full h-full object-cover"
-          onError={(e) => {
-                  console.error(`Failed to load color preview: ${color}`);
-                  e.currentTarget.src = '/placeholder-thumbnail.jpg';
-                }}
               />
               
               {selectedColor === color && (
@@ -3906,15 +3891,15 @@ const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product:
           
           {/* Guide image */}
           <button
-            onClick={() => {}}
+            onClick={() => setIsViewingGuide(true)}
             className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              false
+            isViewingGuide
                 ? 'ring-2 ring-primary scale-105'
                 : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
             }`}
           >
             <ProductImage
-              src={product.images?.[0] || ''}
+            src={guideImage}
               alt={`${product.name} - Usage Guide`}
               className="object-cover"
               productId={product.id}

@@ -9,8 +9,7 @@ interface ProductImageProps {
   productId?: string;
 }
 
-// Global placeholder (requested path)
-const DEFAULT_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
+// No global photo fallback; avoid swapping images on error
 
 export const ProductImage = ({ 
   src, 
@@ -23,19 +22,14 @@ export const ProductImage = ({
   const needsBlackBorderRemoval = productId === 'heatless-4' || src.includes('product-4.webp');
   
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative h-full ${className}`}>
       <OptimizedImage
         src={src}
         alt={alt}
         className="w-full h-full"
         priority={priority}
         removeBlackBorders={needsBlackBorderRemoval}
-        onError={(e) => {
-          // Swap to placeholder on error
-          try {
-            (e.currentTarget as HTMLImageElement).src = DEFAULT_PLACEHOLDER;
-          } catch {}
-        }}
+        onError={() => { /* keep empty: do not replace with another photo */ }}
       />
       
       {/* Additional overlay for product-4.webp to ensure black borders are completely removed */}

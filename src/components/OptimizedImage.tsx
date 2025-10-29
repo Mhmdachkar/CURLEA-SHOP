@@ -15,8 +15,7 @@ interface OptimizedImageProps {
 // Image cache to prevent re-downloading
 const imageCache = new Map<string, boolean>();
 
-// Default placeholder (requested path)
-const DEFAULT_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
+// No default placeholder image; avoid swapping to arbitrary photos
 
 export const OptimizedImage = ({
   src,
@@ -103,8 +102,8 @@ export const OptimizedImage = ({
 
     img.onerror = () => {
       console.error(`Failed to preload image: ${src}`);
-      // Swap to placeholder and mark as loaded
-      const fallback = placeholderSrc || DEFAULT_PLACEHOLDER;
+      // Do not swap to any placeholder image
+      const fallback = placeholderSrc || '';
       setCurrentSrc(fallback);
       setIsLoaded(true);
       // Safely remove link if it exists
@@ -140,14 +139,11 @@ export const OptimizedImage = ({
   const shouldRemoveBlackBorders = removeBlackBorders || isProduct4Image;
 
   return (
-    <div ref={imgRef} className={`relative ${className}`}>
+    <div ref={imgRef} className={`relative h-full ${className}`}>
       {/* Image placeholder while loading */}
       {!isLoaded && !imageCache.has(src) && (
-        <img
-          src={placeholderSrc || DEFAULT_PLACEHOLDER}
-          alt={`${alt} placeholder`}
-          className={`absolute inset-0 w-full h-full ${className}`}
-          style={{ objectFit }}
+        <div
+          className={`absolute inset-0 w-full h-full ${className} bg-gray-100 dark:bg-gray-800 animate-pulse`}
           aria-hidden
         />
       )}
@@ -170,10 +166,7 @@ export const OptimizedImage = ({
             imageCache.set(currentSrc, true);
           }}
           onError={(e) => {
-            const fallback = placeholderSrc || DEFAULT_PLACEHOLDER;
-            if ((e.currentTarget as HTMLImageElement).src !== fallback) {
-              (e.currentTarget as HTMLImageElement).src = fallback;
-            }
+            // Do not replace with any image; simply keep skeleton hidden state handled externally
             if (onError) onError(e);
           }}
           loading={priority ? 'eager' : 'lazy'}

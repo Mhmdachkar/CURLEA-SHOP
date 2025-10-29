@@ -19,6 +19,10 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   // Special handling for specific products
   const isMiniProduct = product.id === 'zero-heat-mini';
   const isOriginalProduct = product.id === 'dreamcurl-original';
+  const isJumboProduct = product.id === 'dreamcurl-jumbo';
+  const isBunBonsProduct = product.id === 'heatless-5';
+  const isMidiProduct = product.id === 'dreamcurl-midi';
+  const isShortSetProduct = product.id === 'dreamcurl-short-set';
   
   // Determine left and right images based on product
   let leftImage, rightImage;
@@ -26,8 +30,20 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
     leftImage = new URL('../assets/Heatless Hair Curling Rod/mini-size/photo1.webp', import.meta.url).href;
     rightImage = new URL('../assets/Heatless Hair Curling Rod/mini-size/photo2.png', import.meta.url).href;
   } else if (isOriginalProduct) {
-    leftImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original1.png', import.meta.url).href;
-    rightImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original.webp', import.meta.url).href;
+    leftImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original1.jpg', import.meta.url).href;
+    rightImage = new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original.jpg', import.meta.url).href;
+  } else if (isJumboProduct) {
+    leftImage = new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/jambo.webp', import.meta.url).href;
+    rightImage = new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/jambo1.webp', import.meta.url).href;
+  } else if (isBunBonsProduct) {
+    leftImage = new URL('../assets/Heatless Hair Curling Rod/product5/buns.png', import.meta.url).href;
+    rightImage = new URL('../assets/Heatless Hair Curling Rod/product5/buns1.png', import.meta.url).href;
+  } else if (isMidiProduct) {
+    leftImage = new URL('../assets/Heatless Hair Curling Rod/midi_size/midi.png', import.meta.url).href;
+    rightImage = new URL('../assets/Heatless Hair Curling Rod/midi_size/midi1.png', import.meta.url).href;
+  } else if (isShortSetProduct) {
+    leftImage = new URL('../assets/Heatless Hair Curling Rod/short.webp', import.meta.url).href;
+    rightImage = new URL('../assets/Heatless Hair Curling Rod/short1.webp', import.meta.url).href;
   } else {
     leftImage = images[0] || product.image;
     rightImage = images[1] || images[0] || product.image;
@@ -38,7 +54,15 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
     ? new URL('../assets/Heatless Hair Curling Rod/mini-size/mini.mp4', import.meta.url).href
     : product.id === 'dreamcurl-original'
       ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original.mp4', import.meta.url).href
-      : (product.video || null);
+      : product.id === 'dreamcurl-jumbo'
+        ? new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/guide(1).mp4', import.meta.url).href
+        : product.id === 'dreamcurl-short-set'
+          ? new URL('../assets/Heatless Hair Curling Rod/short.mp4', import.meta.url).href
+          : product.id === 'heatless-5'
+            ? new URL('../assets/Heatless Hair Curling Rod/product5/bun bons.mp4', import.meta.url).href
+      : product.id === 'dreamcurl-midi'
+        ? new URL('../assets/Heatless Hair Curling Rod/midi_size/midi.mp4', import.meta.url).href
+        : (product.video || null);
 
   // Video handlers
   const handleVideoLoad = () => {
@@ -200,7 +224,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
                     src={leftImage}
                     alt={`${product.name} - View 1`}
@@ -353,7 +377,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
                     src={rightImage}
                     alt={`${product.name} - View 2`}
@@ -385,7 +409,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+                <div className="relative h-full rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
                   <OptimizedImage
                     src={leftImage}
                     alt={`${product.name} - View 1`}
@@ -410,7 +434,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+                <div className="relative h-full rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
                   <OptimizedImage
                     src={rightImage}
                     alt={`${product.name} - View 2`}

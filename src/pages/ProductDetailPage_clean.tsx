@@ -374,7 +374,7 @@ export const ProductDetailPage = () => {
 
     // Calculate current cart total
     const currentCartTotal = cartState.items.reduce((total, item) => {
-      const price = parseFloat(item.price.replace('€', ''));
+      const price = parseFloat(item.price.replace('ï¿½', ''));
       return total + (price * item.quantity);
     }, 0);
     
@@ -391,7 +391,7 @@ export const ProductDetailPage = () => {
 
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(finalPrice.replace('€', ''));
+      const priceNumber = parseFloat(finalPrice.replace('ï¿½', ''));
       const newCartTotal = currentCartTotal + (priceNumber * quantity);
       
       (window as any).analytics.trackCart('add', {
@@ -741,14 +741,14 @@ export const ProductDetailPage = () => {
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Regular price:</span>
-                    <span className="line-through text-muted-foreground">€{(12.99 * quantity).toFixed(2)}</span>
+                    <span className="line-through text-muted-foreground">ï¿½{(12.99 * quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
                     <span>Bundle price:</span>
-                    <span>€{(12.99 * quantity * 0.9).toFixed(2)}</span>
+                    <span>ï¿½{(12.99 * quantity * 0.9).toFixed(2)}</span>
                   </div>
                   <div className="text-xs text-green-600 dark:text-green-400 mt-2">
-                    You save €{(12.99 * quantity * 0.1).toFixed(2)}!
+                    You save ï¿½{(12.99 * quantity * 0.1).toFixed(2)}!
                   </div>
                 </motion.div>
               )}
@@ -762,7 +762,7 @@ export const ProductDetailPage = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-sm font-medium text-primary">
-                    × {(() => {
+                    ï¿½ {(() => {
                       if (product.id === 'curly-clip-1') {
                         // Get piece count from selected size
                         const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize] 
@@ -1549,7 +1549,7 @@ export const ProductDetailPage = () => {
                   Choose Your Perfect Size
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Find the ideal DreamCurl™ size for your hair length and desired curl style
+                  Find the ideal DreamCurlï¿½ size for your hair length and desired curl style
                 </p>
               </motion.div>
 
@@ -1757,10 +1757,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
   const heatlessProducts: Product[] = [
     {
       id: "dreamcurl-original",
-      name: "DreamCurl™ Original Set",
-      price: "€39.99",
+      name: "DreamCurlï¿½ Original Set",
+      price: "ï¿½39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurlï¿½ Collection",
       hairType: "Medium to Long",
       featured: true,
       description: [
@@ -1799,10 +1799,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-short-set",
-      name: "DreamCurl™ Short Set",
-      price: "€24.99",
+      name: "DreamCurlï¿½ Short Set",
+      price: "ï¿½24.99",
       image: product1Image,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurlï¿½ Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -1839,10 +1839,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-midi",
-      name: "DreamCurl™ Midi",
-      price: "€34.99",
+      name: "DreamCurlï¿½ Midi",
+      price: "ï¿½34.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurlï¿½ Collection",
       hairType: "Short to Long",
       featured: true,
       description: [
@@ -1880,10 +1880,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-jumbo",
-      name: "DreamCurl™ JUMBO SIZE",
-      price: "€39.99",
+      name: "DreamCurlï¿½ JUMBO SIZE",
+      price: "ï¿½39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurlï¿½ Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -1922,17 +1922,17 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "€24.99",
+      price: "ï¿½24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
-      category: "DreamCurl™ Collection",
+      category: "DreamCurlï¿½ Collection",
       hairType: "Short to Medium",
       featured: true,
       description: [
         "Our 'Zero Heat' Curling Rod is made out of the finest Peau De Soie fabric to help you achieve frizz-free shiny curls.",
         "The Zero Heat set includes:",
-        "• 2 Scrunchies",
-        "• 1 Curling Rod",
-        "• 1 Hair Claw Clip",
+        "ï¿½ 2 Scrunchies",
+        "ï¿½ 1 Curling Rod",
+        "ï¿½ 1 Hair Claw Clip",
         "We use sustainably grown materials to fill our Curling Rod which means that not only does it make our product extremely comfortable to sleep with, but it also takes us all a step closer to a cleaner and safer environment - now that's what I call a Win-Win!",
         "*Please note, we do our best to match the curler sets with our claw clips that we have in stock. If you wish to receive a specific colour please leave a note with your order and we'll do our best to accommodate",
         "Perfect for shorter hair or those who want tighter, more defined curls",
@@ -1952,7 +1952,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "heatless-6",
       name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "€39.99",
+      price: "ï¿½39.99",
       image: product6Image,
       category: "Heatless Tools",
       hairType: "All Types",
