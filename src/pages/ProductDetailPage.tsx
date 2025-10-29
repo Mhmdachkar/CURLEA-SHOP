@@ -4321,6 +4321,15 @@ const DreamCurlImageGallery = ({
   selectedColor: string; 
   onColorSelect: (color: string) => void;
 }) => {
+  const [isViewingExtra, setIsViewingExtra] = useState(false);
+  
+  // Reset extra view when selectedColor changes (from color buttons)
+  useEffect(() => {
+    if (selectedColor) {
+      setIsViewingExtra(false);
+    }
+  }, [selectedColor]);
+  
   // All images for DreamCurl Original
   const dreamCurlImages = [
     new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
@@ -4341,8 +4350,10 @@ const DreamCurlImageGallery = ({
     return colorImageMap[color as keyof typeof colorImageMap] || dreamCurlImages[0];
   };
 
-  // Get the current main image based on selected color
-  const currentMainImage = selectedColor ? getColorSpecificImage(selectedColor) : dreamCurlImages[0];
+  // Get the current main image based on selected color or extra image toggle
+  const currentMainImage = isViewingExtra
+    ? dreamCurlImages[4]
+    : (selectedColor ? getColorSpecificImage(selectedColor) : dreamCurlImages[0]);
 
   return (
     <div className="space-y-4">
@@ -4367,6 +4378,7 @@ const DreamCurlImageGallery = ({
           <>
             <button
               onClick={() => {
+                setIsViewingExtra(false);
                 const currentIndex = selectedColor 
                   ? product.colors!.indexOf(selectedColor)
                   : 0;
@@ -4382,6 +4394,7 @@ const DreamCurlImageGallery = ({
             </button>
             <button
               onClick={() => {
+                setIsViewingExtra(false);
                 const currentIndex = selectedColor 
                   ? product.colors!.indexOf(selectedColor)
                   : 0;
@@ -4393,7 +4406,7 @@ const DreamCurlImageGallery = ({
               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Next color"
             >
-              <span className="text-lg sm:text-xl">�' </span>
+              <span className="text-lg sm:text-xl">→</span>
             </button>
           </>
         )}
@@ -4407,6 +4420,7 @@ const DreamCurlImageGallery = ({
             key={color}
             onClick={() => {
               // Update both color selection and image index when clicking thumbnail
+              setIsViewingExtra(false);
               onColorSelect(color);
             }}
             className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
@@ -4432,16 +4446,16 @@ const DreamCurlImageGallery = ({
         ))}
         
         {/* Guide image */}
-        <button
-          onClick={() => {}}
-          className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-            false
-              ? 'ring-2 ring-primary scale-105'
-              : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-          }`}
+          <button
+            onClick={() => setIsViewingExtra(true)}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
+              isViewingExtra
+                ? 'ring-2 ring-primary scale-105'
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+            }`}
         >
           <OptimizedImage
-            src={dreamCurlImages[0]}
+            src={dreamCurlImages[4]}
             alt={`${product.name} - Usage Guide`}
             className="object-cover"
             // placeholderSrc={placeholderImage}

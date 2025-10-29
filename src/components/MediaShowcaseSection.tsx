@@ -33,8 +33,12 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
     rightImage = images[1] || images[0] || product.image;
   }
   
-  // Use mini video for mini product, otherwise use product.video
-  const video = isMiniProduct ? new URL('../assets/Heatless Hair Curling Rod/mini-size/mini.mp4', import.meta.url).href : (product.video || null);
+  // Use specific videos per product where needed
+  const video = isMiniProduct
+    ? new URL('../assets/Heatless Hair Curling Rod/mini-size/mini.mp4', import.meta.url).href
+    : product.id === 'dreamcurl-original'
+      ? new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/original.mp4', import.meta.url).href
+      : (product.video || null);
 
   // Video handlers
   const handleVideoLoad = () => {
@@ -55,6 +59,47 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
       } catch (error) {
         console.warn('Autoplay prevented:', error);
       }
+    }
+  };
+
+  // Ensure object-fit is contained in fullscreen and restored when exiting
+  useEffect(() => {
+    const handleFsChange = () => {
+      const videoEl = videoRef.current;
+      if (!videoEl) return;
+      const isFs = !!(document.fullscreenElement && document.fullscreenElement === videoEl);
+      if (isFs) {
+        videoEl.style.objectFit = 'contain';
+      } else {
+        // Restore default when not in fullscreen
+        videoEl.style.objectFit = '';
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFsChange);
+    (document as unknown as any).addEventListener('webkitfullscreenchange', handleFsChange as EventListener);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      (document as unknown as any).removeEventListener('webkitfullscreenchange', handleFsChange as EventListener);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (videoEl.requestFullscreen) {
+        await videoEl.requestFullscreen();
+      } else if ((videoEl as unknown as any).webkitEnterFullScreen) {
+        // Some iOS WebKit builds only support this synchronous call
+        (videoEl as unknown as any).webkitEnterFullScreen();
+      } else if ((videoEl as unknown as any).webkitRequestFullscreen) {
+        await (videoEl as unknown as any).webkitRequestFullscreen();
+      }
+    } catch (err) {
+      console.log('Fullscreen error:', err);
     }
   };
 
@@ -282,13 +327,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (videoRef.current) {
-                      if (document.fullscreenElement) {
-                        document.exitFullscreen().catch(err => console.log('Exit fullscreen error:', err));
-                      } else {
-                        videoRef.current.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
-                      }
-                    }
+                    toggleFullscreen();
                   }}
                   className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-white/90 backdrop-blur-md rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:scale-110 group"
                 >

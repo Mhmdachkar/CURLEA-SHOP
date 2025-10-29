@@ -538,3 +538,13 @@ img[src*="product-4.webp"]::before {
     transition: transform 0.15s ease-out;
   }
 }
+
+/* Fullscreen video should be unzoomed (contained) */
+video:fullscreen,
+video:-webkit-full-screen,
+video:-ms-fullscreen {
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #000 !important;
+}
