@@ -138,12 +138,12 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
           <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-center">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] order-3 md:order-1"
-              initial={{ opacity: 0, x: -150, rotate: -8, scale: 0.75 }}
-              animate={isInView ? { opacity: 1, x: 0, rotate: 0, scale: 1 } : { opacity: 0, x: -150, rotate: -8, scale: 0.75 }}
+              className="relative aspect-[4/5]"
+              initial={{ opacity: 0, x: -30, scale: 0.9 }}
+              animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -30, scale: 0.9 }}
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
@@ -155,7 +155,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
                     src={leftImage}
                     alt={`${product.name} - View 1`}
@@ -166,8 +166,8 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   {/* Elegant overlay with golden accent */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  {/* Number badge */}
-                  <div className="absolute top-6 right-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
+                  {/* Number badge - Hidden on small mobile, visible on larger */}
+                  <div className="hidden sm:flex absolute top-6 right-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
                     <span className="text-xl font-bold text-foreground">01</span>
                   </div>
                 </div>
@@ -176,9 +176,9 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Center Video - Elegant Hero */}
             <motion.div
-              className="relative aspect-[4/5] order-1 md:order-2"
-              initial={{ opacity: 0, y: 100, scale: 0.7 }}
-              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 100, scale: 0.7 }}
+              className="relative aspect-[4/5]"
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
               transition={{ delay: 0.5, duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
               whileHover={{ scale: 1.02, y: -8 }}
             >
@@ -186,8 +186,8 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 className="relative h-full overflow-visible cursor-pointer group"
                 onMouseEnter={() => setSelectedMedia('center')}
               >
-                {/* Connecting Lines */}
-                <div className="absolute left-0 top-1/2 -translate-x-full md:flex hidden items-center gap-2 -translate-y-1/2 z-10">
+                {/* Connecting Lines - Hidden on mobile */}
+                <div className="hidden lg:flex absolute left-0 top-1/2 -translate-x-full items-center gap-2 -translate-y-1/2 z-10">
                   <motion.div
                     className="w-16 h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-primary/20"
                     initial={{ scaleX: 0 }}
@@ -201,7 +201,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   />
                 </div>
                 
-                <div className="absolute right-0 top-1/2 translate-x-full md:flex hidden items-center gap-2 -translate-y-1/2 z-10">
+                <div className="hidden lg:flex absolute right-0 top-1/2 translate-x-full items-center gap-2 -translate-y-1/2 z-10">
                   <motion.div
                     className="w-2 h-2 rounded-full bg-primary/50"
                     animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
@@ -222,7 +222,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative h-full rounded-[2.5rem] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.7)] border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500">
+                <div className="relative h-full rounded-xl sm:rounded-2xl lg:rounded-[2.5rem] overflow-hidden shadow-xl sm:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.7)] border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500">
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
@@ -295,9 +295,9 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                       }
                     }
                   }}
-                  className="absolute bottom-6 right-6 flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-md rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:scale-110 group"
+                  className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-white/90 backdrop-blur-md rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:scale-110 group"
                 >
-                  <Maximize2 className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+                  <Maximize2 className="w-3 h-3 sm:w-5 sm:h-5 text-foreground group-hover:text-primary transition-colors" />
                 </button>
                 </div>
               </motion.div>
@@ -305,9 +305,9 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] order-2 md:order-3"
-              initial={{ opacity: 0, x: 150, rotate: 8, scale: 0.75 }}
-              animate={isInView ? { opacity: 1, x: 0, rotate: 0, scale: 1 } : { opacity: 0, x: 150, rotate: 8, scale: 0.75 }}
+              className="relative aspect-[4/5]"
+              initial={{ opacity: 0, x: 30, scale: 0.9 }}
+              animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
@@ -319,7 +319,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                 <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
                 <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
                 
-                <div className="relative rounded-[2rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
                     src={rightImage}
                     alt={`${product.name} - View 2`}
@@ -330,8 +330,8 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   {/* Elegant overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  {/* Number badge */}
-                    <div className="absolute top-6 left-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
+                  {/* Number badge - Hidden on small mobile, visible on larger */}
+                  <div className="hidden sm:flex absolute top-6 left-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
                     <span className="text-xl font-bold text-foreground">02</span>
                   </div>
                 </div>
