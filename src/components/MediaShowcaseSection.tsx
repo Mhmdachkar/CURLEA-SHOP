@@ -165,11 +165,6 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   
                   {/* Elegant overlay with golden accent */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Number badge - Hidden on small mobile, visible on larger */}
-                  <div className="hidden sm:flex absolute top-6 right-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
-                    <span className="text-xl font-bold text-foreground">01</span>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -329,11 +324,6 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   
                   {/* Elegant overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Number badge - Hidden on small mobile, visible on larger */}
-                  <div className="hidden sm:flex absolute top-6 left-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300">
-                    <span className="text-xl font-bold text-foreground">02</span>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -363,9 +353,6 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                     className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                     priority={true}
                   />
-                  <div className="absolute top-6 right-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-xl font-bold text-foreground">01</span>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -391,9 +378,6 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                     className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                     priority={true}
                   />
-                  <div className="absolute top-6 left-6 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-xl font-bold text-foreground">02</span>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
