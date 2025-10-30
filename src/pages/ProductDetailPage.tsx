@@ -4128,6 +4128,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
       image: images[0] || bundleProducts[0].image,
       images,
       isBundle: true,
+      selectedColor: selectedColor, // differentiate bundles by DreamCurl color
     });
     openCart();
   };
