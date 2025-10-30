@@ -45,7 +45,7 @@ BEGIN
         END DESC
     LIMIT limit_count;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get traffic by source with conversion metrics
 CREATE OR REPLACE FUNCTION get_traffic_by_source(
@@ -82,7 +82,7 @@ BEGIN
     GROUP BY v.utm_source, v.utm_medium
     ORDER BY revenue DESC;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get geographic breakdown
 CREATE OR REPLACE FUNCTION get_traffic_by_country(
@@ -115,7 +115,7 @@ BEGIN
     ORDER BY revenue DESC
     LIMIT limit_count;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get device breakdown
 CREATE OR REPLACE FUNCTION get_traffic_by_device(
@@ -150,7 +150,7 @@ BEGIN
     GROUP BY device_type
     ORDER BY visitors DESC;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get conversion funnel with drop-off rates
 CREATE OR REPLACE FUNCTION get_conversion_funnel_detailed(
@@ -200,7 +200,7 @@ BEGIN
     SELECT '5. Purchase'::TEXT, purchases, ROUND(100.0 * purchases / NULLIF(total_visits, 0), 2),
            ROUND(100.0 * (checkout_start - purchases) / NULLIF(checkout_start, 0), 2);
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get cohort analysis (customers by first purchase date)
 CREATE OR REPLACE FUNCTION get_cohort_analysis(
@@ -249,7 +249,7 @@ BEGIN
     GROUP BY c.cohort_period
     ORDER BY c.cohort_period DESC;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get abandoned cart details with recovery potential
 CREATE OR REPLACE FUNCTION get_abandoned_carts_detailed(
@@ -410,7 +410,7 @@ BEGIN
     
     RAISE NOTICE 'Cleaned up analytics data older than % days', retention_days;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public;
 
 -- Function: Vacuum and analyze tables for performance
 CREATE OR REPLACE FUNCTION optimize_analytics_tables()
@@ -424,7 +424,7 @@ BEGIN
     
     RAISE NOTICE 'Optimized analytics tables';
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public;
 
 COMMENT ON FUNCTION get_top_products IS 'Get top performing products by revenue, units sold, or profit';
 COMMENT ON FUNCTION get_traffic_by_source IS 'Get traffic breakdown by UTM source and medium with conversion metrics';

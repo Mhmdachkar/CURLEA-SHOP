@@ -23,6 +23,8 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   const isBunBonsProduct = product.id === 'heatless-5';
   const isMidiProduct = product.id === 'dreamcurl-midi';
   const isShortSetProduct = product.id === 'dreamcurl-short-set';
+  const isScarfProduct = product.id === 'curly-scarf-1';
+  const isCurlyClipProduct = product.id === 'curly-clip-1';
   
   // Determine left and right images based on product
   let leftImage, rightImage;
@@ -44,6 +46,12 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   } else if (isShortSetProduct) {
     leftImage = new URL('../assets/Heatless Hair Curling Rod/short.webp', import.meta.url).href;
     rightImage = new URL('../assets/Heatless Hair Curling Rod/short1.webp', import.meta.url).href;
+  } else if (isScarfProduct) {
+    leftImage = new URL('../assets/curly hair collection/product2/Hair long bow scrunchies.jpg', import.meta.url).href;
+    rightImage = new URL('../assets/curly hair collection/product2/Hair long bow scrunchies.jpeg', import.meta.url).href;
+  } else if (isCurlyClipProduct) {
+    leftImage = new URL('../assets/curly hair collection/product1/fLAT cLAW clIP IMAGE.jpg', import.meta.url).href;
+    rightImage = new URL('../assets/curly hair collection/product1/fLAT cLAW clIP IMAGE 2.jpg', import.meta.url).href;
   } else {
     leftImage = images[0] || product.image;
     rightImage = images[1] || images[0] || product.image;
@@ -62,6 +70,8 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
             ? new URL('../assets/Heatless Hair Curling Rod/product5/bun bons.mp4', import.meta.url).href
       : product.id === 'dreamcurl-midi'
         ? new URL('../assets/Heatless Hair Curling Rod/midi_size/midi.mp4', import.meta.url).href
+      : product.id === 'curly-clip-1'
+        ? new URL('../assets/curly hair collection/product1/FLAT CLAW CLIPPS CONTENT.mp4', import.meta.url).href
         : (product.video || null);
 
   // Video handlers
@@ -177,7 +187,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="relative py-24 md:py-40 px-4 sm:px-6 overflow-hidden"
+      className="relative py-16 sm:py-24 md:py-40 px-2 sm:px-4 md:px-6 overflow-hidden"
       style={{
         background: 'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)/0.4) 50%, hsl(var(--background)) 100%)'
       }}
@@ -207,22 +217,22 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
           <div className="relative">
-            <div className="grid grid-cols-3 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-center">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-6 lg:gap-8 xl:gap-12 items-stretch">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5]"
+              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-10"
               initial={{ opacity: 0, x: -30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -30, scale: 0.9 }}
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group"
+                className="relative h-full overflow-visible cursor-pointer group z-10"
                 whileHover={{ rotate: 5, y: -15, scale: 1.05 }}
                 onClick={() => setSelectedMedia('left')}
               >
                 {/* Decorative border frame */}
-                <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
-                <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
+                <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500 pointer-events-none z-0"></div>
+                <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem] pointer-events-none z-0"></div>
                 
                 <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
@@ -240,14 +250,14 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Center Video - Elegant Hero */}
             <motion.div
-              className="relative aspect-[4/5]"
+              className="relative aspect-[4/5] min-h-[120px] sm:min-h-[260px] md:min-h-0 z-20 flex items-center justify-center"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
               transition={{ delay: 0.5, duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
               whileHover={{ scale: 1.02, y: -8 }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group"
+                className="relative h-full overflow-visible cursor-pointer group z-20"
                 onMouseEnter={() => setSelectedMedia('center')}
               >
                 {/* Connecting Lines - Hidden on mobile */}
@@ -286,7 +296,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative h-full rounded-xl sm:rounded-2xl lg:rounded-[2.5rem] overflow-hidden shadow-xl sm:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.7)] border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500">
+                <div className="relative h-full rounded-xl sm:rounded-2xl lg:rounded-[2.5rem] overflow-hidden shadow-xl sm:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.7)] border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500 z-20 isolate transform scale-[0.72] sm:scale-90 md:scale-100">
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
@@ -353,7 +363,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                     e.stopPropagation();
                     toggleFullscreen();
                   }}
-                  className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-white/90 backdrop-blur-md rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:scale-110 group"
+                  className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-30 pointer-events-auto flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-md rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:scale-110 group"
                 >
                   <Maximize2 className="w-3 h-3 sm:w-5 sm:h-5 text-foreground group-hover:text-primary transition-colors" />
                 </button>
@@ -363,19 +373,19 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5]"
+              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-0"
               initial={{ opacity: 0, x: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group"
-                whileHover={{ rotate: -5, y: -15, scale: 1.05 }}
+                className="relative h-full overflow-visible cursor-pointer group z-0"
+                whileHover={{ scale: 1.03 }}
                 onClick={() => setSelectedMedia('right')}
               >
                 {/* Decorative border frame */}
-                <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500"></div>
-                <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem]"></div>
+                <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2rem] group-hover:border-primary/40 transition-all duration-500 pointer-events-none z-0"></div>
+                <div className="absolute -inset-2 border border-white/10 rounded-[1.5rem] pointer-events-none z-0"></div>
                 
                 <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm">
                   <OptimizedImage
@@ -402,7 +412,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group"
+                className="relative h-full overflow-visible cursor-pointer group z-10"
                 whileHover={{ rotate: 5, y: -15, scale: 1.05 }}
                 onClick={() => setSelectedMedia('left')}
               >
@@ -427,7 +437,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
               transition={{ delay: 0.5, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group"
+                className="relative h-full overflow-visible cursor-pointer group z-10"
                 whileHover={{ rotate: -5, y: -15, scale: 1.05 }}
                 onClick={() => setSelectedMedia('right')}
               >

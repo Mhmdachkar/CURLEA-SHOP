@@ -311,6 +311,7 @@ SELECT
 FROM visits
 GROUP BY DATE(created_at)
 ORDER BY date DESC;
+ALTER VIEW daily_overview SET (security_invoker = true);
 
 -- View: Sales Overview
 CREATE OR REPLACE VIEW sales_overview AS
@@ -327,6 +328,7 @@ FROM orders
 WHERE status IN ('completed', 'processing')
 GROUP BY DATE(created_at)
 ORDER BY date DESC;
+ALTER VIEW sales_overview SET (security_invoker = true);
 
 -- View: Top Products by Revenue
 CREATE OR REPLACE VIEW top_products_by_revenue AS
@@ -342,6 +344,7 @@ LEFT JOIN cart_events ce ON p.id = ce.product_id
 WHERE ce.event_type = 'checkout_complete'
 GROUP BY p.product_id, p.title, p.category
 ORDER BY revenue DESC;
+ALTER VIEW top_products_by_revenue SET (security_invoker = true);
 
 -- View: Traffic Sources
 CREATE OR REPLACE VIEW traffic_sources AS
@@ -353,6 +356,7 @@ SELECT
 FROM visits
 GROUP BY utm_source, utm_medium
 ORDER BY visitors DESC;
+ALTER VIEW traffic_sources SET (security_invoker = true);
 
 -- View: Conversion Funnel Real-time
 CREATE OR REPLACE VIEW conversion_funnel_realtime AS
@@ -369,6 +373,7 @@ LEFT JOIN page_views pv ON v.session_id = pv.session_id
 LEFT JOIN cart_events ce ON v.session_id = ce.session_id
 LEFT JOIN orders o ON v.session_id = o.session_id
 WHERE v.created_at >= NOW() - INTERVAL '30 days';
+ALTER VIEW conversion_funnel_realtime SET (security_invoker = true);
 
 -- View: Abandoned Carts
 CREATE OR REPLACE VIEW abandoned_carts AS
@@ -386,6 +391,7 @@ WHERE ce.event_type IN ('add', 'checkout_start')
 GROUP BY v.session_id, v.created_at, o.id
 HAVING CASE WHEN o.id IS NULL THEN true ELSE false END = true
 ORDER BY last_cart_activity DESC;
+ALTER VIEW abandoned_carts SET (security_invoker = true);
 
 -- View: Campaign Performance
 CREATE OR REPLACE VIEW campaign_performance AS
@@ -405,6 +411,7 @@ LEFT JOIN visits v ON v.utm_campaign = c.utm_campaign
 LEFT JOIN orders o ON o.utm_campaign = c.utm_campaign
 GROUP BY c.id, c.name, c.utm_campaign, c.cost
 ORDER BY revenue DESC;
+ALTER VIEW campaign_performance SET (security_invoker = true);
 
 -- =====================================================
 -- ANALYTICS FUNCTIONS
@@ -420,7 +427,7 @@ BEGIN
         WHERE created_at >= NOW() - INTERVAL '5 minutes'
     );
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get stats for date range
 CREATE OR REPLACE FUNCTION get_stats_for_period(
@@ -451,7 +458,7 @@ BEGIN
     LEFT JOIN orders o ON v.session_id = o.session_id AND o.status IN ('completed', 'processing')
     WHERE v.created_at BETWEEN start_date AND end_date;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Get hourly stats for today
 CREATE OR REPLACE FUNCTION get_hourly_stats_today()
@@ -477,7 +484,7 @@ BEGIN
     GROUP BY EXTRACT(HOUR FROM v.created_at)::INTEGER
     ORDER BY hour;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SET search_path = public;
 
 -- Function: Update conversion funnel aggregates
 CREATE OR REPLACE FUNCTION update_conversion_funnel_aggregates(target_date DATE)
@@ -507,7 +514,7 @@ BEGIN
         revenue = EXCLUDED.revenue,
         updated_at = NOW();
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public;
 
 -- =====================================================
 -- SAMPLE DATA (Optional - for testing)

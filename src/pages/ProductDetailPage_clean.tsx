@@ -580,13 +580,15 @@ export const ProductDetailPage = () => {
       <div className="max-w-7xl mx-auto px-6 mb-8">
         <motion.button
           onClick={() => {
-            // If we know where the user came from, navigate there directly
-            // This prevents unwanted animations and re-renders
+            if (document.referrer && window.history.length > 1) {
+              window.history.back();
+              return;
+            }
             if (referrerPath) {
               navigate(referrerPath, { replace: true });
-            } else {
-              navigate(-1);
+              return;
             }
+            navigate('/', { replace: true });
           }}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors relative z-[40] px-4 py-2 -ml-4"
           whileHover={{ x: -5 }}

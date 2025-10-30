@@ -40,3 +40,7 @@ dist-ssr
 !src/assets/curly hair collection/Download (3).mp4
 !src/assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4
 !src/assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4
+
+# Environment files
+.env
+.env.local

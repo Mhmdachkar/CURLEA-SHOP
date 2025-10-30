@@ -13,6 +13,7 @@ FROM visits
 WHERE created_at >= NOW() - INTERVAL '30 days'
 GROUP BY utm_source
 ORDER BY visit_count DESC;
+ALTER VIEW traffic_by_source SET (security_invoker = true);
 
 -- View: Top Products Summary (for bar chart)
 CREATE OR REPLACE VIEW top_products_summary AS
@@ -32,6 +33,7 @@ LEFT JOIN cart_events ce ON p.id = ce.product_id
 GROUP BY p.product_id, p.title, p.category
 ORDER BY view_count DESC
 LIMIT 10;
+ALTER VIEW top_products_summary SET (security_invoker = true);
 
 -- View: Conversion Funnel Summary (for funnel chart)
 CREATE OR REPLACE VIEW conversion_funnel AS
@@ -46,6 +48,7 @@ LEFT JOIN page_views pv ON v.session_id = pv.session_id
 LEFT JOIN cart_events ce ON v.session_id = ce.session_id
 LEFT JOIN orders o ON v.session_id = o.session_id
 WHERE v.created_at >= NOW() - INTERVAL '30 days';
+ALTER VIEW conversion_funnel SET (security_invoker = true);
 
 -- View: Total Sales Summary (for stats cards)
 CREATE OR REPLACE VIEW total_sales_summary AS
@@ -56,6 +59,7 @@ SELECT
 FROM orders
 WHERE status IN ('completed', 'processing')
     AND created_at >= NOW() - INTERVAL '30 days';
+ALTER VIEW total_sales_summary SET (security_invoker = true);
 
 -- View: Average Order Value Summary (for stats cards)
 CREATE OR REPLACE VIEW aov_summary AS
@@ -64,6 +68,7 @@ SELECT
 FROM orders
 WHERE status IN ('completed', 'processing')
     AND created_at >= NOW() - INTERVAL '30 days';
+ALTER VIEW aov_summary SET (security_invoker = true);
 
 -- View: Real-time Active Visitors
 CREATE OR REPLACE VIEW active_visitors_realtime AS
@@ -71,6 +76,7 @@ SELECT
     COUNT(DISTINCT session_id) as active_count
 FROM page_views
 WHERE created_at >= NOW() - INTERVAL '5 minutes';
+ALTER VIEW active_visitors_realtime SET (security_invoker = true);
 
 -- View: Today's Performance
 CREATE OR REPLACE VIEW today_performance AS
@@ -84,6 +90,7 @@ LEFT JOIN page_views pv ON v.session_id = pv.session_id AND DATE(pv.created_at) 
 LEFT JOIN orders o ON v.session_id = o.session_id AND DATE(o.created_at) = CURRENT_DATE 
     AND o.status IN ('completed', 'processing')
 WHERE DATE(v.created_at) = CURRENT_DATE;
+ALTER VIEW today_performance SET (security_invoker = true);
 
 -- View: Hourly Performance (for line chart)
 CREATE OR REPLACE VIEW hourly_performance AS
@@ -100,6 +107,7 @@ LEFT JOIN orders o ON v.session_id = o.session_id AND DATE(o.created_at) = CURRE
 WHERE DATE(v.created_at) = CURRENT_DATE
 GROUP BY hour
 ORDER BY hour;
+ALTER VIEW hourly_performance SET (security_invoker = true);
 
 -- View: Geographic Performance
 CREATE OR REPLACE VIEW geographic_performance AS
@@ -114,6 +122,7 @@ WHERE v.created_at >= NOW() - INTERVAL '30 days'
 GROUP BY country
 ORDER BY revenue DESC
 LIMIT 20;
+ALTER VIEW geographic_performance SET (security_invoker = true);
 
 -- View: Device Performance
 CREATE OR REPLACE VIEW device_performance AS
@@ -132,6 +141,7 @@ LEFT JOIN orders o ON v.session_id = o.session_id AND o.status IN ('completed', 
 WHERE v.created_at >= NOW() - INTERVAL '30 days'
 GROUP BY device_type
 ORDER BY visitors DESC;
+ALTER VIEW device_performance SET (security_invoker = true);
 
 -- Grant permissions for anonymous access (dashboard uses anon key)
 GRANT SELECT ON traffic_by_source TO anon;
