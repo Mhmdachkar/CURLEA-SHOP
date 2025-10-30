@@ -268,10 +268,10 @@ export const ProductCard = ({
         
         {/* Left Side: Title, Price, Colors */}
         <div className="flex-1 pr-2">
-          <h3 className="text-base font-bold text-gray-900 line-clamp-2 mb-1">
+          <h3 className="text-base font-semibold text-gray-900 line-clamp-2 mb-1 font-sharp-serif">
             {name}
           </h3>
-          <p className="text-lg font-bold text-gray-900 mt-1">{price}</p>
+          <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
           
           {/* 3. Enhanced Color Swatches */}
           {colorOptions.length > 0 && (

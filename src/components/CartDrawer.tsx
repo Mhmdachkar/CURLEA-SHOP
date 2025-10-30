@@ -336,13 +336,13 @@ export const CartDrawer = () => {
 
   const calculateTotal = () => {
     return state.items.reduce((total, item) => {
-      const price = parseFloat(item.price.replace('€', ''));
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       return total + (price * item.quantity);
     }, 0);
   };
 
   const formatPrice = (price: number) => {
-    return `€${price.toFixed(2)}`;
+    return `$${price.toFixed(2)}`;
   };
 
   const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {
@@ -464,13 +464,20 @@ export const CartDrawer = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                       >
-                        {/* Product Image */}
-                        <ProductImage>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                          />
-                        </ProductImage>
+                        {/* Product Image(s) */}
+                        {item.isBundle && item.images && item.images.length ? (
+                          <div style={{ display: 'flex', gap: '0.25rem' }}>
+                            {item.images.slice(0, 3).map((img, idx) => (
+                              <ProductImage key={idx}>
+                                <Image src={img} alt={`${item.name} ${idx + 1}`} />
+                              </ProductImage>
+                            ))}
+                          </div>
+                        ) : (
+                          <ProductImage>
+                            <Image src={item.image} alt={item.name} />
+                          </ProductImage>
+                        )}
 
                         {/* Product Details */}
                         <ProductDetails>
@@ -481,7 +488,16 @@ export const CartDrawer = () => {
                           {item.size && (
                             <ProductVariant>Size: {item.size}</ProductVariant>
                           )}
-                          <ProductPrice>{item.price}</ProductPrice>
+                          <ProductPrice>
+                            {item.isBundle && item.originalPrice ? (
+                              <>
+                                <span style={{ textDecoration: 'line-through', opacity: 0.7, marginRight: '0.5rem' }}>{item.originalPrice}</span>
+                                <span>{item.price}</span>
+                              </>
+                            ) : (
+                              <>{item.price}</>
+                            )}
+                          </ProductPrice>
                         </ProductDetails>
 
                         {/* Quantity Controls */}

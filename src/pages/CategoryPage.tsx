@@ -896,14 +896,14 @@ export const CategoryPage = () => {
 
                     {/* Elegant Product Info */}
                     <div className="space-y-2 sm:space-y-4 w-full px-1 sm:px-0">
-                      <h3 className="font-bold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2">
+                      <h3 className="font-semibold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2 font-sharp-serif">
                         {product.name}
                       </h3>
                       <p className="text-[10px] sm:text-sm font-light leading-relaxed text-black line-clamp-2 sm:line-clamp-3 hidden sm:block">
                         {product.description[0]}
                       </p>
                       <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 pt-1 sm:pt-2">
-                        <span className="text-sm sm:text-2xl font-bold text-primary">
+                        <span className="text-sm sm:text-2xl font-semibold text-primary font-sharp-serif">
                           {product.price}
                         </span>
                         <span className="text-[10px] sm:text-sm text-muted-foreground font-light">
@@ -972,7 +972,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-original",
       name: "DreamCurl™ Original Set",
-      price: "€39.99",
+      price: "$39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Medium to Long",
@@ -1005,7 +1005,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-short-set",
       name: "DreamCurl™ Short Set",
-      price: "€24.99",
+      price: "$24.99",
       image: product1Image,
       category: "DreamCurl™ Collection",
       hairType: "All Types",
@@ -1036,7 +1036,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-midi",
       name: "DreamCurl™ Midi",
-      price: "€34.99",
+      price: "$34.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Short to Long",
@@ -1069,7 +1069,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-jumbo",
       name: "DreamCurl™ JUMBO SIZE",
-      price: "€39.99",
+      price: "$39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "All Types",
@@ -1100,7 +1100,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "€24.99",
+      price: "$24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Short to Medium",
@@ -1131,7 +1131,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "heatless-5",
       name: "BUN BONS - Heatless Curling System",
-      price: "€89.99",
+      price: "$89.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
       category: "Heatless Tools",
       hairType: "All Types",

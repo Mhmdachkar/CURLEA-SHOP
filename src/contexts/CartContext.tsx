@@ -11,6 +11,10 @@ export interface CartItem {
   size?: string;
   category?: string;
   hairType?: string;
+  // Bundle support
+  isBundle?: boolean;
+  images?: string[]; // for showing multiple images (e.g., 3 in a row)
+  originalPrice?: string; // strikethrough original combined price
 }
 
 interface CartState {

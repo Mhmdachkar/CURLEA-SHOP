@@ -1266,7 +1266,7 @@ const FeaturedProductCard = ({
               
               // Track add to cart event
               if (typeof window !== 'undefined' && (window as any).analytics) {
-                const priceNumber = parseFloat(product.price.replace('€', ''));
+                const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
                 (window as any).analytics.trackCart('add', {
                   product_id: product.id,
                   title: product.name,
@@ -1293,7 +1293,7 @@ const FeaturedProductCard = ({
 
       <div className="p-4 sm:p-6 md:p-8">
         <h3
-          className="font-semibold text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 cursor-pointer hover:text-primary transition-colors line-clamp-2"
+          className="font-semibold text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 cursor-pointer hover:text-primary transition-colors line-clamp-2 font-sharp-serif"
           onClick={() => {
             // Track product view
             if (typeof window !== 'undefined' && (window as any).analytics) {
@@ -1310,7 +1310,7 @@ const FeaturedProductCard = ({
         >
           {product.name}
         </h3>
-        <p className="text-xl sm:text-2xl md:text-3xl font-light text-muted-foreground mb-3">
+        <p className="text-xl sm:text-2xl md:text-3xl font-light text-muted-foreground mb-3 font-sharp-serif">
           {product.price}
         </p>
         <p className="text-sm sm:text-base line-clamp-3 text-black">
@@ -1430,7 +1430,7 @@ const MediumProductCard = ({
               
               // Track add to cart event
               if (typeof window !== 'undefined' && (window as any).analytics) {
-                const priceNumber = parseFloat(product.price.replace('€', ''));
+                const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
                 (window as any).analytics.trackCart('add', {
                   product_id: product.id,
                   title: product.name,
@@ -1457,7 +1457,7 @@ const MediumProductCard = ({
 
       <div className="p-3 sm:p-4">
         <h3
-          className="font-semibold text-sm sm:text-base mb-1 cursor-pointer hover:text-primary transition-colors line-clamp-2"
+          className="font-semibold text-sm sm:text-base mb-1 cursor-pointer hover:text-primary transition-colors line-clamp-2 font-sharp-serif"
           onClick={() => {
             // Track product view
             if (typeof window !== 'undefined' && (window as any).analytics) {
@@ -1474,7 +1474,7 @@ const MediumProductCard = ({
         >
           {product.name}
         </h3>
-        <p className="text-base sm:text-lg font-light text-muted-foreground">
+        <p className="text-base sm:text-lg font-light text-muted-foreground font-sharp-serif">
           {product.price}
         </p>
       </div>
@@ -1582,7 +1582,7 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                           
                           // Track add to cart event
                           if (typeof window !== 'undefined' && (window as any).analytics) {
-                            const priceNumber = parseFloat(product.price.replace('€', ''));
+                            const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
                             (window as any).analytics.trackCart('add', {
                               product_id: product.id,
                               title: product.name,
@@ -1609,7 +1609,7 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
 
                   <div className="p-3 sm:p-4 md:p-6">
                     <h3
-                      className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2"
+                      className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2 font-sharp-serif"
                       onClick={() => {
                         // Track product view
                         if (typeof window !== 'undefined' && (window as any).analytics) {
@@ -1626,7 +1626,7 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
                     >
                       {product.name}
                     </h3>
-                    <p className="text-lg sm:text-xl md:text-2xl font-light text-muted-foreground">
+                    <p className="text-lg sm:text-xl md:text-2xl font-light text-muted-foreground font-sharp-serif">
                       {product.price}
                     </p>
                   </div>

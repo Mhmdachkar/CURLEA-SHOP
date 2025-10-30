@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { OptimizedImage } from "./OptimizedImage";
 import { Product } from "@/data/products";
@@ -217,17 +217,16 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
           <div className="relative">
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-6 lg:gap-8 xl:gap-12 items-stretch">
+            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-6 sm:-translate-x-8">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-10"
+              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-start -ml-1 sm:-ml-2 -mr-6 sm:-mr-7"
               initial={{ opacity: 0, x: -30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -30, scale: 0.9 }}
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-10"
-                whileHover={{ rotate: 5, y: -15, scale: 1.05 }}
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.80]"
                 onClick={() => setSelectedMedia('left')}
               >
                 {/* Decorative border frame */}
@@ -238,7 +237,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   <OptimizedImage
                     src={leftImage}
                     alt={`${product.name} - View 1`}
-                    className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                    className="w-full h-full object-contain bg-white transform transition-all duration-500 group-hover:brightness-110"
                     priority={true}
                   />
                   
@@ -250,7 +249,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Center Video - Elegant Hero */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[120px] sm:min-h-[260px] md:min-h-0 z-20 flex items-center justify-center"
+              className="relative aspect-[4/5] min-h-[120px] sm:min-h-[260px] md:min-h-0 z-10 flex items-center justify-center justify-self-center -translate-x-7 md:-translate-x-8 -mx-5 sm:-mx-6"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
               transition={{ delay: 0.5, duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
@@ -296,7 +295,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative h-full rounded-xl sm:rounded-2xl lg:rounded-[2.5rem] overflow-hidden shadow-xl sm:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.7)] border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500 z-20 isolate transform scale-[0.72] sm:scale-90 md:scale-100">
+                <div className="relative h-full rounded-[2rem] overflow-hidden shadow-[0_40px_100px_-25px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 transition-all duration-500 z-10 isolate transform scale-[0.69] md:scale-[0.69] lg:scale-[0.73] bg-black/10">
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
@@ -373,14 +372,13 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-0"
+              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-end -translate-x-6 md:-translate-x-8 -ml-5 sm:-ml-7"
               initial={{ opacity: 0, x: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-0"
-                whileHover={{ scale: 1.03 }}
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.80]"
                 onClick={() => setSelectedMedia('right')}
               >
                 {/* Decorative border frame */}
@@ -391,7 +389,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   <OptimizedImage
                     src={rightImage}
                     alt={`${product.name} - View 2`}
-                    className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                    className="w-full h-full object-contain bg-white transform transition-all duration-500 group-hover:brightness-110"
                     priority={true}
                   />
                   
@@ -456,6 +454,45 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
             </motion.div>
           </div>
         )}
+        {/* Elegant fullscreen image modal with animated reveal */}
+        <AnimatePresence>
+          {selectedMedia && (selectedMedia === 'left' || selectedMedia === 'right') && (
+            <motion.div
+              className="fixed inset-0 z-[2000] bg-black/70 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div
+                className="absolute inset-0 flex items-center justify-center p-3 sm:p-6"
+                onClick={() => setSelectedMedia(null)}
+              >
+                <motion.div
+                  className="relative w-full max-w-6xl max-h-[92vh] rounded-[2rem] overflow-hidden shadow-[0_50px_140px_-30px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 bg-gradient-to-b from-white/5 to-white/0"
+                  initial={{ scale: 0.92, y: 16, opacity: 0 }}
+                  animate={{ scale: 1, y: 0, opacity: 1 }}
+                  exit={{ scale: 0.96, y: 8, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 24 }}
+                >
+                  <img
+                    src={selectedMedia === 'left' ? leftImage : rightImage}
+                    alt={`${product.name} - Full View`}
+                    className="w-full h-[92vh] object-contain"
+                  />
+
+                  {/* Close button */}
+                  <button
+                    aria-label="Close"
+                    onClick={(e) => { e.stopPropagation(); setSelectedMedia(null); }}
+                    className="absolute top-3 right-3 sm:top-5 sm:right-5 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white/95 text-black shadow-lg hover:shadow-2xl hover:bg-white transition-all"
+                  >
+                    ✕
+                  </button>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.section>
   );

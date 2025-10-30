@@ -8,7 +8,7 @@ const VALIDATION_PATTERNS = {
   productId: /^[a-zA-Z0-9-_]{1,50}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   name: /^[a-zA-Z\s]{2,100}$/,
-  price: /^€?\d+\.?\d{0,2}$/,
+  price: /^\$?\d+\.?\d{0,2}$/,
   category: /^[a-zA-Z\s]{2,50}$/,
   hairType: /^[a-zA-Z\s]{2,50}$/,
   url: /^https?:\/\/[^\s/$.?#].[^\s]*$/i,

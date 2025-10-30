@@ -246,6 +246,17 @@ img[src*="product-4.webp"]::before {
   .bg-gradient-radial {
     background-image: radial-gradient(circle, var(--tw-gradient-stops));
   }
+  /* Brand serif with extra sharpness for titles/prices */
+  .font-sharp-serif {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-kerning: normal;
+    font-feature-settings: "kern" 1, "liga" 1, "clig" 1;
+  }
 }
 
 /* Curlea Premium Design System - Mobile-First */

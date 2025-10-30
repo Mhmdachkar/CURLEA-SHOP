@@ -27,7 +27,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-original",
     name: "DreamCurl™ Original Set",
-    price: "€39.99",
+    price: "$39.99",
     image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "Medium to Long",
@@ -59,7 +59,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-short-set",
     name: "DreamCurl™ Short Set",
-    price: "€24.99",
+    price: "$24.99",
     image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "All Types",
@@ -89,7 +89,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-midi",
     name: "DreamCurl™ Midi",
-    price: "€34.99",
+    price: "$34.99",
     image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "Medium to Long",
@@ -120,7 +120,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-jumbo",
     name: "DreamCurl™ JUMBO SIZE",
-    price: "€39.99",
+    price: "$39.99",
     image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "All Types",
@@ -150,7 +150,7 @@ export const products: Product[] = [
   {
     id: "zero-heat-mini",
     name: "ZERO HEAT SET MINI SIZE",
-    price: "€24.99",
+    price: "$24.99",
     image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "Short to Medium",
@@ -181,7 +181,7 @@ export const products: Product[] = [
   {
     id: "curly-clip-1",
     name: "Curved Resin Hair Clip - Duckbill Grip & Strong Teeth",
-    price: "€15.99",
+    price: "$15.99",
     image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -202,7 +202,7 @@ export const products: Product[] = [
     inStock: true,
     sizeOptions: {
       "9-piece-complete": {
-        price: "€15.99",
+        price: "$15.99",
         image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
         description: [
           "Complete 9-piece set with all clip sizes and styles",
@@ -212,7 +212,7 @@ export const products: Product[] = [
         ]
       },
       "4-piece-type1": {
-        price: "€8.99",
+        price: "$8.99",
         image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
         description: [
           "4-piece set - Type 1 style",
@@ -222,7 +222,7 @@ export const products: Product[] = [
         ]
       },
       "4-piece-type2": {
-        price: "€8.99",
+        price: "$8.99",
         image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
         description: [
           "4-piece set - Type 2 style",
@@ -232,7 +232,7 @@ export const products: Product[] = [
         ]
       },
       "4-piece-type3": {
-        price: "€8.99",
+        price: "$8.99",
         image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
         description: [
           "4-piece set - Type 3 style",
@@ -246,7 +246,7 @@ export const products: Product[] = [
   {
     id: "curly-scarf-1",
     name: "MIO Elegant Scarf - Soft Satin Hair Band & Scrunchies",
-    price: "€12.99",
+    price: "$12.99",
     image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -277,7 +277,7 @@ export const products: Product[] = [
   {
     id: "curly-claw-1",
     name: "HC027D Fashion Solid Elegant Neutral Geometric Flower Hair Claw Clips",
-    price: "€19.99",
+    price: "$19.99",
     image: new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -308,7 +308,7 @@ export const products: Product[] = [
   {
     id: "songmay-hair-clips",
     name: "SongMay Woman Hair Clips",
-    price: "€18.99",
+    price: "$18.99",
     image: new URL('../assets/curly hair collection/product4/SongMay Woman Hair Clips.jpg', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -341,7 +341,7 @@ export const products: Product[] = [
   {
     id: "heatless-5",
     name: "BUN BONS - Heatless Curling System",
-    price: "€89.99",
+    price: "$89.99",
     image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
     category: "Heatless Tools",
     hairType: "All Types",
@@ -378,7 +378,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-midi",
     name: "DreamCurl™ Midi",
-    price: "€34.99",
+    price: "$34.99",
     image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "Short to Long",
@@ -410,7 +410,7 @@ export const products: Product[] = [
   {
     id: "dreamcurl-jumbo",
     name: "DreamCurl™ JUMBO SIZE",
-    price: "€39.99",
+    price: "$39.99",
     image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "All Types",
@@ -440,7 +440,7 @@ export const products: Product[] = [
   {
     id: "curlea-comb",
     name: "CURLEA Comb",
-    price: "€12.99",
+    price: "$12.99",
     image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -488,7 +488,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
     {
       id: "curly-clip-1",
       name: "Curved Resin Hair Clip - Duckbill Grip & Strong Teeth",
-      price: "€15.99",
+      price: "$15.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
       category: "Hair Accessories",
       hairType: "Curly",
@@ -509,7 +509,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       inStock: true,
       sizeOptions: {
         "9-piece-complete": {
-          price: "€15.99",
+          price: "$15.99",
           image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
           description: [
             "Complete 9-piece set with all clip sizes and styles",
@@ -519,7 +519,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
           ]
         },
         "4-piece-type1": {
-          price: "€8.99",
+          price: "$8.99",
           image: new URL('../assets/curly hair collection/product1/p2.jpg', import.meta.url).href,
           description: [
             "4-piece set - Type 1 style",
@@ -529,7 +529,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
           ]
         },
         "4-piece-type2": {
-          price: "€8.99",
+          price: "$8.99",
           image: new URL('../assets/curly hair collection/product1/p3.jpg', import.meta.url).href,
           description: [
             "4-piece set - Type 2 style",
@@ -539,7 +539,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
           ]
         },
         "4-piece-type3": {
-          price: "€8.99",
+          price: "$8.99",
           image: new URL('../assets/curly hair collection/product1/p4.jpg', import.meta.url).href,
           description: [
             "4-piece set - Type 3 style",
@@ -553,7 +553,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
     {
     id: "curly-scarf-1",
     name: "MIO Elegant Scarf - Soft Satin Hair Band & Scrunchies",
-    price: "€12.99",
+    price: "$12.99",
     image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
     category: "Hair Accessories",
       hairType: "Curly",
@@ -575,7 +575,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
     {
       id: "curly-claw-1",
       name: "HC027D Fashion Solid Elegant Neutral Geometric Flower Hair Claw Clips",
-      price: "€19.99",
+      price: "$19.99",
       image: new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
       category: "Hair Accessories",
       hairType: "Curly",
@@ -599,7 +599,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
     {
       id: "songmay-hair-clips",
       name: "SongMay Woman Hair Clips",
-      price: "€18.99",
+      price: "$18.99",
       image: new URL('../assets/curly hair collection/product4/SongMay Woman Hair Clips.jpg', import.meta.url).href,
       category: "Hair Accessories",
       hairType: "Curly",
@@ -624,7 +624,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
     {
       id: "curlea-comb",
       name: "CURLEA Comb",
-      price: "€12.99",
+      price: "$12.99",
       image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       category: "Hair Accessories",
       hairType: "Curly",

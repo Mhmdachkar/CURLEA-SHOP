@@ -915,7 +915,7 @@ export const ProductDetailPage = () => {
           <p className="text-sm text-gray-600">Select the perfect set size for your styling needs</p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-3">
           {Object.entries(product.sizeOptions).map(([sizeKey, sizeOption], index) => (
             <motion.button
               key={sizeKey}
@@ -1228,12 +1228,56 @@ export const ProductDetailPage = () => {
 
             {/* Add to Cart Button */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              initial="rest"
+              animate="rest"
+              whileHover="hover"
               onClick={handleAddToCart}
-              className="w-full md:w-auto px-16 py-4 bg-primary text-primary-foreground font-semibold tracking-wide hover:bg-primary/90 transition-colors"
+              className="group relative w-full md:w-auto px-16 py-4 rounded-full font-semibold tracking-wide overflow-hidden focus:outline-none"
             >
-              Add to Cart
+              {/* Base layer (black to subtle white tint) */}
+              <motion.span
+                className="absolute inset-0 rounded-full bg-black"
+                variants={{
+                  rest: { backgroundColor: "#000000" },
+                  hover: { backgroundColor: "#ffffff" },
+                }}
+                transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+              />
+              {/* Left-to-right liquid sweep overlay */}
+              <motion.span
+                className="absolute left-0 top-0 h-full rounded-full bg-white/95 backdrop-blur-[1px]"
+                style={{ width: '0%', filter: 'drop-shadow(0 6px 14px rgba(255,255,255,0.35))' }}
+                variants={{
+                  rest: { width: '0%' },
+                  hover: { width: '105%' },
+                }}
+                transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1] }}
+              />
+              {/* Radial reveal pulse for unique hover */}
+              <motion.span
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white pointer-events-none"
+                style={{ width: 0, height: 0, filter: 'blur(2px)' }}
+                variants={{
+                  rest: { opacity: 0, scale: 0 },
+                  hover: { opacity: 1, scale: 2.2 },
+                }}
+                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+              />
+              {/* Soft outer glow on hover */}
+              <motion.span
+                className="absolute -inset-2 rounded-full bg-white/30 blur-xl pointer-events-none"
+                variants={{ rest: { opacity: 0 }, hover: { opacity: 0.6 } }}
+                transition={{ duration: 0.9, ease: 'easeOut' }}
+              />
+              {/* Text color invert */}
+              <motion.span
+                className="relative z-10"
+                variants={{ rest: { color: '#ffffff' }, hover: { color: '#000000' } }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Add to Cart
+              </motion.span>
             </motion.button>
 
             {/* (Removed duplicate color section under Add to Cart) */}
@@ -1760,7 +1804,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-original",
       name: "DreamCurl� Original Set",
-      price: "�39.99",
+      price: "$39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Medium to Long",
@@ -1802,7 +1846,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-short-set",
       name: "DreamCurl� Short Set",
-      price: "�24.99",
+      price: "$24.99",
       image: product1Image,
       category: "DreamCurl� Collection",
       hairType: "All Types",
@@ -1842,7 +1886,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-midi",
       name: "DreamCurl� Midi",
-      price: "�34.99",
+      price: "$34.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Short to Long",
@@ -1883,7 +1927,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-jumbo",
       name: "DreamCurl� JUMBO SIZE",
-      price: "�39.99",
+      price: "$39.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "All Types",
@@ -1924,7 +1968,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "�24.99",
+      price: "$24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Short to Medium",
@@ -1954,7 +1998,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "heatless-6",
       name: "PEAU DE SOIE | XL OVERNIGHT BONNET",
-      price: "�39.99",
+      price: "$39.99",
       image: product6Image,
       category: "Heatless Tools",
       hairType: "All Types",
@@ -4011,7 +4055,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     {
       id: "dreamcurl-short-set",
       name: "DREAMCURL� SHORT SET - ORIGINAL SIZE",
-      price: "�24.99",
+      price: "$24.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       hasColorOptions: true,
       colors: [
@@ -4024,14 +4068,14 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     {
       id: "curlea-comb",
       name: "CURLEA COMB - PROFESSIONAL STYLING",
-      price: "�12.99",
+      price: "$12.99",
       image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       hasColorOptions: false
     },
     {
       id: "curly-clip-1",
       name: "CURVED RESIN HAIR CLIP - DUCKBILL GRIP",
-      price: "�15.99",
+      price: "$15.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
       hasColorOptions: false
     }
@@ -4071,36 +4115,84 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     selectedProductIds.forEach(productId => {
       const product = bundleProducts.find(p => p.id === productId);
       if (product) {
-        addToCart({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          image: getSelectedProductImage(productId)
-        });
+        // no-op: replaced below with bundle item
       }
     });
-    openCart(); // Automatically open cart dashboard
+    // Add a single bundle item to cart with 3 images and USD pricing
+    const images = selectedProductIds.map(pid => getSelectedProductImage(pid)).slice(0, 3);
+    addToCart({
+      id: `limited-offer-bundle`,
+      name: 'Limited Time Offer · Starter Kit',
+      price: `$${bundlePrice.toFixed(2)}`,
+      originalPrice: `$${totalPrice.toFixed(2)}`,
+      image: images[0] || bundleProducts[0].image,
+      images,
+      isBundle: true,
+    });
+    openCart();
   };
 
   return (
     <motion.section
       ref={ref}
-      className="py-16 px-6 bg-gradient-to-b from-muted/10 to-background"
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.8 }}
+      className="py-16 px-6 bg-gradient-to-b from-amber-50/40 via-background to-background"
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
     >
-      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl text-center font-sans">
+      <motion.div
+        className="max-w-3xl mx-auto p-6 bg-white/95 backdrop-blur rounded-2xl text-center font-sans shadow-[0_20px_60px_-20px_rgba(255,165,0,0.45)] ring-1 ring-amber-200 relative overflow-hidden"
+        initial={{ y: 32, scale: 0.96, opacity: 0 }}
+        animate={isInView ? { y: 0, scale: 1, opacity: 1 } : {}}
+        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+        whileHover={{ y: -2 }}
+      >
+        {/* subtle animated glow */}
+        <motion.div
+          className="pointer-events-none absolute -inset-1 rounded-[1.25rem]"
+          style={{ background: 'radial-gradient(1200px 300px at 50% 0%, rgba(251,191,36,0.15), transparent 60%)' }}
+          animate={{ opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
         {/* Title */}
         <motion.h2 
-          className="text-xl md:text-2xl font-bold uppercase mb-6 tracking-wider text-gray-900"
+          className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ delay: 0.2, duration: 0.6 }}
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 700 }}
         >
-          LIMITED TIME OFFER | STARTER KIT
+          LIMITED TIME OFFER · STARTER KIT
         </motion.h2>
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 ring-1 ring-amber-200">
+            Save 10% today
+          </span>
+          <span className="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-xs font-medium px-3 py-1 ring-1 ring-rose-200">
+            While supplies last
+          </span>
+        </div>
+
+        {/* Color selector for DreamCurl Short Set */}
+        {selectedProducts['dreamcurl-short-set'] && (
+          <motion.div
+            className="mb-5 flex items-center justify-center gap-2 flex-wrap"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.4 }}
+          >
+            {(bundleProducts.find(p => p.id === 'dreamcurl-short-set')?.colors || []).map((c) => (
+              <button
+                key={c.name}
+                onClick={() => setSelectedColor(c.name)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  selectedColor === c.name ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300 hover:border-gray-500'
+                }`}
+              >
+                {c.name.replace(/_/g, ' ')}
+              </button>
+            ))}
+          </motion.div>
+        )}
 
         {/* Images row */}
         <motion.div 
@@ -4135,27 +4227,32 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          <p className="text-lg font-semibold text-gray-800">
-            Total Price:{" "}
-            <span className="text-red-600 font-bold text-xl">�{bundlePrice.toFixed(2)}</span>{" "}
-            <span className="line-through text-gray-400 text-lg">�{totalPrice.toFixed(2)}</span>
+          <p className="text-lg font-semibold text-gray-900">
+            Bundle Today:{" "}
+            <span className="text-rose-600 font-extrabold text-2xl">${bundlePrice.toFixed(2)}</span>{" "}
+            <span className="line-through text-gray-400 text-base align-middle">${totalPrice.toFixed(2)}</span>
           </p>
-          <p className="text-gray-600 text-sm font-medium">You save: �{savings.toFixed(2)}</p>
+          <p className="text-amber-700 text-sm font-semibold">You save ${savings.toFixed(2)} with this starter kit</p>
         </motion.div>
 
         {/* Add to Cart */}
         <motion.button 
-          className="border-2 border-gray-900 px-8 py-3 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-300 mb-8 tracking-wide uppercase text-sm"
+          className="group relative inline-flex items-center justify-center px-10 py-3 mb-8 rounded-full font-extrabold tracking-wide uppercase text-sm text-white focus:outline-none"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleAddToCart}
           disabled={selectedProductIds.length === 0}
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 700 }}
         >
-          ADD TO CART
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500" />
+          <span className="absolute -inset-[2px] rounded-full bg-gradient-to-r from-amber-400/40 to-rose-400/40 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <span className="relative z-10 flex items-center gap-2">
+            Add to Cart
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </span>
         </motion.button>
 
         {/* Items breakdown */}
@@ -4203,7 +4300,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
             </div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </motion.section>
   );
 };
