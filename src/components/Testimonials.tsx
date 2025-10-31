@@ -271,12 +271,6 @@ export const Testimonials = () => {
               <Content>{testimonial.content}</Content>
               
               <AuthorContainer>
-                <Avatar
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                />
                 <AuthorInfo>
                   <AuthorName>{testimonial.name}</AuthorName>
                   <AuthorRole>{testimonial.role}</AuthorRole>

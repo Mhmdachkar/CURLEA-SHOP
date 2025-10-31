@@ -217,7 +217,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
           <div className="relative">
-            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-6 sm:-translate-x-8">
+            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-10 sm:-translate-x-14">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
               className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-start -ml-1 sm:-ml-2 -mr-6 sm:-mr-7"
@@ -226,7 +226,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.62] sm:scale-[0.74] md:scale-[0.80]"
                 onClick={() => setSelectedMedia('left')}
               >
                 {/* Decorative border frame */}
@@ -372,13 +372,13 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-end -translate-x-6 md:-translate-x-8 -ml-5 sm:-ml-7"
+              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-end -translate-x-10 md:-translate-x-12 -ml-6 sm:-ml-8"
               initial={{ opacity: 0, x: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.62] sm:scale-[0.74] md:scale-[0.80]"
                 onClick={() => setSelectedMedia('right')}
               >
                 {/* Decorative border frame */}

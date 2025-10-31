@@ -314,6 +314,7 @@ export const products: Product[] = [
     hairType: "Curly",
     featured: true,
     description: [
+      "Includes both Gold and Print colors in one package (not sold separately)",
       "Premium alloy construction with elegant gold finish for luxury styling",
       "Large U-shaped design perfect for securing medium to long hair",
       "Minimalist modern style that fits both casual and elegant outfits",
@@ -605,6 +606,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       hairType: "Curly",
       featured: true,
       description: [
+        "Includes both Gold and Print colors in one package (not sold separately)",
         "Premium alloy construction with elegant gold finish for luxury styling",
         "Large U-shaped design perfect for securing medium to long hair",
         "Minimalist modern style that fits both casual and elegant outfits",

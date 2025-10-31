@@ -905,74 +905,71 @@ export const ProductDetailPage = () => {
     {/* Size Selection for Curved Resin Hair Clip */}
     {product.id === 'curly-clip-1' && product.sizeOptions && (
       <motion.div 
-        className="mb-8 p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200"
+        className="mb-8 p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Choose Your Set</h3>
-          <p className="text-sm text-gray-600">Select the perfect set size for your styling needs</p>
+        <div className="mb-4 lg:mb-5">
+          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 tracking-tight" style={{ fontFamily: 'Georgia, Cambria, Times New Roman, Times, serif' }}>Choose Your Set</h3>
+          <p className="text-xs sm:text-sm text-gray-600">Select the perfect set size for your styling needs</p>
         </div>
         
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-3">
+        <div
+          className="flex flex-col gap-3 lg:gap-4"
+          role="radiogroup"
+          aria-label="Choose Hair Clip Set Size"
+        >
           {Object.entries(product.sizeOptions).map(([sizeKey, sizeOption], index) => (
             <motion.button
               key={sizeKey}
               onClick={() => setSelectedSize(sizeKey)}
-              className={`relative p-3 rounded-lg border transition-all duration-200 ${
+              className={`group relative w-full text-left rounded-xl border p-4 sm:p-5 lg:p-6 transition-all duration-200 ${
                 selectedSize === sizeKey
-                  ? 'border-primary bg-primary/5 shadow'
-                  : 'border-gray-200 bg-white hover:border-primary/40 hover:shadow-sm'
+                  ? 'border-gray-900 bg-gray-900/5 shadow-lg'
+                  : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-md'
               }`}
-              whileHover={{ 
-                scale: 1.01,
-                y: -1,
-                transition: { duration: 0.15 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.08 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.06 * index }}
+              role="radio"
+              aria-checked={selectedSize === sizeKey}
             >
-              <div className="flex items-start gap-3">
-                <div className="w-14 h-14 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+              <div className="flex items-center gap-4 sm:gap-5 lg:gap-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 rounded-lg overflow-hidden bg-gray-50 ring-1 ring-gray-100 flex-shrink-0">
                   <img
                     src={sizeOption.image}
                     alt={`${product.name} - ${sizeKey}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900 capitalize">
-                      {sizeKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </h4>
-                    <span className="text-base font-semibold text-primary">{sizeOption.price}</span>
+                <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-4 mb-2">
+                      <h4 className="text-base sm:text-lg lg:text-xl font-semibold tracking-wide uppercase text-gray-900 leading-snug" style={{ fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }}>
+                        {sizeKey.replace(/-/g, ' ')}
+                      </h4>
+                      <span className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 whitespace-nowrap">
+                        {sizeOption.price}
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed">
+                      {sizeOption.description[0]}
+                    </p>
                   </div>
-                  <div className="text-xs text-gray-600 space-y-0.5">
-                    {sizeOption.description.slice(0, 2).map((desc, idx) => (
-                      <p key={idx}>{desc}</p>
-                    ))}
-                  </div>
+                  {selectedSize === sizeKey ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-900 text-white px-3 py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
+                      Selected
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1.5 text-xs sm:text-sm font-medium whitespace-nowrap">
+                      Tap to select
+                    </span>
+                  )}
                 </div>
               </div>
-              {/* Selected indicator */}
-              {selectedSize === sizeKey && (
-                <motion.div
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </motion.div>
-              )}
             </motion.button>
           ))}
         </div>
@@ -1399,6 +1396,7 @@ export const ProductDetailPage = () => {
                     </motion.button>
                   ))}
                 </div>
+                
               </motion.div>
             )}
 
