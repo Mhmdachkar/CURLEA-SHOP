@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
@@ -308,6 +309,7 @@ const ClearButton = styled.button`
 
 export const CartDrawer = () => {
   const { state, updateQuantity, removeFromCart, clearCart, closeCart } = useCart();
+  const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top whenever cart opens
@@ -393,8 +395,8 @@ export const CartDrawer = () => {
       });
     }
     
-    // Note: In production, this would redirect to actual checkout page
-    alert('Checkout functionality coming soon!');
+    closeCart();
+    navigate('/checkout');
   };
 
   const handleClearCart = () => {
