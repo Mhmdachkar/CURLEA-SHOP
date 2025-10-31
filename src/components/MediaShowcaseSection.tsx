@@ -25,6 +25,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   const isShortSetProduct = product.id === 'dreamcurl-short-set';
   const isScarfProduct = product.id === 'curly-scarf-1';
   const isCurlyClipProduct = product.id === 'curly-clip-1';
+  const isCurleaCombProduct = product.id === 'curlea-comb';
   
   // Determine left and right images based on product
   let leftImage, rightImage;
@@ -52,6 +53,9 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   } else if (isCurlyClipProduct) {
     leftImage = new URL('../assets/curly hair collection/product1/fLAT cLAW clIP IMAGE.jpg', import.meta.url).href;
     rightImage = new URL('../assets/curly hair collection/product1/fLAT cLAW clIP IMAGE 2.jpg', import.meta.url).href;
+  } else if (isCurleaCombProduct) {
+    leftImage = new URL('../assets/curly hair collection/product7/curlea comb.webp', import.meta.url).href;
+    rightImage = images[1] || images[0] || product.image;
   } else {
     leftImage = images[0] || product.image;
     rightImage = images[1] || images[0] || product.image;
