@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Truck, ArrowLeft, Check, Lock, MapPin, Phone, Mail, User, ShieldCheck } from 'lucide-react';
+import { CreditCard, Truck, ArrowLeft, Check, Lock, MapPin, Phone, Mail, User, ShieldCheck, Loader2 } from 'lucide-react';
+import { createStripeCheckout, calculateCartTotal, parsePriceToNumber } from '@/utils/stripeCheckout';
+import { toast } from 'sonner';
+import '../styles/checkout-styles.css';
 
-type PaymentMethod = 'cashflow' | 'cod' | null;
+type PaymentMethod = 'stripe' | 'cod' | null;
 
 // Refined typography
 const typography = {
@@ -16,7 +19,7 @@ const typography = {
 // Pull items from CartContext instead of mock data
 
 export default function CheckoutPage() {
-  const { state } = useCart();
+  const { state, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [formData, setFormData] = useState({ 
     name: '', 
@@ -120,18 +123,85 @@ export default function CheckoutPage() {
   const handleCODSubmit = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    alert(`Order Confirmed! Thank you, ${formData.name}.\n\nTotal: $${total.toFixed(2)}\nDelivery to: ${formData.address}`);
-    setIsSubmitting(false);
+    
+    try {
+      // Generate unique order ID
+      const orderId = `COD-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Format items for analytics
+      const items = state.items.map(item => {
+        const unitPrice = parsePriceToNumber(item.price);
+        return {
+          product_id: item.id,
+          title: item.name,
+          quantity: item.quantity,
+          price: unitPrice,
+        };
+      });
+      
+      // Track the order in database as completed (COD orders are confirmed on checkout)
+      if ((window as any).analytics) {
+        (window as any).analytics.trackPurchase({
+          order_id: orderId,
+          customer_email: formData.email,
+          subtotal: subtotal,
+          shipping_total: deliveryFee,
+          discount_total: 0,
+          tax_total: 0,
+          total_value: total,
+          currency: 'USD',
+          payment_method: 'cash_on_delivery',
+          items: items,
+          status: 'completed',
+        });
+      }
+      
+      // Clear cart immediately
+      clearCart();
+      
+      // Show success message
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      toast.success(`Order confirmed! Thank you, ${formData.name}.`);
+      
+      // Redirect to success page
+      setTimeout(() => {
+        window.location.href = '/success?order_id=' + orderId;
+      }, 2000);
+      
+    } catch (error: any) {
+      console.error('COD order error:', error);
+      toast.error('Failed to create order. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
-  const handleStripeRedirect = () => {
-    alert('Redirecting to secure payment gateway...');
+  const handleStripeRedirect = async () => {
+    if (state.items.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { url } = await createStripeCheckout({
+        cartItems: state.items,
+        currency: 'USD',
+        successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/`,
+      });
+      
+      // Redirect to Stripe
+      window.location.href = url;
+    } catch (error: any) {
+      console.error('Stripe checkout error:', error);
+      toast.error(error.message || 'Failed to create checkout session. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = paymentMethod === 'cod' 
     ? Object.keys(formData).every(key => formData[key as keyof typeof formData].trim() !== '') && Object.keys(errors).length === 0
-    : paymentMethod === 'cashflow';
+    : paymentMethod === 'stripe';
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -177,7 +247,7 @@ export default function CheckoutPage() {
                 Payment method
               </h2>
 
-              {/* Cashflow Card */}
+              {/* Stripe Card Payment */}
               <motion.div
                 whileHover={{ 
                   scale: 1.01,
@@ -185,18 +255,18 @@ export default function CheckoutPage() {
                   transition: { duration: 0.2 }
                 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setPaymentMethod('cashflow')}
+                onClick={() => setPaymentMethod('stripe')}
                 className={`group cursor-pointer rounded-xl p-4 border transition-all relative overflow-hidden ${
-                  paymentMethod === 'cashflow'
-                    ? 'bg-gray-50 border-gray-900 ring-2 ring-gray-900/10 shadow-sm'
-                    : 'bg-white border-gray-200 hover:border-gray-400 hover:shadow-md'
+                  paymentMethod === 'stripe'
+                    ? 'bg-gradient-to-br from-[#A4193D]/10 to-[#D4AF37]/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/20 shadow-sm'
+                    : 'bg-white border-gray-200 hover:border-[#D4AF37] hover:shadow-md'
                 }`}
               >
                 {/* Animated gradient on hover */}
                 <motion.div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(0,0,0,0.02) 0%, transparent 100%)'
+                    background: 'linear-gradient(135deg, rgba(164, 25, 61, 0.02) 0%, rgba(212, 175, 55, 0.02) 100%)'
                   }}
                 />
                 
@@ -205,34 +275,34 @@ export default function CheckoutPage() {
                     <motion.div 
                       whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
                       className={`p-2 rounded-lg transition-all duration-300 ${
-                        paymentMethod === 'cashflow' 
-                          ? 'bg-gray-900' 
-                          : 'bg-gray-100 group-hover:bg-gray-900'
+                        paymentMethod === 'stripe' 
+                          ? 'bg-gradient-to-br from-[#A4193D] to-[#D4AF37]' 
+                          : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-[#A4193D] group-hover:to-[#D4AF37]'
                       }`}
                     >
                       <CreditCard className={`w-4 h-4 transition-colors duration-300 ${
-                        paymentMethod === 'cashflow' 
+                        paymentMethod === 'stripe' 
                           ? 'text-white' 
                           : 'text-gray-600 group-hover:text-white'
                       }`} />
                     </motion.div>
                     <div>
                       <p className="text-sm font-medium text-gray-900" style={typography}>
-                        Card payment
+                        Stripe Checkout
                       </p>
                       <p className="text-xs text-gray-500" style={typography}>
-                        Secure online payment
+                        Secure card payment • PCI compliant
                       </p>
                     </div>
                   </div>
                   <AnimatePresence>
-                    {paymentMethod === 'cashflow' && (
+                    {paymentMethod === 'stripe' && (
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: 180 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="w-5 h-5 rounded-full bg-gray-900 flex items-center justify-center"
+                        className="w-5 h-5 rounded-full bg-gradient-to-br from-[#A4193D] to-[#D4AF37] flex items-center justify-center"
                       >
                         <Check className="w-3 h-3 text-white" />
                       </motion.div>
@@ -641,8 +711,15 @@ export default function CheckoutPage() {
                   whileTap={{ scale: 0.98 }}
                   onClick={paymentMethod === 'cod' ? handleCODSubmit : handleStripeRedirect}
                   disabled={!isFormValid || isSubmitting}
-                  className="group relative w-full mt-6 py-3 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all overflow-hidden"
-                  style={typography}
+                  className="checkout-btn group relative w-full mt-6 py-3 px-4 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all overflow-hidden"
+                  style={{ 
+                    ...typography,
+                    background: 'linear-gradient(135deg, #A4193D, #D4AF37)',
+                    color: 'white',
+                    borderRadius: '9999px',
+                    border: 'none',
+                    boxShadow: '0 10px 40px -10px rgba(212, 175, 55, 0.3)',
+                  }}
                 >
                   {/* Animated shimmer effect */}
                   <motion.div

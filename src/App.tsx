@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CollectionPage } from "./pages/CollectionPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import SuccessPage from "./pages/SuccessPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
@@ -63,6 +64,7 @@ const App = () => {
                 <Route path="/category/:category" element={<CategoryPage />} />
                 <Route path="/product/:id" element={<ProductDetailPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/success" element={<SuccessPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

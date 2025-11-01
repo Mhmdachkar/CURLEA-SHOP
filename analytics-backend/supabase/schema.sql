@@ -502,7 +502,7 @@ BEGIN
     FROM visits v
     LEFT JOIN page_views pv ON v.session_id = pv.session_id AND DATE(pv.created_at) = target_date
     LEFT JOIN cart_events ce ON v.session_id = ce.session_id AND DATE(ce.created_at) = target_date
-    LEFT JOIN orders o ON v.session_id = o.session_id AND DATE(o.created_at) = target_date
+    LEFT JOIN orders o ON v.session_id = o.session_id AND DATE(o.created_at) = target_date AND o.status IN ('completed', 'processing')
     WHERE DATE(v.created_at) = target_date
     ON CONFLICT (date, COALESCE(hour, -1)) 
     DO UPDATE SET

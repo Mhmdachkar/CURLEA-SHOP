@@ -13,7 +13,7 @@ module.exports = {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Note: Remove unsafe-eval in production if possible
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
-      "connect-src 'self' https:",
+      "connect-src 'self' https: http://localhost:*",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
