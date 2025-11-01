@@ -137,11 +137,11 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'Print': new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href
     },
     'heatless-5': {
-      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
-      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
-      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
-      'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
+      
     },
     'zero-heat-mini': {
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,

@@ -141,10 +141,10 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href
     },
     'heatless-5': {
-      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
-      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
-      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href
     }
   };
 

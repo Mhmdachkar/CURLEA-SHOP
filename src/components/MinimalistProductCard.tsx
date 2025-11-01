@@ -51,6 +51,29 @@ interface MinimalistProductCardProps extends Product {
   onAddToCart?: (product: { id: string; name: string; price: string; image: string; activeColor: ColorOption | null }) => void;
 }
 
+// Helper function to format color names for display
+const formatColorName = (color: string): string => {
+  const displayMap: Record<string, string> = {
+    'CANDY': 'Candy',
+    'LATTE': 'Latte',
+    'MULBERRY': 'Mulberry',
+    'OLIVE': 'Olive',
+    'BUTTERMILK': 'Buttermilk',
+    'GOLD': 'Gold',
+    'PRINT': 'Print',
+    'ROSE GOLD': 'Rose Gold',
+    'ROYAL PURPLE': 'Royal Purple',
+    'OLIVE LUX': 'Olive Lux',
+    'EARL GREY': 'Earl Grey',
+    'CANDY&MARCHMELLO': 'Candy & Marshmallow',
+    'OLIVE&LATTE': 'Olive & Latte',
+    'candy&marchmello': 'Candy & Marshmallow',
+    'olive&latte': 'Olive & Latte'
+  };
+  
+  return displayMap[color.toUpperCase()] || color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+};
+
 // Helper function to convert product colors to color options
 const getColorOptions = (colors?: string[]): ColorOption[] => {
   if (!colors || colors.length === 0) return [];
@@ -113,10 +136,10 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'Print': new URL('../assets/curly hair collection/product4/print.jpg', import.meta.url).href
     },
     'heatless-5': {
-      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'MULBERRY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
-      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
-      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp4.webp', import.meta.url).href,
+      'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
+      'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
       'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
     },
     'zero-heat-mini': {
