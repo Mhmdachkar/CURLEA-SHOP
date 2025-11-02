@@ -972,7 +972,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-original",
       name: "DreamCurl™ Original Set",
-      price: "$39.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Medium to Long",
@@ -1005,7 +1005,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-short-set",
       name: "DreamCurl™ Short Set",
-      price: "$24.99",
+      price: "$16.99",
       image: product1Image,
       category: "DreamCurl™ Collection",
       hairType: "All Types",
@@ -1036,7 +1036,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-midi",
       name: "DreamCurl™ Midi",
-      price: "$34.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Short to Long",
@@ -1069,7 +1069,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "dreamcurl-jumbo",
       name: "DreamCurl™ JUMBO SIZE",
-      price: "$39.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "All Types",
@@ -1100,7 +1100,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "$24.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       category: "DreamCurl™ Collection",
       hairType: "Short to Medium",
@@ -1131,7 +1131,7 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     {
       id: "heatless-5",
       name: "BUN BONS - Heatless Curling System",
-      price: "$89.99",
+      price: "$19.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
       category: "Heatless Tools",
       hairType: "All Types",

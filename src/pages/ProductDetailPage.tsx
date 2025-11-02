@@ -1578,7 +1578,7 @@ export const ProductDetailPage = () => {
                 selectedColor={selectedColor} 
                 onColorSelect={setSelectedColor}
               />
-            ) : product.id === 'curly-clip-1' || product.id === 'curly-clip-6' ? (
+            ) : product.id === 'curly-clip-1' || product.id === 'curly-clip-6' || product.id === 'satin-scrunchies-french-5pc' ? (
               <CurlyHairCollectionImageGallery 
                 key={`hairclip-gallery-${product.id}`}
                 product={product}
@@ -1616,7 +1616,7 @@ export const ProductDetailPage = () => {
         </div>
 
         {/* 1. The "Media Showcase" Section - Elegant 3-column layout */}
-        {product.id !== 'curly-claw-1' && (
+        {product.id !== 'curly-claw-1' && product.id !== 'songmay-hair-clips' && (
           <MediaShowcaseSection key={`media-${product.id}`} product={product} />
         )}
 
@@ -1626,7 +1626,7 @@ export const ProductDetailPage = () => {
         )}
 
         {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
-        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && (
+        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && product.id !== 'satin-scrunchies-french-5pc' && (
           <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
         )}
 
@@ -1864,7 +1864,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-original",
       name: "DreamCurl� Original Set",
-      price: "$39.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Medium to Long",
@@ -1906,7 +1906,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-short-set",
       name: "DreamCurl� Short Set",
-      price: "$24.99",
+      price: "$16.99",
       image: product1Image,
       category: "DreamCurl� Collection",
       hairType: "All Types",
@@ -1946,7 +1946,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-midi",
       name: "DreamCurl� Midi",
-      price: "$34.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Short to Long",
@@ -1987,7 +1987,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "dreamcurl-jumbo",
       name: "DreamCurl� JUMBO SIZE",
-      price: "$39.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "All Types",
@@ -2028,7 +2028,7 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     {
       id: "zero-heat-mini",
       name: "ZERO HEAT SET MINI SIZE",
-      price: "$24.99",
+      price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       category: "DreamCurl� Collection",
       hairType: "Short to Medium",
@@ -3172,6 +3172,12 @@ const CurlyHairCollectionImageGallery = ({
       // Images for CURLEA Comb from product7 folder
       new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
+  ] : product.id === 'satin-scrunchies-french-5pc' ? [
+      // Images for Satin Scrunchies Luxury French 5 Piece
+      new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/scrunchiess.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/scrunchiesss.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/guide-scrunchies.webp', import.meta.url).href,
   ] : [
     // Images for claw clips product
     new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
@@ -3288,8 +3294,8 @@ const CurlyHairCollectionImageGallery = ({
       </div>
       </motion.div>
 
-      {/* Thumbnail Gallery for curly-clip-6 - Always show thumbnails */}
-      {product.id === 'curly-clip-6' && curlyHairImages.length > 1 && (
+      {/* Thumbnail Gallery for curly-clip-6 and scrunchies - Always show thumbnails */}
+      {(product.id === 'curly-clip-6' || product.id === 'satin-scrunchies-french-5pc') && curlyHairImages.length > 1 && (
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
           {curlyHairImages.map((imgSrc, index) => (
             <button
@@ -3312,8 +3318,8 @@ const CurlyHairCollectionImageGallery = ({
         </div>
       )}
 
-      {/* Thumbnail Gallery with Pagination - for other products */}
-      {product.id !== 'curly-clip-6' && curlyHairImages.length > 6 && (
+      {/* Thumbnail Gallery with Pagination - for other products with many images */}
+      {product.id !== 'curly-clip-6' && product.id !== 'satin-scrunchies-french-5pc' && curlyHairImages.length > 6 && (
         <div className="flex flex-col gap-2">
         <div className="grid grid-cols-6 gap-2">
             {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((imgSrc, index) => {
@@ -4115,7 +4121,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     {
       id: "dreamcurl-short-set",
       name: "DREAMCURL� SHORT SET - ORIGINAL SIZE",
-      price: "$24.99",
+      price: "$16.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       hasColorOptions: true,
       colors: [
@@ -4128,14 +4134,14 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     {
       id: "curlea-comb",
       name: "CURLEA COMB - PROFESSIONAL STYLING",
-      price: "$12.99",
+      price: "$2.99",
       image: new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
       hasColorOptions: false
     },
     {
       id: "curly-clip-1",
       name: "CURVED RESIN HAIR CLIP - DUCKBILL GRIP",
-      price: "$15.99",
+      price: "$14.99",
       image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
       hasColorOptions: false
     }
@@ -4143,12 +4149,27 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
 
   // Calculate pricing based on selected products
   const selectedProductIds = Object.keys(selectedProducts).filter(id => selectedProducts[id]);
+  const selectedCount = selectedProductIds.length;
+  
+  // Calculate total price before discount
   const totalPrice = selectedProductIds.reduce((sum, id) => {
     const product = bundleProducts.find(p => p.id === id);
-    return sum + parseFloat(product?.price.replace('�', '') || '0');
+    if (!product) return sum;
+    // Remove $ and parse price
+    const priceValue = parseFloat(product.price.replace('$', ''));
+    return sum + priceValue;
   }, 0);
   
-  const bundlePrice = totalPrice * 0.9; // 10% off
+  // Apply tiered discounts: 3 products = 25%, 2 products = 10%, 1 product = 0%
+  let discountPercent = 0;
+  if (selectedCount === 3) {
+    discountPercent = 25;
+  } else if (selectedCount === 2) {
+    discountPercent = 10;
+  }
+  
+  const discountMultiplier = 1 - (discountPercent / 100);
+  const bundlePrice = totalPrice * discountMultiplier;
   const savings = totalPrice - bundlePrice;
 
   // Get selected product image based on color
@@ -4225,9 +4246,11 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           LIMITED TIME OFFER · STARTER KIT
         </motion.h2>
         <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 ring-1 ring-amber-200">
-            Save 10% today
-          </span>
+          {selectedCount > 1 && (
+            <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 ring-1 ring-amber-200">
+              Save {discountPercent}% today
+            </span>
+          )}
           <span className="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-xs font-medium px-3 py-1 ring-1 ring-rose-200">
             While supplies last
           </span>
@@ -4290,10 +4313,22 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
         >
           <p className="text-lg font-semibold text-gray-900">
             Bundle Today:{" "}
-            <span className="text-rose-600 font-extrabold text-2xl">${bundlePrice.toFixed(2)}</span>{" "}
-            <span className="line-through text-gray-400 text-base align-middle">${totalPrice.toFixed(2)}</span>
+            <span className="text-rose-600 font-extrabold text-2xl">${bundlePrice.toFixed(2)}</span>
+            {selectedCount > 1 && (
+              <>
+                {" "}
+                <span className="line-through text-gray-400 text-base align-middle">${totalPrice.toFixed(2)}</span>
+              </>
+            )}
           </p>
-          <p className="text-amber-700 text-sm font-semibold">You save ${savings.toFixed(2)} with this starter kit</p>
+          {selectedCount > 1 && (
+            <p className="text-amber-700 text-sm font-semibold">
+              You save ${savings.toFixed(2)} ({discountPercent}% off) with this bundle
+            </p>
+          )}
+          {selectedCount === 1 && (
+            <p className="text-gray-600 text-sm">Add more products to unlock bundle savings!</p>
+          )}
         </motion.div>
 
         {/* Add to Cart */}

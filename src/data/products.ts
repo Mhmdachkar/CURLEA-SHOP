@@ -248,7 +248,7 @@ export const products: Product[] = [
   {
     id: "curly-scarf-1",
     name: "MIO Elegant Scarf - Soft Satin Hair Band & Scrunchies",
-    price: "$6.99",
+    price: "$11.99",
     image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
     category: "Hair Accessories",
     hairType: "Curly",
@@ -273,6 +273,32 @@ export const products: Product[] = [
       new URL('../assets/curly hair collection/product2/pp4.jpg', import.meta.url).href,
       new URL('../assets/curly hair collection/product2/pp5.jpg', import.meta.url).href,
       new URL('../assets/curly hair collection/product2/pp6.jpg', import.meta.url).href
+    ]
+  },
+  {
+    id: "satin-scrunchies-french-5pc",
+    name: "Satin Scrunchies Luxury French 5 Piece",
+    price: "$6.77",
+    image: new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+    category: "Hair Accessories",
+    hairType: "Curly",
+    featured: true,
+    description: [
+      "A Touch of Parisian Elegance: Inspired by timeless French sophistication, this 5-piece scrunchie set elevates every hairstyle with effortless grace.",
+      "Lustrous Satin Finish: Crafted from the finest silky satin for a soft, glossy texture that glides through hair without pulling or creasing.",
+      "Gentle & Protective Hold: Designed to reduce friction and prevent breakage, keeping your hair smooth, shiny, and frizz-free all day.",
+      "Luxury in Every Detail: Each scrunchie embodies understated refinement—perfect for both daily wear and special occasions.",
+      "Versatile Styling: Ideal for ponytails, buns, or wrist wear as an elegant accessory.",
+      "Premium Presentation: Delivered in a beautifully packaged set, perfect for gifting or personal indulgence."
+    ],
+    ingredients: ["Premium Satin", "Luxury French Fabric", "Gentle Elastic"],
+    size: "5-Piece Set",
+    inStock: true,
+    images: [
+      new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/scrunchiess.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/scrunchiesss.webp', import.meta.url).href,
+      new URL('../assets/curly hair collection/scrunchies/guide-scrunchies.webp', import.meta.url).href
     ]
   },
   {
@@ -573,6 +599,32 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       ingredients: ["Premium Satin", "Elastic Band", "Fashion Ribbon"],
       size: "7-Piece Set",
       inStock: true,
+    },
+    {
+      id: "satin-scrunchies-french-5pc",
+      name: "Satin Scrunchies Luxury French 5 Piece",
+      price: "$6.77",
+      image: new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+      category: "Hair Accessories",
+      hairType: "Curly",
+      featured: true,
+      description: [
+        "A Touch of Parisian Elegance: Inspired by timeless French sophistication, this 5-piece scrunchie set elevates every hairstyle with effortless grace.",
+        "Lustrous Satin Finish: Crafted from the finest silky satin for a soft, glossy texture that glides through hair without pulling or creasing.",
+        "Gentle & Protective Hold: Designed to reduce friction and prevent breakage, keeping your hair smooth, shiny, and frizz-free all day.",
+        "Luxury in Every Detail: Each scrunchie embodies understated refinement—perfect for both daily wear and special occasions.",
+        "Versatile Styling: Ideal for ponytails, buns, or wrist wear as an elegant accessory.",
+        "Premium Presentation: Delivered in a beautifully packaged set, perfect for gifting or personal indulgence."
+      ],
+      ingredients: ["Premium Satin", "Luxury French Fabric", "Gentle Elastic"],
+      size: "5-Piece Set",
+      inStock: true,
+      images: [
+        new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+        new URL('../assets/curly hair collection/scrunchies/scrunchiess.webp', import.meta.url).href,
+        new URL('../assets/curly hair collection/scrunchies/scrunchiesss.webp', import.meta.url).href,
+        new URL('../assets/curly hair collection/scrunchies/guide-scrunchies.webp', import.meta.url).href
+      ]
     },
     {
       id: "curly-claw-1",

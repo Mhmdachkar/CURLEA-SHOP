@@ -34,7 +34,7 @@ const priceUpdates = [
   { productId: 'dreamcurl-short-set', price: 16.99 },
   { productId: 'curly-clip-1', price: 14.99 },
   { productId: 'curly-claw-1', price: 15.99 },
-  { productId: 'curly-scarf-1', price: 6.99 },
+  { productId: 'curly-scarf-1', price: 11.99 },
   { productId: 'songmay-hair-clips', price: 3.99 },
   { productId: 'curlea-comb', price: 2.99 },
 ];
