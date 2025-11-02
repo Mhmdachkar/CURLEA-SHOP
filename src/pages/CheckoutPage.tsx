@@ -57,8 +57,13 @@ export default function CheckoutPage() {
     [cart]
   );
   
+  // 5% discount for Stripe payments
+  const stripeDiscount = useMemo(() => {
+    return paymentMethod === 'stripe' ? subtotal * 0.05 : 0;
+  }, [paymentMethod, subtotal]);
+  
   const deliveryFee = paymentMethod === 'cod' ? 4 : 0;
-  const total = subtotal + deliveryFee;
+  const total = subtotal + deliveryFee - stripeDiscount;
   const savings = useMemo(() => {
     return cart.reduce((sum, item) => {
       if (typeof item.originalPrice === 'number' && !isNaN(item.originalPrice)) {
@@ -336,6 +341,9 @@ export default function CheckoutPage() {
                       </p>
                       <p className="text-xs text-gray-500" style={typography}>
                         Secure card payment • PCI compliant
+                      </p>
+                      <p className="text-xs font-semibold text-green-600 mt-1" style={typography}>
+                        🎉 Get 5% discount on total price!
                       </p>
                     </div>
                   </div>
@@ -615,7 +623,7 @@ export default function CheckoutPage() {
                 boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
                 transition: { duration: 0.3 }
               }}
-              className="bg-white rounded-xl p-6 border border-gray-200 transition-all"
+              className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 transition-all overflow-hidden"
             >
               <h2 className="text-base font-medium text-gray-900 mb-4" style={typography}>
                 Order summary
@@ -705,31 +713,44 @@ export default function CheckoutPage() {
               {/* Price breakdown */}
               <div className="space-y-2 pt-4 border-t border-gray-200">
                 <motion.div 
-                  className="flex justify-between text-sm"
+                  className="flex justify-between items-center gap-2 text-sm"
                   whileHover={{ x: 2, transition: { duration: 0.2 } }}
                 >
-                  <span className="text-gray-600" style={typography}>Subtotal</span>
-                  <span className="font-medium text-gray-900" style={typography}>${subtotal.toFixed(2)}</span>
+                  <span className="text-gray-600 flex-shrink-0" style={typography}>Subtotal</span>
+                  <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>${subtotal.toFixed(2)}</span>
                 </motion.div>
+                {stripeDiscount > 0 && (
+                  <motion.div 
+                    className="flex justify-between items-center gap-2 text-sm"
+                    whileHover={{ x: 2, transition: { duration: 0.2 } }}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <span className="text-green-600 font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>Stripe Discount (5%)</span>
+                    <span className="font-semibold text-green-600 flex-shrink-0 whitespace-nowrap" style={typography}>
+                      -${stripeDiscount.toFixed(2)}
+                    </span>
+                  </motion.div>
+                )}
                 <motion.div 
-                  className="flex justify-between text-sm"
+                  className="flex justify-between items-center gap-2 text-sm"
                   whileHover={{ x: 2, transition: { duration: 0.2 } }}
                 >
-                  <span className="text-gray-600" style={typography}>Delivery</span>
-                  <span className="font-medium text-gray-900" style={typography}>
+                  <span className="text-gray-600 flex-shrink-0" style={typography}>Delivery</span>
+                  <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>
                     ${deliveryFee.toFixed(2)}
                   </span>
                 </motion.div>
                 <motion.div 
-                  className="flex justify-between pt-3 border-t border-gray-200"
+                  className="flex justify-between items-center gap-2 pt-3 border-t border-gray-200"
                   whileHover={{ 
                     scale: 1.02,
                     transition: { duration: 0.2 }
                   }}
                 >
-                  <span className="text-sm font-medium text-gray-900" style={typography}>Total</span>
+                  <span className="text-sm font-medium text-gray-900 flex-shrink-0" style={typography}>Total</span>
                   <motion.span 
-                    className="text-lg font-semibold text-gray-900" 
+                    className="text-base sm:text-lg font-semibold text-gray-900 flex-shrink-0 whitespace-nowrap" 
                     style={{ ...typography, letterSpacing: '-0.01em' }}
                     whileHover={{ 
                       scale: 1.05,

@@ -102,13 +102,19 @@ serve(async (req) => {
       return Number.isFinite(numeric) ? numeric : 0;
     };
 
-    // Step 6: Calculate total amount
-    const totalAmount = cartItems.reduce((total: number, item: any) => {
+    // Step 6: Calculate subtotal and apply 5% discount for Stripe
+    const subtotal = cartItems.reduce((total: number, item: any) => {
       const itemPrice = parsePriceToNumber(item.price);
       return total + (itemPrice * item.quantity);
     }, 0);
+    
+    // Apply 5% discount for Stripe payments
+    const discountAmount = subtotal * 0.05;
+    const totalAmount = subtotal - discountAmount;
 
-    console.log('Total amount:', totalAmount);
+    console.log('Subtotal:', subtotal);
+    console.log('Stripe discount (5%):', discountAmount);
+    console.log('Total amount after discount:', totalAmount);
 
     // Step 7: Create absolute image URLs
     const getBaseOrigin = (): string | null => {
@@ -179,6 +185,21 @@ serve(async (req) => {
     
     console.log('Created line items with images:', lineItems.length, 'items');
 
+    // Step 8.5: Add discount line item (5% off)
+    if (discountAmount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: String(currency || 'USD').toLowerCase(),
+          product_data: {
+            name: 'Stripe Payment Discount (5%)',
+          },
+          unit_amount: -Math.round(discountAmount * 100), // Negative amount for discount
+        },
+        quantity: 1,
+      });
+      console.log('Added 5% discount line item:', discountAmount);
+    }
+
     // Step 9: Generate unique order ID
     const generateUniqueOrderId = () => {
       const date = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
@@ -227,8 +248,8 @@ serve(async (req) => {
       session_id: sessionId || 'anonymous',
       visit_id: visitId,
       customer_email: null, // Will be filled by Stripe
-      subtotal: totalAmount,
-      discount_total: 0,
+      subtotal: subtotal,
+      discount_total: discountAmount,
       shipping_total: 0,
       tax_total: 0,
       total_value: totalAmount,
@@ -262,6 +283,8 @@ serve(async (req) => {
         order_id: order.id,
         order_number: orderId,
         currency: currency,
+        subtotal: subtotal.toString(),
+        discount_amount: discountAmount.toString(),
         total_amount: totalAmount.toString(),
         items_count: cartItems.length.toString(),
       },

@@ -56,12 +56,19 @@ exports.handler = async (event, context) => {
       expand: ['line_items', 'line_items.data.price.product'],
     });
 
+    // Extract discount and totals from metadata or calculate
+    const subtotal = session.metadata?.subtotal ? parseFloat(session.metadata.subtotal) : 0;
+    const discountAmount = session.metadata?.discount_amount ? parseFloat(session.metadata.discount_amount) : 0;
+    const totalFromMetadata = session.metadata?.total_amount ? parseFloat(session.metadata.total_amount) : null;
+    
     // Extract order details
     const orderData = {
       orderId: session.metadata?.order_number || session.id,
       paymentMethod: 'stripe',
       customerEmail: session.customer_details?.email || session.customer_email,
-      total: (session.amount_total / 100).toFixed(2), // Convert cents to dollars
+      subtotal: subtotal || 0,
+      discountAmount: discountAmount || 0,
+      total: totalFromMetadata ? totalFromMetadata : ((session.amount_total / 100)), // Convert cents to dollars
       currency: session.currency?.toUpperCase() || 'USD',
       delivery: {
         name: session.customer_details?.name || session.shipping_details?.name || 'N/A',
@@ -75,17 +82,22 @@ exports.handler = async (event, context) => {
         country: session.shipping_details?.address?.country || 'N/A',
       },
       cart: [],
-      subtotal: 0,
       deliveryFee: 0,
+      stripeDiscount: discountAmount || 0,
     };
 
-    // Format line items
+    // Format line items (excluding discount line items)
     if (session.line_items?.data) {
-      let subtotal = 0;
+      let calculatedSubtotal = 0;
       session.line_items.data.forEach((item) => {
-        const price = (item.price.unit_amount / 100).toFixed(2);
+        // Skip discount line items (negative amounts)
+        if (item.price.unit_amount < 0) {
+          return;
+        }
+        
+        const price = (item.price.unit_amount / 100);
         const quantity = item.quantity || 1;
-        subtotal += parseFloat(price) * quantity;
+        calculatedSubtotal += price * quantity;
 
         // Extract color/size from description or metadata if available
         const description = item.description || '';
@@ -94,14 +106,17 @@ exports.handler = async (event, context) => {
 
         orderData.cart.push({
           name: item.description || item.price.nickname || 'Product',
-          price: parseFloat(price),
+          price: price,
           quantity: quantity,
           selectedColor: colorMatch ? colorMatch[1] : null,
           selectedSize: sizeMatch ? sizeMatch[1] : null,
         });
       });
 
-      orderData.subtotal = subtotal;
+      // Use calculated subtotal if metadata doesn't have it
+      if (!orderData.subtotal || orderData.subtotal === 0) {
+        orderData.subtotal = calculatedSubtotal;
+      }
     }
 
     return {

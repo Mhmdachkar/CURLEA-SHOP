@@ -48,6 +48,7 @@ export default function SuccessPage() {
             cart: order.cart,
             deliveryFee: 0, // Stripe payments don't have COD delivery fee
             subtotal: order.subtotal,
+            discountAmount: order.discountAmount || order.stripeDiscount || 0,
             total: order.total,
           }),
         });

@@ -79,12 +79,13 @@ exports.handler = async (event, context) => {
     };
 
     // Calculate totals
-    const subtotal = orderData.cart.reduce(
+    const subtotal = orderData.subtotal || orderData.cart.reduce(
       (sum, item) => sum + (parseFloat(item.price) || 0) * (item.quantity || 1),
       0
     );
+    const discountAmount = orderData.discountAmount || orderData.stripeDiscount || 0;
     const deliveryFee = orderData.deliveryFee || 0;
-    const total = subtotal + deliveryFee;
+    const total = orderData.total || (subtotal - discountAmount + deliveryFee);
 
     // Create HTML email template
     const htmlEmail = `
@@ -182,6 +183,12 @@ exports.handler = async (event, context) => {
                     <td style="padding: 10px 0; color: #6b7280; font-size: 15px;">Subtotal:</td>
                     <td style="padding: 10px 0; text-align: right; color: #111827; font-size: 15px; font-weight: 500;">$${subtotal.toFixed(2)}</td>
                   </tr>
+                  ${discountAmount > 0 ? `
+                  <tr>
+                    <td style="padding: 10px 0; color: #10b981; font-size: 15px; font-weight: 600;">Stripe Discount (5%):</td>
+                    <td style="padding: 10px 0; text-align: right; color: #10b981; font-size: 15px; font-weight: 600;">-$${discountAmount.toFixed(2)}</td>
+                  </tr>
+                  ` : ''}
                   ${deliveryFee > 0 ? `
                   <tr>
                     <td style="padding: 10px 0; color: #6b7280; font-size: 15px;">Delivery Fee:</td>
@@ -239,7 +246,7 @@ ${orderData.cart
 
 Order Summary:
 Subtotal: $${subtotal.toFixed(2)}
-${deliveryFee > 0 ? `Delivery Fee: $${deliveryFee.toFixed(2)}\n` : ''}Total: $${total.toFixed(2)}
+${discountAmount > 0 ? `Stripe Discount (5%): -$${discountAmount.toFixed(2)}\n` : ''}${deliveryFee > 0 ? `Delivery Fee: $${deliveryFee.toFixed(2)}\n` : ''}Total: $${total.toFixed(2)}
 
 Order placed on ${new Date().toLocaleString()}
     `.trim();
