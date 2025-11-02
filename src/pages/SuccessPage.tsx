@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, ShoppingBag, Truck, Mail } from 'lucide-react';
 import '../styles/checkout-styles.css';
+import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 
 export default function SuccessPage() {
   const navigate = useNavigate();
@@ -12,9 +13,9 @@ export default function SuccessPage() {
   const [countdown, setCountdown] = useState(5);
   const [emailSent, setEmailSent] = useState(false);
 
-  // Send order email for Stripe payments
+  // Handle Stripe order completion - create order in Supabase and send email
   useEffect(() => {
-    const sendStripeOrderEmail = async () => {
+    const handleStripeOrderCompletion = async () => {
       if (!sessionId || emailSent) return;
 
       try {
@@ -34,7 +35,69 @@ export default function SuccessPage() {
 
         const { order } = await orderResponse.json();
 
-        // Send email
+        // 1. Create Stripe order and order_items in Supabase
+        const items = order.cart.map((item: any) => ({
+          product_name: item.name,
+          variant: item.selectedColor || item.selectedSize || undefined,
+          quantity: item.quantity,
+          unit_price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0,
+          total_price: (parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0) * item.quantity,
+          image_url: item.image || undefined,
+          product_metadata: {
+            product_id: item.id,
+            selectedColor: item.selectedColor,
+            selectedSize: item.selectedSize,
+          },
+        }));
+
+        const orderResult = await createStripeOrderAndItems(
+          order.orderId,
+          sessionId,
+          null, // payment_intent_id - can be retrieved from Stripe if needed
+          order.customerEmail,
+          order.total,
+          'USD',
+          items,
+          order.delivery, // billing address
+          order.delivery, // shipping address
+          undefined // user_id - can be added if you have user authentication
+        );
+
+        if (orderResult.success) {
+          console.log('[Success Page] Stripe order created in Supabase:', orderResult.orderId);
+        } else {
+          console.warn('[Success Page] Failed to create Stripe order in Supabase:', orderResult.error);
+        }
+
+        // 2. Track order completion in analytics
+        if ((window as any).analytics) {
+          (window as any).analytics.trackCart('checkout_complete', {
+            order_id: order.orderId,
+            cart_total: order.total,
+            items_count: order.cart.length,
+          });
+
+          (window as any).analytics.trackPurchase({
+            order_id: order.orderId,
+            customer_email: order.customerEmail,
+            subtotal: order.subtotal,
+            shipping_total: 0,
+            discount_total: order.discountAmount || order.stripeDiscount || 0,
+            tax_total: 0,
+            total_value: order.total,
+            currency: 'USD',
+            payment_method: 'stripe',
+            items: order.cart.map((item: any) => ({
+              product_id: item.id,
+              title: item.name,
+              quantity: item.quantity,
+              price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0,
+            })),
+            status: 'completed',
+          });
+        }
+
+        // 3. Send email
         const emailResponse = await fetch('/.netlify/functions/send-order-email', {
           method: 'POST',
           headers: {
@@ -46,7 +109,7 @@ export default function SuccessPage() {
             customerEmail: order.customerEmail,
             delivery: order.delivery,
             cart: order.cart,
-            deliveryFee: 0, // Stripe payments don't have COD delivery fee
+            deliveryFee: 0,
             subtotal: order.subtotal,
             discountAmount: order.discountAmount || order.stripeDiscount || 0,
             total: order.total,
@@ -60,15 +123,15 @@ export default function SuccessPage() {
           console.error('Failed to send Stripe order email');
         }
       } catch (error) {
-        console.error('Error sending Stripe order email:', error);
-        // Don't block the success page - email failure shouldn't affect user experience
+        console.error('Error handling Stripe order completion:', error);
+        // Don't block the success page - failures shouldn't affect user experience
       }
     };
 
-    // Only send email for Stripe payments (session_id present)
-    // COD orders already sent email in CheckoutPage
+    // Only handle for Stripe payments (session_id present)
+    // COD orders already handled in CheckoutPage
     if (sessionId && !orderId) {
-      sendStripeOrderEmail();
+      handleStripeOrderCompletion();
     }
   }, [sessionId, orderId, emailSent]);
 

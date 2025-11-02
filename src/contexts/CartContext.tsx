@@ -166,6 +166,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       type: 'ADD_TO_CART',
       payload: { ...item, quantity: 1 },
     });
+
+    // Track analytics - ensure ALL add to cart events are tracked
+    if (typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const currentItems = loadCartFromStorage().items;
+      const newCartTotal = [...currentItems, { ...item, quantity: 1 }].reduce(
+        (sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity,
+        0
+      );
+
+      (window as any).analytics.trackCart('add', {
+        product_id: item.id,
+        title: item.name,
+        price: priceNumber,
+        quantity: 1,
+        variant_id: item.selectedSize || item.selectedColor || undefined,
+        variant_title: item.selectedSize || item.selectedColor || undefined,
+        total_value: priceNumber,
+        cart_total: newCartTotal,
+      });
+    }
   };
 
   const removeFromCart = (id: string, selectedColor?: string, selectedSize?: string) => {
@@ -176,10 +197,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateQuantity = (id: string, quantity: number, selectedColor?: string, selectedSize?: string) => {
+    const currentState = loadCartFromStorage();
+    const item = currentState.items.find(
+      (i) => i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize
+    );
+
     dispatch({
       type: 'UPDATE_QUANTITY',
       payload: { id, quantity, selectedColor, selectedSize },
     });
+
+    // Track analytics
+    if (item && typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const newCartTotal = currentState.items
+        .map((i) =>
+          i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize
+            ? { ...i, quantity }
+            : i
+        )
+        .filter((i) => i.quantity > 0)
+        .reduce((sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity, 0);
+
+      (window as any).analytics.trackCart('update', {
+        product_id: id,
+        title: item.name,
+        price: priceNumber,
+        quantity: quantity,
+        variant_id: selectedSize || selectedColor || undefined,
+        variant_title: selectedSize || selectedColor || undefined,
+        total_value: priceNumber * quantity,
+        cart_total: newCartTotal,
+      });
+    }
   };
 
   const clearCart = () => {

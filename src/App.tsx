@@ -15,8 +15,10 @@ import { CollectionPage } from "./pages/CollectionPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import SuccessPage from "./pages/SuccessPage";
 import { CategoryPage } from "./pages/CategoryPage";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
+import { initializeSupabaseIntegration, trackCampaignFromUrl } from "@/services/supabaseIntegration";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,17 @@ const App = () => {
     if (process.env.NODE_ENV === 'production') {
       registerServiceWorker();
     }
+  }, []);
+
+  // Initialize comprehensive Supabase integration
+  useEffect(() => {
+    // Wait a bit for analytics SDK to initialize
+    const timer = setTimeout(() => {
+      initializeSupabaseIntegration().catch(console.error);
+      trackCampaignFromUrl(); // Track campaign from URL params
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -65,6 +78,7 @@ const App = () => {
                 <Route path="/product/:id" element={<ProductDetailPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/success" element={<SuccessPage />} />
+                <Route path="/analytics" element={<AnalyticsDashboard />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

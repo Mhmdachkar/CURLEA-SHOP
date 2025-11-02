@@ -312,9 +312,18 @@ export const CartDrawer = () => {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top whenever cart opens
+  // Scroll to top whenever cart opens and track cart view
   useEffect(() => {
     if (state.isOpen && contentRef.current) {
+      // Track cart view event
+      if (typeof window !== 'undefined' && (window as any).analytics) {
+        const cartTotal = calculateTotal();
+        (window as any).analytics.trackCart('view', {
+          cart_total: cartTotal,
+          items_count: state.items.reduce((total, item) => total + item.quantity, 0),
+        });
+      }
+
       // Scroll main page to top first
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
@@ -334,7 +343,7 @@ export const CartDrawer = () => {
       
       return () => clearTimeout(timeoutId);
     }
-  }, [state.isOpen]);
+  }, [state.isOpen, state.items]);
 
   const calculateTotal = () => {
     return state.items.reduce((total, item) => {
