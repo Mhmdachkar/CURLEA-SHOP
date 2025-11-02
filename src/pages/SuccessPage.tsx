@@ -65,19 +65,26 @@ export default function SuccessPage() {
         }
 
         // 1. Create Stripe order and order_items in Supabase
-        const items = order.cart.map((item: any) => ({
-          product_name: item.name,
-          variant: item.selectedColor || item.selectedSize || undefined,
-          quantity: item.quantity,
-          unit_price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0,
-          total_price: (parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0) * item.quantity,
-          image_url: item.image || undefined,
-          product_metadata: {
-            product_id: item.id,
-            selectedColor: item.selectedColor,
-            selectedSize: item.selectedSize,
-          },
-        }));
+        const items = order.cart.map((item: any) => {
+          // Handle price - could be number or string
+          const unitPrice = typeof item.price === 'number' 
+            ? item.price 
+            : parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+          
+          return {
+            product_name: item.name,
+            variant: item.selectedColor || item.selectedSize || undefined,
+            quantity: item.quantity,
+            unit_price: unitPrice,
+            total_price: unitPrice * item.quantity,
+            image_url: item.image || undefined,
+            product_metadata: {
+              product_id: item.id,
+              selectedColor: item.selectedColor,
+              selectedSize: item.selectedSize,
+            },
+          };
+        });
 
         const orderResult = await createStripeOrderAndItems(
           order.orderId,
@@ -137,40 +144,49 @@ export default function SuccessPage() {
           });
         }
 
-        // 3. Send email
-        const emailResponse = await fetch('/.netlify/functions/send-order-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            orderId: order.orderId,
-            paymentMethod: 'stripe',
-            customerEmail: order.customerEmail,
-            delivery: order.delivery,
-            cart: order.cart,
-            deliveryFee: 0,
-            subtotal: order.subtotal,
-            discountAmount: order.discountAmount || order.stripeDiscount || 0,
-            total: order.total,
-          }),
-        });
+        // 3. Send email (same as COD orders)
+        try {
+          const emailResponse = await fetch('/.netlify/functions/send-order-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: order.orderId,
+              paymentMethod: 'stripe',
+              customerEmail: order.customerEmail,
+              delivery: order.delivery,
+              cart: order.cart,
+              deliveryFee: order.deliveryFee || 0,
+              subtotal: order.subtotal,
+              discountAmount: order.discountAmount || order.stripeDiscount || 0,
+              total: order.total,
+            }),
+          });
 
-        if (emailResponse.ok) {
-          setEmailSent(true);
-          console.log('Stripe order email sent successfully');
-        } else {
-          console.error('Failed to send Stripe order email');
+          if (emailResponse.ok) {
+            setEmailSent(true);
+            console.log('[Success Page] Stripe order email sent successfully');
+          } else {
+            const errorData = await emailResponse.json().catch(() => ({}));
+            console.error('[Success Page] Failed to send Stripe order email:', errorData);
+          }
+        } catch (emailError) {
+          // Log error but don't block - email failure shouldn't affect user experience
+          console.error('[Success Page] Error sending Stripe order email:', emailError);
         }
       } catch (error) {
-        console.error('Error handling Stripe order completion:', error);
+        console.error('[Success Page] Error handling Stripe order completion:', error);
         // Don't block the success page - failures shouldn't affect user experience
+      } finally {
+        // Mark email as sent even if there was an error, to prevent retries
+        setEmailSent(true);
       }
     };
 
     // Only handle for Stripe payments (session_id present)
     // COD orders already handled in CheckoutPage
-    if (sessionId && !orderId) {
+    if (sessionId && !orderId && !emailSent) {
       handleStripeOrderCompletion();
     }
   }, [sessionId, orderId, emailSent]);
