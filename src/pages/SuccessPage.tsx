@@ -8,7 +8,68 @@ export default function SuccessPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const orderId = searchParams.get('order_id');
   const [countdown, setCountdown] = useState(5);
+  const [emailSent, setEmailSent] = useState(false);
+
+  // Send order email for Stripe payments
+  useEffect(() => {
+    const sendStripeOrderEmail = async () => {
+      if (!sessionId || emailSent) return;
+
+      try {
+        // Get order details from Stripe session
+        const orderResponse = await fetch('/.netlify/functions/get-stripe-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId }),
+        });
+
+        if (!orderResponse.ok) {
+          console.error('Failed to get order details');
+          return;
+        }
+
+        const { order } = await orderResponse.json();
+
+        // Send email
+        const emailResponse = await fetch('/.netlify/functions/send-order-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: order.orderId,
+            paymentMethod: 'stripe',
+            customerEmail: order.customerEmail,
+            delivery: order.delivery,
+            cart: order.cart,
+            deliveryFee: 0, // Stripe payments don't have COD delivery fee
+            subtotal: order.subtotal,
+            total: order.total,
+          }),
+        });
+
+        if (emailResponse.ok) {
+          setEmailSent(true);
+          console.log('Stripe order email sent successfully');
+        } else {
+          console.error('Failed to send Stripe order email');
+        }
+      } catch (error) {
+        console.error('Error sending Stripe order email:', error);
+        // Don't block the success page - email failure shouldn't affect user experience
+      }
+    };
+
+    // Only send email for Stripe payments (session_id present)
+    // COD orders already sent email in CheckoutPage
+    if (sessionId && !orderId) {
+      sendStripeOrderEmail();
+    }
+  }, [sessionId, orderId, emailSent]);
 
   // Countdown to redirect
   useEffect(() => {

@@ -4,7 +4,7 @@
   "description": "Netlify serverless functions for Curlea Beauty",
   "main": "index.js",
   "dependencies": {
-    "resend": "^4.0.0"
+    "resend": "^4.0.0",
+    "stripe": "^14.21.0"
   }
 }
-

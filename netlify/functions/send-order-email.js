@@ -117,8 +117,12 @@ exports.handler = async (event, context) => {
                   Payment Information
                 </h2>
                 <p style="color: #4b5563; margin: 0; font-size: 15px;">
-                  <strong>Method:</strong> ${orderData.paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : 'Online Payment'}<br>
-                  ${orderData.paymentMethod === 'cod' ? '<span style="color: #dc2626; font-weight: 600;">⚠️ Delivery Fee: $4.00</span>' : ''}
+                  <strong>Method:</strong> 
+                  ${orderData.paymentMethod === 'cod' 
+                    ? '<span style="color: #dc2626; font-weight: 600;">💵 Cash on Delivery (COD)</span>' 
+                    : '<span style="color: #10b981; font-weight: 600;">💳 Stripe - Online Payment (Paid)</span>'}
+                  <br>
+                  ${orderData.paymentMethod === 'cod' ? '<span style="color: #dc2626; font-weight: 600;">⚠️ Delivery Fee: $4.00</span>' : '<span style="color: #10b981;">✅ Payment processed successfully</span>'}
                 </p>
               </div>
 
@@ -217,7 +221,7 @@ exports.handler = async (event, context) => {
 New Order Received! 🎉
 
 Order ID: ${orderData.orderId}
-Payment Method: ${orderData.paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : 'Online Payment'}
+Payment Method: ${orderData.paymentMethod === 'cod' ? 'Cash on Delivery (COD) - Payment Due on Delivery' : 'Stripe - Online Payment (Already Paid)'}
 
 Customer Details:
 - Name: ${orderData.delivery.name || 'N/A'}
@@ -245,7 +249,7 @@ Order placed on ${new Date().toLocaleString()}
       from: fromEmail,
       to: toEmail,
       replyTo: orderData.customerEmail,
-      subject: `New Order #${orderData.orderId} - ${orderData.paymentMethod === 'cod' ? 'COD' : 'Online Payment'}`,
+      subject: `New Order #${orderData.orderId} - ${orderData.paymentMethod === 'cod' ? 'COD' : 'Stripe Payment'}`,
       html: htmlEmail,
       text: textEmail,
     });
