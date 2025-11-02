@@ -28,6 +28,15 @@
   pretty_urls = true
 
 # Redirect rules - Order matters! Specific rules first, then fallback
+
+# 301 Redirects from legacy subdomain to primary domain
+# This ensures SEO value is preserved when moving from curlea.netlify.app to curlea.beauty
+[[redirects]]
+  from = "https://curlea.netlify.app/*"
+  to = "https://curlea.beauty/:splat"
+  status = 301
+  force = true
+
 # Ensure assets are NOT redirected (served directly)
 [[redirects]]
   from = "/assets/*"

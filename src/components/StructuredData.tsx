@@ -1,3 +1,5 @@
+import { DOMAINS } from '@/config/seo.config';
+
 interface OrganizationSchema {
   "@context": "https://schema.org";
   "@type": "Organization";
@@ -50,8 +52,8 @@ export const getOrganizationSchema = (): OrganizationSchema => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "CURLEA",
-  url: "https://curlea.netlify.app",
-  logo: "https://curlea.netlify.app/assets/curlea-logo.png",
+  url: DOMAINS.active,
+  logo: `${DOMAINS.active}/assets/curlea-logo.png`,
   description: "Premium luxury hair accessories and heatless curling tools designed for curly hair. Elevate your styling routine with elegant, professional-grade products.",
   contactPoint: {
     "@type": "ContactPoint",
@@ -91,7 +93,7 @@ export const getProductSchema = (
     price: price.replace(/[€$£]/g, '').trim(),
     priceCurrency: currency,
     availability: "https://schema.org/InStock",
-    url: `https://curlea.netlify.app/product/${productId}`,
+    url: `${DOMAINS.active}/product/${productId}`,
   },
 });
 

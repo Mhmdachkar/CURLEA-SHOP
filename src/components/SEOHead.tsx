@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { DOMAINS } from '@/config/seo.config';
 
 interface SEOHeadProps {
   title?: string;
@@ -13,15 +14,16 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title = 'CURLEA - Luxury Hair Accessories for Curly Hair',
   description = 'Discover premium heatless curlers and elegant hair accessories by CURLEA. Transform your curly hair routine with our luxury collection.',
-  image = 'https://curlea.netlify.app/assets/hero-1.png',
+  image,
   url,
   type = 'website',
   keywords = 'curly hair accessories, luxury hair clips, heatless curlers, CURLEA, curly hair care, hair accessories for curly hair, elegant hair tools, premium hair products',
 }: SEOHeadProps) => {
   const location = useLocation();
   
-  // Get full URL
-  const fullUrl = url || `https://curlea.netlify.app${location.pathname}`;
+  // Get full URL - use provided URL or generate from active domain
+  const defaultImage = image || `${DOMAINS.active}/assets/hero-1.png`;
+  const fullUrl = url || `${DOMAINS.active}${location.pathname}`;
   
   useEffect(() => {
     // Update document title
@@ -49,7 +51,7 @@ export const SEOHead = ({
     // Open Graph tags
     updateMetaTag('og:title', title, true);
     updateMetaTag('og:description', description, true);
-    updateMetaTag('og:image', image, true);
+    updateMetaTag('og:image', defaultImage, true);
     updateMetaTag('og:url', fullUrl, true);
     updateMetaTag('og:type', type, true);
     updateMetaTag('og:site_name', 'CURLEA', true);
@@ -61,7 +63,7 @@ export const SEOHead = ({
     updateMetaTag('twitter:creator', '@curlea_official');
     updateMetaTag('twitter:title', title);
     updateMetaTag('twitter:description', description);
-    updateMetaTag('twitter:image', image);
+    updateMetaTag('twitter:image', defaultImage);
     
     // Canonical URL
     let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
@@ -73,7 +75,7 @@ export const SEOHead = ({
     link.href = fullUrl;
     
     // Structured data will be handled separately
-  }, [title, description, image, fullUrl, type, keywords, location.pathname]);
+  }, [title, description, defaultImage, fullUrl, type, keywords, location.pathname]);
   
   return null;
 };
@@ -84,30 +86,30 @@ export const SEOPages = {
     title: 'CURLEA - Luxury Hair Accessories | Elegant Tools for Curly Hair',
     description: 'Discover CURLEA\'s collection of premium heatless curlers and elegant hair accessories. Transform your curly hair routine with luxury products designed for beautiful, healthy hair.',
     keywords: 'CURLEA, curly hair accessories, heatless curlers, luxury hair products, curly hair care, elegant hair accessories, premium hair tools',
-    image: 'https://curlea.netlify.app/assets/hero-1.png',
+    image: `${DOMAINS.active}/assets/hero-1.png`,
   },
   shop: {
     title: 'Shop CURLEA Collection - Premium Hair Accessories',
     description: 'Browse our complete collection of luxury hair accessories for curly, wavy, and straight hair. Find the perfect styling tools to enhance your natural beauty.',
     keywords: 'shop hair accessories, CURLEA products, buy heatless curlers, hair clips, satin bonnets, styling tools',
-    image: 'https://curlea.netlify.app/assets/hero-4.png',
+    image: `${DOMAINS.active}/assets/hero-4.png`,
   },
   curly: {
     title: 'Curly Hair Collection - CURLEA Premium Accessories',
     description: 'Explore our curated collection of premium hair accessories specifically designed for curly hair. From comfortable hair clips to styling tools, enhance your natural curls.',
     keywords: 'curly hair accessories, curly hair clips, curly hair tools, products for curly hair',
-    image: 'https://curlea.netlify.app/assets/curly-hair-collection/hero1.png',
+    image: `${DOMAINS.active}/assets/curly-hair-collection/hero1.png`,
   },
   wavy: {
     title: 'DreamCurl™ Collection - Heatless Curlers by CURLEA',
     description: 'Effortless curls, no heat, no damage. Professional heatless curling system designed to protect your hair while creating beautiful, voluminous curls overnight.',
     keywords: 'heatless curlers, DreamCurl, overnight curls, no heat curling, safe hair styling',
-    image: 'https://curlea.netlify.app/assets/hero-4.png',
+    image: `${DOMAINS.active}/assets/hero-4.png`,
   },
   product: (productName: string, productDescription: string) => ({
     title: `${productName} by CURLEA - Premium Hair Accessories`,
     description: productDescription.substring(0, 160),
-    image: 'https://curlea.netlify.app/assets/products/product-image.jpg',
+    image: `${DOMAINS.active}/assets/products/product-image.jpg`,
   }),
 };
 

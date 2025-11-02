@@ -1,5 +1,5 @@
 # CURLEA - Luxury Hair Accessories
-# Optimized for curlea.netlify.app (transitioning to curlea.beauty)
+# Optimized for curlea.beauty
 
 User-agent: *
 Allow: /
@@ -44,6 +44,4 @@ User-agent: facebookexternalhit
 Allow: /
 
 # Sitemap location
-Sitemap: https://curlea.netlify.app/sitemap.xml
-# Future domain transition
 Sitemap: https://curlea.beauty/sitemap.xml

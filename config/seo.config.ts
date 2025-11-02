@@ -5,11 +5,11 @@
 
 // Domain Configuration
 export const DOMAINS = {
-  // Current production domain
-  current: 'https://curlea.netlify.app',
+  // Current production domain (primary)
+  current: 'https://curlea.beauty',
   
-  // Future production domain
-  future: 'https://curlea.beauty',
+  // Legacy subdomain (for redirects)
+  legacy: 'https://curlea.netlify.app',
   
   // Local development
   local: 'http://localhost:5173',
@@ -127,17 +127,13 @@ export const getCanonicalUrl = (path: string = ''): string => {
   return `${DOMAINS.active}${cleanPath}`;
 };
 
-// Check if using future domain
-export const isFutureDomain = (): boolean => {
+// Check if using primary domain
+export const isPrimaryDomain = (): boolean => {
   return window.location.hostname.includes('curlea.beauty');
 };
 
-// Transition helper for URLs
-export const transitionUrl = (path: string = ''): string => {
-  const futureUrl = `${DOMAINS.future}${path}`;
-  const currentUrl = `${DOMAINS.current}${path}`;
-  
-  // Return future URL if currently on future domain, otherwise current
-  return isFutureDomain() ? currentUrl : futureUrl;
+// Legacy domain redirect helper
+export const getRedirectUrl = (path: string = ''): string => {
+  return `${DOMAINS.current}${path}`;
 };
 

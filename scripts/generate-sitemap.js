@@ -5,9 +5,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Base URL - will transition from netlify to beauty domain
-const BASE_URL = process.env.BASE_URL || 'https://curlea.netlify.app';
-const FUTURE_URL = 'https://curlea.beauty';
+// Base URL - primary domain
+const BASE_URL = process.env.BASE_URL || 'https://curlea.beauty';
 
 // Static pages
 const staticPages = [
@@ -63,15 +62,6 @@ const publicPath = path.join(__dirname, '../public');
   if (fs.existsSync(dir)) {
     fs.writeFileSync(path.join(dir, 'sitemap.xml'), sitemapContent);
     console.log(`✅ Sitemap generated at ${dir}/sitemap.xml`);
-  }
-});
-
-// Also create for future domain
-const sitemapFuture = sitemapContent.replace(new RegExp(BASE_URL, 'g'), FUTURE_URL);
-[distPath, publicPath].forEach(dir => {
-  if (fs.existsSync(dir)) {
-    fs.writeFileSync(path.join(dir, 'sitemap-curlea-beauty.xml'), sitemapFuture);
-    console.log(`✅ Future sitemap generated at ${dir}/sitemap-curlea-beauty.xml`);
   }
 });
 
