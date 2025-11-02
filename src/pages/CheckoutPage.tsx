@@ -120,6 +120,29 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const sendOrderEmail = async (orderData: any) => {
+    try {
+      const response = await fetch('/.netlify/functions/send-order-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send email');
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('Email sending error:', error);
+      // Don't throw - email failure shouldn't block order completion
+      return null;
+    }
+  };
+
   const handleCODSubmit = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
@@ -155,6 +178,27 @@ export default function CheckoutPage() {
           status: 'completed',
         });
       }
+
+      // Send order email via Resend (non-blocking)
+      sendOrderEmail({
+        orderId,
+        paymentMethod: 'cod',
+        customerEmail: formData.email,
+        delivery: formData,
+        cart: cart.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize,
+        })),
+        deliveryFee,
+        subtotal,
+        total,
+      }).catch(error => {
+        // Log error but don't block order completion
+        console.error('Email sending failed:', error);
+      });
       
       // Clear cart immediately
       clearCart();
