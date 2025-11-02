@@ -218,7 +218,7 @@ export default function CheckoutPage() {
             >
               <ArrowLeft className="w-4 h-4" />
             </motion.div>
-            <span className="group-hover:underline underline-offset-2">Back to cart</span>
+            <span className="group-hover:underline underline-offset-2">Back</span>
           </button>
         </div>
       </div>

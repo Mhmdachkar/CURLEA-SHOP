@@ -1616,7 +1616,9 @@ export const ProductDetailPage = () => {
         </div>
 
         {/* 1. The "Media Showcase" Section - Elegant 3-column layout */}
-        <MediaShowcaseSection key={`media-${product.id}`} product={product} />
+        {product.id !== 'curly-claw-1' && (
+          <MediaShowcaseSection key={`media-${product.id}`} product={product} />
+        )}
 
         {/* Usage Steps Section - for all products with usageSteps */}
         {product.usageSteps && (

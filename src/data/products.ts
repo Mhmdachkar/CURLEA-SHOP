@@ -264,7 +264,6 @@ export const products: Product[] = [
     ingredients: ["Premium Satin", "Elastic Band", "Fashion Ribbon"],
     size: "7-Piece Set",
     inStock: true,
-    video: new URL('../assets/curly hair collection/product2/Screen Recording 2025-10-04 143847.mp4', import.meta.url).href,
     images: [
       new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
       new URL('../assets/curly hair collection/product2/pp2.jpg', import.meta.url).href,
