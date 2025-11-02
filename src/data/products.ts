@@ -150,7 +150,7 @@ export const products: Product[] = [
   {
     id: "zero-heat-mini",
     name: "ZERO HEAT SET MINI SIZE",
-    price: "$24.99",
+    price: "$1.00",
     image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
     hairType: "Short to Medium",
