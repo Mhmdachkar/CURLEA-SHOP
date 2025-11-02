@@ -305,7 +305,7 @@
       },
   
       // Track page view
-      trackPageView(scroll_depth = 0, time_on_page = 0) {
+      trackPageView(scroll_depth = 0, time_on_page = 0, isBounce = false, isExit = false) {
         const data = {
           type: 'page_view',
           data: {
@@ -317,9 +317,11 @@
             referrer: document.referrer || null,
             scroll_depth: scroll_depth,
             time_on_page: time_on_page,
+            bounce: isBounce,
+            exit: isExit,
           },
         };
-  
+
         network.queueEvent(data);
         utils.log('Page view tracked:', data);
       },
@@ -447,18 +449,24 @@
         );
   
         // Track page visibility changes
+        let isFirstPageView = true;
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'hidden') {
             const timeOnPage = Math.round((Date.now() - pageStartTime) / 1000);
-            tracker.trackPageView(maxScrollDepth, timeOnPage);
+            const isBounce = isFirstPageView && timeOnPage < 5 && maxScrollDepth < 25;
+            tracker.trackPageView(maxScrollDepth, timeOnPage, isBounce, false);
+            isFirstPageView = false;
             network.flushQueue();
           }
         });
-  
-        // Track page before unload
+
+        // Track page before unload (exit page)
         window.addEventListener('beforeunload', () => {
           const timeOnPage = Math.round((Date.now() - pageStartTime) / 1000);
-          tracker.trackPageView(maxScrollDepth, timeOnPage);
+          const isBounce = isFirstPageView && timeOnPage < 5 && maxScrollDepth < 25;
+          // This is an exit page (user leaving site)
+          tracker.trackPageView(maxScrollDepth, timeOnPage, isBounce, true);
+          isFirstPageView = false;
           network.flushQueue();
         });
   

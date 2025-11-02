@@ -88,6 +88,11 @@ export const createStripeCheckout = async (
   // Get session ID from analytics if available
   const sessionId = (window as any).analytics?.getSessionId?.();
   
+  // Get UTM parameters from sessionStorage if available
+  const utmSource = sessionStorage.getItem('utm_source');
+  const utmMedium = sessionStorage.getItem('utm_medium');
+  const utmCampaign = sessionStorage.getItem('utm_campaign');
+  
   try {
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -100,6 +105,9 @@ export const createStripeCheckout = async (
         cartItems: formattedItems,
         currency,
         sessionId,
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
         successUrl: request.successUrl || `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: request.cancelUrl || `${window.location.origin}/`,
       }),

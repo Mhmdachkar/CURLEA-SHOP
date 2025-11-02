@@ -12,7 +12,7 @@ const corsHeaders = {
 };
 
 interface TrackRequest {
-  type: 'visit' | 'page_view' | 'event' | 'cart_event' | 'order';
+  type: 'visit' | 'page_view' | 'event' | 'cart_event' | 'order' | 'order_update';
   data: any;
 }
 
@@ -84,6 +84,9 @@ serve(async (req) => {
         break;
       case 'order':
         result = await handleOrder(supabase, data);
+        break;
+      case 'order_update':
+        result = await handleOrderUpdate(supabase, data);
         break;
       default:
         return new Response(
@@ -196,7 +199,9 @@ async function handlePageView(supabase: any, data: any) {
       referrer: data.referrer,
       scroll_depth: data.scroll_depth || 0,
       time_on_page: data.time_on_page || 0,
-      engaged: data.scroll_depth > 50 || data.time_on_page > 30,
+      engaged: (data.scroll_depth || 0) > 50 || (data.time_on_page || 0) > 30,
+      bounce: data.bounce !== undefined ? data.bounce : false,
+      exit: data.exit !== undefined ? data.exit : false,
     })
     .select('id')
     .single();
@@ -368,6 +373,7 @@ async function handleOrder(supabase: any, data: any) {
       discount_codes: data.discount_codes,
       items: data.items,
       status: data.status || 'completed',
+      fulfillment_status: data.fulfillment_status || null,
     })
     .select('id')
     .single();
@@ -378,6 +384,56 @@ async function handleOrder(supabase: any, data: any) {
   }
 
   return { order_id: order.id };
+}
+
+/**
+ * Handle order update (update existing order with customer info after payment)
+ */
+async function handleOrderUpdate(supabase: any, data: any) {
+  // Find order by order_id (order_number)
+  const { data: existingOrder, error: findError } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('order_id', data.order_id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (findError || !existingOrder) {
+    console.error('Order not found for update:', data.order_id);
+    // If order not found, this is okay - it might be a new order being created
+    return { success: false, message: 'Order not found' };
+  }
+
+  // Build update object with only provided fields
+  const updateData: any = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (data.customer_email !== undefined) updateData.customer_email = data.customer_email;
+  if (data.customer_id !== undefined) updateData.customer_id = data.customer_id;
+  if (data.shipping_method !== undefined) updateData.shipping_method = data.shipping_method;
+  if (data.shipping_total !== undefined) updateData.shipping_total = data.shipping_total;
+  if (data.status !== undefined) updateData.status = data.status;
+  if (data.fulfillment_status !== undefined) updateData.fulfillment_status = data.fulfillment_status;
+  if (data.discount_total !== undefined) updateData.discount_total = data.discount_total;
+  if (data.total_value !== undefined) updateData.total_value = data.total_value;
+  if (data.payment_method !== undefined) updateData.payment_method = data.payment_method;
+
+  // Update the order
+  const { data: updatedOrder, error: updateError } = await supabase
+    .from('orders')
+    .update(updateData)
+    .eq('id', existingOrder.id)
+    .select()
+    .single();
+
+  if (updateError) {
+    console.error('Error updating order:', updateError);
+    throw updateError;
+  }
+
+  return { success: true, order_id: updatedOrder.id };
 }
 
 console.log('Track Edge Function ready!');

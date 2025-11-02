@@ -179,6 +179,8 @@ export default function CheckoutPage() {
           total_value: total,
           currency: 'USD',
           payment_method: 'cash_on_delivery',
+          shipping_method: 'cash_on_delivery', // COD includes delivery fee
+          source: (window as any).analytics?.determineSource?.() || 'direct',
           items: items,
           status: 'completed',
         });
@@ -228,6 +230,14 @@ export default function CheckoutPage() {
     if (state.items.length === 0) {
       toast.error('Your cart is empty');
       return;
+    }
+
+    // Track checkout start event
+    if ((window as any).analytics) {
+      (window as any).analytics.trackCart('checkout_start', {
+        cart_total: total,
+        items_count: cart.length,
+      });
     }
 
     setIsSubmitting(true);

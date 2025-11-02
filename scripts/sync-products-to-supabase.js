@@ -43,6 +43,9 @@ async function getProducts() {
 
 function convertToSupabaseProduct(product) {
   const price = parseFloat(product.price?.replace(/[^0-9.]/g, '') || '0');
+  const originalPrice = product.originalPrice 
+    ? parseFloat(String(product.originalPrice).replace(/[^0-9.]/g, '') || '0')
+    : null;
   
   return {
     product_id: product.id,
@@ -51,13 +54,15 @@ function convertToSupabaseProduct(product) {
       ? product.description.join('\n\n') 
       : product.description || '',
     price: price,
+    compare_at_price: originalPrice && originalPrice > price ? originalPrice : null,
+    cost: null, // COGS - set manually if available
     category: product.category || 'Uncategorized',
-    subcategory: product.hairType || '',
-    brand: 'CURLEA',
-    sku: product.id,
-    image_url: product.image || '',
+    subcategory: product.hairType || product.subcategory || '',
+    brand: product.brand || 'CURLEA',
+    sku: product.sku || product.id,
+    image_url: product.image || (product.images && product.images[0]) || '',
     is_active: product.inStock !== false,
-    inventory_count: product.inStock !== false ? 100 : 0,
+    inventory_count: product.inventory_count !== undefined ? product.inventory_count : (product.inStock !== false ? 100 : 0),
   };
 }
 

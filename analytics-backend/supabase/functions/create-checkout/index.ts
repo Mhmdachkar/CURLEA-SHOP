@@ -243,20 +243,35 @@ serve(async (req) => {
       };
     });
 
+    // Get UTM parameters from session storage or metadata if available
+    let utmSource = null;
+    let utmMedium = null;
+    let utmCampaign = null;
+    
+    // Try to extract from request metadata if provided
+    if (requestBody.utm_source) utmSource = requestBody.utm_source;
+    if (requestBody.utm_medium) utmMedium = requestBody.utm_medium;
+    if (requestBody.utm_campaign) utmCampaign = requestBody.utm_campaign;
+
     const orderData: any = {
       order_id: orderId,
       session_id: sessionId || 'anonymous',
       visit_id: visitId,
-      customer_email: null, // Will be filled by Stripe
+      customer_email: null, // Will be filled by Stripe after payment
       subtotal: subtotal,
       discount_total: discountAmount,
-      shipping_total: 0,
+      shipping_total: 0, // Stripe checkout - shipping handled by Stripe, typically 0 in our case
       tax_total: 0,
       total_value: totalAmount,
       currency: currency,
       payment_method: 'stripe',
+      shipping_method: 'standard', // Standard shipping for Stripe checkout
+      source: utmSource || 'direct',
+      utm_source: utmSource,
+      utm_medium: utmMedium,
+      utm_campaign: utmCampaign,
       items: itemsData,
-      status: 'pending',
+      status: 'pending', // Will be updated to 'completed' after payment
     };
 
     const { data: order, error: orderError } = await supabaseAdmin

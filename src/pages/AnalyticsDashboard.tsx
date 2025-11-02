@@ -493,8 +493,13 @@ export default function AnalyticsDashboard() {
                       <tr className="border-b">
                         <th className="text-left p-2">Order ID</th>
                         <th className="text-left p-2">Customer</th>
+                        <th className="text-right p-2">Subtotal</th>
+                        <th className="text-right p-2">Discount</th>
+                        <th className="text-right p-2">Shipping</th>
                         <th className="text-right p-2">Total</th>
                         <th className="text-left p-2">Payment</th>
+                        <th className="text-left p-2">Shipping Method</th>
+                        <th className="text-left p-2">Status</th>
                         <th className="text-left p-2">Source</th>
                         <th className="text-left p-2">Date</th>
                       </tr>
@@ -503,11 +508,42 @@ export default function AnalyticsDashboard() {
                       {analyticsOrders.data.map((order: any) => (
                         <tr key={order.id} className="border-b">
                           <td className="p-2 font-mono text-xs">{order.order_id}</td>
-                          <td className="p-2">{order.customer_email || 'Anonymous'}</td>
+                          <td className="p-2 text-xs">
+                            <div>{order.customer_email || 'Anonymous'}</div>
+                            {order.customer_id && (
+                              <div className="text-muted-foreground text-xs">ID: {order.customer_id.slice(0, 8)}...</div>
+                            )}
+                          </td>
+                          <td className="text-right p-2">{formatCurrency(order.subtotal || 0)}</td>
+                          <td className="text-right p-2 text-red-600">
+                            -{formatCurrency(order.discount_total || 0)}
+                          </td>
+                          <td className="text-right p-2">{formatCurrency(order.shipping_total || 0)}</td>
                           <td className="text-right p-2 font-medium">
                             {formatCurrency(order.total_value)}
                           </td>
                           <td className="p-2 text-xs">{order.payment_method || 'N/A'}</td>
+                          <td className="p-2 text-xs">{order.shipping_method || 'N/A'}</td>
+                          <td className="p-2">
+                            <span
+                              className={`px-2 py-1 rounded text-xs ${
+                                order.status === 'completed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : order.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : order.status === 'processing'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {order.status || 'N/A'}
+                            </span>
+                            {order.fulfillment_status && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Fulfillment: {order.fulfillment_status}
+                              </div>
+                            )}
+                          </td>
                           <td className="p-2 text-xs">{order.source || 'Direct'}</td>
                           <td className="p-2 text-xs">
                             {new Date(order.created_at).toLocaleDateString()}
@@ -542,10 +578,27 @@ export default function AnalyticsDashboard() {
                     <div key={product.id} className="flex justify-between items-center p-2 border rounded">
                       <div>
                         <div className="font-medium">{product.title}</div>
-                        <div className="text-sm text-muted-foreground">{product.category}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {product.category}
+                          {product.subcategory && ` • ${product.subcategory}`}
+                          {product.brand && ` • ${product.brand}`}
+                        </div>
+                        {product.sku && (
+                          <div className="text-xs text-muted-foreground">SKU: {product.sku}</div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="font-medium">{formatCurrency(product.price)}</div>
+                        {product.compare_at_price && product.compare_at_price > product.price && (
+                          <div className="text-sm text-muted-foreground line-through">
+                            {formatCurrency(product.compare_at_price)}
+                          </div>
+                        )}
+                        {product.cost && (
+                          <div className="text-xs text-muted-foreground">
+                            Cost: {formatCurrency(product.cost)}
+                          </div>
+                        )}
                         <div className="text-sm text-muted-foreground">
                           Stock: {product.inventory_count || 0}
                         </div>
@@ -862,8 +915,10 @@ export default function AnalyticsDashboard() {
                         <th className="text-left p-2">Device</th>
                         <th className="text-left p-2">Browser</th>
                         <th className="text-left p-2">Country</th>
+                        <th className="text-left p-2">City</th>
                         <th className="text-left p-2">Source</th>
                         <th className="text-left p-2">Campaign</th>
+                        <th className="text-left p-2">Landing Page</th>
                         <th className="text-left p-2">Date</th>
                       </tr>
                     </thead>
@@ -871,11 +926,38 @@ export default function AnalyticsDashboard() {
                       {visits.data.map((visit: any) => (
                         <tr key={visit.id} className="border-b">
                           <td className="p-2 font-mono text-xs">{visit.session_id.slice(0, 8)}...</td>
-                          <td className="p-2">{visit.device || 'N/A'}</td>
-                          <td className="p-2">{visit.browser || 'N/A'}</td>
+                          <td className="p-2">
+                            <div>{visit.device || 'N/A'}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {visit.is_mobile && 'Mobile'}
+                              {visit.is_desktop && 'Desktop'}
+                              {visit.is_tablet && 'Tablet'}
+                            </div>
+                          </td>
+                          <td className="p-2">
+                            <div>{visit.browser || 'N/A'}</div>
+                            <div className="text-xs text-muted-foreground">{visit.os || 'N/A'}</div>
+                          </td>
                           <td className="p-2">{visit.country || 'N/A'}</td>
-                          <td className="p-2 text-xs">{visit.utm_source || visit.referrer || 'Direct'}</td>
-                          <td className="p-2 text-xs">{visit.utm_campaign || 'N/A'}</td>
+                          <td className="p-2 text-xs">{visit.city || 'N/A'}</td>
+                          <td className="p-2 text-xs">
+                            <div>{visit.utm_source || visit.referrer || 'Direct'}</div>
+                            {visit.utm_medium && (
+                              <div className="text-muted-foreground">Medium: {visit.utm_medium}</div>
+                            )}
+                          </td>
+                          <td className="p-2 text-xs">
+                            <div>{visit.utm_campaign || 'N/A'}</div>
+                            {visit.utm_term && (
+                              <div className="text-muted-foreground">Term: {visit.utm_term}</div>
+                            )}
+                            {visit.utm_content && (
+                              <div className="text-muted-foreground">Content: {visit.utm_content}</div>
+                            )}
+                          </td>
+                          <td className="p-2 text-xs font-mono max-w-xs truncate">
+                            {visit.landing_page || 'N/A'}
+                          </td>
                           <td className="p-2 text-xs">{new Date(visit.created_at).toLocaleString()}</td>
                         </tr>
                       ))}
@@ -910,6 +992,9 @@ export default function AnalyticsDashboard() {
                         <th className="text-left p-2">Title</th>
                         <th className="text-right p-2">Scroll</th>
                         <th className="text-right p-2">Time (s)</th>
+                        <th className="text-center p-2">Engaged</th>
+                        <th className="text-center p-2">Bounce</th>
+                        <th className="text-center p-2">Exit</th>
                         <th className="text-left p-2">Session</th>
                         <th className="text-left p-2">Date</th>
                       </tr>
@@ -921,6 +1006,27 @@ export default function AnalyticsDashboard() {
                           <td className="p-2 text-sm">{view.title || 'N/A'}</td>
                           <td className="text-right p-2">{view.scroll_depth || 0}%</td>
                           <td className="text-right p-2">{view.time_on_page || 0}s</td>
+                          <td className="text-center p-2">
+                            {view.engaged ? (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Yes</span>
+                            ) : (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">No</span>
+                            )}
+                          </td>
+                          <td className="text-center p-2">
+                            {view.bounce ? (
+                              <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Yes</span>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">No</span>
+                            )}
+                          </td>
+                          <td className="text-center p-2">
+                            {view.exit ? (
+                              <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">Yes</span>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">No</span>
+                            )}
+                          </td>
                           <td className="p-2 font-mono text-xs">{view.session_id.slice(0, 8)}...</td>
                           <td className="p-2 text-xs">{new Date(view.created_at).toLocaleString()}</td>
                         </tr>
@@ -954,10 +1060,12 @@ export default function AnalyticsDashboard() {
                       <tr className="border-b">
                         <th className="text-left p-2">Event Type</th>
                         <th className="text-left p-2">Product</th>
+                        <th className="text-left p-2">Variant</th>
                         <th className="text-right p-2">Quantity</th>
                         <th className="text-right p-2">Price</th>
                         <th className="text-right p-2">Total</th>
                         <th className="text-right p-2">Cart Total</th>
+                        <th className="text-left p-2">Discount</th>
                         <th className="text-left p-2">Session</th>
                         <th className="text-left p-2">Date</th>
                       </tr>
@@ -980,12 +1088,29 @@ export default function AnalyticsDashboard() {
                               {event.event_type}
                             </span>
                           </td>
-                          <td className="p-2">{event.product_title || event.external_product_id || 'N/A'}</td>
+                          <td className="p-2">
+                            <div>{event.product_title || 'N/A'}</div>
+                            {event.external_product_id && (
+                              <div className="text-xs text-muted-foreground">ID: {event.external_product_id.slice(0, 12)}...</div>
+                            )}
+                          </td>
+                          <td className="p-2 text-xs">
+                            {event.variant_title || event.variant_id || 'N/A'}
+                          </td>
                           <td className="text-right p-2">{event.quantity || 1}</td>
                           <td className="text-right p-2">{formatCurrency(event.price || 0)}</td>
                           <td className="text-right p-2">{formatCurrency(event.total_value || 0)}</td>
                           <td className="text-right p-2 font-medium">
                             {event.cart_total ? formatCurrency(event.cart_total) : 'N/A'}
+                          </td>
+                          <td className="p-2 text-xs">
+                            {event.discount_code && (
+                              <div>Code: {event.discount_code}</div>
+                            )}
+                            {event.discount_amount && (
+                              <div className="text-red-600">-{formatCurrency(event.discount_amount)}</div>
+                            )}
+                            {!event.discount_code && !event.discount_amount && 'N/A'}
                           </td>
                           <td className="p-2 font-mono text-xs">{event.session_id.slice(0, 8)}...</td>
                           <td className="p-2 text-xs">{new Date(event.created_at).toLocaleString()}</td>

@@ -35,6 +35,35 @@ export default function SuccessPage() {
 
         const { order } = await orderResponse.json();
 
+        // 0. Update analytics orders table with customer email and shipping info from Stripe
+        // The order was created as 'pending' in create-checkout, now update it with complete info
+        try {
+          const updateResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
+            },
+            body: JSON.stringify({
+              type: 'order_update',
+              data: {
+                order_id: order.orderId, // Use the order_number to find the order
+                customer_email: order.customerEmail,
+                shipping_method: 'standard',
+                status: 'completed',
+                // Include shipping address if available
+                shipping_address: order.delivery,
+              },
+            }),
+          });
+          if (updateResponse.ok) {
+            console.log('[Success Page] Analytics order updated with customer info');
+          }
+        } catch (updateError) {
+          console.warn('[Success Page] Failed to update analytics order:', updateError);
+        }
+
         // 1. Create Stripe order and order_items in Supabase
         const items = order.cart.map((item: any) => ({
           product_name: item.name,
@@ -69,7 +98,7 @@ export default function SuccessPage() {
           console.warn('[Success Page] Failed to create Stripe order in Supabase:', orderResult.error);
         }
 
-        // 2. Track order completion in analytics
+        // 2. Track order completion in analytics (update existing order or create new one)
         if ((window as any).analytics) {
           (window as any).analytics.trackCart('checkout_complete', {
             order_id: order.orderId,
@@ -77,21 +106,32 @@ export default function SuccessPage() {
             items_count: order.cart.length,
           });
 
+          // Get UTM parameters if available
+          const urlParams = new URLSearchParams(window.location.search);
+          const utmSource = urlParams.get('utm_source') || sessionStorage.getItem('utm_source');
+          const utmMedium = urlParams.get('utm_medium') || sessionStorage.getItem('utm_medium');
+          const utmCampaign = urlParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign');
+
           (window as any).analytics.trackPurchase({
             order_id: order.orderId,
             customer_email: order.customerEmail,
             subtotal: order.subtotal,
-            shipping_total: 0,
+            shipping_total: order.deliveryFee || 0,
             discount_total: order.discountAmount || order.stripeDiscount || 0,
             tax_total: 0,
             total_value: order.total,
-            currency: 'USD',
+            currency: order.currency || 'USD',
             payment_method: 'stripe',
+            shipping_method: 'standard', // Stripe checkout uses standard shipping
+            source: (window as any).analytics?.determineSource?.() || 'direct',
+            utm_source: utmSource,
+            utm_medium: utmMedium,
+            utm_campaign: utmCampaign,
             items: order.cart.map((item: any) => ({
-              product_id: item.id,
+              product_id: item.id || item.product_id,
               title: item.name,
               quantity: item.quantity,
-              price: parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0,
+              price: typeof item.price === 'number' ? item.price : (parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0),
             })),
             status: 'completed',
           });

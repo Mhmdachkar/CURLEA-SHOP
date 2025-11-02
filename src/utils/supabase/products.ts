@@ -12,19 +12,29 @@ import { Product } from '@/data/products';
 function convertToSupabaseProduct(product: Product): Partial<SupabaseProduct> {
   // Extract numeric price (remove currency symbols)
   const price = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
+  // Extract original price if available (for compare_at_price)
+  const originalPrice = product.originalPrice
+    ? parseFloat(String(product.originalPrice).replace(/[^0-9.]/g, '') || '0')
+    : null;
 
   return {
     product_id: product.id,
     title: product.name,
-    description: product.description.join('\n\n'),
+    description: Array.isArray(product.description)
+      ? product.description.join('\n\n')
+      : product.description || '',
     price: price,
-    category: product.category,
-    subcategory: product.hairType,
-    brand: 'CURLEA',
-    sku: product.id,
-    image_url: product.image,
+    compare_at_price: originalPrice && originalPrice > price ? originalPrice : null,
+    cost: null, // COGS - set manually if available
+    category: product.category || 'Uncategorized',
+    subcategory: product.hairType || product.subcategory || '',
+    brand: product.brand || 'CURLEA',
+    sku: product.sku || product.id,
+    image_url: product.image || (product.images && product.images[0]) || '',
     is_active: product.inStock !== false,
-    inventory_count: product.inStock !== false ? 100 : 0, // Default inventory
+    inventory_count: product.inventory_count !== undefined
+      ? product.inventory_count
+      : product.inStock !== false ? 100 : 0,
   };
 }
 
