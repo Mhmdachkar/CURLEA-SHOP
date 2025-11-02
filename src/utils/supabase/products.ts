@@ -164,3 +164,189 @@ export async function updateProductInventory(
   }
 }
 
+/**
+ * Update product price in Supabase (PROFESSIONAL PRICING MANAGEMENT)
+ */
+export async function updateProductPrice(
+  productId: string,
+  price: number,
+  compareAtPrice?: number | null,
+  cost?: number | null
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (price < 0) {
+      return { success: false, error: 'Price must be a positive number' };
+    }
+
+    const updateData: Partial<SupabaseProduct> = {
+      price: price,
+    };
+
+    if (compareAtPrice !== undefined) {
+      updateData.compare_at_price = compareAtPrice && compareAtPrice > price ? compareAtPrice : null;
+    }
+
+    if (cost !== undefined) {
+      updateData.cost = cost && cost >= 0 ? cost : null;
+    }
+
+    const { error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('product_id', productId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Batch update product prices
+ */
+export async function batchUpdateProductPrices(
+  updates: Array<{
+    productId: string;
+    price: number;
+    compareAtPrice?: number | null;
+    cost?: number | null;
+  }>
+): Promise<{
+  success: number;
+  failed: number;
+  errors: string[];
+}> {
+  const results = {
+    success: 0,
+    failed: 0,
+    errors: [] as string[],
+  };
+
+  for (const update of updates) {
+    const result = await updateProductPrice(
+      update.productId,
+      update.price,
+      update.compareAtPrice,
+      update.cost
+    );
+
+    if (result.success) {
+      results.success++;
+    } else {
+      results.failed++;
+      results.errors.push(`${update.productId}: ${result.error}`);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Merge Supabase prices with local product data
+ * This is the SOURCE OF TRUTH for prices - Supabase prices override local prices
+ */
+export function mergeProductWithSupabasePrice(
+  localProduct: Product,
+  supabaseProduct: SupabaseProduct | null
+): Product {
+  if (!supabaseProduct) {
+    return localProduct;
+  }
+
+  // Format price from Supabase (numeric) to display format (string with currency)
+  const formatPrice = (price: number): string => {
+    return `$${price.toFixed(2)}`;
+  };
+
+  // Use Supabase price if available, otherwise fall back to local price
+  const realPrice = supabaseProduct.price > 0 
+    ? formatPrice(supabaseProduct.price)
+    : localProduct.price;
+
+  // Handle original/compare at price
+  const originalPrice = supabaseProduct.compare_at_price && supabaseProduct.compare_at_price > supabaseProduct.price
+    ? formatPrice(supabaseProduct.compare_at_price)
+    : undefined;
+
+  return {
+    ...localProduct,
+    price: realPrice,
+    originalPrice: originalPrice,
+    // Store the numeric price for calculations
+    numericPrice: supabaseProduct.price > 0 ? supabaseProduct.price : parseFloat(localProduct.price.replace(/[^0-9.]/g, '')) || 0,
+  };
+}
+
+/**
+ * Get all products with real prices from Supabase
+ * Returns merged products where Supabase prices override local prices
+ */
+export async function getProductsWithRealPrices(): Promise<{
+  products: Product[];
+  errors: string[];
+}> {
+  const { products: localProducts } = await import('@/data/products');
+  const { data: supabaseProducts, error } = await getSupabaseProducts();
+
+  if (error) {
+    console.warn('Could not fetch Supabase prices, using local prices:', error);
+    return {
+      products: localProducts,
+      errors: [error],
+    };
+  }
+
+  // Create a map of Supabase products by product_id for quick lookup
+  const supabaseProductMap = new Map<string, SupabaseProduct>();
+  if (supabaseProducts) {
+    supabaseProducts.forEach((sp) => {
+      supabaseProductMap.set(sp.product_id, sp);
+    });
+  }
+
+  // Merge each local product with its Supabase price
+  const mergedProducts = localProducts.map((localProduct) => {
+    const supabaseProduct = supabaseProductMap.get(localProduct.id);
+    return mergeProductWithSupabasePrice(localProduct, supabaseProduct || null);
+  });
+
+  return {
+    products: mergedProducts,
+    errors: [],
+  };
+}
+
+/**
+ * Get a single product with real price from Supabase
+ */
+export async function getProductWithRealPrice(productId: string): Promise<{
+  product: Product | null;
+  error: string | null;
+}> {
+  try {
+    const { getProductById } = await import('@/data/products');
+    const localProduct = getProductById(productId);
+
+    if (!localProduct) {
+      return { product: null, error: 'Product not found' };
+    }
+
+    const { data: supabaseProduct, error } = await getSupabaseProductById(productId);
+
+    if (error && error !== 'PGRST116') {
+      // PGRST116 = no rows returned, which is acceptable (use local price)
+      console.warn('Could not fetch Supabase price, using local price:', error);
+    }
+
+    const mergedProduct = mergeProductWithSupabasePrice(localProduct, supabaseProduct || null);
+
+    return { product: mergedProduct, error: null };
+  } catch (error: any) {
+    return { product: null, error: error.message };
+  }
+}
+

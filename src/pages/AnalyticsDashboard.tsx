@@ -24,6 +24,7 @@ import {
 } from '@/hooks/useSupabaseRawData';
 import { getActiveCampaigns, getCampaignPerformance } from '@/utils/supabase/campaigns';
 import { getVisitorStats } from '@/utils/supabase/visitorStats';
+import { PricingManagement } from '@/components/PricingManagement';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -165,11 +166,12 @@ export default function AnalyticsDashboard() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11">
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="sales">Sales</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="pricing">Pricing</TabsTrigger>
           <TabsTrigger value="traffic">Traffic</TabsTrigger>
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="visits">Visits</TabsTrigger>
@@ -644,6 +646,11 @@ export default function AnalyticsDashboard() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Pricing Management Tab */}
+        <TabsContent value="pricing" className="space-y-4">
+          <PricingManagement />
         </TabsContent>
 
         {/* Traffic Tab */}
