@@ -138,33 +138,57 @@ Wait for DNS propagation (can take 24-48 hours, but often happens within a few h
 
 ### Step 5: Update Google Search Console
 
-This is critical for preserving SEO rankings!
+This is critical for SEO and search engine indexing!
 
-#### A. Add New Property
+#### A. Add New Property (curlea.beauty)
 1. Go to [Google Search Console](https://search.google.com/search-console)
 2. Click **Add property**
 3. Select **URL prefix** option
 4. Enter: `https://curlea.beauty`
-5. Verify ownership (use HTML tag method if needed)
+5. Verify ownership:
+   - **Option 1: HTML tag method** (Recommended)
+     - Copy the verification meta tag Google provides
+     - Add it to your `index.html` file (it should already be there: `9DJabJ0w8vD3eYkqBWQH8LK5SzyOyhpvY-CABviWVJk`)
+     - Click **Verify** in Search Console
+   - **Option 2: DNS record** (if HTML tag doesn't work)
+   - **Option 3: HTML file upload** (if other methods fail)
 
 #### B. Submit New Sitemap
-1. In the new property, go to **Sitemaps**
+1. Once verified, in the new property, go to **Sitemaps**
 2. Enter: `https://curlea.beauty/sitemap.xml`
 3. Click **Submit**
 
-#### C. Update Existing Property (curlea.netlify.app)
+#### C. Handle Old Property (curlea.netlify.app)
+
+**Scenario 1: Old Property Already Exists**
+If you already have `https://curlea.netlify.app` in Search Console:
 1. Go to your existing property: `https://curlea.netlify.app`
 2. In **Settings** → **Change of address**
 3. Select the new property: `https://curlea.beauty`
-4. This tells Google about the domain migration
+4. This tells Google about the domain migration and preserves SEO value
+
+**Scenario 2: Old Property Doesn't Exist** ⚠️
+If you don't see `https://curlea.netlify.app` in Search Console (which is your situation):
+
+**Option A: Add It Now (Recommended if site had traffic)**
+1. Add property: `https://curlea.netlify.app`
+2. Verify it (you can use DNS method or wait for it to auto-verify via Netlify)
+3. Then go to **Settings** → **Change of address** to link to new domain
+4. This helps Google understand the migration
+
+**Option B: Skip It (If site is brand new with no SEO history)**
+- If your site is brand new and has no search rankings yet, you can skip adding the old property
+- Just focus on the new domain (`curlea.beauty`)
+- The 301 redirects will still work, but you won't need the "Change of address" feature
 
 #### D. Request Reindexing (Important!)
-1. In the new property, go to **URL Inspection**
+1. In the new property (`curlea.beauty`), go to **URL Inspection**
 2. Test key pages:
    - `https://curlea.beauty/`
    - `https://curlea.beauty/shop`
    - `https://curlea.beauty/collection`
 3. For each page, click **Request Indexing**
+4. This speeds up Google's discovery of your new domain
 
 ---
 
@@ -293,8 +317,10 @@ Before considering the migration complete, verify:
 - [ ] Domain accessible at `https://curlea.beauty`
 - [ ] SSL certificate active
 - [ ] 301 redirects working from old domain
-- [ ] New property added to Google Search Console
-- [ ] Change of address submitted in Search Console
+- [ ] New property added to Google Search Console (`curlea.beauty`)
+- [ ] New property verified successfully
+- [ ] (Optional) Old property added if it didn't exist previously
+- [ ] (Optional) Change of address submitted in Search Console (if old property exists)
 - [ ] New sitemap submitted to Google
 - [ ] New sitemap submitted to Bing
 - [ ] Canonical URLs showing new domain
