@@ -281,6 +281,14 @@ export const ProductDetailPage = () => {
       return;
     }
 
+    // For BUN BONS - Heatless Curling System, require size selection (excluding sold out Original)
+    if (product.id === 'heatless-5' && (!selectedSize || selectedSize === 'Original')) {
+      const errorMsg = selectedSize === 'Original' ? 'Original size is currently sold out. Please select another size.' : 'Please select a size';
+      setError(errorMsg);
+      showError(errorMsg);
+      return;
+    }
+
     // For Hair Clip product, require size selection
     if (product.id === 'curly-clip-1' && !selectedSize) {
       const errorMsg = 'Please select a set size';
@@ -311,6 +319,11 @@ export const ProductDetailPage = () => {
       finalPrice = sizeOption.price;
       finalImage = sizeOption.image;
       finalName = `${product.name} - ${selectedSize.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+    }
+    
+    // Add size to product name for DreamCurl Short Set and BUN BONS
+    if ((product.id === 'dreamcurl-short-set' || product.id === 'heatless-5') && selectedSize) {
+      finalName = `${product.name} - ${selectedSize} Size`;
     }
     
     // Use color-specific image if a color is selected
@@ -377,6 +390,10 @@ export const ProductDetailPage = () => {
           default: return selectedSize.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         }
       }
+      // For DreamCurl Short Set and BUN BONS, show the selected size
+      if ((product.id === 'dreamcurl-short-set' || product.id === 'heatless-5') && selectedSize) {
+        return selectedSize;
+      }
       // For SongMay clips, ensure "Set of 2 Clips" is shown in cart
       if (product.id === 'songmay-hair-clips') {
         return 'Set of 2 Clips';
@@ -398,7 +415,7 @@ export const ProductDetailPage = () => {
 
     // Calculate current cart total
     const currentCartTotal = cartState.items.reduce((total, item) => {
-      const price = parseFloat(item.price.replace('�', ''));
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       return total + (price * item.quantity);
     }, 0);
     
@@ -415,7 +432,7 @@ export const ProductDetailPage = () => {
 
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(finalPrice.replace('�', ''));
+      const priceNumber = parseFloat(finalPrice.replace('', ''));
       const newCartTotal = currentCartTotal + (priceNumber * quantity);
       
       (window as any).analytics.trackCart('add', {
@@ -665,6 +682,56 @@ export const ProductDetailPage = () => {
                 : product.price}
             </motion.p>
 
+            {/* Pre-Order Notice for CURLEA Comb and SongMay Hair Clips */}
+            {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-400/30 rounded-lg sm:rounded-xl shadow-lg relative overflow-hidden"
+              >
+                {/* Decorative background pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
+                  }} />
+                </div>
+                
+                <div className="relative z-10">
+                  {/* Icon and Title */}
+                  <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-amber-500 rounded-full flex items-center justify-center"
+                      >
+                        <span className="text-white text-sm sm:text-base md:text-lg font-bold"></span>
+                      </motion.div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-amber-900 mb-1 sm:mb-2 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+                        <span className="px-1.5 sm:px-2 py-0.5 bg-amber-500 text-white text-[10px] sm:text-xs font-extrabold uppercase tracking-wider rounded inline-block">
+                          PRE-ORDER
+                        </span>
+                        <span className="text-xs sm:text-sm md:text-base">Available Now for Pre-Order</span>
+                      </h3>
+                      <p className="text-xs sm:text-sm text-amber-800 font-semibold leading-relaxed">
+                        Estimated delivery time: <span className="text-amber-900 font-extrabold text-sm sm:text-base md:text-lg">28 days</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Additional Info */}
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-amber-300/50">
+                    <p className="text-[10px] sm:text-xs text-amber-700 leading-relaxed">
+                      This item is currently available for pre-order. Your order will be processed and shipped within approximately 28 days from the date of purchase. You will receive shipping confirmation once your order is ready.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 lg:mb-12">
               {product.description.map((item, index) => (
                 <motion.div
@@ -769,14 +836,14 @@ export const ProductDetailPage = () => {
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Regular price:</span>
-                    <span className="line-through text-muted-foreground">�{(12.99 * quantity).toFixed(2)}</span>
+                    <span className="line-through text-muted-foreground">{(12.99 * quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
                     <span>Bundle price:</span>
-                    <span>�{(12.99 * quantity * 0.9).toFixed(2)}</span>
+                    <span>{(12.99 * quantity * 0.9).toFixed(2)}</span>
                   </div>
                   <div className="text-xs text-green-600 dark:text-green-400 mt-2">
-                    You save �{(12.99 * quantity * 0.1).toFixed(2)}!
+                    You save {(12.99 * quantity * 0.1).toFixed(2)}!
                   </div>
                 </motion.div>
               )}
@@ -790,7 +857,7 @@ export const ProductDetailPage = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-sm font-medium text-primary">
-                    � {(() => {
+                    {(() => {
                       if (product.id === 'curly-clip-1') {
                         // Get piece count from selected size
                         const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize] 
@@ -1055,6 +1122,85 @@ export const ProductDetailPage = () => {
       </motion.div>
     )}
 
+    {/* Enhanced Size Selection for BUN BONS - Heatless Curling System */}
+    {product.id === 'heatless-5' && (
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
+          {selectedSize && (
+            <span className="ml-2 text-sm text-primary font-medium">
+              Selected: {selectedSize}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => {
+            const isSoldOut = size === 'Original';
+            const isSelected = selectedSize === size;
+            
+            return (
+              <motion.button
+                key={size}
+                onClick={() => !isSoldOut && setSelectedSize(size)}
+                disabled={isSoldOut}
+                className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
+                  isSoldOut
+                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60'
+                    : isSelected
+                    ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                    : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                }`}
+                whileHover={!isSoldOut ? { 
+                  scale: 1.02,
+                  y: -1,
+                  transition: { duration: 0.2 }
+                } : {}}
+                whileTap={!isSoldOut ? { 
+                  scale: 0.98,
+                  transition: { duration: 0.1 }
+                } : {}}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+              >
+                {size}
+                {/* Sold Out Badge */}
+                {isSoldOut && (
+                  <motion.span
+                    className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-500 text-white rounded-full shadow-md"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                  >
+                    SOLD OUT
+                  </motion.span>
+                )}
+                {/* Selected indicator */}
+                {isSelected && !isSoldOut && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  />
+                )}
+                {/* Sold out overlay effect */}
+                {isSoldOut && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-300/20 to-gray-400/20 rounded pointer-events-none" />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
+    )}
+
     {/* Enhanced Color Selection for DreamCurl Midi */}
     {product.id === 'dreamcurl-midi' && product.colors && product.colors.length > 0 && (
       <motion.div
@@ -1303,6 +1449,29 @@ export const ProductDetailPage = () => {
                 className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm"
               >
                 {error}
+              </motion.div>
+            )}
+
+            {/* Pre-Order Notice - Second Location (Right Above Add to Cart Button) */}
+            {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 border-2 border-amber-500/40 rounded-lg shadow-md relative"
+              >
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="flex-shrink-0">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs sm:text-sm font-bold"></span>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-bold text-amber-900 leading-tight">
+                      <span className="uppercase tracking-wide">PRE-ORDER:</span> <span className="whitespace-nowrap sm:whitespace-normal">Estimated delivery time is <span className="font-extrabold">28 days</span></span>
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -1678,7 +1847,7 @@ export const ProductDetailPage = () => {
                   Choose Your Perfect Size
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Find the ideal DreamCurl� size for your hair length and desired curl style
+                  Find the ideal DreamCurl size for your hair length and desired curl style
                 </p>
               </motion.div>
 
@@ -1886,10 +2055,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
   const heatlessProducts: Product[] = [
     {
       id: "dreamcurl-original",
-      name: "DreamCurl� Original Set",
+      name: "DreamCurl Original Set",
       price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-      category: "DreamCurl� Collection",
+      category: "DreamCurl Collection",
       hairType: "Medium to Long",
       featured: true,
       description: [
@@ -1928,10 +2097,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-short-set",
-      name: "DreamCurl� Short Set",
+      name: "DreamCurl Short Set",
       price: "$16.99",
       image: product1Image,
-      category: "DreamCurl� Collection",
+      category: "DreamCurl Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -1968,10 +2137,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-midi",
-      name: "DreamCurl� Midi",
+      name: "DreamCurl Midi",
       price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
-      category: "DreamCurl� Collection",
+      category: "DreamCurl Collection",
       hairType: "Short to Long",
       featured: true,
       description: [
@@ -2009,10 +2178,10 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
     },
     {
       id: "dreamcurl-jumbo",
-      name: "DreamCurl� JUMBO SIZE",
+      name: "DreamCurl JUMBO SIZE",
       price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
-      category: "DreamCurl� Collection",
+      category: "DreamCurl Collection",
       hairType: "All Types",
       featured: true,
       description: [
@@ -2053,15 +2222,15 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       name: "ZERO HEAT SET MINI SIZE",
       price: "$22.99",
       image: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
-      category: "DreamCurl� Collection",
+      category: "DreamCurl Collection",
       hairType: "Short to Medium",
       featured: true,
       description: [
         "Our 'Zero Heat' Curling Rod is made out of the finest Peau De Soie fabric to help you achieve frizz-free shiny curls.",
         "The Zero Heat set includes:",
-        "� 2 Scrunchies",
-        "� 1 Curling Rod",
-        "� 1 Hair Claw Clip",
+        " 2 Scrunchies",
+        " 1 Curling Rod",
+        " 1 Hair Claw Clip",
         "We use sustainably grown materials to fill our Curling Rod which means that not only does it make our product extremely comfortable to sleep with, but it also takes us all a step closer to a cleaner and safer environment - now that's what I call a Win-Win!",
         "*Please note, we do our best to match the curler sets with our claw clips that we have in stock. If you wish to receive a specific colour please leave a note with your order and we'll do our best to accommodate",
         "Perfect for shorter hair or those who want tighter, more defined curls",
@@ -3664,7 +3833,7 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
   );
 };
 
-// Short Set Image Gallery Component - for DreamCurl™ Short Set
+// Short Set Image Gallery Component - for DreamCurl Short Set
 const ShortSetImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // Import images for Short Set product (4 images mapped to 4 colors)
   const shortSetImages = [
@@ -3826,7 +3995,7 @@ const CurlyClip5ImageGallery = ({ product, selectedColor, onColorSelect }: { pro
   );
 };
 
-// Midi Image Gallery Component - for DreamCurl™ Midi
+// Midi Image Gallery Component - for DreamCurl Midi
 const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // State to track if guide image is being viewed
   const [isViewingGuide, setIsViewingGuide] = useState(false);
@@ -3937,7 +4106,7 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
   );
 };
 
-// Jumbo Image Gallery Component - for DreamCurl� JUMBO SIZE
+// Jumbo Image Gallery Component - for DreamCurl JUMBO SIZE
 const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
   // State to track if guide image is being viewed
   const [isViewingGuide, setIsViewingGuide] = useState(false);
@@ -4143,7 +4312,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   const bundleProducts = [
     {
       id: "dreamcurl-short-set",
-      name: "DREAMCURL� SHORT SET - ORIGINAL SIZE",
+      name: "DREAMCURL SHORT SET - ORIGINAL SIZE",
       price: "$16.99",
       image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
       hasColorOptions: true,
@@ -4226,7 +4395,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     const images = selectedProductIds.map(pid => getSelectedProductImage(pid)).slice(0, 3);
     addToCart({
       id: `limited-offer-bundle`,
-      name: 'Limited Time Offer · Starter Kit',
+      name: 'Limited Time Offer  Starter Kit',
       price: `$${bundlePrice.toFixed(2)}`,
       originalPrice: `$${totalPrice.toFixed(2)}`,
       image: images[0] || bundleProducts[0].image,
@@ -4266,7 +4435,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           transition={{ delay: 0.2, duration: 0.6 }}
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 700 }}
         >
-          LIMITED TIME OFFER · STARTER KIT
+          LIMITED TIME OFFER  STARTER KIT
         </motion.h2>
         <div className="flex items-center justify-center gap-2 mb-6">
           {selectedCount > 1 && (
@@ -4595,7 +4764,7 @@ const DreamCurlImageGallery = ({
               className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Previous color"
             >
-              <span className="text-lg sm:text-xl">←</span>
+              <span className="text-lg sm:text-xl"></span>
             </button>
             <button
               onClick={() => {
@@ -4611,7 +4780,7 @@ const DreamCurlImageGallery = ({
               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-black/70 active:bg-black/80 transition-colors touch-manipulation"
               aria-label="Next color"
             >
-              <span className="text-lg sm:text-xl">→</span>
+              <span className="text-lg sm:text-xl"></span>
             </button>
           </>
         )}

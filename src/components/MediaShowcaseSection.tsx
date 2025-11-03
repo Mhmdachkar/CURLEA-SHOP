@@ -191,7 +191,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
   return (
     <motion.section
       ref={ref}
-      className="relative py-16 sm:py-24 md:py-40 px-2 sm:px-4 md:px-6 overflow-hidden"
+      className="relative py-8 sm:py-16 md:py-24 lg:py-40 px-2 sm:px-4 md:px-6 overflow-hidden"
       style={{
         background: 'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)/0.4) 50%, hsl(var(--background)) 100%)'
       }}
@@ -202,18 +202,18 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
       <div className="max-w-7xl mx-auto">
         {/* Elegant Title Section */}
         <motion.div
-          className="text-center mb-16 md:mb-24"
+          className="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-24"
           initial={{ opacity: 0, y: -30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -30 }}
           transition={{ delay: 0.2, duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
-          <h2 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-2 sm:mb-4 tracking-tight">
             <span className="bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent inline-block">
               Visual Journey
             </span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto"></div>
-          <p className="text-lg md:text-xl text-muted-foreground mt-6 font-light tracking-wide">
+          <div className="w-16 sm:w-24 h-0.5 sm:h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto"></div>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mt-3 sm:mt-4 md:mt-6 font-light tracking-wide">
             Experience every detail in motion
           </p>
         </motion.div>
@@ -221,16 +221,16 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
           <div className="relative">
-            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-10 sm:-translate-x-14">
+            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-4 sm:-translate-x-6 md:-translate-x-10 lg:-translate-x-14">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-start -ml-1 sm:-ml-2 -mr-6 sm:-mr-7"
+              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-start -ml-0.5 sm:-ml-1 md:-ml-2 -mr-3 sm:-mr-4 md:-mr-6 lg:-mr-7"
               initial={{ opacity: 0, x: -30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -30, scale: 0.9 }}
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.62] sm:scale-[0.74] md:scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.55] sm:scale-[0.62] md:scale-[0.74] lg:scale-[0.80]"
                 onClick={() => setSelectedMedia('left')}
               >
                 {/* Decorative border frame */}
@@ -253,7 +253,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Center Video - Elegant Hero */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[120px] sm:min-h-[260px] md:min-h-0 z-10 flex items-center justify-center justify-self-center -translate-x-7 md:-translate-x-8 -mx-5 sm:-mx-6"
+              className="relative aspect-[4/5] min-h-[100px] sm:min-h-[180px] md:min-h-[260px] lg:min-h-0 z-10 flex items-center justify-center justify-self-center -translate-x-3 sm:-translate-x-5 md:-translate-x-7 lg:-translate-x-8 -mx-2 sm:-mx-3 md:-mx-5 lg:-mx-6"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
               transition={{ delay: 0.5, duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
@@ -299,7 +299,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative h-full rounded-[2rem] overflow-hidden shadow-[0_40px_100px_-25px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 transition-all duration-500 z-10 isolate transform scale-[0.69] md:scale-[0.69] lg:scale-[0.73] bg-black/10">
+                <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] sm:shadow-[0_40px_100px_-25px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 transition-all duration-500 z-10 isolate transform scale-[0.58] sm:scale-[0.62] md:scale-[0.69] lg:scale-[0.73] bg-black/10">
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
@@ -376,13 +376,13 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[240px] sm:min-h-[320px] md:min-h-0 z-30 justify-self-end -translate-x-10 md:-translate-x-12 -ml-6 sm:-ml-8"
+              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-end -translate-x-4 sm:-translate-x-6 md:-translate-x-10 lg:-translate-x-12 -ml-3 sm:-ml-4 md:-ml-6 lg:-ml-8"
               initial={{ opacity: 0, x: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.62] sm:scale-[0.74] md:scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.55] sm:scale-[0.62] md:scale-[0.74] lg:scale-[0.80]"
                 onClick={() => setSelectedMedia('right')}
               >
                 {/* Decorative border frame */}
