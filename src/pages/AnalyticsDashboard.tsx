@@ -143,53 +143,54 @@ export default function AnalyticsDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-b from-[#FFF8F5] via-white to-[#F9F5EE]">
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">View all your Supabase analytics data</p>
+          <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#A4193D] to-[#D4AF37]">Analytics Dashboard</h1>
+          <p className="text-sm text-muted-foreground">View and explore your live business metrics</p>
         </div>
         <div className="flex gap-2">
           <select
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
-            className="px-4 py-2 border rounded-md"
+            className="px-3 py-2 rounded-lg border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm hover:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           >
             <option value={7}>Last 7 days</option>
             <option value={30}>Last 30 days</option>
             <option value={90}>Last 90 days</option>
           </select>
-          <Button onClick={() => syncProducts()} disabled={productsLoading}>
+          <Button onClick={() => syncProducts()} disabled={productsLoading} className="bg-gradient-to-r from-[#A4193D] to-[#D4AF37] text-white border-0 shadow-md hover:brightness-110">
             {productsLoading ? 'Syncing...' : 'Sync Products'}
           </Button>
         </div>
-      </div>
+        </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="sales">Sales</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="pricing">Pricing</TabsTrigger>
-          <TabsTrigger value="traffic">Traffic</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="visits">Visits</TabsTrigger>
-          <TabsTrigger value="pageviews">Pages</TabsTrigger>
-          <TabsTrigger value="cartevents">Cart Events</TabsTrigger>
-          <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-          <TabsTrigger value="funnel">Funnel</TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Overview</TabsTrigger>
+            <TabsTrigger value="sales" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Sales</TabsTrigger>
+            <TabsTrigger value="orders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Orders</TabsTrigger>
+            <TabsTrigger value="products" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Products</TabsTrigger>
+            <TabsTrigger value="pricing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Pricing</TabsTrigger>
+            <TabsTrigger value="traffic" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Traffic</TabsTrigger>
+            <TabsTrigger value="events" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Events</TabsTrigger>
+            <TabsTrigger value="visits" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Visits</TabsTrigger>
+            <TabsTrigger value="pageviews" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Pages</TabsTrigger>
+            <TabsTrigger value="cartevents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Cart Events</TabsTrigger>
+            <TabsTrigger value="campaigns" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Campaigns</TabsTrigger>
+            <TabsTrigger value="funnel" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#A4193D]/10 data-[state=active]:to-[#D4AF37]/10 data-[state=active]:text-[#A4193D] rounded-md">Funnel</TabsTrigger>
+          </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            <Card>
+            <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Visitors</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
                   {visitorStatsLoading
                     ? '...'
                     : formatNumber(visitorStats?.unique_visitors || 0)}
@@ -200,12 +201,12 @@ export default function AnalyticsDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Visits</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
                   {visitorStatsLoading
                     ? '...'
                     : formatNumber(visitorStats?.total_visits || 0)}
@@ -216,36 +217,36 @@ export default function AnalyticsDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
                   {sales.loading ? '...' : formatCurrency(sales.data?.reduce((sum, d) => sum + (d.revenue || 0), 0) || 0)}
                 </div>
                 <p className="text-xs text-muted-foreground">Last {days} days</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
                   {sales.loading ? '...' : formatNumber(sales.data?.reduce((sum, d) => sum + (d.total_orders || 0), 0) || 0)}
                 </div>
                 <p className="text-xs text-muted-foreground">Last {days} days</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Average Order Value</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
                   {sales.loading
                     ? '...'
                     : formatCurrency(
@@ -258,7 +259,7 @@ export default function AnalyticsDashboard() {
           </div>
 
           {/* Real-time Funnel */}
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Conversion Funnel (Real-time)</CardTitle>
               <CardDescription>Last 30 days performance</CardDescription>
@@ -318,7 +319,7 @@ export default function AnalyticsDashboard() {
 
         {/* Sales Tab */}
         <TabsContent value="sales" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Sales Overview</CardTitle>
               <CardDescription>Daily sales metrics</CardDescription>
@@ -330,8 +331,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {sales.error}</p>
               ) : sales.data && sales.data.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Date</th>
                         <th className="text-right p-2">Orders</th>
@@ -343,7 +344,7 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {sales.data.map((day: any) => (
-                        <tr key={day.date} className="border-b">
+                        <tr key={day.date} className="border-b hover:bg-gray-50/60">
                           <td className="p-2">{new Date(day.date).toLocaleDateString()}</td>
                           <td className="text-right p-2">{formatNumber(day.total_orders || 0)}</td>
                           <td className="text-right p-2">{formatNumber(day.unique_customers || 0)}</td>
@@ -364,7 +365,7 @@ export default function AnalyticsDashboard() {
 
         {/* Orders Tab - Shows all orders from both tables */}
         <TabsContent value="orders" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Stripe Orders (public.orders)</CardTitle>
               <CardDescription>All orders from Stripe payments with order items</CardDescription>
@@ -376,8 +377,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {stripeOrders.error}</p>
               ) : stripeOrders.data && stripeOrders.data.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Order #</th>
                         <th className="text-left p-2">Email</th>
@@ -389,10 +390,10 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {stripeOrders.data.map((order: any) => (
-                        <tr key={order.id} className="border-b">
+                        <tr key={order.id} className="border-b hover:bg-gray-50/60">
                           <td className="p-2 font-mono text-xs">{order.order_number}</td>
                           <td className="p-2 text-xs">
-                            <div className="font-medium">{order.customer_email || 'N/A'}</div>
+                            <div className="font-medium">{order.customer_email || '-'}</div>
                             {/* Extract phone from shipping_address JSONB */}
                             {order.shipping_address?.phone && (
                               <div className="text-muted-foreground text-xs mt-1">📞 {order.shipping_address.phone}</div>
@@ -469,7 +470,7 @@ export default function AnalyticsDashboard() {
                         {orderItems.data.map((item: any) => (
                           <tr key={item.id} className="border-b">
                             <td className="p-2">{item.product_name}</td>
-                            <td className="p-2 text-muted-foreground">{item.variant || 'N/A'}</td>
+                            <td className="p-2 text-muted-foreground">{item.variant || '-'}</td>
                             <td className="text-right p-2">{item.quantity}</td>
                             <td className="text-right p-2">{formatCurrency(item.unit_price)}</td>
                             <td className="text-right p-2 font-medium">
@@ -487,7 +488,7 @@ export default function AnalyticsDashboard() {
             </Card>
           )}
 
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Analytics Orders (orders table)</CardTitle>
               <CardDescription>Order tracking for analytics and reporting</CardDescription>
@@ -499,8 +500,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {analyticsOrders.error}</p>
               ) : analyticsOrders.data && analyticsOrders.data.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Order ID</th>
                         <th className="text-left p-2">Customer</th>
@@ -517,7 +518,7 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {analyticsOrders.data.map((order: any) => (
-                        <tr key={order.id} className="border-b">
+                        <tr key={order.id} className="border-b hover:bg-gray-50/60">
                           <td className="p-2 font-mono text-xs">{order.order_id}</td>
                           <td className="p-2 text-xs">
                             <div className="font-medium">{order.customer_email || 'Anonymous'}</div>
@@ -542,8 +543,8 @@ export default function AnalyticsDashboard() {
                           <td className="text-right p-2 font-medium">
                             {formatCurrency(order.total_value)}
                           </td>
-                          <td className="p-2 text-xs">{order.payment_method || 'N/A'}</td>
-                          <td className="p-2 text-xs">{order.shipping_method || 'N/A'}</td>
+                          <td className="p-2 text-xs">{order.payment_method || '-'}</td>
+                          <td className="p-2 text-xs">{order.shipping_method || '-'}</td>
                           <td className="p-2">
                             <span
                               className={`px-2 py-1 rounded text-xs ${
@@ -556,7 +557,7 @@ export default function AnalyticsDashboard() {
                                   : 'bg-red-100 text-red-800'
                               }`}
                             >
-                              {order.status || 'N/A'}
+                              {order.status || '-'}
                             </span>
                             {order.fulfillment_status && (
                               <div className="text-xs text-muted-foreground mt-1">
@@ -582,7 +583,7 @@ export default function AnalyticsDashboard() {
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Supabase Products</CardTitle>
               <CardDescription>
@@ -595,7 +596,7 @@ export default function AnalyticsDashboard() {
               ) : supabaseProducts && supabaseProducts.length > 0 ? (
                 <div className="space-y-2">
                   {supabaseProducts.slice(0, 10).map((product) => (
-                    <div key={product.id} className="flex justify-between items-center p-2 border rounded">
+                    <div key={product.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50/60">
                       <div>
                         <div className="font-medium">{product.title}</div>
                         <div className="text-sm text-muted-foreground">
@@ -635,7 +636,7 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Top Products by Revenue</CardTitle>
             </CardHeader>
@@ -645,7 +646,7 @@ export default function AnalyticsDashboard() {
               ) : topProducts.data && topProducts.data.length > 0 ? (
                 <div className="space-y-2">
                   {topProducts.data.map((product: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center p-2 border rounded">
+                    <div key={index} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50/60">
                       <div>
                         <div className="font-medium">{product.title}</div>
                         <div className="text-sm text-muted-foreground">
@@ -673,7 +674,7 @@ export default function AnalyticsDashboard() {
 
         {/* Traffic Tab */}
         <TabsContent value="traffic" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Traffic Sources</CardTitle>
               <CardDescription>Where your visitors come from</CardDescription>
@@ -684,7 +685,7 @@ export default function AnalyticsDashboard() {
               ) : traffic.data && traffic.data.length > 0 ? (
                 <div className="space-y-2">
                   {traffic.data.map((source: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center p-2 border rounded">
+                    <div key={index} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50/60">
                       <div>
                         <div className="font-medium">{source.source || 'Direct'}</div>
                         <div className="text-sm text-muted-foreground">{source.medium || 'none'}</div>
@@ -702,7 +703,7 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Daily Visitors (from daily_overview view)</CardTitle>
               <CardDescription>
@@ -715,7 +716,7 @@ export default function AnalyticsDashboard() {
               ) : daily.data && daily.data.length > 0 ? (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {daily.data.map((day: any) => (
-                    <div key={day.date} className="flex justify-between items-center p-2 border rounded">
+                    <div key={day.date} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50/60">
                       <div className="font-medium">{new Date(day.date).toLocaleDateString()}</div>
                       <div className="flex gap-4 text-sm">
                         <span>
@@ -740,7 +741,7 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Visitor Statistics Summary (Direct from visits table)</CardTitle>
               <CardDescription>
@@ -787,7 +788,7 @@ export default function AnalyticsDashboard() {
 
         {/* Campaigns Tab */}
         <TabsContent value="campaigns" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Active Campaigns</CardTitle>
               <CardDescription>Marketing campaigns and performance</CardDescription>
@@ -800,7 +801,7 @@ export default function AnalyticsDashboard() {
               ) : campaigns && campaigns.length > 0 ? (
                 <div className="space-y-4">
                   {campaigns.map((campaign: any) => (
-                    <div key={campaign.id} className="p-4 border rounded">
+                    <div key={campaign.id} className="p-4 border rounded-lg hover:bg-gray-50/60">
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <div className="font-medium text-lg">{campaign.name}</div>
@@ -822,7 +823,7 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Campaign Performance</CardTitle>
               <CardDescription>Performance metrics for all campaigns</CardDescription>
@@ -834,8 +835,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {campaignPerformanceError}</p>
               ) : campaignPerformance && campaignPerformance.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Campaign</th>
                         <th className="text-right p-2">Visitors</th>
@@ -846,7 +847,7 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {campaignPerformance.map((campaign: any) => (
-                        <tr key={campaign.utm_campaign} className="border-b">
+                        <tr key={campaign.utm_campaign} className="border-b hover:bg-gray-50/60">
                           <td className="p-2">{campaign.name}</td>
                           <td className="text-right p-2">{formatNumber(campaign.visitors || 0)}</td>
                           <td className="text-right p-2">{formatNumber(campaign.orders || 0)}</td>
@@ -868,7 +869,7 @@ export default function AnalyticsDashboard() {
 
         {/* Events Tab */}
         <TabsContent value="events" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Recent Events</CardTitle>
               <CardDescription>All custom events from events table (Last {days} days)</CardDescription>
@@ -884,8 +885,8 @@ export default function AnalyticsDashboard() {
                     Showing {events.data.length} events
                   </div>
                   <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                    <table className="w-full text-sm">
-                      <thead className="sticky top-0 bg-background">
+                    <table className="w-full text-sm rounded-lg overflow-hidden">
+                      <thead className="sticky top-0 bg-gray-50/80">
                         <tr className="border-b">
                           <th className="text-left p-2">Event</th>
                           <th className="text-left p-2">Category</th>
@@ -897,14 +898,14 @@ export default function AnalyticsDashboard() {
                       </thead>
                       <tbody>
                         {events.data.map((event: any) => (
-                          <tr key={event.id} className="border-b">
+                          <tr key={event.id} className="border-b hover:bg-gray-50/60">
                             <td className="p-2 font-medium">{event.event_name}</td>
-                            <td className="p-2 text-muted-foreground">{event.event_category || 'N/A'}</td>
-                            <td className="p-2 text-muted-foreground">{event.event_label || 'N/A'}</td>
-                            <td className="text-right p-2">{event.event_value ?? 'N/A'}</td>
-                            <td className="p-2 font-mono text-xs">{event.session_id?.slice(0, 8) || 'N/A'}...</td>
+                            <td className="p-2 text-muted-foreground">{event.event_category || '-'}</td>
+                            <td className="p-2 text-muted-foreground">{event.event_label || '-'}</td>
+                            <td className="text-right p-2">{event.event_value ?? '-'}</td>
+                            <td className="p-2 font-mono text-xs">{event.session_id ? `${event.session_id.slice(0, 8)}...` : '-'}</td>
                             <td className="p-2 text-xs">
-                              {event.created_at ? new Date(event.created_at).toLocaleString() : 'N/A'}
+                              {event.created_at ? new Date(event.created_at).toLocaleString() : '-'}
                             </td>
                           </tr>
                         ))}
@@ -921,7 +922,7 @@ export default function AnalyticsDashboard() {
 
         {/* Visits Tab */}
         <TabsContent value="visits" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Recent Visits</CardTitle>
               <CardDescription>Raw visit data from visits table</CardDescription>
@@ -933,8 +934,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {visits.error}</p>
               ) : visits.data && visits.data.length > 0 ? (
                 <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-background">
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="sticky top-0 bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Session</th>
                         <th className="text-left p-2">Device</th>
@@ -949,10 +950,10 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {visits.data.map((visit: any) => (
-                        <tr key={visit.id} className="border-b">
+                        <tr key={visit.id} className="border-b hover:bg-gray-50/60">
                           <td className="p-2 font-mono text-xs">{visit.session_id.slice(0, 8)}...</td>
                           <td className="p-2">
-                            <div>{visit.device || 'N/A'}</div>
+                            <div>{visit.device || '-'}</div>
                             <div className="text-xs text-muted-foreground">
                               {visit.is_mobile && 'Mobile'}
                               {visit.is_desktop && 'Desktop'}
@@ -960,11 +961,11 @@ export default function AnalyticsDashboard() {
                             </div>
                           </td>
                           <td className="p-2">
-                            <div>{visit.browser || 'N/A'}</div>
-                            <div className="text-xs text-muted-foreground">{visit.os || 'N/A'}</div>
+                            <div>{visit.browser || '-'}</div>
+                            <div className="text-xs text-muted-foreground">{visit.os || '-'}</div>
                           </td>
-                          <td className="p-2">{visit.country || 'N/A'}</td>
-                          <td className="p-2 text-xs">{visit.city || 'N/A'}</td>
+                          <td className="p-2">{visit.country || '-'}</td>
+                          <td className="p-2 text-xs">{visit.city || '-'}</td>
                           <td className="p-2 text-xs">
                             <div>{visit.utm_source || visit.referrer || 'Direct'}</div>
                             {visit.utm_medium && (
@@ -972,7 +973,7 @@ export default function AnalyticsDashboard() {
                             )}
                           </td>
                           <td className="p-2 text-xs">
-                            <div>{visit.utm_campaign || 'N/A'}</div>
+                            <div>{visit.utm_campaign || '-'}</div>
                             {visit.utm_term && (
                               <div className="text-muted-foreground">Term: {visit.utm_term}</div>
                             )}
@@ -981,7 +982,7 @@ export default function AnalyticsDashboard() {
                             )}
                           </td>
                           <td className="p-2 text-xs font-mono max-w-xs truncate">
-                            {visit.landing_page || 'N/A'}
+                            {visit.landing_page || '-'}
                           </td>
                           <td className="p-2 text-xs">{new Date(visit.created_at).toLocaleString()}</td>
                         </tr>
@@ -998,7 +999,7 @@ export default function AnalyticsDashboard() {
 
         {/* Page Views Tab */}
         <TabsContent value="pageviews" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Recent Page Views</CardTitle>
               <CardDescription>Raw page view data from page_views table</CardDescription>
@@ -1010,8 +1011,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {pageViews.error}</p>
               ) : pageViews.data && pageViews.data.length > 0 ? (
                 <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-background">
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="sticky top-0 bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Path</th>
                         <th className="text-left p-2">Title</th>
@@ -1026,9 +1027,9 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {pageViews.data.map((view: any) => (
-                        <tr key={view.id} className="border-b">
+                        <tr key={view.id} className="border-b hover:bg-gray-50/60">
                           <td className="p-2 font-mono text-xs">{view.path || view.url}</td>
-                          <td className="p-2 text-sm">{view.title || 'N/A'}</td>
+                          <td className="p-2 text-sm">{view.title || '-'}</td>
                           <td className="text-right p-2">{view.scroll_depth || 0}%</td>
                           <td className="text-right p-2">{view.time_on_page || 0}s</td>
                           <td className="text-center p-2">
@@ -1068,7 +1069,7 @@ export default function AnalyticsDashboard() {
 
         {/* Cart Events Tab */}
         <TabsContent value="cartevents" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Cart Events</CardTitle>
               <CardDescription>All cart events from cart_events table</CardDescription>
@@ -1080,8 +1081,8 @@ export default function AnalyticsDashboard() {
                 <p className="text-red-500">Error: {cartEvents.error}</p>
               ) : cartEvents.data && cartEvents.data.length > 0 ? (
                 <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-background">
+                  <table className="w-full text-sm rounded-lg overflow-hidden">
+                    <thead className="sticky top-0 bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Event Type</th>
                         <th className="text-left p-2">Product</th>
@@ -1097,7 +1098,7 @@ export default function AnalyticsDashboard() {
                     </thead>
                     <tbody>
                       {cartEvents.data.map((event: any) => (
-                        <tr key={event.id} className="border-b">
+                        <tr key={event.id} className="border-b hover:bg-gray-50/60">
                           <td className="p-2">
                             <span
                               className={`px-2 py-1 rounded text-xs ${
@@ -1114,19 +1115,19 @@ export default function AnalyticsDashboard() {
                             </span>
                           </td>
                           <td className="p-2">
-                            <div>{event.product_title || 'N/A'}</div>
+                            <div>{event.product_title || '-'}</div>
                             {event.external_product_id && (
                               <div className="text-xs text-muted-foreground">ID: {event.external_product_id.slice(0, 12)}...</div>
                             )}
                           </td>
                           <td className="p-2 text-xs">
-                            {event.variant_title || event.variant_id || 'N/A'}
+                            {event.variant_title || event.variant_id || '-'}
                           </td>
                           <td className="text-right p-2">{event.quantity || 1}</td>
                           <td className="text-right p-2">{formatCurrency(event.price || 0)}</td>
                           <td className="text-right p-2">{formatCurrency(event.total_value || 0)}</td>
                           <td className="text-right p-2 font-medium">
-                            {event.cart_total ? formatCurrency(event.cart_total) : 'N/A'}
+                            {event.cart_total ? formatCurrency(event.cart_total) : '-'}
                           </td>
                           <td className="p-2 text-xs">
                             {event.discount_code && (
@@ -1135,7 +1136,7 @@ export default function AnalyticsDashboard() {
                             {event.discount_amount && (
                               <div className="text-red-600">-{formatCurrency(event.discount_amount)}</div>
                             )}
-                            {!event.discount_code && !event.discount_amount && 'N/A'}
+                            {!event.discount_code && !event.discount_amount && '-'}
                           </td>
                           <td className="p-2 font-mono text-xs">{event.session_id.slice(0, 8)}...</td>
                           <td className="p-2 text-xs">{new Date(event.created_at).toLocaleString()}</td>
@@ -1153,7 +1154,7 @@ export default function AnalyticsDashboard() {
 
         {/* Funnel Tab */}
         <TabsContent value="funnel" className="space-y-4">
-          <Card>
+          <Card className="border-gray-200/80 shadow-sm hover:shadow-md transition-shadow bg-white/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Abandoned Carts</CardTitle>
               <CardDescription>Last 7 days</CardDescription>
@@ -1164,7 +1165,7 @@ export default function AnalyticsDashboard() {
               ) : abandoned.data && abandoned.data.length > 0 ? (
                 <div className="space-y-2">
                   {abandoned.data.slice(0, 10).map((cart: any) => (
-                    <div key={cart.session_id} className="flex justify-between items-center p-2 border rounded">
+                    <div key={cart.session_id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50/60">
                       <div>
                         <div className="font-mono text-xs">{cart.session_id.slice(0, 8)}...</div>
                         <div className="text-sm text-muted-foreground">
@@ -1183,7 +1184,8 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }
