@@ -141,6 +141,7 @@ export default function SuccessPage() {
           (window as any).analytics.trackPurchase({
             order_id: order.orderId,
             customer_email: order.customerEmail,
+            customer_phone: order.delivery?.phone || order.delivery?.phone_number || null, // Include phone from delivery info
             subtotal: order.subtotal,
             shipping_total: order.deliveryFee || 0,
             discount_total: order.discountAmount || order.stripeDiscount || 0,

@@ -348,6 +348,14 @@ async function handleOrder(supabase: any, data: any) {
     profit = data.total_value - data.total_cost;
   }
 
+  // Store customer_phone in items JSONB if provided (since analytics orders table doesn't have phone column)
+  const itemsWithPhone = data.items ? 
+    (Array.isArray(data.items) ? data.items.map((item: any) => ({
+      ...item,
+      customer_phone: data.customer_phone || null, // Store phone in items metadata
+    })) : data.items) 
+    : null;
+
   const { data: order, error } = await supabase
     .from('orders')
     .insert({
@@ -371,7 +379,7 @@ async function handleOrder(supabase: any, data: any) {
       utm_medium: data.utm_medium,
       utm_campaign: data.utm_campaign,
       discount_codes: data.discount_codes,
-      items: data.items,
+      items: itemsWithPhone || data.items, // Include phone in items JSONB
       status: data.status || 'completed',
       fulfillment_status: data.fulfillment_status || null,
     })

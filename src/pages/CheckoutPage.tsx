@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, Truck, ArrowLeft, Check, Lock, MapPin, Phone, Mail, User, ShieldCheck, Loader2 } from 'lucide-react';
 import { createStripeCheckout, calculateCartTotal, parsePriceToNumber } from '@/utils/stripeCheckout';
 import { toast } from 'sonner';
+import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import '../styles/checkout-styles.css';
 
 type PaymentMethod = 'stripe' | 'cod' | null;
@@ -172,6 +173,7 @@ export default function CheckoutPage() {
         (window as any).analytics.trackPurchase({
           order_id: orderId,
           customer_email: formData.email,
+          customer_phone: formData.phone, // Include phone number
           subtotal: subtotal,
           shipping_total: deliveryFee,
           discount_total: 0,
@@ -206,6 +208,38 @@ export default function CheckoutPage() {
         // Log error but don't block order completion
         console.error('Email sending failed:', error);
       });
+
+      // Also create an entry in public.orders (Stripe orders table) for COD to store email and phone
+      try {
+        const orderItems = cart.map((item) => ({
+          product_name: item.name,
+          variant: item.selectedColor || item.selectedSize || undefined,
+          quantity: item.quantity,
+          unit_price: item.price,
+          total_price: item.price * item.quantity,
+          image_url: item.image || undefined,
+          product_metadata: {
+            product_id: item.id,
+            selectedColor: item.selectedColor,
+            selectedSize: item.selectedSize,
+          },
+        }));
+
+        await createStripeOrderAndItems(
+          orderId,            // orderNumber
+          'COD',              // stripeSessionId placeholder
+          null,               // stripePaymentIntentId
+          formData.email,     // customerEmail
+          total,              // totalAmount
+          'USD',              // currency
+          orderItems,         // items
+          formData,           // billingAddress (contains phone)
+          formData,           // shippingAddress (contains phone)
+          undefined           // userId
+        );
+      } catch (err) {
+        console.warn('[Checkout] Failed to create COD order in public.orders:', err);
+      }
       
       // Clear cart immediately
       clearCart();

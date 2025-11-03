@@ -381,6 +381,7 @@
             session_id: utils.getSessionId(),
             visit_id: visitId || utils.getStorage('curlea_visit_id'),
             customer_email: orderData.customer_email || null,
+            customer_phone: orderData.customer_phone || null, // Include phone number
             customer_id: orderData.customer_id || null,
             subtotal: orderData.subtotal,
             discount_total: orderData.discount_total || 0,

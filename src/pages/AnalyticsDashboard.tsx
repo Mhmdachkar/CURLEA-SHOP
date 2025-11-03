@@ -391,7 +391,16 @@ export default function AnalyticsDashboard() {
                       {stripeOrders.data.map((order: any) => (
                         <tr key={order.id} className="border-b">
                           <td className="p-2 font-mono text-xs">{order.order_number}</td>
-                          <td className="p-2">{order.customer_email || 'N/A'}</td>
+                          <td className="p-2 text-xs">
+                            <div className="font-medium">{order.customer_email || 'N/A'}</div>
+                            {/* Extract phone from shipping_address JSONB */}
+                            {order.shipping_address?.phone && (
+                              <div className="text-muted-foreground text-xs mt-1">📞 {order.shipping_address.phone}</div>
+                            )}
+                            {order.billing_address?.phone && !order.shipping_address?.phone && (
+                              <div className="text-muted-foreground text-xs mt-1">📞 {order.billing_address.phone}</div>
+                            )}
+                          </td>
                           <td className="text-right p-2 font-medium">
                             {formatCurrency(order.total_amount)}
                           </td>
@@ -511,9 +520,18 @@ export default function AnalyticsDashboard() {
                         <tr key={order.id} className="border-b">
                           <td className="p-2 font-mono text-xs">{order.order_id}</td>
                           <td className="p-2 text-xs">
-                            <div>{order.customer_email || 'Anonymous'}</div>
+                            <div className="font-medium">{order.customer_email || 'Anonymous'}</div>
+                            {/* Extract phone from items JSONB if available */}
+                            {(() => {
+                              const phone = order.items && Array.isArray(order.items) && order.items.length > 0
+                                ? order.items[0]?.customer_phone || null
+                                : null;
+                              return phone ? (
+                                <div className="text-muted-foreground text-xs mt-1">📞 {phone}</div>
+                              ) : null;
+                            })()}
                             {order.customer_id && (
-                              <div className="text-muted-foreground text-xs">ID: {order.customer_id.slice(0, 8)}...</div>
+                              <div className="text-muted-foreground text-xs mt-1">ID: {order.customer_id.slice(0, 8)}...</div>
                             )}
                           </td>
                           <td className="text-right p-2">{formatCurrency(order.subtotal || 0)}</td>
