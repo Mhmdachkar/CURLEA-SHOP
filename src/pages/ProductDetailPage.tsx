@@ -17,6 +17,7 @@ import { useEventProduct, useEventUI, EVENTS } from "@/hooks/useEventSystem";
 import { useRealtimeContext } from "@/contexts/RealtimeContext";
 import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 import { toast } from "sonner";
+import { fbTrack, gaTrack } from "@/utils/tracking";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
@@ -109,6 +110,28 @@ export const ProductDetailPage = () => {
       setSelectedSize('9-piece-complete');
     }
   }, [product?.id, selectedSize]);
+
+  // Track product view events
+  useEffect(() => {
+    if (!product) return;
+
+    const priceNumber = typeof product.price === 'string'
+      ? parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0
+      : Number(product.price) || 0;
+
+    fbTrack('ViewContent', {
+      content_name: product.name,
+      content_ids: [product.id],
+      value: priceNumber,
+      currency: 'USD',
+    });
+
+    gaTrack('view_item', {
+      currency: 'USD',
+      value: priceNumber,
+      items: [{ id: product.id, name: product.name }],
+    });
+  }, [product?.id]);
 
   // Scroll to top instantly when page loads
   useEffect(() => {

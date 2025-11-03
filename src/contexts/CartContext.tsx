@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { fbTrack, gaTrack } from '@/utils/tracking';
 
 export interface CartItem {
   id: string;
@@ -187,6 +188,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         cart_total: newCartTotal,
       });
     }
+
+    // Meta + GA tracking
+    const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+    fbTrack('AddToCart', {
+      content_name: item.name,
+      content_ids: [item.id],
+      value: priceNumber,
+      currency: 'USD',
+    });
+    gaTrack('add_to_cart', {
+      currency: 'USD',
+      value: priceNumber,
+      items: [{ id: item.id, name: item.name }],
+    });
   };
 
   const removeFromCart = (id: string, selectedColor?: string, selectedSize?: string) => {

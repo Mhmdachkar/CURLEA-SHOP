@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, ShoppingBag, Truck, Mail } from 'lucide-react';
 import '../styles/checkout-styles.css';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
+import { fbTrack, gaTrack } from '@/utils/tracking';
 
 export default function SuccessPage() {
   const navigate = useNavigate();
@@ -12,6 +13,24 @@ export default function SuccessPage() {
   const orderId = searchParams.get('order_id');
   const [countdown, setCountdown] = useState(5);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Fire purchase tracking when arriving at success page
+  useEffect(() => {
+    const valueParam = searchParams.get('amount');
+    const value = valueParam ? parseFloat(valueParam) : undefined;
+
+    fbTrack('Purchase', {
+      value: value ?? 0,
+      currency: 'USD',
+    });
+
+    gaTrack('purchase', {
+      transaction_id: orderId || sessionId || undefined,
+      value: value ?? 0,
+      currency: 'USD',
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle Stripe order completion - create order in Supabase and send email
   useEffect(() => {
