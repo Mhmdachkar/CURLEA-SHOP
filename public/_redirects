@@ -1,2 +1,5 @@
+# Exempt Meta domain verification HTML file from SPA rewrite
+/h8bp9hawcekzxl3r9inkwbgrgi4xm3.html   /h8bp9hawcekzxl3r9inkwbgrgi4xm3.html   200!
+
 # SPA fallback - must be last
 /*    /index.html   200

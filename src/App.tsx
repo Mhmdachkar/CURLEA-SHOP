@@ -7,6 +7,7 @@ import { RealtimeProvider } from "@/contexts/RealtimeContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { RealtimeSync } from "@/components/RealtimeSync";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import Index from "./pages/Index";
@@ -69,6 +70,7 @@ const App = () => {
                 }}
               >
               <ScrollToTop />
+              <RouteAnalytics />
               <RealtimeSync />
               <Routes>
                 <Route path="/" element={<Index />} />

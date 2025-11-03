@@ -3,6 +3,9 @@
 
 /*    /index.html   200
 
+# Exempt Meta domain verification HTML file from SPA rewrite
+/h8bp9hawcekzxl3r9inkwbgrgi4xm3.html   /h8bp9hawcekzxl3r9inkwbgrgi4xm3.html   200!
+
 # API redirects (if you add backend later)
 # /api/*  https://your-api-domain.com/api/:splat  200
 
