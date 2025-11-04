@@ -300,6 +300,24 @@ serve(async (req) => {
       throw new Error(`Failed to create order: ${orderError.message}`);
     }
 
+    // Step 11.5: Also create order in public.orders table with pending status
+    // This allows the webhook to find and update it when payment completes
+    const publicOrderData: any = {
+      order_number: orderId,
+      total_amount: totalAmount,
+      currency: currency || 'USD',
+      status: 'pending', // Will be updated to 'completed' by webhook
+      customer_email: null, // Will be filled by Stripe after payment
+      is_guest: true, // Will be updated by webhook if customer exists
+      stripe_session_id: null, // Will be filled after session creation
+      stripe_payment_intent_id: null, // Will be filled by webhook after payment
+      billing_address: null, // Will be filled by webhook from Stripe
+      shipping_address: null, // Will be filled by webhook from Stripe
+    };
+
+    // We'll update this after creating the Stripe session
+    let publicOrderId: string | null = null;
+
     // Step 12: Create Stripe Checkout Session
     const sessionConfig: any = {
       payment_method_types: ['card'],
@@ -340,6 +358,46 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log('Stripe session created successfully:', session.id);
+
+    // Step 12.5: Create or update order in public.orders table with stripe_session_id
+    publicOrderData.stripe_session_id = session.id;
+    
+    // Try to find existing order by order_number first
+    const { data: existingPublicOrder } = await supabaseAdmin
+      .from('orders')
+      .select('id')
+      .eq('order_number', orderId)
+      .single();
+
+    if (existingPublicOrder) {
+      // Update existing order with stripe_session_id
+      const { data: updatedOrder, error: updateError } = await supabaseAdmin
+        .from('orders')
+        .update({ stripe_session_id: session.id })
+        .eq('id', existingPublicOrder.id)
+        .select('id')
+        .single();
+      
+      if (!updateError && updatedOrder) {
+        publicOrderId = updatedOrder.id;
+        console.log('Updated existing public order with stripe_session_id:', publicOrderId);
+      }
+    } else {
+      // Create new order in public.orders
+      const { data: newPublicOrder, error: publicOrderError } = await supabaseAdmin
+        .from('orders')
+        .insert(publicOrderData)
+        .select('id')
+        .single();
+
+      if (publicOrderError) {
+        console.warn('Failed to create public order (non-critical):', publicOrderError);
+        // Don't throw - this is non-critical, webhook will create it if needed
+      } else if (newPublicOrder) {
+        publicOrderId = newPublicOrder.id;
+        console.log('Created public order with stripe_session_id:', publicOrderId);
+      }
+    }
 
     // Step 14: Return success response
     return new Response(

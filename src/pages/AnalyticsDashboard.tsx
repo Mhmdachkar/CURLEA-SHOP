@@ -381,9 +381,12 @@ export default function AnalyticsDashboard() {
                     <thead className="bg-gray-50/80">
                       <tr className="border-b">
                         <th className="text-left p-2">Order #</th>
-                        <th className="text-left p-2">Email</th>
+                        <th className="text-left p-2">Customer</th>
                         <th className="text-right p-2">Amount</th>
+                        <th className="text-left p-2">Currency</th>
                         <th className="text-left p-2">Status</th>
+                        <th className="text-left p-2">Payment Intent</th>
+                        <th className="text-left p-2">Guest</th>
                         <th className="text-left p-2">Date</th>
                         <th className="text-left p-2">Actions</th>
                       </tr>
@@ -401,10 +404,17 @@ export default function AnalyticsDashboard() {
                             {order.billing_address?.phone && !order.shipping_address?.phone && (
                               <div className="text-muted-foreground text-xs mt-1">📞 {order.billing_address.phone}</div>
                             )}
+                            {/* Show billing address */}
+                            {order.billing_address && (
+                              <div className="text-muted-foreground text-xs mt-1">
+                                📍 {order.billing_address.city || ''} {order.billing_address.country || ''}
+                              </div>
+                            )}
                           </td>
                           <td className="text-right p-2 font-medium">
                             {formatCurrency(order.total_amount)}
                           </td>
+                          <td className="p-2 text-xs">{order.currency || 'USD'}</td>
                           <td className="p-2">
                             <span
                               className={`px-2 py-1 rounded text-xs ${
@@ -417,6 +427,22 @@ export default function AnalyticsDashboard() {
                             >
                               {order.status}
                             </span>
+                          </td>
+                          <td className="p-2 text-xs font-mono">
+                            {order.stripe_payment_intent_id ? (
+                              <div className="max-w-xs truncate" title={order.stripe_payment_intent_id}>
+                                {order.stripe_payment_intent_id.slice(0, 12)}...
+                              </div>
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td className="p-2 text-xs">
+                            {order.is_guest ? (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">Guest</span>
+                            ) : (
+                              <span className="text-muted-foreground">User</span>
+                            )}
                           </td>
                           <td className="p-2 text-xs">
                             {new Date(order.created_at).toLocaleDateString()}
@@ -464,6 +490,8 @@ export default function AnalyticsDashboard() {
                           <th className="text-right p-2">Quantity</th>
                           <th className="text-right p-2">Unit Price</th>
                           <th className="text-right p-2">Total</th>
+                          <th className="text-left p-2">Image</th>
+                          <th className="text-left p-2">Metadata</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -475,6 +503,43 @@ export default function AnalyticsDashboard() {
                             <td className="text-right p-2">{formatCurrency(item.unit_price)}</td>
                             <td className="text-right p-2 font-medium">
                               {formatCurrency(item.total_price)}
+                            </td>
+                            <td className="p-2">
+                              {item.image_url ? (
+                                <img 
+                                  src={item.image_url} 
+                                  alt={item.product_name} 
+                                  className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-xs text-muted-foreground">No image</span>
+                              )}
+                            </td>
+                            <td className="p-2 text-xs">
+                              {item.product_metadata ? (
+                                <div className="max-w-xs">
+                                  {typeof item.product_metadata === 'object' ? (
+                                    <div className="space-y-1">
+                                      {item.product_metadata.product_id && (
+                                        <div>ID: {item.product_metadata.product_id.slice(0, 12)}...</div>
+                                      )}
+                                      {item.product_metadata.selectedColor && (
+                                        <div>Color: {item.product_metadata.selectedColor}</div>
+                                      )}
+                                      {item.product_metadata.selectedSize && (
+                                        <div>Size: {item.product_metadata.selectedSize}</div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div className="text-muted-foreground">Metadata available</div>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -508,11 +573,16 @@ export default function AnalyticsDashboard() {
                         <th className="text-right p-2">Subtotal</th>
                         <th className="text-right p-2">Discount</th>
                         <th className="text-right p-2">Shipping</th>
+                        <th className="text-right p-2">Tax</th>
                         <th className="text-right p-2">Total</th>
+                        <th className="text-right p-2">Cost</th>
+                        <th className="text-right p-2">Profit</th>
+                        <th className="text-left p-2">Currency</th>
                         <th className="text-left p-2">Payment</th>
                         <th className="text-left p-2">Shipping Method</th>
                         <th className="text-left p-2">Status</th>
-                        <th className="text-left p-2">Source</th>
+                        <th className="text-left p-2">UTM Source</th>
+                        <th className="text-left p-2">UTM Campaign</th>
                         <th className="text-left p-2">Date</th>
                       </tr>
                     </thead>
@@ -534,15 +604,41 @@ export default function AnalyticsDashboard() {
                             {order.customer_id && (
                               <div className="text-muted-foreground text-xs mt-1">ID: {order.customer_id.slice(0, 8)}...</div>
                             )}
+                            {/* Show discount codes if available */}
+                            {order.discount_codes && Array.isArray(order.discount_codes) && order.discount_codes.length > 0 && (
+                              <div className="text-muted-foreground text-xs mt-1">
+                                Codes: {order.discount_codes.join(', ')}
+                              </div>
+                            )}
+                            {/* Show items count */}
+                            {order.items && Array.isArray(order.items) && (
+                              <div className="text-muted-foreground text-xs mt-1">
+                                {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                              </div>
+                            )}
                           </td>
                           <td className="text-right p-2">{formatCurrency(order.subtotal || 0)}</td>
                           <td className="text-right p-2 text-red-600">
                             -{formatCurrency(order.discount_total || 0)}
                           </td>
                           <td className="text-right p-2">{formatCurrency(order.shipping_total || 0)}</td>
+                          <td className="text-right p-2 text-xs">{formatCurrency(order.tax_total || 0)}</td>
                           <td className="text-right p-2 font-medium">
                             {formatCurrency(order.total_value)}
                           </td>
+                          <td className="text-right p-2 text-xs text-muted-foreground">
+                            {order.total_cost ? formatCurrency(order.total_cost) : '-'}
+                          </td>
+                          <td className="text-right p-2 text-xs font-semibold">
+                            {order.profit !== null && order.profit !== undefined ? (
+                              <span className={order.profit >= 0 ? 'text-green-600' : 'text-red-600'}>
+                                {formatCurrency(order.profit)}
+                              </span>
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td className="p-2 text-xs">{order.currency || 'USD'}</td>
                           <td className="p-2 text-xs">{order.payment_method || '-'}</td>
                           <td className="p-2 text-xs">{order.shipping_method || '-'}</td>
                           <td className="p-2">
@@ -565,7 +661,15 @@ export default function AnalyticsDashboard() {
                               </div>
                             )}
                           </td>
-                          <td className="p-2 text-xs">{order.source || 'Direct'}</td>
+                          <td className="p-2 text-xs">
+                            <div>{order.utm_source || order.source || 'Direct'}</div>
+                            {order.utm_medium && (
+                              <div className="text-muted-foreground text-xs">Medium: {order.utm_medium}</div>
+                            )}
+                          </td>
+                          <td className="p-2 text-xs">
+                            {order.utm_campaign || '-'}
+                          </td>
                           <td className="p-2 text-xs">
                             {new Date(order.created_at).toLocaleDateString()}
                           </td>

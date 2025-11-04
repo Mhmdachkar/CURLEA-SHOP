@@ -113,7 +113,7 @@ exports.handler = async (event) => {
         };
 
         const orderPayload = {
-          orderId: session.metadata?.orderId || `STRIPE-${sessionId}`,
+          orderId: session.metadata?.orderId || session.metadata?.order_number || `STRIPE-${sessionId}`,
           paymentMethod: 'stripe',
           customerEmail: delivery.email,
           delivery,
@@ -124,6 +124,108 @@ exports.handler = async (event) => {
           total,
         };
 
+        // Update Supabase orders directly
+        try {
+          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          
+          if (supabaseUrl && supabaseServiceKey) {
+            // Use Supabase REST API to update orders
+            const orderNumber = session.metadata?.order_number || session.metadata?.orderId || `STRIPE-${sessionId}`;
+            
+            // Get payment intent ID
+            const paymentIntentId = typeof session.payment_intent === 'string'
+              ? session.payment_intent
+              : (session.payment_intent?.id || null);
+
+            // Prepare billing and shipping addresses
+            const billingAddress = session.customer_details?.address ? {
+              line1: session.customer_details.address.line1 || '',
+              line2: session.customer_details.address.line2 || null,
+              city: session.customer_details.address.city || '',
+              state: session.customer_details.address.state || '',
+              postal_code: session.customer_details.address.postal_code || '',
+              country: session.customer_details.address.country || '',
+            } : null;
+
+            const shippingAddress = session.shipping_details?.address ? {
+              line1: session.shipping_details.address.line1 || '',
+              line2: session.shipping_details.address.line2 || null,
+              city: session.shipping_details.address.city || '',
+              state: session.shipping_details.address.state || '',
+              postal_code: session.shipping_details.address.postal_code || '',
+              country: session.shipping_details.address.country || '',
+            } : billingAddress;
+
+            const customerEmail = session.customer_details?.email || session.customer_email || null;
+
+            // Update analytics orders table (orders table)
+            // Use order_id field to find the order
+            const updateAnalyticsOrder = await fetch(`${supabaseUrl}/rest/v1/orders?order_id=eq.${encodeURIComponent(orderNumber)}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseServiceKey,
+                'Authorization': `Bearer ${supabaseServiceKey}`,
+                'Prefer': 'return=representation',
+              },
+              body: JSON.stringify({
+                status: 'completed',
+                customer_email: customerEmail,
+                customer_id: session.customer || null,
+                shipping_method: 'standard',
+                shipping_total: deliveryFee,
+                discount_total: discountAmount,
+                total_value: total,
+                payment_method: 'stripe',
+                fulfillment_status: 'unfulfilled',
+                updated_at: new Date().toISOString(),
+              }),
+            });
+
+            if (!updateAnalyticsOrder.ok) {
+              const errorText = await updateAnalyticsOrder.text();
+              console.warn('Failed to update analytics order:', errorText);
+            } else {
+              console.log('Analytics order updated successfully');
+            }
+
+            // Update public.orders table (Stripe orders table)
+            // Use stripe_session_id to find the order
+            const updatePublicOrder = await fetch(`${supabaseUrl}/rest/v1/orders?stripe_session_id=eq.${sessionId}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseServiceKey,
+                'Authorization': `Bearer ${supabaseServiceKey}`,
+                'Prefer': 'return=representation',
+              },
+              body: JSON.stringify({
+                status: 'completed',
+                customer_email: customerEmail,
+                stripe_payment_intent_id: paymentIntentId,
+                billing_address: billingAddress,
+                shipping_address: shippingAddress,
+                total_amount: total,
+                is_guest: !session.customer,
+                updated_at: new Date().toISOString(),
+              }),
+            });
+
+            if (!updatePublicOrder.ok) {
+              const errorText = await updatePublicOrder.text();
+              console.warn('Failed to update public order:', errorText);
+            } else {
+              console.log('Public order updated successfully');
+            }
+          } else {
+            console.warn('Supabase credentials not configured; skipping order update');
+          }
+        } catch (supabaseErr) {
+          console.error('Failed to update Supabase orders:', supabaseErr);
+        }
+
+        // Send email
         try {
           const siteUrl = process.env.URL || process.env.DEPLOY_PRIME_URL;
           if (siteUrl) {

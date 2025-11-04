@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, ShoppingBag, Truck, Mail } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Mail } from 'lucide-react';
 import '../styles/checkout-styles.css';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { fbTrack, gaTrack } from '@/utils/tracking';
@@ -54,8 +54,18 @@ export default function SuccessPage() {
 
         const { order } = await orderResponse.json();
 
-        // 0. Update analytics orders table with customer email and shipping info from Stripe
-        // The order was created as 'pending' in create-checkout, now update it with complete info
+        // Note: Order updates are now handled by the Stripe webhook handler
+        // This page only tracks analytics and sends email if webhook hasn't already done so
+        // The webhook updates both orders tables with complete information including:
+        // - status: 'completed'
+        // - customer_email
+        // - payment_intent_id
+        // - billing_address
+        // - shipping_address
+        // - All other required fields
+        
+        // Only update analytics orders table if webhook hasn't processed yet
+        // (This is a fallback in case webhook hasn't fired yet)
         try {
           const updateResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track`, {
             method: 'POST',
@@ -67,62 +77,27 @@ export default function SuccessPage() {
             body: JSON.stringify({
               type: 'order_update',
               data: {
-                order_id: order.orderId, // Use the order_number to find the order
+                order_id: order.orderId,
                 customer_email: order.customerEmail,
                 shipping_method: 'standard',
                 status: 'completed',
-                // Include shipping address if available
-                shipping_address: order.delivery,
+                shipping_total: order.deliveryFee || 4.00,
+                discount_total: order.discountAmount || 0,
+                total_value: order.total,
+                payment_method: 'stripe',
               },
             }),
           });
           if (updateResponse.ok) {
-            console.log('[Success Page] Analytics order updated with customer info');
+            console.log('[Success Page] Analytics order updated with customer info (fallback)');
           }
         } catch (updateError) {
-          console.warn('[Success Page] Failed to update analytics order:', updateError);
+          console.warn('[Success Page] Failed to update analytics order (fallback):', updateError);
         }
 
-        // 1. Create Stripe order and order_items in Supabase
-        const items = order.cart.map((item: any) => {
-          // Handle price - could be number or string
-          const unitPrice = typeof item.price === 'number' 
-            ? item.price 
-            : parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
-          
-          return {
-            product_name: item.name,
-            variant: item.selectedColor || item.selectedSize || undefined,
-            quantity: item.quantity,
-            unit_price: unitPrice,
-            total_price: unitPrice * item.quantity,
-            image_url: item.image || undefined,
-            product_metadata: {
-              product_id: item.id,
-              selectedColor: item.selectedColor,
-              selectedSize: item.selectedSize,
-            },
-          };
-        });
-
-        const orderResult = await createStripeOrderAndItems(
-          order.orderId,
-          sessionId,
-          null, // payment_intent_id - can be retrieved from Stripe if needed
-          order.customerEmail,
-          order.total,
-          'USD',
-          items,
-          order.delivery, // billing address
-          order.delivery, // shipping address
-          undefined // user_id - can be added if you have user authentication
-        );
-
-        if (orderResult.success) {
-          console.log('[Success Page] Stripe order created in Supabase:', orderResult.orderId);
-        } else {
-          console.warn('[Success Page] Failed to create Stripe order in Supabase:', orderResult.error);
-        }
+        // Note: We no longer create duplicate orders in public.orders table here
+        // The webhook handler creates/updates orders in public.orders table
+        // This prevents duplicate orders from being created
 
         // 2. Track order completion in analytics (update existing order or create new one)
         if ((window as any).analytics) {
@@ -264,16 +239,16 @@ export default function SuccessPage() {
             backgroundClip: 'text',
           }}
         >
-          Payment Successful! 🎉
+          Thank You for Your Order! 🎉
         </h1>
 
         {/* Description */}
         <p className="text-muted mb-6" style={{ color: '#666666' }}>
-          Thank you for your purchase. Your order is being processed and you'll receive a confirmation email shortly.
+          We truly appreciate your purchase and are thrilled to have you as a valued customer. Your order is being processed and you'll receive a confirmation email shortly with all the details.
         </p>
 
         {/* Session ID (if available) */}
-        {sessionId && (
+        {(sessionId || orderId) && (
           <div 
             className="bg-[#F5E6D3] border border-[#D4AF37] rounded-lg p-4 mb-6"
           >
@@ -281,7 +256,7 @@ export default function SuccessPage() {
               Order Confirmation
             </p>
             <p className="text-xs font-mono" style={{ color: '#666666' }}>
-              {sessionId}
+              {orderId || sessionId}
             </p>
           </div>
         )}
@@ -291,14 +266,6 @@ export default function SuccessPage() {
           <div className="flex items-center justify-center gap-3 text-sm" style={{ color: '#666666' }}>
             <Mail className="w-4 h-4" />
             <span>Email confirmation sent</span>
-          </div>
-          <div className="flex items-center justify-center gap-3 text-sm" style={{ color: '#666666' }}>
-            <Truck className="w-4 h-4" />
-            <span>Free shipping included</span>
-          </div>
-          <div className="flex items-center justify-center gap-3 text-sm" style={{ color: '#666666' }}>
-            <CheckCircle className="w-4 h-4" />
-            <span>30-day money-back guarantee</span>
           </div>
         </div>
 
