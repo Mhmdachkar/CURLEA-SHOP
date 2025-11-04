@@ -67,27 +67,36 @@ exports.handler = async (event) => {
 
         let subtotal = 0;
         let discountAmount = 0;
+        let deliveryFee = 4.00; // Default delivery fee
         const cart = [];
 
         for (const item of lineItems.data) {
           const unitAmount = (item.price && typeof item.price.unit_amount === 'number') ? item.price.unit_amount : 0;
           const price = unitAmount / 100;
           const quantity = item.quantity || 1;
+          const itemName = item.description || (item.price && item.price.nickname) || 'Product';
 
+          // Check if this is a discount line item (negative amount)
           if (unitAmount < 0) {
             discountAmount += Math.abs(price * quantity);
             continue;
           }
 
+          // Check if this is a delivery fee line item
+          if (itemName.toLowerCase().includes('delivery fee')) {
+            deliveryFee = price;
+            continue;
+          }
+
           subtotal += price * quantity;
           cart.push({
-            name: item.description || (item.price && item.price.nickname) || 'Product',
+            name: itemName,
             price,
             quantity,
           });
         }
 
-        const total = (typeof session.amount_total === 'number') ? session.amount_total / 100 : Math.max(0, subtotal - discountAmount);
+        const total = (typeof session.amount_total === 'number') ? session.amount_total / 100 : Math.max(0, subtotal - discountAmount + deliveryFee);
 
         const delivery = {
           name: session.customer_details?.name || '',
@@ -109,7 +118,7 @@ exports.handler = async (event) => {
           customerEmail: delivery.email,
           delivery,
           cart,
-          deliveryFee: 0,
+          deliveryFee,
           subtotal,
           discountAmount,
           total,

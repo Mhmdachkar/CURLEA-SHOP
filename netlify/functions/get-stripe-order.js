@@ -82,13 +82,15 @@ exports.handler = async (event, context) => {
         country: session.shipping_details?.address?.country || 'N/A',
       },
       cart: [],
-      deliveryFee: 0,
+      deliveryFee: 4.00, // Default delivery fee
       stripeDiscount: discountAmount || 0,
     };
 
     // Format line items (excluding discount line items)
     if (session.line_items?.data) {
       let calculatedSubtotal = 0;
+      let extractedDeliveryFee = 4.00; // Default
+      
       session.line_items.data.forEach((item) => {
         // Skip discount line items (negative amounts)
         if (item.price.unit_amount < 0) {
@@ -97,6 +99,15 @@ exports.handler = async (event, context) => {
         
         const price = (item.price.unit_amount / 100);
         const quantity = item.quantity || 1;
+        const itemName = item.description || item.price.nickname || 'Product';
+
+        // Check if this is a delivery fee line item
+        if (itemName.toLowerCase().includes('delivery fee')) {
+          extractedDeliveryFee = price;
+          orderData.deliveryFee = extractedDeliveryFee;
+          return;
+        }
+
         calculatedSubtotal += price * quantity;
 
         // Extract color/size from description or metadata if available
@@ -105,7 +116,7 @@ exports.handler = async (event, context) => {
         const sizeMatch = description.match(/size[:\s]+(\w+)/i);
 
         orderData.cart.push({
-          name: item.description || item.price.nickname || 'Product',
+          name: itemName,
           price: price,
           quantity: quantity,
           selectedColor: colorMatch ? colorMatch[1] : null,
@@ -117,6 +128,9 @@ exports.handler = async (event, context) => {
       if (!orderData.subtotal || orderData.subtotal === 0) {
         orderData.subtotal = calculatedSubtotal;
       }
+      
+      // Update delivery fee
+      orderData.deliveryFee = extractedDeliveryFee;
     }
 
     return {

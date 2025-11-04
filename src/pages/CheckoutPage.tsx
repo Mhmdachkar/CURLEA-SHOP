@@ -63,7 +63,8 @@ export default function CheckoutPage() {
     return paymentMethod === 'stripe' ? subtotal * 0.05 : 0;
   }, [paymentMethod, subtotal]);
   
-  const deliveryFee = paymentMethod === 'cod' ? 4 : 0;
+  // $4 delivery fee applies to both COD and Stripe
+  const deliveryFee = 4;
   const total = subtotal + deliveryFee - stripeDiscount;
   const savings = useMemo(() => {
     return cart.reduce((sum, item) => {
@@ -384,7 +385,7 @@ export default function CheckoutPage() {
                         Stripe Checkout
                       </p>
                       <p className="text-xs text-gray-500" style={typography}>
-                        Secure card payment • PCI compliant
+                        Secure card payment • PCI compliant • <span className="font-semibold">+$4.00 fee</span>
                       </p>
                       <p className="text-xs font-semibold text-green-600 mt-1" style={typography}>
                         🎉 Get 5% discount on total price!

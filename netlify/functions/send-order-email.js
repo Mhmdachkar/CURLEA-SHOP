@@ -123,7 +123,9 @@ exports.handler = async (event, context) => {
                     ? '<span style="color: #dc2626; font-weight: 600;">💵 Cash on Delivery (COD)</span>' 
                     : '<span style="color: #10b981; font-weight: 600;">💳 Stripe - Online Payment (Paid)</span>'}
                   <br>
-                  ${orderData.paymentMethod === 'cod' ? '<span style="color: #dc2626; font-weight: 600;">⚠️ Delivery Fee: $4.00</span>' : '<span style="color: #10b981;">✅ Payment processed successfully</span>'}
+                  ${orderData.paymentMethod === 'cod' 
+                    ? '<span style="color: #dc2626; font-weight: 600;">⚠️ Delivery Fee: $4.00</span>' 
+                    : '<span style="color: #10b981;">✅ Payment processed successfully • Delivery Fee: $4.00</span>'}
                 </p>
               </div>
 

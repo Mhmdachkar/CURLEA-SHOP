@@ -177,7 +177,7 @@ export default function SuccessPage() {
               customerEmail: order.customerEmail,
               delivery: order.delivery,
               cart: order.cart,
-              deliveryFee: order.deliveryFee || 0,
+              deliveryFee: order.deliveryFee || 4.00, // $4 delivery fee for Stripe payments
               subtotal: order.subtotal,
               discountAmount: order.discountAmount || order.stripeDiscount || 0,
               total: order.total,

@@ -110,11 +110,13 @@ serve(async (req) => {
     
     // Apply 5% discount for Stripe payments
     const discountAmount = subtotal * 0.05;
-    const totalAmount = subtotal - discountAmount;
+    const deliveryFee = 4.00; // $4 delivery fee for Stripe payments
+    const totalAmount = subtotal - discountAmount + deliveryFee;
 
     console.log('Subtotal:', subtotal);
     console.log('Stripe discount (5%):', discountAmount);
-    console.log('Total amount after discount:', totalAmount);
+    console.log('Delivery fee:', deliveryFee);
+    console.log('Total amount after discount and delivery:', totalAmount);
 
     // Step 7: Create absolute image URLs
     const getBaseOrigin = (): string | null => {
@@ -200,6 +202,19 @@ serve(async (req) => {
       console.log('Added 5% discount line item:', discountAmount);
     }
 
+    // Step 8.6: Add delivery fee line item ($4)
+    lineItems.push({
+      price_data: {
+        currency: String(currency || 'USD').toLowerCase(),
+        product_data: {
+          name: 'Delivery Fee',
+        },
+        unit_amount: Math.round(deliveryFee * 100), // Convert to cents
+      },
+      quantity: 1,
+    });
+    console.log('Added delivery fee line item:', deliveryFee);
+
     // Step 9: Generate unique order ID
     const generateUniqueOrderId = () => {
       const date = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
@@ -260,7 +275,7 @@ serve(async (req) => {
       customer_email: null, // Will be filled by Stripe after payment
       subtotal: subtotal,
       discount_total: discountAmount,
-      shipping_total: 0, // Stripe checkout - shipping handled by Stripe, typically 0 in our case
+      shipping_total: deliveryFee, // $4 delivery fee for Stripe payments
       tax_total: 0,
       total_value: totalAmount,
       currency: currency,
