@@ -4,7 +4,8 @@
 // - Responds 200 for supported events so Stripe marks delivery successful
 
 const Stripe = require('stripe');
-const fetchFn = (...args) => (globalThis.fetch ? fetch(...args) : require('node-fetch')(...args));
+
+// Node.js 18+ has native fetch support (Netlify Functions use Node 18+)
 
 // Secret key (live or test depending on your Stripe dashboard context)
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -117,7 +118,8 @@ exports.handler = async (event) => {
         try {
           const siteUrl = process.env.URL || process.env.DEPLOY_PRIME_URL;
           if (siteUrl) {
-            await fetchFn(`${siteUrl}/.netlify/functions/send-order-email`, {
+            // Use native fetch (available in Node.js 18+)
+            await fetch(`${siteUrl}/.netlify/functions/send-order-email`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(orderPayload),
