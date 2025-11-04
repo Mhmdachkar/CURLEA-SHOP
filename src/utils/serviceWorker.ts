@@ -45,10 +45,14 @@ export const registerServiceWorker = async () => {
   }
 };
 
-// Show update notification
+// Auto-reload when a new version is installed to avoid stale pages
 const showUpdateNotification = () => {
-  if (confirm('New version available! Would you like to update?')) {
+  try {
+    // Force reload bypassing caches
     window.location.reload();
+  } catch (_) {
+    // Fallback navigation
+    window.location.href = window.location.href;
   }
 };
 
