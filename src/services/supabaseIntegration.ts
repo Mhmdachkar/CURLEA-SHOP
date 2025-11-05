@@ -127,6 +127,7 @@ export function trackCartView(cartItems: any[], cartTotal: number) {
 
 /**
  * Create Stripe order and order items in Supabase
+ * Uses REST API to ensure we're inserting into the correct public.orders table
  */
 export async function createStripeOrderAndItems(
   orderNumber: string,
@@ -149,57 +150,120 @@ export async function createStripeOrderAndItems(
   userId?: string
 ): Promise<{ success: boolean; orderId?: string; error?: string }> {
   try {
-    // 1. Create order in public.orders (Stripe orders table)
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        order_number: orderNumber,
-        user_id: userId || null,
-        total_amount: totalAmount,
-        currency: currency || 'USD',
-        status: 'completed',
-        customer_email: customerEmail,
-        is_guest: !userId,
-        stripe_session_id: stripeSessionId,
-        stripe_payment_intent_id: stripePaymentIntentId,
-        billing_address: billingAddress || null,
-        shipping_address: shippingAddress || null,
-      })
-      .select('id')
-      .single();
-
-    if (orderError) {
-      console.error('[Supabase Integration] Error creating Stripe order:', orderError);
-      return { success: false, error: orderError.message };
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vfhxwzcbjdlfmizakvqc.supabase.co';
+    const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      const errorMsg = 'Supabase credentials not configured';
+      console.error('[Supabase Integration]', errorMsg);
+      return { success: false, error: errorMsg };
     }
+
+    // Prepare billing and shipping addresses
+    const formattedBillingAddress = billingAddress ? {
+      line1: billingAddress.address || billingAddress.line1 || '',
+      line2: billingAddress.address2 || billingAddress.line2 || null,
+      city: billingAddress.city || '',
+      state: billingAddress.state || '',
+      postal_code: billingAddress.postalCode || billingAddress.postal_code || '',
+      country: billingAddress.country || '',
+      phone: billingAddress.phone || null,
+      name: billingAddress.name || null,
+    } : null;
+
+    const formattedShippingAddress = shippingAddress ? {
+      line1: shippingAddress.address || shippingAddress.line1 || '',
+      line2: shippingAddress.address2 || shippingAddress.line2 || null,
+      city: shippingAddress.city || '',
+      state: shippingAddress.state || '',
+      postal_code: shippingAddress.postalCode || shippingAddress.postal_code || '',
+      country: shippingAddress.country || '',
+      phone: shippingAddress.phone || null,
+      name: shippingAddress.name || null,
+    } : formattedBillingAddress;
+
+    // 1. Create order in public.orders table using REST API
+    const orderPayload = {
+      order_number: orderNumber,
+      user_id: userId || null,
+      total_amount: totalAmount,
+      currency: currency || 'USD',
+      status: 'completed',
+      customer_email: customerEmail,
+      is_guest: !userId,
+      stripe_session_id: stripeSessionId === 'COD' ? null : stripeSessionId, // Don't store 'COD' placeholder
+      stripe_payment_intent_id: stripePaymentIntentId,
+      billing_address: formattedBillingAddress,
+      shipping_address: formattedShippingAddress,
+    };
+
+    console.log('[Supabase Integration] Creating order in public.orders:', orderPayload);
+
+    const orderResponse = await fetch(`${supabaseUrl}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseServiceKey,
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify(orderPayload),
+    });
+
+    if (!orderResponse.ok) {
+      const errorText = await orderResponse.text();
+      console.error('[Supabase Integration] Error creating order:', errorText);
+      console.error('[Supabase Integration] Response status:', orderResponse.status);
+      return { success: false, error: `Failed to create order: ${errorText}` };
+    }
+
+    const orderData = await orderResponse.json();
+    const order = Array.isArray(orderData) ? orderData[0] : orderData;
+    const orderId = order.id;
+
+    console.log('[Supabase Integration] Order created successfully:', orderId);
 
     // 2. Create order items
     const orderItems = items.map((item) => ({
-      order_id: order.id,
+      order_id: orderId,
       product_name: item.product_name,
       variant: item.variant || null,
       quantity: item.quantity,
-      unit_price: item.unit_price,
-      total_price: item.total_price,
+      unit_price: typeof item.unit_price === 'string' ? parseFloat(item.unit_price.replace(/[^0-9.]/g, '')) : item.unit_price,
+      total_price: typeof item.total_price === 'string' ? parseFloat(item.total_price.replace(/[^0-9.]/g, '')) : item.total_price,
       image_url: item.image_url || null,
       product_metadata: item.product_metadata || null,
     }));
 
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
+    console.log('[Supabase Integration] Creating order items:', orderItems.length, 'items');
 
-    if (itemsError) {
-      console.error('[Supabase Integration] Error creating order items:', itemsError);
+    const itemsResponse = await fetch(`${supabaseUrl}/rest/v1/order_items`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseServiceKey,
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify(orderItems),
+    });
+
+    if (!itemsResponse.ok) {
+      const errorText = await itemsResponse.text();
+      console.error('[Supabase Integration] Error creating order items:', errorText);
+      console.error('[Supabase Integration] Items response status:', itemsResponse.status);
       // Order was created, but items failed - still return success but log error
-      console.warn('[Supabase Integration] Order created but items failed:', itemsError);
+      console.warn('[Supabase Integration] Order created but items failed:', errorText);
+    } else {
+      console.log('[Supabase Integration] Order items created successfully');
     }
 
-    console.log('[Supabase Integration] Stripe order and items created successfully:', order.id);
-    return { success: true, orderId: order.id };
+    console.log('[Supabase Integration] Order and items creation complete:', orderId);
+    return { success: true, orderId: orderId };
   } catch (error: any) {
     console.error('[Supabase Integration] Error in createStripeOrderAndItems:', error);
-    return { success: false, error: error.message };
+    console.error('[Supabase Integration] Error stack:', error.stack);
+    return { success: false, error: error.message || 'Unknown error' };
   }
 }
 

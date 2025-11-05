@@ -46,18 +46,54 @@ serve(async (req) => {
     console.log('API key type:', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ? 'Service Role' : 'Anon');
     
     // Initialize Supabase client
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
+    let supabase;
+    try {
+      supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      });
+      console.log('Supabase client initialized successfully');
+    } catch (clientError: any) {
+      console.error('Failed to initialize Supabase client:', clientError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to initialize Supabase client',
+          details: clientError?.message 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
 
     // Parse request body
-    const { type, data }: TrackRequest = await req.json();
+    let requestData: TrackRequest;
+    try {
+      const bodyText = await req.text();
+      console.log('Request body received:', bodyText.substring(0, 500)); // Log first 500 chars
+      requestData = JSON.parse(bodyText);
+    } catch (parseError: any) {
+      console.error('Failed to parse request body:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid JSON in request body',
+          details: parseError?.message 
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    const { type, data } = requestData;
 
     // Validate request
     if (!type || !data) {
+      console.error('Missing required fields:', { type, hasData: !!data });
       return new Response(
         JSON.stringify({ error: 'Missing required fields: type, data' }),
         { 
@@ -66,6 +102,8 @@ serve(async (req) => {
         }
       );
     }
+
+    console.log('Processing event type:', type);
 
     // Route to appropriate handler
     let result;
@@ -111,12 +149,19 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error processing request:', error);
+    console.error('Error name:', error?.name);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Internal server error',
-        success: false 
+        error: error?.message || 'Internal server error',
+        errorType: error?.name || 'UnknownError',
+        success: false,
+        details: process.env.NODE_ENV === 'development' ? error?.stack : undefined,
       }),
       { 
         status: 500, 
@@ -174,6 +219,21 @@ async function handlePageView(supabase: any, data: any) {
   // Get visit_id from session_id if not provided
   let visitId = data.visit_id;
   
+  // If visit_id is provided, verify it exists in the database
+  if (visitId) {
+    const { data: visit, error: visitCheckError } = await supabase
+      .from('visits')
+      .select('id')
+      .eq('id', visitId)
+      .single();
+    
+    if (visitCheckError || !visit) {
+      console.warn(`Visit ID ${visitId} not found, will try to find by session_id or create new visit`);
+      visitId = null; // Reset to null if visit doesn't exist
+    }
+  }
+  
+  // If still no visit_id, try to find by session_id
   if (!visitId && data.session_id) {
     const { data: visit } = await supabase
       .from('visits')
@@ -185,6 +245,11 @@ async function handlePageView(supabase: any, data: any) {
     
     if (visit) {
       visitId = visit.id;
+    } else {
+      // Visit doesn't exist - create one or use null
+      // For page views, visit_id can be null (it's optional)
+      console.warn(`No visit found for session_id ${data.session_id}, inserting page_view without visit_id`);
+      visitId = null;
     }
   }
 
@@ -192,7 +257,7 @@ async function handlePageView(supabase: any, data: any) {
     .from('page_views')
     .insert({
       session_id: data.session_id,
-      visit_id: visitId,
+      visit_id: visitId, // Can be null if visit doesn't exist
       url: data.url,
       path: data.path,
       title: data.title,
@@ -208,6 +273,14 @@ async function handlePageView(supabase: any, data: any) {
 
   if (error) {
     console.error('Error inserting page view:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error details:', error.details);
+    console.error('Page view data attempted:', {
+      session_id: data.session_id,
+      visit_id: visitId,
+      url: data.url,
+    });
     throw error;
   }
 
@@ -221,6 +294,20 @@ async function handleEvent(supabase: any, data: any) {
   // Get visit_id from session_id if not provided
   let visitId = data.visit_id;
   
+  // If visit_id is provided, verify it exists in the database
+  if (visitId) {
+    const { data: visit, error: visitCheckError } = await supabase
+      .from('visits')
+      .select('id')
+      .eq('id', visitId)
+      .single();
+    
+    if (visitCheckError || !visit) {
+      console.warn(`Visit ID ${visitId} not found for event, will try to find by session_id or use null`);
+      visitId = null;
+    }
+  }
+  
   if (!visitId && data.session_id) {
     const { data: visit } = await supabase
       .from('visits')
@@ -232,6 +319,9 @@ async function handleEvent(supabase: any, data: any) {
     
     if (visit) {
       visitId = visit.id;
+    } else {
+      // Visit doesn't exist - can be null for events
+      visitId = null;
     }
   }
 
@@ -264,6 +354,20 @@ async function handleCartEvent(supabase: any, data: any) {
   // Get visit_id from session_id if not provided
   let visitId = data.visit_id;
   
+  // If visit_id is provided, verify it exists in the database
+  if (visitId) {
+    const { data: visit, error: visitCheckError } = await supabase
+      .from('visits')
+      .select('id')
+      .eq('id', visitId)
+      .single();
+    
+    if (visitCheckError || !visit) {
+      console.warn(`Visit ID ${visitId} not found for cart event, will try to find by session_id or use null`);
+      visitId = null;
+    }
+  }
+  
   if (!visitId && data.session_id) {
     const { data: visit } = await supabase
       .from('visits')
@@ -275,6 +379,9 @@ async function handleCartEvent(supabase: any, data: any) {
     
     if (visit) {
       visitId = visit.id;
+    } else {
+      // Visit doesn't exist - can be null for cart events
+      visitId = null;
     }
   }
 
@@ -328,6 +435,20 @@ async function handleOrder(supabase: any, data: any) {
   // Get visit_id from session_id if not provided
   let visitId = data.visit_id;
   
+  // If visit_id is provided, verify it exists in the database
+  if (visitId) {
+    const { data: visit, error: visitCheckError } = await supabase
+      .from('visits')
+      .select('id')
+      .eq('id', visitId)
+      .single();
+    
+    if (visitCheckError || !visit) {
+      console.warn(`Visit ID ${visitId} not found for order, will try to find by session_id or use null`);
+      visitId = null;
+    }
+  }
+  
   if (!visitId && data.session_id) {
     const { data: visit } = await supabase
       .from('visits')
@@ -339,6 +460,10 @@ async function handleOrder(supabase: any, data: any) {
     
     if (visit) {
       visitId = visit.id;
+    } else {
+      // Visit doesn't exist - can be null for orders (orders can exist without visits)
+      console.warn(`No visit found for session_id ${data.session_id}, creating order without visit_id`);
+      visitId = null;
     }
   }
 
@@ -388,6 +513,16 @@ async function handleOrder(supabase: any, data: any) {
 
   if (error) {
     console.error('Error inserting order:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error details:', error.details);
+    console.error('Error hint:', error.hint);
+    console.error('Order data attempted:', {
+      order_id: data.order_id,
+      customer_email: data.customer_email,
+      total_value: data.total_value,
+      items_count: data.items?.length || 0,
+    });
     throw error;
   }
 

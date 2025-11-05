@@ -171,22 +171,37 @@ export default function CheckoutPage() {
       
       // Track the order in database as completed (COD orders are confirmed on checkout)
       if ((window as any).analytics) {
-        (window as any).analytics.trackPurchase({
+        console.log('[Checkout] Tracking COD order in analytics:', {
           order_id: orderId,
           customer_email: formData.email,
-          customer_phone: formData.phone, // Include phone number
-          subtotal: subtotal,
-          shipping_total: deliveryFee,
-          discount_total: 0,
-          tax_total: 0,
           total_value: total,
-          currency: 'USD',
-          payment_method: 'cash_on_delivery',
-          shipping_method: 'cash_on_delivery', // COD includes delivery fee
-          source: (window as any).analytics?.determineSource?.() || 'direct',
-          items: items,
-          status: 'completed',
+          items_count: items.length,
         });
+
+        try {
+          (window as any).analytics.trackPurchase({
+            order_id: orderId,
+            customer_email: formData.email,
+            customer_phone: formData.phone, // Include phone number
+            subtotal: subtotal,
+            shipping_total: deliveryFee,
+            discount_total: 0,
+            tax_total: 0,
+            total_value: total,
+            currency: 'USD',
+            payment_method: 'cash_on_delivery',
+            shipping_method: 'cash_on_delivery', // COD includes delivery fee
+            source: (window as any).analytics?.determineSource?.() || 'direct',
+            items: items,
+            status: 'completed',
+          });
+          console.log('[Checkout] Analytics order tracking initiated');
+        } catch (analyticsError: any) {
+          console.error('[Checkout] Error tracking order in analytics:', analyticsError);
+          console.error('[Checkout] Analytics error details:', analyticsError.message, analyticsError.stack);
+        }
+      } else {
+        console.warn('[Checkout] Analytics SDK not available - order not tracked in analytics table');
       }
 
       // Send order email via Resend (non-blocking)
@@ -212,23 +227,33 @@ export default function CheckoutPage() {
 
       // Also create an entry in public.orders (Stripe orders table) for COD to store email and phone
       try {
-        const orderItems = cart.map((item) => ({
-          product_name: item.name,
-          variant: item.selectedColor || item.selectedSize || undefined,
-          quantity: item.quantity,
-          unit_price: item.price,
-          total_price: item.price * item.quantity,
-          image_url: item.image || undefined,
-          product_metadata: {
-            product_id: item.id,
-            selectedColor: item.selectedColor,
-            selectedSize: item.selectedSize,
-          },
-        }));
+        const orderItems = cart.map((item) => {
+          const unitPrice = parsePriceToNumber(item.price);
+          return {
+            product_name: item.name,
+            variant: item.selectedColor || item.selectedSize || undefined,
+            quantity: item.quantity,
+            unit_price: unitPrice,
+            total_price: unitPrice * item.quantity,
+            image_url: item.image || undefined,
+            product_metadata: {
+              product_id: item.id,
+              selectedColor: item.selectedColor,
+              selectedSize: item.selectedSize,
+            },
+          };
+        });
 
-        await createStripeOrderAndItems(
+        console.log('[Checkout] Creating COD order in public.orders:', {
+          orderId,
+          customerEmail: formData.email,
+          total,
+          itemsCount: orderItems.length,
+        });
+
+        const result = await createStripeOrderAndItems(
           orderId,            // orderNumber
-          'COD',              // stripeSessionId placeholder
+          'COD',              // stripeSessionId placeholder (will be set to null)
           null,               // stripePaymentIntentId
           formData.email,     // customerEmail
           total,              // totalAmount
@@ -238,8 +263,15 @@ export default function CheckoutPage() {
           formData,           // shippingAddress (contains phone)
           undefined           // userId
         );
-      } catch (err) {
-        console.warn('[Checkout] Failed to create COD order in public.orders:', err);
+
+        if (result.success) {
+          console.log('[Checkout] COD order created successfully in public.orders:', result.orderId);
+        } else {
+          console.error('[Checkout] Failed to create COD order in public.orders:', result.error);
+        }
+      } catch (err: any) {
+        console.error('[Checkout] Error creating COD order in public.orders:', err);
+        console.error('[Checkout] Error details:', err.message, err.stack);
       }
       
       // Clear cart immediately
