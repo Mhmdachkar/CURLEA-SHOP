@@ -205,10 +205,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: string, selectedColor?: string, selectedSize?: string) => {
+    const currentState = loadCartFromStorage();
+    const item = currentState.items.find(
+      (i) => i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize
+    );
+
     dispatch({
       type: 'REMOVE_FROM_CART',
       payload: { id, selectedColor, selectedSize },
     });
+
+    // Track analytics
+    if (item && typeof window !== 'undefined' && (window as any).analytics) {
+      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const newCartTotal = currentState.items
+        .filter((i) => !(i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize))
+        .reduce((sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity, 0);
+
+      (window as any).analytics.trackCart('remove', {
+        product_id: id,
+        title: item.name,
+        price: priceNumber,
+        quantity: item.quantity,
+        variant_id: selectedSize || selectedColor || undefined,
+        variant_title: selectedSize || selectedColor || undefined,
+        total_value: priceNumber * item.quantity,
+        cart_total: newCartTotal,
+      });
+    }
   };
 
   const updateQuantity = (id: string, quantity: number, selectedColor?: string, selectedSize?: string) => {
