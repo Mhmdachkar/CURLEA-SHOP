@@ -145,7 +145,8 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
     'zero-heat-mini': {
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
-      'CANDY': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href
+      'CANDY': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+      'PURPLE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-purple.webp', import.meta.url).href
     }
   };
 

@@ -132,3 +132,4 @@ Should return:
 - The SERVICE_ROLE_KEY bypasses all RLS policies
 - Keep it secure and rotate it if exposed
 
+

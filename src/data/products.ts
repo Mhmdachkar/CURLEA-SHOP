@@ -171,11 +171,12 @@ export const products: Product[] = [
     ingredients: ["Finest Peau De Soie Fabric", "Sustainably Grown Materials", "Premium Fill"],
     size: "Mini Size",
     inStock: true,
-    colors: ["OLIVE", "LATTE", "CANDY"],
+    colors: ["OLIVE", "LATTE", "CANDY", "PURPLE"],
     images: [
       new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
       new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
       new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+      new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-purple.webp', import.meta.url).href,
       new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href
     ]
   },

@@ -364,6 +364,12 @@ export const ProductDetailPage = () => {
           'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
           'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
           'BUTTERMILK': new URL('../assets/Heatless Hair Curling Rod/product5/pppp5.webp', import.meta.url).href
+        },
+        'zero-heat-mini': {
+          'OLIVE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
+          'LATTE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
+          'CANDY': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+          'PURPLE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-purple.webp', import.meta.url).href
         }
       };
 
@@ -2239,11 +2245,12 @@ const getHeatlessCurlingRodProductById = (id: string): Product | undefined => {
       ingredients: ["Finest Peau De Soie Fabric", "Sustainably Grown Materials", "Premium Fill"],
       size: "Mini Size",
       inStock: true,
-      colors: ["OLIVE", "LATTE", "CANDY"],
+      colors: ["OLIVE", "LATTE", "CANDY", "PURPLE"],
       images: [
         new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+        new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-purple.webp', import.meta.url).href,
         new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href
       ]
     },
@@ -3669,11 +3676,12 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
 
 // Zero Heat Mini Image Gallery Component - color-to-image mapping
 const ZeroHeatMiniImageGallery = ({ product, selectedColor, onColorSelect }: { product: Product; selectedColor: string; onColorSelect: (color: string) => void }) => {
-  // Import images for Zero Heat Mini (3 colors + guide)
+  // Import images for Zero Heat Mini (4 colors + guide)
   const miniImages = {
     OLIVE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
     LATTE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-latte.webp', import.meta.url).href,
     CANDY: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-candy.webp', import.meta.url).href,
+    PURPLE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-purple.webp', import.meta.url).href,
     GUIDE: new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-guide.webp', import.meta.url).href,
   } as const;
 
