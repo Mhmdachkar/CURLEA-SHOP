@@ -18,3 +18,4 @@ LEFT JOIN cart_events ce ON v.session_id = ce.session_id
 WHERE v.created_at >= NOW() - INTERVAL '30 days';
 
 
+

@@ -336,3 +336,4 @@
 **All database columns are fully connected to the website and displayed in the analytics dashboard.** The system captures comprehensive analytics data including visits, page views, events, cart interactions, orders, and products with complete metadata and variant information.
 
 
+

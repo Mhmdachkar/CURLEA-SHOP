@@ -84,6 +84,7 @@ const getColorOptions = (colors?: string[]): ColorOption[] => {
     'black': 'bg-black',
     'white': 'bg-white',
     'mulberry': 'bg-purple-700',
+    'purple': 'bg-purple-700',
     'candy': 'bg-pink-400',
     'latte': 'bg-amber-200',
     'olive': 'bg-green-700',
@@ -97,10 +98,26 @@ const getColorOptions = (colors?: string[]): ColorOption[] => {
     'print': 'bg-gray-300'
   };
 
-  return colors.map(color => ({
-    name: color,
-    bgClass: colorMap[color.toLowerCase()] || 'bg-gray-400'
-  }));
+  return colors.map(color => {
+    const normalizedColor = color.toLowerCase().trim();
+    // Try exact match first
+    let bgClass = colorMap[normalizedColor];
+    
+    // If not found, try partial matches for compound colors
+    if (!bgClass) {
+      // Check for "purple" in the color name
+      if (normalizedColor.includes('purple') && !normalizedColor.includes('royal')) {
+        bgClass = 'bg-purple-700';
+      } else {
+        bgClass = 'bg-gray-400'; // Default fallback
+      }
+    }
+    
+    return {
+      name: color,
+      bgClass: bgClass
+    };
+  });
 };
 
 // Helper function to get color-specific image based on product ID and color
@@ -152,13 +169,23 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
 
   // Return color-specific image if available, otherwise return default
   const productColorMap = colorImageMap[productId];
-  if (productColorMap && productColorMap[colorName]) {
-    return productColorMap[colorName];
+  if (productColorMap) {
+    // Try exact match first
+    if (productColorMap[colorName]) {
+      return productColorMap[colorName];
+    }
+    // Try case-insensitive match
+    const colorKey = Object.keys(productColorMap).find(
+      key => key.toUpperCase() === colorName.toUpperCase()
+    );
+    if (colorKey && productColorMap[colorKey]) {
+      return productColorMap[colorKey];
+    }
   }
 
   // Fallback: try to map by color index if images array is available
   if (images && images.length > 0) {
-    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Mulberry', 'Olive', 'Purple'].indexOf(colorName);
+    const colorIndex = ['Rose Gold', 'Royal Purple', 'Olive Lux', 'Earl Grey', 'Candy', 'Latte', 'Mulberry', 'Olive', 'Purple', 'PURPLE'].indexOf(colorName);
     if (colorIndex >= 0 && colorIndex < images.length) {
       return images[colorIndex];
     }
