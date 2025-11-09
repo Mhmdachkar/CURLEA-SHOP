@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setPaymentMethod('stripe')}
-                className={`group cursor-pointer rounded-xl p-4 border transition-all relative overflow-hidden ${
+                className={`group cursor-pointer rounded-sm p-4 border transition-all relative overflow-hidden ${
                   paymentMethod === 'stripe'
                     ? 'bg-gradient-to-br from-[#A4193D]/10 to-[#D4AF37]/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/20 shadow-sm'
                     : 'bg-white border-gray-200 hover:border-[#D4AF37] hover:shadow-md'
@@ -458,7 +458,7 @@ export default function CheckoutPage() {
                 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setPaymentMethod('cod')}
-                className={`group cursor-pointer rounded-xl p-4 border transition-all relative overflow-hidden ${
+                className={`group cursor-pointer rounded-sm p-4 border transition-all relative overflow-hidden ${
                   paymentMethod === 'cod'
                     ? 'bg-gray-50 border-gray-900 ring-2 ring-gray-900/10 shadow-sm'
                     : 'bg-white border-gray-200 hover:border-gray-400 hover:shadow-md'
@@ -524,7 +524,7 @@ export default function CheckoutPage() {
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden"
                 >
-                  <div className="bg-white rounded-xl p-6 border border-gray-200">
+                  <div className="bg-white rounded-sm p-6 border border-gray-200">
                     <div className="flex items-center gap-2 mb-5">
                       <MapPin className="w-4 h-4 text-gray-400" />
                       <h3 className="text-sm font-medium text-gray-900" style={typography}>
@@ -544,7 +544,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('name', e.target.value)}
                           onBlur={() => handleBlur('name')}
                           
-                          className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                          className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                             errors.name
                               ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                               : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
@@ -567,8 +567,7 @@ export default function CheckoutPage() {
                             value={formData.phone}
                             onChange={(e) => handleInputChange('phone', e.target.value)}
                             onBlur={() => handleBlur('phone')}
-                            placeholder="81939088 or +961 81 939 088"
-                            className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                            className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                               errors.phone
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                                 : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
@@ -590,7 +589,7 @@ export default function CheckoutPage() {
                             onChange={(e) => handleInputChange('email', e.target.value)}
                             onBlur={() => handleBlur('email')}
                            
-                            className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                            className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                               errors.email
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                                 : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
@@ -614,7 +613,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('address', e.target.value)}
                           onBlur={() => handleBlur('address')}
                           placeholder="123 Main Street"
-                          className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                          className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                             errors.address
                               ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                               : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
@@ -638,7 +637,7 @@ export default function CheckoutPage() {
                             onChange={(e) => handleInputChange('city', e.target.value)}
                             onBlur={() => handleBlur('city')}
                             placeholder="Beirut"
-                            className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                            className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                               errors.city
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                                 : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
@@ -660,7 +659,7 @@ export default function CheckoutPage() {
                             onChange={(e) => handleInputChange('zipCode', e.target.value)}
                             onBlur={() => handleBlur('zipCode')}
                             placeholder="1107"
-                            className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+                            className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${
                               errors.zipCode
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                                 : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
