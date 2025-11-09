@@ -69,7 +69,7 @@ exports.handler = async (event) => {
 
         let subtotal = 0;
         let discountAmount = 0;
-        let deliveryFee = 4.00; // Default delivery fee
+        let deliveryFee = 0.00; // No delivery fee for Stripe payments
         const cart = [];
 
         for (const item of lineItems.data) {

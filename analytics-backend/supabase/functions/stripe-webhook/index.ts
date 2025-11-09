@@ -123,7 +123,7 @@ serve(async (req) => {
       
       let subtotal = 0;
       let discountAmount = 0;
-      let deliveryFee = 4.00; // Default
+      let deliveryFee = 0.00; // No delivery fee for Stripe payments
       const cartItems: any[] = [];
 
       for (const item of lineItems.data) {

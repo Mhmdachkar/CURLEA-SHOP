@@ -3,9 +3,11 @@
  * Provides offline support and performance optimization
  */
 
-const CACHE_NAME = 'curlea-luxe-v2.0.0';
-const STATIC_CACHE_NAME = 'curlea-static-v2.0.0';
-const DYNAMIC_CACHE_NAME = 'curlea-dynamic-v2.0.0';
+// IMPORTANT: Increment version on every deployment to force cache refresh
+const CACHE_VERSION = Date.now(); // Always use timestamp for fresh cache
+const CACHE_NAME = `curlea-luxe-v${CACHE_VERSION}`;
+const STATIC_CACHE_NAME = `curlea-static-v${CACHE_VERSION}`;
+const DYNAMIC_CACHE_NAME = `curlea-dynamic-v${CACHE_VERSION}`;
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -54,7 +56,10 @@ self.addEventListener('activate', (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
+            // Delete ALL old caches to force fresh content
+            if (cacheName.startsWith('curlea-') && 
+                cacheName !== STATIC_CACHE_NAME && 
+                cacheName !== DYNAMIC_CACHE_NAME) {
               console.log('🗑️ Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
@@ -62,8 +67,18 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('✅ Service Worker: Activation complete');
-        return self.clients.claim(); // Take control immediately
+        console.log('✅ Service Worker: Activation complete - all old caches cleared');
+        // Force all tabs to reload with new content
+        return self.clients.claim().then(() => {
+          return self.clients.matchAll().then((clients) => {
+            clients.forEach((client) => {
+              client.postMessage({
+                type: 'CACHE_UPDATED',
+                message: 'New version available! Reloading...'
+              });
+            });
+          });
+        });
       })
   );
 });
@@ -189,21 +204,31 @@ async function networkFirstStrategy(request) {
   }
 }
 
-// Stale While Revalidate Strategy - for HTML pages
+// Network First Strategy for HTML pages - ALWAYS get fresh content
 async function staleWhileRevalidateStrategy(request) {
-  const cachedResponse = await caches.match(request);
-  
-  const networkResponsePromise = fetch(request)
-    .then((response) => {
-      if (response.ok) {
-        const cache = caches.open(DYNAMIC_CACHE_NAME);
-        cache.then((c) => c.put(request, response.clone()));
-      }
-      return response;
-    })
-    .catch(() => cachedResponse);
-  
-  return cachedResponse || networkResponsePromise;
+  try {
+    // ALWAYS try network first for HTML to get latest version
+    console.log('🌐 Service Worker: Fetching fresh HTML from network', request.url);
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse.ok) {
+      // Cache the fresh response
+      const cache = await caches.open(DYNAMIC_CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    // Only fall back to cache if network fails
+    console.log('📦 Service Worker: Network failed, using cached HTML', request.url);
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    throw error;
+  }
 }
 
 // Helper functions to identify request types

@@ -27,12 +27,21 @@ export const registerServiceWorker = async () => {
         }
       });
       
-      // Handle service worker messages
+      // Handle service worker messages - force reload on cache update
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data && event.data.type === 'CACHE_UPDATED') {
-          console.log('📦 Cache updated:', event.data.payload);
+          console.log('📦 Cache updated:', event.data.message);
+          // Force hard reload to get latest version
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         }
       });
+      
+      // Check for updates every 60 seconds
+      setInterval(() => {
+        registration.update();
+      }, 60000);
       
       return registration;
     } catch (error) {
@@ -48,8 +57,24 @@ export const registerServiceWorker = async () => {
 // Auto-reload when a new version is installed to avoid stale pages
 const showUpdateNotification = () => {
   try {
-    // Force reload bypassing caches
-    window.location.reload();
+    console.log('🔄 New version detected! Reloading page...');
+    // Force hard reload bypassing all caches
+    if ('caches' in window) {
+      // Clear all caches before reload
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          if (name.startsWith('curlea-')) {
+            caches.delete(name);
+          }
+        });
+      }).finally(() => {
+        // Hard reload
+        window.location.reload();
+      });
+    } else {
+      // Fallback: simple reload
+      window.location.reload();
+    }
   } catch (_) {
     // Fallback navigation
     window.location.href = window.location.href;

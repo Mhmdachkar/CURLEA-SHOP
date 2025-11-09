@@ -86,7 +86,7 @@ exports.handler = async (event, context) => {
     // Format line items (excluding discount line items)
     if (session.line_items?.data) {
       let calculatedSubtotal = 0;
-      let extractedDeliveryFee = 4.00; // Default
+      let extractedDeliveryFee = 0.00; // No delivery fee for Stripe payments
       
       session.line_items.data.forEach((item) => {
         // Skip discount line items (negative amounts)

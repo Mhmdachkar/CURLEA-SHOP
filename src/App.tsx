@@ -28,6 +28,16 @@ const App = () => {
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       registerServiceWorker();
+      
+      // Force check for service worker updates on page load
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (reg) {
+            console.log('🔍 Checking for service worker updates...');
+            reg.update();
+          }
+        });
+      }
     }
   }, []);
 

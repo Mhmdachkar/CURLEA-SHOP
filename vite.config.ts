@@ -34,6 +34,10 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
+          // Add hash to filenames for cache busting
+          entryFileNames: 'assets/[name].[hash].js',
+          chunkFileNames: 'assets/[name].[hash].js',
+          assetFileNames: 'assets/[name].[hash].[ext]',
           manualChunks: {
             vendor: ['react', 'react-dom'],
             router: ['react-router-dom'],
@@ -41,7 +45,11 @@ export default defineConfig(({ mode }) => {
             ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
           }
         }
-      }
+      },
+      // Generate manifest for cache busting
+      manifest: true,
+      // Clear output directory before build
+      emptyOutDir: true
     },
     plugins: [react(), mode === "development" && componentTagger].filter(Boolean),
     resolve: {

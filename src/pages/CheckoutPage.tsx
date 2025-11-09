@@ -63,8 +63,8 @@ export default function CheckoutPage() {
     return paymentMethod === 'stripe' ? subtotal * 0.05 : 0;
   }, [paymentMethod, subtotal]);
   
-  // $4 delivery fee applies to both COD and Stripe
-  const deliveryFee = 4;
+  // Delivery fee: $0 for Stripe payments (free delivery), $4 for COD
+  const deliveryFee = paymentMethod === 'stripe' ? 0 : 4;
   const total = subtotal + deliveryFee - stripeDiscount;
   const savings = useMemo(() => {
     return cart.reduce((sum, item) => {
@@ -809,15 +809,17 @@ export default function CheckoutPage() {
                     </span>
                   </motion.div>
                 )}
-                <motion.div 
-                  className="flex justify-between items-center gap-2 text-sm"
-                  whileHover={{ x: 2, transition: { duration: 0.2 } }}
-                >
-                  <span className="text-gray-600 flex-shrink-0" style={typography}>Delivery</span>
-                  <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>
-                    ${deliveryFee.toFixed(2)}
-                  </span>
-                </motion.div>
+                {deliveryFee > 0 && (
+                  <motion.div 
+                    className="flex justify-between items-center gap-2 text-sm"
+                    whileHover={{ x: 2, transition: { duration: 0.2 } }}
+                  >
+                    <span className="text-gray-600 flex-shrink-0" style={typography}>Delivery</span>
+                    <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>
+                      ${deliveryFee.toFixed(2)}
+                    </span>
+                  </motion.div>
+                )}
                 <motion.div 
                   className="flex justify-between items-center gap-2 pt-3 border-t border-gray-200"
                   whileHover={{ 
