@@ -4,15 +4,18 @@
  */
 
 exports.handler = async (event, context) => {
+  // CORS headers - restrict to your domain in production
+  const headers = {
+    'Access-Control-Allow-Origin': process.env.DEPLOY_PRIME_URL || process.env.URL || 'https://curlea.beauty',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+
   // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      },
+      headers,
       body: '',
     };
   }
@@ -21,10 +24,7 @@ exports.handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers,
       body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
@@ -35,10 +35,7 @@ exports.handler = async (event, context) => {
     if (!sessionId) {
       return {
         statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        headers,
         body: JSON.stringify({ error: 'Session ID is required' }),
       };
     }
@@ -135,10 +132,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers,
       body: JSON.stringify({
         success: true,
         order: orderData,
@@ -148,10 +142,7 @@ exports.handler = async (event, context) => {
     console.error('Error retrieving Stripe order:', error);
     return {
       statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers,
       body: JSON.stringify({
         error: 'Failed to retrieve order details',
         message: error.message,

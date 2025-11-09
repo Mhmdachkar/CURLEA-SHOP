@@ -12,9 +12,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-06-20',
 });
 
-// CORS headers (not strictly necessary for Stripe → server calls, but harmless)
+// CORS headers
+// PRODUCTION: Restrict to your domain only for better security
+// For development, you can use '*' or your dev URL
 const headers = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': process.env.DEPLOY_PRIME_URL || process.env.URL || 'https://curlea.beauty',
   'Access-Control-Allow-Headers': 'Content-Type,Stripe-Signature',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };

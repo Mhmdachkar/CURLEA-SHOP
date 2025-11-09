@@ -151,9 +151,11 @@ export async function createStripeOrderAndItems(
 ): Promise<{ success: boolean; orderId?: string; error?: string }> {
   try {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vfhxwzcbjdlfmizakvqc.supabase.co';
-    const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    // SECURITY: Use anon key for client-side operations
+    // Service role key operations should be done via Edge Functions/Netlify Functions
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
     
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !supabaseKey) {
       const errorMsg = 'Supabase credentials not configured';
       console.error('[Supabase Integration]', errorMsg);
       return { success: false, error: errorMsg };
@@ -199,12 +201,14 @@ export async function createStripeOrderAndItems(
 
     console.log('[Supabase Integration] Creating order in public.orders:', orderPayload);
 
+    // SECURITY: Use anon key with RLS policies for client-side operations
+    // For order creation, we rely on RLS policies to allow inserts
     const orderResponse = await fetch(`${supabaseUrl}/rest/v1/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': supabaseServiceKey,
-        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
         'Prefer': 'return=representation',
       },
       body: JSON.stringify(orderPayload),
@@ -237,12 +241,13 @@ export async function createStripeOrderAndItems(
 
     console.log('[Supabase Integration] Creating order items:', orderItems.length, 'items');
 
+    // SECURITY: Use anon key with RLS policies
     const itemsResponse = await fetch(`${supabaseUrl}/rest/v1/order_items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': supabaseServiceKey,
-        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
         'Prefer': 'return=representation',
       },
       body: JSON.stringify(orderItems),

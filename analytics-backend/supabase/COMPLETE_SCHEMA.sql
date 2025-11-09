@@ -353,6 +353,15 @@ CREATE TRIGGER update_orders_updated_at
 -- ANALYTICS VIEWS
 -- =====================================================
 
+-- Drop existing views first to avoid conflicts
+DROP VIEW IF EXISTS daily_overview CASCADE;
+DROP VIEW IF EXISTS sales_overview CASCADE;
+DROP VIEW IF EXISTS top_products_by_revenue CASCADE;
+DROP VIEW IF EXISTS traffic_sources CASCADE;
+DROP VIEW IF EXISTS conversion_funnel_realtime CASCADE;
+DROP VIEW IF EXISTS abandoned_carts CASCADE;
+DROP VIEW IF EXISTS campaign_performance CASCADE;
+
 -- View: Daily Overview Stats
 CREATE OR REPLACE VIEW daily_overview AS
 SELECT 
