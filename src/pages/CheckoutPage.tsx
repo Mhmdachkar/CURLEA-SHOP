@@ -29,7 +29,7 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     zipCode: '',
-    country: ''
+    country: 'Lebanon' // Default to Lebanon
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,7 +80,9 @@ export default function CheckoutPage() {
       case 'name':
         return value.trim().length < 2 ? 'Name must be at least 2 characters' : '';
       case 'phone':
-        return !/^[\d\s+()-]{10,}$/.test(value) ? 'Please enter a valid phone number' : '';
+        // Accept Lebanese numbers: 81939088, +961 81 939 088, 03 123 456, etc.
+        const phoneRegex = /^[\d\s+()-]{7,}$/; // At least 7 digits (Lebanese numbers can be 7-8 digits)
+        return !phoneRegex.test(value) ? 'Please enter a valid phone number' : '';
       case 'email':
         return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Please enter a valid email' : '';
       case 'address':
@@ -90,7 +92,8 @@ export default function CheckoutPage() {
       case 'zipCode':
         return value.trim().length < 3 ? 'Zip code is required' : '';
       case 'country':
-        return value.trim().length < 2 ? 'Country is required' : '';
+        // Country is always Lebanon, no validation needed
+        return '';
       default:
         return '';
     }
@@ -119,6 +122,9 @@ export default function CheckoutPage() {
     
     const newErrors: Record<string, string> = {};
     Object.keys(formData).forEach(key => {
+      // Skip country validation (always Lebanon)
+      if (key === 'country') return;
+      
       const error = validateField(key, formData[key as keyof typeof formData]);
       if (error) newErrors[key] = error;
     });
@@ -155,6 +161,9 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     
     try {
+      // Ensure country is always Lebanon
+      const deliveryData = { ...formData, country: 'Lebanon' };
+      
       // Generate unique order ID
       const orderId = `COD-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       
@@ -209,7 +218,7 @@ export default function CheckoutPage() {
         orderId,
         paymentMethod: 'cod',
         customerEmail: formData.email,
-        delivery: formData,
+        delivery: deliveryData,
         cart: cart.map(item => ({
           name: item.name,
           price: item.price,
@@ -259,8 +268,8 @@ export default function CheckoutPage() {
           total,              // totalAmount
           'USD',              // currency
           orderItems,         // items
-          formData,           // billingAddress (contains phone)
-          formData,           // shippingAddress (contains phone)
+          deliveryData,       // billingAddress (contains phone, country always Lebanon)
+          deliveryData,       // shippingAddress (contains phone, country always Lebanon)
           undefined           // userId
         );
 
@@ -417,7 +426,7 @@ export default function CheckoutPage() {
                         Stripe Checkout
                       </p>
                       <p className="text-xs text-gray-500" style={typography}>
-                        Secure card payment • PCI compliant • <span className="font-semibold">+$4.00 fee</span>
+                        Secure card payment • PCI compliant
                       </p>
                       <p className="text-xs font-semibold text-green-600 mt-1" style={typography}>
                         🎉 Get 5% discount on total price!
@@ -558,7 +567,7 @@ export default function CheckoutPage() {
                             value={formData.phone}
                             onChange={(e) => handleInputChange('phone', e.target.value)}
                             onBlur={() => handleBlur('phone')}
-                            placeholder="+961 71 234 567"
+                            placeholder="81939088 or +961 81 939 088"
                             className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
                               errors.phone
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
@@ -617,8 +626,8 @@ export default function CheckoutPage() {
                         )}
                       </div>
 
-                      {/* City, Zip, Country */}
-                      <div className="grid grid-cols-3 gap-4">
+                      {/* City, Zip */}
+                      <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1.5" style={typography}>
                             City
@@ -660,28 +669,6 @@ export default function CheckoutPage() {
                           />
                           {errors.zipCode && (
                             <p className="text-xs text-red-600 mt-1" style={typography}>{errors.zipCode}</p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1.5" style={typography}>
-                            Country
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.country}
-                            onChange={(e) => handleInputChange('country', e.target.value)}
-                            onBlur={() => handleBlur('country')}
-                            placeholder="Lebanon"
-                            className={`w-full px-3 py-2 text-sm rounded-lg border transition-all focus:outline-none focus:ring-2 ${
-                              errors.country
-                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
-                            }`}
-                            style={typography}
-                          />
-                          {errors.country && (
-                            <p className="text-xs text-red-600 mt-1" style={typography}>{errors.country}</p>
                           )}
                         </div>
                       </div>
