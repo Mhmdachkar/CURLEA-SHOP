@@ -307,8 +307,35 @@ const ClearButton = styled.button`
    CART DRAWER COMPONENT
    ============================================ */
 
+const DiscountRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, rgba(164, 25, 61, 0.05), rgba(212, 175, 55, 0.05));
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const DiscountLabel = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: #A4193D;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+`;
+
+const DiscountAmount = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #A4193D;
+`;
+
 export const CartDrawer = () => {
-  const { state, updateQuantity, removeFromCart, clearCart, closeCart } = useCart();
+  const { state, updateQuantity, removeFromCart, clearCart, closeCart, promoDiscount } = useCart();
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -346,10 +373,11 @@ export const CartDrawer = () => {
   }, [state.isOpen, state.items]);
 
   const calculateTotal = () => {
-    return state.items.reduce((total, item) => {
+    const subtotal = state.items.reduce((total, item) => {
       const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       return total + (price * item.quantity);
     }, 0);
+    return subtotal - promoDiscount;
   };
 
   const formatPrice = (price: number) => {
@@ -533,6 +561,16 @@ export const CartDrawer = () => {
                       </CartItemCard>
                     ))}
                   </ItemsList>
+
+                  {/* Promotional Discount */}
+                  {promoDiscount > 0 && (
+                    <DiscountRow>
+                      <DiscountLabel>
+                        <span>🎉</span> Buy 2 Get 50% Off 3rd
+                      </DiscountLabel>
+                      <DiscountAmount>-{formatPrice(promoDiscount)}</DiscountAmount>
+                    </DiscountRow>
+                  )}
 
                   {/* Checkout Button and Total */}
                   <ButtonGroup>

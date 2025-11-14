@@ -99,6 +99,7 @@ export const CollectionPage = () => {
   return (
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
+      
       {/* Modern Elegant Brand Loader */}
       <AnimatePresence mode="wait">
         {showLoader && (

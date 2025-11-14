@@ -10,6 +10,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
+import PromotionalPopup from "@/components/PromotionalPopup";
 import Index from "./pages/Index";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CollectionPage } from "./pages/CollectionPage";
@@ -95,6 +96,7 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <CartDrawer />
+              <PromotionalPopup />
             </BrowserRouter>
             </CartProvider>
           </RealtimeProvider>
