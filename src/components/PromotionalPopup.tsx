@@ -5,9 +5,20 @@ export default function PromotionalPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -50,6 +61,23 @@ export default function PromotionalPopup() {
     return null;
   }
 
+  // Responsive styles
+  const containerTop = isMobile ? '80px' : '100px';
+  const containerPadding = isMobile ? '12px' : '16px';
+  const cardPadding = isMobile ? '20px' : '32px';
+  const cardPaddingTop = isMobile ? '18px' : '28px';
+  const iconSize = isMobile ? '40px' : '48px';
+  const iconFontSize = isMobile ? '20px' : '24px';
+  const titleFontSize = isMobile ? '20px' : '24px';
+  const messageFontSize = isMobile ? '14px' : '15px';
+  const messageHighlightSize = isMobile ? '15px' : '16px';
+  const noteFontSize = isMobile ? '11px' : '12px';
+  const closeButtonSize = isMobile ? '36px' : 'auto';
+  const closeButtonPadding = isMobile ? '8px' : '8px';
+  const closeIconSize = isMobile ? 18 : 16;
+  const maxWidth = isMobile ? 'calc(100% - 24px)' : '420px';
+  const borderRadius = isMobile ? '12px' : '16px';
+
   return (
     <div 
       style={{
@@ -72,8 +100,8 @@ export default function PromotionalPopup() {
           right: 0,
           bottom: 0,
           backgroundColor: isVisible ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0)',
-          backdropFilter: isVisible ? 'blur(4px)' : 'blur(0px)',
-          WebkitBackdropFilter: isVisible ? 'blur(4px)' : 'blur(0px)',
+          backdropFilter: isVisible && !isMobile ? 'blur(4px)' : 'none',
+          WebkitBackdropFilter: isVisible && !isMobile ? 'blur(4px)' : 'none',
           pointerEvents: 'auto',
           transition: 'all 0.4s ease-out',
           cursor: 'pointer'
@@ -84,12 +112,12 @@ export default function PromotionalPopup() {
       <div
         style={{
           position: 'absolute',
-          top: '100px',
+          top: containerTop,
           left: '50%',
           transform: `translateX(-50%) translateY(${isVisible ? '0' : '-20px'})`,
           width: '100%',
-          maxWidth: '420px',
-          padding: '0 16px',
+          maxWidth: maxWidth,
+          padding: `0 ${containerPadding}`,
           pointerEvents: 'auto',
           zIndex: 100000,
           opacity: isVisible ? 1 : 0,
@@ -103,7 +131,7 @@ export default function PromotionalPopup() {
           style={{
             position: 'relative',
             background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
-            borderRadius: '16px',
+            borderRadius: borderRadius,
             boxShadow: isVisible 
               ? '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(164, 25, 61, 0.1), 0 0 40px rgba(164, 25, 61, 0.15)'
               : '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
@@ -111,8 +139,8 @@ export default function PromotionalPopup() {
             pointerEvents: 'auto',
             overflow: 'hidden',
             transition: 'box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)'
+            backdropFilter: !isMobile ? 'blur(10px)' : 'none',
+            WebkitBackdropFilter: !isMobile ? 'blur(10px)' : 'none'
           }}
         >
           {/* Animated gradient accent bar */}
@@ -124,7 +152,7 @@ export default function PromotionalPopup() {
               right: 0,
               height: '3px',
               background: 'linear-gradient(90deg, #A4193D 0%, #D4AF37 50%, #A4193D 100%)',
-              borderRadius: '16px 16px 0 0',
+              borderRadius: `${borderRadius} ${borderRadius} 0 0`,
               backgroundSize: '200% 100%',
               animation: isVisible ? 'shimmer 3s ease-in-out infinite' : 'none'
             }}
@@ -147,14 +175,16 @@ export default function PromotionalPopup() {
             }
           `}</style>
 
-          {/* Close button */}
+          {/* Close button - larger on mobile for touch */}
           <button
             onClick={handleClose}
             style={{
               position: 'absolute',
-              top: '16px',
-              right: '16px',
-              padding: '8px',
+              top: isMobile ? '12px' : '16px',
+              right: isMobile ? '12px' : '16px',
+              padding: closeButtonPadding,
+              minWidth: closeButtonSize,
+              minHeight: closeButtonSize,
               borderRadius: '50%',
               border: 'none',
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -164,32 +194,45 @@ export default function PromotionalPopup() {
               justifyContent: 'center',
               zIndex: 10,
               transition: 'all 0.2s ease',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              touchAction: 'manipulation'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff';
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+              if (!isMobile) {
+                e.currentTarget.style.backgroundColor = '#ffffff';
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+              }
             }}
             onMouseLeave={(e) => {
+              if (!isMobile) {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+              }
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.backgroundColor = '#ffffff';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onTouchEnd={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
               e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
             }}
             aria-label="Close"
           >
-            <X size={16} color="#6b7280" />
+            <X size={closeIconSize} color="#6b7280" />
           </button>
 
           {/* Content */}
-          <div style={{ padding: '32px', paddingTop: '28px' }}>
+          <div style={{ padding: cardPadding, paddingTop: cardPaddingTop }}>
             <div style={{ textAlign: 'center' }}>
               {/* Elegant decorative element */}
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  margin: '0 auto 16px',
+                  width: iconSize,
+                  height: iconSize,
+                  margin: `0 auto ${isMobile ? '12px' : '16px'}`,
                   borderRadius: '50%',
                   background: 'linear-gradient(135deg, #A4193D 0%, #D4AF37 100%)',
                   display: 'flex',
@@ -201,20 +244,20 @@ export default function PromotionalPopup() {
                   transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
               >
-                <span style={{ fontSize: '24px' }}>✨</span>
+                <span style={{ fontSize: iconFontSize }}>✨</span>
               </div>
 
               {/* Title */}
               <h3
                 style={{
                   fontFamily: 'Cormorant Garamond, serif',
-                  fontSize: '24px',
+                  fontSize: titleFontSize,
                   fontWeight: 700,
                   background: 'linear-gradient(135deg, #A4193D 0%, #D4AF37 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  marginBottom: '12px',
+                  marginBottom: isMobile ? '10px' : '12px',
                   letterSpacing: '-0.02em',
                   lineHeight: '1.3',
                   animation: isVisible ? 'fadeInUp 0.6s ease-out 0.3s both' : 'none',
@@ -230,11 +273,12 @@ export default function PromotionalPopup() {
               <p
                 style={{
                   fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                  fontSize: '15px',
+                  fontSize: messageFontSize,
                   color: '#374151',
                   lineHeight: '1.7',
-                  marginBottom: '20px',
+                  marginBottom: isMobile ? '16px' : '20px',
                   fontWeight: 400,
+                  padding: isMobile ? '0 4px' : '0',
                   animation: isVisible ? 'fadeInUp 0.6s ease-out 0.4s both' : 'none',
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
@@ -246,7 +290,7 @@ export default function PromotionalPopup() {
                   style={{ 
                     fontWeight: 700, 
                     color: '#A4193D',
-                    fontSize: '16px',
+                    fontSize: messageHighlightSize,
                     letterSpacing: '0.02em'
                   }}
                 >
@@ -258,9 +302,9 @@ export default function PromotionalPopup() {
               {/* Elegant divider */}
               <div
                 style={{
-                  width: '60px',
+                  width: isMobile ? '50px' : '60px',
                   height: '2px',
-                  margin: '0 auto 16px',
+                  margin: `0 auto ${isMobile ? '12px' : '16px'}`,
                   background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
                   animation: isVisible ? 'fadeInUp 0.6s ease-out 0.5s both' : 'none',
                   opacity: isVisible ? 1 : 0
@@ -271,7 +315,7 @@ export default function PromotionalPopup() {
               <p
                 style={{
                   fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                  fontSize: '12px',
+                  fontSize: noteFontSize,
                   color: '#9ca3af',
                   lineHeight: '1.6',
                   fontStyle: 'italic',
