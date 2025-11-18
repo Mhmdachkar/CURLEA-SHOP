@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { 
   LayoutDashboard, 
   ShoppingBag, 
@@ -10,7 +10,9 @@ import {
   Eye,
   Activity,
   Settings,
-  Filter
+  Filter,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface NavItem {
@@ -41,48 +43,80 @@ const navItems: NavItem[] = [
 ];
 
 export function ShopifySidebar({ activeTab, onTabChange }: ShopifySidebarProps) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const handleTabChange = (tab: string) => {
+    onTabChange(tab);
+    setIsMobileOpen(false); // Close mobile menu after selection
+  };
+
   return (
-    <aside className="w-64 bg-gray-900 text-white min-h-screen fixed left-0 top-0 overflow-y-auto">
-      {/* Logo/Brand */}
-      <div className="p-6 border-b border-gray-800">
-        <h1 className="text-xl font-bold">CURLEA Analytics</h1>
-        <p className="text-xs text-gray-400 mt-1">Business Intelligence</p>
-      </div>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 text-white rounded-lg shadow-lg"
+        aria-label="Toggle menu"
+      >
+        {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
 
-      {/* Navigation */}
-      <nav className="py-4">
-        <div className="px-3 mb-2">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            Analytics
-          </span>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        w-64 bg-gray-900 text-white min-h-screen fixed left-0 top-0 overflow-y-auto z-40
+        transform transition-transform duration-300 ease-in-out
+        lg:translate-x-0
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        {/* Logo/Brand */}
+        <div className="p-4 lg:p-6 border-b border-gray-800">
+          <h1 className="text-lg lg:text-xl font-bold">CURLEA Analytics</h1>
+          <p className="text-xs text-gray-400 mt-1">Business Intelligence</p>
         </div>
-        
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onTabChange(item.id)}
-            className={`
-              w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors
-              ${activeTab === item.id 
-                ? 'bg-green-600 text-white' 
-                : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-              }
-            `}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
 
-      {/* Settings at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
-          <Settings className="w-5 h-5" />
-          <span>Settings</span>
-        </button>
-      </div>
-    </aside>
+        {/* Navigation */}
+        <nav className="py-4">
+          <div className="px-3 mb-2">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              Analytics
+            </span>
+          </div>
+          
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleTabChange(item.id)}
+              className={`
+                w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors
+                ${activeTab === item.id 
+                  ? 'bg-green-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }
+              `}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        {/* Settings at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+            <Settings className="w-5 h-5" />
+            <span>Settings</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 

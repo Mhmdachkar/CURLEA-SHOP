@@ -39,46 +39,76 @@ export function ShopifyTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-200">
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                className={`py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${
-                  column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'
-                }`}
-              >
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              onClick={() => onRowClick?.(row)}
-              className={`hover:bg-gray-50 transition-colors ${
-                onRowClick ? 'cursor-pointer' : ''
-              }`}
-            >
+    <>
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200">
               {columns.map((column) => (
-                <td
+                <th
                   key={column.key}
-                  className={`py-4 px-4 text-sm ${
+                  className={`py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider ${
                     column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'
                   }`}
                 >
-                  {column.render ? column.render(row[column.key], row) : row[column.key]}
-                </td>
+                  {column.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {data.map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                onClick={() => onRowClick?.(row)}
+                className={`hover:bg-gray-50 transition-colors ${
+                  onRowClick ? 'cursor-pointer' : ''
+                }`}
+              >
+                {columns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={`py-4 px-4 text-sm ${
+                      column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'
+                    }`}
+                  >
+                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {data.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            onClick={() => onRowClick?.(row)}
+            className={`bg-white border border-gray-200 rounded-lg p-4 space-y-3 ${
+              onRowClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+            }`}
+          >
+            {columns.map((column) => (
+              <div key={column.key} className="flex justify-between items-start gap-2">
+                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[100px]">
+                  {column.header}:
+                </span>
+                <span className={`
+                  text-sm text-gray-900 flex-1 text-right
+                  ${column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'}
+                `}>
+                  {column.render ? column.render(row[column.key], row) : row[column.key] || '-'}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

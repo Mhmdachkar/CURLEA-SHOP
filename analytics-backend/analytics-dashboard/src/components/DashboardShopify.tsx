@@ -176,7 +176,7 @@ export default function DashboardShopify() {
       <ShopifySidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-64 w-full">
         <ShopifyHeader
           title="Analytics Dashboard"
           subtitle="View and explore your live business metrics"
@@ -186,18 +186,19 @@ export default function DashboardShopify() {
           onRefresh={refreshData}
           loading={productsLoading}
           actions={
-            <ShopifyButton onClick={() => syncProducts()} loading={productsLoading}>
-              Sync Products
+            <ShopifyButton onClick={() => syncProducts()} loading={productsLoading} className="text-xs sm:text-sm">
+              <span className="hidden sm:inline">Sync Products</span>
+              <span className="sm:hidden">Sync</span>
             </ShopifyButton>
           }
         />
 
-        <div className="p-8 space-y-6">
+        <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Key Metrics */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <ShopifyStatCard
                   title="Total Visitors"
                   value={visitorStatsLoading ? '...' : formatNumber(visitorStats?.unique_visitors || 0)}
@@ -237,38 +238,38 @@ export default function DashboardShopify() {
                   <div className="space-y-6">
                     {funnel.data?.[0] && (
                       <>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Visits</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].total_visits || 0)}</div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Visits</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].total_visits || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Product Views</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].product_views || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Product Views</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].product_views || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Add to Cart</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].add_to_cart || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Add to Cart</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].add_to_cart || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Checkout Start</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].checkout_start || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Checkout Start</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].checkout_start || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                            <div className="text-sm font-medium text-green-700 mb-2">Purchases</div>
-                            <div className="text-3xl font-bold text-green-700">{formatNumber(funnel.data[0].purchases || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200 col-span-2 sm:col-span-1">
+                            <div className="text-xs sm:text-sm font-medium text-green-700 mb-1 sm:mb-2">Purchases</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700">{formatNumber(funnel.data[0].purchases || 0)}</div>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-                          <div className="p-4 bg-blue-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Visit to Cart Rate</div>
-                            <div className="text-2xl font-bold text-blue-600">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-gray-200">
+                          <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Visit to Cart Rate</div>
+                            <div className="text-xl sm:text-2xl font-bold text-blue-600">
                               {funnel.data[0].visit_to_cart_rate?.toFixed(2) || '0.00'}%
                             </div>
                           </div>
-                          <div className="p-4 bg-green-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Cart to Purchase Rate</div>
-                            <div className="text-2xl font-bold text-green-600">
+                          <div className="p-3 sm:p-4 bg-green-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Cart to Purchase Rate</div>
+                            <div className="text-xl sm:text-2xl font-bold text-green-600">
                               {funnel.data[0].cart_to_purchase_rate?.toFixed(2) || '0.00'}%
                             </div>
                           </div>
