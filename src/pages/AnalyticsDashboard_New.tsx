@@ -13,7 +13,6 @@ import {
   useConversionFunnel,
   useAbandonedCarts,
 } from '@/hooks/useSupabaseAnalytics';
-import { useConversionFunnelHistory } from '@/hooks/useConversionFunnelHistory';
 import {
   useRecentVisits,
   useRecentPageViews,
@@ -60,7 +59,6 @@ export default function AnalyticsDashboard() {
   const traffic = useTrafficSources();
   const funnel = useConversionFunnel();
   const abandoned = useAbandonedCarts(7);
-  const funnelHistory = useConversionFunnelHistory(days);
 
   // Raw data hooks (direct table access)
   const visits = useRecentVisits(days);
@@ -695,7 +693,7 @@ export default function AnalyticsDashboard() {
             </div>
           )}
 
-          {/* Funnel Tab - Abandoned Carts */}
+          {/* Funnel Tab */}
           {activeTab === 'funnel' && (
             <div className="space-y-6">
               <ShopifyCard
@@ -724,99 +722,6 @@ export default function AnalyticsDashboard() {
                   <p className="text-gray-500 text-center py-8">No abandoned carts found</p>
                 )}
               </ShopifyCard>
-            </div>
-          )}
-
-          {/* Funnel History Tab - Historical Conversion Data */}
-          {activeTab === 'funnelhistory' && (
-            <div className="space-y-6">
-              <ShopifyCard
-                title="Historical Conversion Funnel"
-                subtitle={`Hourly conversion data (Last ${days} days)`}
-                noPadding
-              >
-                <ShopifyTable
-                  columns={[
-                    { key: 'date', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
-                    { key: 'hour', header: 'Hour', align: 'center', render: (val) => val !== null ? `${val}:00` : 'All Day' },
-                    { key: 'total_visits', header: 'Visits', align: 'right', render: (val) => <span className="font-medium">{formatNumber(val || 0)}</span> },
-                    { key: 'product_views', header: 'Views', align: 'right', render: (val) => formatNumber(val || 0) },
-                    { key: 'add_to_cart', header: 'Add to Cart', align: 'right', render: (val) => formatNumber(val || 0) },
-                    { key: 'checkout_start', header: 'Checkout', align: 'right', render: (val) => formatNumber(val || 0) },
-                    { key: 'checkout_complete', header: 'Complete', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatNumber(val || 0)}</span> },
-                    { key: 'revenue', header: 'Revenue', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val || 0)}</span> },
-                  ]}
-                  data={funnelHistory.data || []}
-                  loading={funnelHistory.loading}
-                  emptyMessage={funnelHistory.error || 'No funnel history data available'}
-                />
-              </ShopifyCard>
-
-              {/* Funnel Visualization */}
-              {funnelHistory.data && funnelHistory.data.length > 0 && (
-                <ShopifyCard
-                  title="Daily Funnel Summary"
-                  subtitle="Aggregated daily conversion metrics"
-                >
-                  <div className="space-y-4">
-                    {/* Group by date and sum metrics */}
-                    {(() => {
-                      const dailySummary = funnelHistory.data.reduce((acc: any, row: any) => {
-                        const date = new Date(row.date).toLocaleDateString();
-                        if (!acc[date]) {
-                          acc[date] = {
-                            total_visits: 0,
-                            product_views: 0,
-                            add_to_cart: 0,
-                            checkout_start: 0,
-                            checkout_complete: 0,
-                            revenue: 0
-                          };
-                        }
-                        acc[date].total_visits += row.total_visits || 0;
-                        acc[date].product_views += row.product_views || 0;
-                        acc[date].add_to_cart += row.add_to_cart || 0;
-                        acc[date].checkout_start += row.checkout_start || 0;
-                        acc[date].checkout_complete += row.checkout_complete || 0;
-                        acc[date].revenue += parseFloat(row.revenue || 0);
-                        return acc;
-                      }, {});
-
-                      return Object.entries(dailySummary).slice(0, 10).map(([date, metrics]: [string, any]) => (
-                        <div key={date} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                          <div className="font-medium text-gray-900 mb-3">{date}</div>
-                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                            <div>
-                              <div className="text-xs text-gray-500">Visits</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.total_visits)}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-500">Views</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.product_views)}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-500">Cart</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.add_to_cart)}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-500">Checkout</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.checkout_start)}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-500">Complete</div>
-                              <div className="text-lg font-semibold text-green-600">{formatNumber(metrics.checkout_complete)}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-500">Revenue</div>
-                              <div className="text-lg font-semibold text-green-600">{formatCurrency(metrics.revenue)}</div>
-                            </div>
-                          </div>
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </ShopifyCard>
-              )}
             </div>
           )}
         </div>

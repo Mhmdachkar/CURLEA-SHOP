@@ -176,7 +176,7 @@ export default function Dashboard() {
               outerRadius={100}
               label={(entry) => `${entry.source}: ${entry.visit_count}`}
             >
-              {trafficBySource.map((entry, index) => (
+              {trafficBySource.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
