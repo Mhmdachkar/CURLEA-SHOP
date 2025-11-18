@@ -262,18 +262,18 @@ export function PricingManagement() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
                 Professional Pricing Management
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm mt-1">
                 Manage product prices in Supabase (source of truth). Changes here override local product prices.
               </CardDescription>
             </div>
             {hasChanges && (
-              <Button onClick={handleBulkSave} disabled={bulkSaving}>
+              <Button onClick={handleBulkSave} disabled={bulkSaving} className="w-full sm:w-auto">
                 {bulkSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -282,7 +282,8 @@ export function PricingManagement() {
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Save All Changes
+                    <span className="hidden sm:inline">Save All Changes</span>
+                    <span className="sm:hidden">Save All</span>
                   </>
                 )}
               </Button>
@@ -291,12 +292,13 @@ export function PricingManagement() {
         </CardHeader>
         <CardContent>
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="flex-1">
               <Input
                 placeholder="Search products by name or ID..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
+                className="text-sm sm:text-base"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -307,12 +309,12 @@ export function PricingManagement() {
                 onChange={(e) => setShowOnlyChanged(e.target.checked)}
                 className="rounded"
               />
-              <Label htmlFor="showChanged">Show only changed</Label>
+              <Label htmlFor="showChanged" className="text-xs sm:text-sm">Show only changed</Label>
             </div>
           </div>
 
-          {/* Price Table */}
-          <div className="border rounded-lg overflow-hidden">
+          {/* Price Table - Desktop */}
+          <div className="hidden md:block border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted">
@@ -429,7 +431,129 @@ export function PricingManagement() {
             </div>
           </div>
 
-          <div className="mt-4 text-sm text-muted-foreground">
+          {/* Price Cards - Mobile */}
+          <div className="md:hidden space-y-4">
+            {filteredRows.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No products found
+              </div>
+            ) : (
+              filteredRows.map((row) => (
+                <div key={row.productId} className="border rounded-lg p-4 space-y-3">
+                  <div>
+                    <div className="font-medium text-sm">{row.name}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{row.productId}</div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-muted-foreground">Current Price:</span>
+                      {row.isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={row.editedPrice}
+                          onChange={(e) => handlePriceChange(row.productId, 'price', e.target.value)}
+                          className="w-24 text-sm"
+                        />
+                      ) : (
+                        <span className="font-semibold text-sm">${row.currentPrice.toFixed(2)}</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-muted-foreground">Compare At:</span>
+                      {row.isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={row.editedCompareAtPrice}
+                          onChange={(e) => handlePriceChange(row.productId, 'compareAtPrice', e.target.value)}
+                          placeholder="Original price"
+                          className="w-24 text-sm"
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {row.compareAtPrice ? `$${row.compareAtPrice.toFixed(2)}` : '-'}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-muted-foreground">Cost (COGS):</span>
+                      {row.isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={row.editedCost}
+                          onChange={(e) => handlePriceChange(row.productId, 'cost', e.target.value)}
+                          placeholder="Cost"
+                          className="w-24 text-sm"
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {row.cost ? `$${row.cost.toFixed(2)}` : '-'}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-muted-foreground">Local Price:</span>
+                      <span className="text-xs text-muted-foreground">{row.localPrice}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-2 border-t">
+                    {row.isEditing ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleSave(row.productId)}
+                          disabled={saving === row.productId}
+                          className="flex-1"
+                        >
+                          {saving === row.productId ? (
+                            <>
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCancel(row.productId)}
+                          disabled={saving === row.productId}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleEdit(row.productId)}
+                        className="w-full"
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="mt-4 text-xs sm:text-sm text-muted-foreground">
             <p>
               <strong>Total Products:</strong> {priceRows.length} | <strong>Showing:</strong> {filteredRows.length}
             </p>

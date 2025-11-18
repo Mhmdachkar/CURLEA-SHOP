@@ -402,10 +402,10 @@ export default function DashboardShopify() {
                 ) : supabaseProducts && supabaseProducts.length > 0 ? (
                   <div className="space-y-3">
                     {supabaseProducts.slice(0, 10).map((product) => (
-                      <div key={product.id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div>
-                          <div className="font-medium text-gray-900">{product.title}</div>
-                          <div className="text-sm text-gray-500">
+                      <div key={product.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm sm:text-base text-gray-900 truncate">{product.title}</div>
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             {product.category}
                             {product.subcategory && ` • ${product.subcategory}`}
                           </div>
@@ -413,14 +413,14 @@ export default function DashboardShopify() {
                             <div className="text-xs text-gray-400 mt-1">SKU: {product.sku}</div>
                           )}
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-gray-900">{formatCurrency(product.price)}</div>
+                        <div className="text-left sm:text-right flex-shrink-0">
+                          <div className="font-semibold text-sm sm:text-base text-gray-900">{formatCurrency(product.price)}</div>
                           {product.compare_at_price && product.compare_at_price > product.price && (
-                            <div className="text-sm text-gray-400 line-through">
+                            <div className="text-xs sm:text-sm text-gray-400 line-through">
                               {formatCurrency(product.compare_at_price)}
                             </div>
                           )}
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             Stock: {product.inventory_count || 0}
                           </div>
                         </div>
@@ -465,7 +465,7 @@ export default function DashboardShopify() {
           {/* Traffic Tab */}
           {activeTab === 'traffic' && (
             <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
                 <ShopifyStatCard
                   title="Unique Visitors"
                   value={formatNumber(visitorStats?.unique_visitors || 0)}
@@ -652,17 +652,17 @@ export default function DashboardShopify() {
                 ) : campaignsError ? (
                   <div className="text-center py-8 text-red-500">Error: {campaignsError}</div>
                 ) : campaigns && campaigns.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {campaigns.map((campaign: any) => (
-                      <div key={campaign.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-medium text-gray-900">{campaign.name}</div>
-                            <div className="text-sm text-gray-500">UTM: {campaign.utm_campaign}</div>
+                      <div key={campaign.id} className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm sm:text-base text-gray-900 truncate">{campaign.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 mt-1">UTM: {campaign.utm_campaign}</div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-500">Cost</div>
-                            <div className="font-semibold text-gray-900">{formatCurrency(campaign.cost || 0)}</div>
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className="text-xs sm:text-sm text-gray-500">Cost</div>
+                            <div className="font-semibold text-sm sm:text-base text-gray-900">{formatCurrency(campaign.cost || 0)}</div>
                           </div>
                         </div>
                       </div>
@@ -708,14 +708,14 @@ export default function DashboardShopify() {
                 ) : abandoned.data && abandoned.data.length > 0 ? (
                   <div className="space-y-3">
                     {abandoned.data.slice(0, 10).map((cart: any) => (
-                      <div key={cart.session_id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div>
+                      <div key={cart.session_id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex-1 min-w-0">
                           <div className="font-mono text-xs text-gray-600">{cart.session_id.slice(0, 8)}...</div>
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             {cart.items_count} items • {formatCurrency(cart.cart_value || 0)}
                           </div>
                         </div>
-                        <div className="text-right text-sm text-gray-500">
+                        <div className="text-left sm:text-right text-xs sm:text-sm text-gray-500 flex-shrink-0">
                           {new Date(cart.last_cart_activity).toLocaleDateString()}
                         </div>
                       </div>
@@ -784,32 +784,32 @@ export default function DashboardShopify() {
                       }, {});
 
                       return Object.entries(dailySummary).slice(0, 10).map(([date, metrics]: [string, any]) => (
-                        <div key={date} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                          <div className="font-medium text-gray-900 mb-3">{date}</div>
-                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                        <div key={date} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                          <div className="font-medium text-sm sm:text-base text-gray-900 mb-2 sm:mb-3">{date}</div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                             <div>
                               <div className="text-xs text-gray-500">Visits</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.total_visits)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.total_visits)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Views</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.product_views)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.product_views)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Cart</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.add_to_cart)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.add_to_cart)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Checkout</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.checkout_start)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.checkout_start)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Complete</div>
-                              <div className="text-lg font-semibold text-green-600">{formatNumber(metrics.checkout_complete)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-green-600">{formatNumber(metrics.checkout_complete)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Revenue</div>
-                              <div className="text-lg font-semibold text-green-600">{formatCurrency(metrics.revenue)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-green-600">{formatCurrency(metrics.revenue)}</div>
                             </div>
                           </div>
                         </div>
