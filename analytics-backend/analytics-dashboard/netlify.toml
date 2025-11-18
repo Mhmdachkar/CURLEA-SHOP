@@ -43,18 +43,18 @@
 
 # Development context
 [context.development]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   
 [context.development.environment]
   NODE_ENV = "development"
 
 # Production context
 [context.production]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   
 [context.production.environment]
   NODE_ENV = "production"
 
 # Deploy previews
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm ci && npm run build"
