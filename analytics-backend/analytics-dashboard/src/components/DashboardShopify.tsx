@@ -23,6 +23,13 @@ import {
   useAnalyticsOrders,
   useOrderItems,
 } from '@/hooks/useSupabaseRawData';
+import {
+  useInventoryDashboard,
+  useLowStockAlerts,
+  useInventoryMovements,
+  useInventoryStats,
+  adjustStock,
+} from '@/hooks/useInventory';
 import { getActiveCampaigns, getCampaignPerformance } from '@/utils/supabase/campaigns';
 import { getVisitorStats } from '@/utils/supabase/visitorStats';
 import { PricingManagement } from '@/components/PricingManagement';
@@ -33,7 +40,7 @@ import { ShopifyBadge } from '@/components/dashboard/ShopifyBadge';
 import { ShopifyButton } from '@/components/dashboard/ShopifyButton';
 import { ShopifySidebar } from '@/components/dashboard/ShopifySidebar';
 import { ShopifyHeader } from '@/components/dashboard/ShopifyHeader';
-import { Users, DollarSign, ShoppingBag, TrendingUp, Eye } from 'lucide-react';
+import { Users, DollarSign, ShoppingBag, TrendingUp, Eye, Box, Package, AlertTriangle } from 'lucide-react';
 
 export default function DashboardShopify() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -70,6 +77,12 @@ export default function DashboardShopify() {
   const stripeOrders = useStripeOrders(50);
   const analyticsOrders = useAnalyticsOrders(days);
   const orderItems = useOrderItems(selectedOrderId);
+
+  // Inventory hooks
+  const inventoryDashboard = useInventoryDashboard();
+  const lowStockAlerts = useLowStockAlerts();
+  const inventoryMovements = useInventoryMovements(50);
+  const inventoryStats = useInventoryStats();
 
   const [campaignsLoading, setCampaignsLoading] = useState(true);
   const [campaignsError, setCampaignsError] = useState<string | null>(null);
@@ -450,6 +463,211 @@ export default function DashboardShopify() {
                   data={topProducts.data || []}
                   loading={topProducts.loading}
                   emptyMessage="No product revenue data available"
+                />
+              </ShopifyCard>
+            </div>
+          )}
+
+          {/* Inventory Tab */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-6">
+              {/* Inventory Stats */}
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+                <ShopifyStatCard
+                  title="Total Variants"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalVariants || 0)}
+                  icon={<Package className="w-5 h-5" />}
+                  subtitle="Active SKUs"
+                />
+                <ShopifyStatCard
+                  title="Total Stock"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalStock || 0)}
+                  icon={<Box className="w-5 h-5" />}
+                  subtitle="All units"
+                />
+                <ShopifyStatCard
+                  title="Inventory Value"
+                  value={inventoryStats.loading ? '...' : formatCurrency(inventoryStats.stats?.totalValue || 0)}
+                  icon={<DollarSign className="w-5 h-5" />}
+                  subtitle="Total value"
+                />
+                <ShopifyStatCard
+                  title="Low Stock Items"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.lowStockCount || 0)}
+                  icon={<AlertTriangle className="w-5 h-5 text-yellow-500" />}
+                  subtitle="< 5 units"
+                />
+                <ShopifyStatCard
+                  title="Out of Stock"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.outOfStockCount || 0)}
+                  icon={<AlertTriangle className="w-5 h-5 text-red-500" />}
+                  subtitle="0 units"
+                />
+              </div>
+
+              {/* Low Stock Alerts */}
+              {lowStockAlerts.data && lowStockAlerts.data.length > 0 && (
+                <ShopifyCard
+                  title="Low Stock Alerts"
+                  subtitle={`${lowStockAlerts.data.length} items need attention`}
+                  noPadding
+                >
+                  <ShopifyTable
+                    columns={[
+                      { key: 'product_id', header: 'Product ID' },
+                      { key: 'variant_name', header: 'Variant' },
+                      { key: 'sku', header: 'SKU' },
+                      { 
+                        key: 'available_quantity', 
+                        header: 'Available', 
+                        align: 'right',
+                        render: (val) => (
+                          <span className={`font-semibold ${val === 0 ? 'text-red-600' : 'text-yellow-600'}`}>
+                            {val || 0}
+                          </span>
+                        )
+                      },
+                      { 
+                        key: 'updated_at', 
+                        header: 'Last Updated', 
+                        render: (val) => new Date(val).toLocaleDateString()
+                      },
+                    ]}
+                    data={lowStockAlerts.data || []}
+                    loading={lowStockAlerts.loading}
+                    emptyMessage="No low stock alerts"
+                  />
+                </ShopifyCard>
+              )}
+
+              {/* Inventory Dashboard */}
+              <ShopifyCard
+                title="Inventory Dashboard"
+                subtitle="All product variants and stock levels"
+                noPadding
+              >
+                <ShopifyTable
+                  columns={[
+                    { key: 'product_id', header: 'Product ID' },
+                    { key: 'variant_name', header: 'Variant' },
+                    { key: 'size', header: 'Size' },
+                    { key: 'color', header: 'Color' },
+                    { key: 'sku', header: 'SKU' },
+                    { 
+                      key: 'stock_quantity', 
+                      header: 'Stock', 
+                      align: 'right',
+                      render: (val) => formatNumber(val || 0)
+                    },
+                    { 
+                      key: 'reserved_quantity', 
+                      header: 'Reserved', 
+                      align: 'right',
+                      render: (val) => formatNumber(val || 0)
+                    },
+                    { 
+                      key: 'available_quantity', 
+                      header: 'Available', 
+                      align: 'right',
+                      render: (val) => (
+                        <span className={`font-semibold ${
+                          val === 0 ? 'text-red-600' : 
+                          val < 5 ? 'text-yellow-600' : 
+                          'text-green-600'
+                        }`}>
+                          {formatNumber(val || 0)}
+                        </span>
+                      )
+                    },
+                    { 
+                      key: 'stock_status', 
+                      header: 'Status',
+                      render: (val) => (
+                        <ShopifyBadge 
+                          variant={
+                            val === 'out_of_stock' ? 'error' : 
+                            val === 'low_stock' ? 'warning' : 
+                            'success'
+                          }
+                        >
+                          {val?.replace('_', ' ').toUpperCase()}
+                        </ShopifyBadge>
+                      )
+                    },
+                    { 
+                      key: 'price', 
+                      header: 'Price', 
+                      align: 'right',
+                      render: (val) => val ? formatCurrency(val) : '-'
+                    },
+                  ]}
+                  data={inventoryDashboard.data || []}
+                  loading={inventoryDashboard.loading}
+                  emptyMessage="No inventory data available"
+                />
+              </ShopifyCard>
+
+              {/* Recent Inventory Movements */}
+              <ShopifyCard
+                title="Recent Inventory Movements"
+                subtitle="Last 50 stock changes"
+                noPadding
+              >
+                <ShopifyTable
+                  columns={[
+                    { key: 'variant_id', header: 'Variant ID' },
+                    { 
+                      key: 'movement_type', 
+                      header: 'Type',
+                      render: (val) => (
+                        <ShopifyBadge 
+                          variant={
+                            val === 'sale' ? 'info' : 
+                            val === 'restock' ? 'success' : 
+                            val === 'return' ? 'success' :
+                            val === 'damage' ? 'error' :
+                            'neutral'
+                          }
+                        >
+                          {val?.toUpperCase()}
+                        </ShopifyBadge>
+                      )
+                    },
+                    { 
+                      key: 'quantity', 
+                      header: 'Quantity', 
+                      align: 'right',
+                      render: (val) => (
+                        <span className={val > 0 ? 'text-green-600' : 'text-red-600'}>
+                          {val > 0 ? '+' : ''}{val}
+                        </span>
+                      )
+                    },
+                    { 
+                      key: 'previous_stock', 
+                      header: 'Previous', 
+                      align: 'right',
+                      render: (val) => formatNumber(val || 0)
+                    },
+                    { 
+                      key: 'new_stock', 
+                      header: 'New Stock', 
+                      align: 'right',
+                      render: (val) => (
+                        <span className="font-semibold">{formatNumber(val || 0)}</span>
+                      )
+                    },
+                    { key: 'order_id', header: 'Order ID', render: (val) => val || '-' },
+                    { key: 'notes', header: 'Notes', render: (val) => val || '-' },
+                    { 
+                      key: 'created_at', 
+                      header: 'Date', 
+                      render: (val) => new Date(val).toLocaleString()
+                    },
+                  ]}
+                  data={inventoryMovements.data || []}
+                  loading={inventoryMovements.loading}
+                  emptyMessage="No inventory movements recorded"
                 />
               </ShopifyCard>
             </div>
