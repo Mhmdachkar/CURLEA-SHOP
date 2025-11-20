@@ -227,17 +227,74 @@ export async function createStripeOrderAndItems(
 
     console.log('[Supabase Integration] Order created successfully:', orderId);
 
-    // 2. Create order items
-    const orderItems = items.map((item) => ({
-      order_id: orderId,
-      product_name: item.product_name,
-      variant: item.variant || null,
-      quantity: item.quantity,
-      unit_price: typeof item.unit_price === 'string' ? parseFloat(item.unit_price.replace(/[^0-9.]/g, '')) : item.unit_price,
-      total_price: typeof item.total_price === 'string' ? parseFloat(item.total_price.replace(/[^0-9.]/g, '')) : item.total_price,
-      image_url: item.image_url || null,
-      product_metadata: item.product_metadata || null,
-    }));
+    // 2. Create order items with full variant details for inventory tracking
+    const orderItems = items.map((item) => {
+      // Extract variant details from product_metadata or parse from variant string
+      const metadata = item.product_metadata || {};
+      const variantStr = item.variant || '';
+      
+      // Parse size and color from variant string if not in metadata
+      // Variant format examples: "Midi - Purple", "Large - Pink", "Jumbo Single - Green"
+      let size = metadata.size || null;
+      let color = metadata.color || null;
+      let productId = metadata.product_id || null;
+      let sku = metadata.sku || null;
+      
+      if (!size && variantStr) {
+        // Extract size from variant string
+        const sizePatterns = /\b(Large|Jumbo|Midi|Small|Mini|Original|One Size)\b/i;
+        const sizeMatch = variantStr.match(sizePatterns);
+        if (sizeMatch) size = sizeMatch[1];
+      }
+      
+      if (!color && variantStr) {
+        // Extract color from variant string
+        const colorPatterns = /\b(Purple|Pink|Brown|Green|Candy|Latte|Mulberry|Olive|Blue|Red|Black|White)\b/i;
+        const colorMatch = variantStr.match(colorPatterns);
+        if (colorMatch) color = colorMatch[1];
+      }
+      
+      // Try to match product_id from product_name
+      if (!productId && item.product_name) {
+        const name = item.product_name.toLowerCase();
+        if (name.includes('dreamcurl') && name.includes('jumbo')) productId = 'dreamcurl-jumbo';
+        else if (name.includes('dreamcurl') && name.includes('midi')) productId = 'dreamcurl-midi';
+        else if (name.includes('dreamcurl') && (name.includes('original') || name.includes('large'))) productId = 'dreamcurl-original';
+        else if (name.includes('zero heat') || name.includes('mini')) productId = 'zero-heat-mini';
+        else if (name.includes('bonnet') || name.includes('bun bon')) productId = 'peau-de-soie-bonnet';
+        else if (name.includes('scrunchie')) productId = 'scrunchies-7pc';
+        else if (name.includes('korean') && name.includes('claw')) productId = 'curly-clip-2';
+        else if (name.includes('flat') && name.includes('claw')) productId = 'curly-clip-1';
+        else if (name.includes('bow tie')) productId = 'bow-tie-scrunchies';
+      }
+      
+      // Build variant_details JSONB
+      const variantDetails = {
+        product_id: productId,
+        size,
+        color,
+        sku,
+        variant_name: variantStr,
+        original_metadata: metadata
+      };
+      
+      return {
+        order_id: orderId,
+        product_name: item.product_name,
+        variant: variantStr || null,
+        product_id: productId,
+        size: size,
+        color: color,
+        sku: sku,
+        variant_details: variantDetails,
+        variant_id: null, // Will be matched by trigger function
+        quantity: item.quantity,
+        unit_price: typeof item.unit_price === 'string' ? parseFloat(item.unit_price.replace(/[^0-9.]/g, '')) : item.unit_price,
+        total_price: typeof item.total_price === 'string' ? parseFloat(item.total_price.replace(/[^0-9.]/g, '')) : item.total_price,
+        image_url: item.image_url || null,
+        product_metadata: item.product_metadata || null,
+      };
+    });
 
     console.log('[Supabase Integration] Creating order items:', orderItems.length, 'items');
 

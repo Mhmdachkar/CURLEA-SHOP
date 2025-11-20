@@ -333,7 +333,10 @@ export default function DashboardShopify() {
                     { key: 'order_number', header: 'Order #', render: (val) => <span className="font-mono text-xs">{val}</span> },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || '-' },
                     { key: 'total_amount', header: 'Amount', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val}</ShopifyBadge> },
+                    { key: 'is_guest', header: 'Guest', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'stripe_session_id', header: 'Stripe Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 20)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                     { 
                       key: 'id', 
@@ -364,10 +367,15 @@ export default function DashboardShopify() {
                   <ShopifyTable
                     columns={[
                       { key: 'product_name', header: 'Product' },
+                      { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'variant', header: 'Variant', render: (val) => val || '-' },
+                      { key: 'size', header: 'Size', render: (val) => val || '-' },
+                      { key: 'color', header: 'Color', render: (val) => val || '-' },
+                      { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'quantity', header: 'Qty', align: 'right' },
                       { key: 'unit_price', header: 'Price', align: 'right', render: (val) => formatCurrency(val) },
                       { key: 'total_price', header: 'Total', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                      { key: 'image_url', header: 'Image', render: (val) => val ? <img src={val} alt="" className="w-10 h-10 object-cover rounded" /> : '-' },
                     ]}
                     data={orderItems.data || []}
                     loading={orderItems.loading}
@@ -384,10 +392,25 @@ export default function DashboardShopify() {
                 <ShopifyTable
                   columns={[
                     { key: 'order_id', header: 'Order ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 15)}...</span> : '-' },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || 'Anonymous' },
+                    { key: 'customer_id', header: 'Customer ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
+                    { key: 'subtotal', header: 'Subtotal', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'discount_total', header: 'Discount', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'shipping_total', header: 'Shipping', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'tax_total', header: 'Tax', align: 'right', render: (val) => formatCurrency(val || 0) },
                     { key: 'total_value', header: 'Total', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val)}</span> },
+                    { key: 'total_cost', header: 'Cost', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
                     { key: 'profit', header: 'Profit', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
+                    { key: 'payment_method', header: 'Payment', render: (val) => val || '-' },
+                    { key: 'shipping_method', header: 'Shipping Method', render: (val) => val || '-' },
+                    { key: 'source', header: 'Source', render: (val) => val || '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val || '-'}</ShopifyBadge> },
+                    { key: 'fulfillment_status', header: 'Fulfillment', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                   ]}
                   data={analyticsOrders.data || []}
@@ -515,6 +538,7 @@ export default function DashboardShopify() {
                   <ShopifyTable
                     columns={[
                       { key: 'product_id', header: 'Product ID' },
+                      { key: 'product_name', header: 'Product Name', render: (val) => val || '-' },
                       { key: 'variant_name', header: 'Variant' },
                       { key: 'sku', header: 'SKU' },
                       { 
@@ -549,6 +573,7 @@ export default function DashboardShopify() {
                 <ShopifyTable
                   columns={[
                     { key: 'product_id', header: 'Product ID' },
+                    { key: 'product_name', header: 'Product Name', render: (val) => val || '-' },
                     { key: 'variant_name', header: 'Variant' },
                     { key: 'size', header: 'Size' },
                     { key: 'color', header: 'Color' },
@@ -600,6 +625,23 @@ export default function DashboardShopify() {
                       align: 'right',
                       render: (val) => val ? formatCurrency(val) : '-'
                     },
+                    { 
+                      key: 'sales_last_30_days', 
+                      header: 'Sales (30d)', 
+                      align: 'right',
+                      render: (val) => formatNumber(val || 0)
+                    },
+                    { 
+                      key: 'is_active', 
+                      header: 'Active', 
+                      align: 'center',
+                      render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge>
+                    },
+                    { 
+                      key: 'updated_at', 
+                      header: 'Updated', 
+                      render: (val) => new Date(val).toLocaleDateString()
+                    },
                   ]}
                   data={inventoryDashboard.data || []}
                   loading={inventoryDashboard.loading}
@@ -615,7 +657,8 @@ export default function DashboardShopify() {
               >
                 <ShopifyTable
                   columns={[
-                    { key: 'variant_id', header: 'Variant ID' },
+                    { key: 'id', header: 'ID', render: (val) => <span className="font-mono text-xs">{val.slice(0, 8)}...</span> },
+                    { key: 'variant_id', header: 'Variant ID', render: (val) => <span className="font-mono text-xs">{val.slice(0, 8)}...</span> },
                     { 
                       key: 'movement_type', 
                       header: 'Type',
@@ -657,8 +700,9 @@ export default function DashboardShopify() {
                         <span className="font-semibold">{formatNumber(val || 0)}</span>
                       )
                     },
-                    { key: 'order_id', header: 'Order ID', render: (val) => val || '-' },
-                    { key: 'notes', header: 'Notes', render: (val) => val || '-' },
+                    { key: 'order_id', header: 'Order ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'notes', header: 'Notes', render: (val) => val ? <span className="text-xs">{val}</span> : '-' },
+                    { key: 'created_by', header: 'Created By', render: (val) => val || 'system' },
                     { 
                       key: 'created_at', 
                       header: 'Date', 
@@ -766,6 +810,9 @@ export default function DashboardShopify() {
                     { key: 'event_category', header: 'Category', render: (val) => val || '-' },
                     { key: 'event_label', header: 'Label', render: (val) => val || '-' },
                     { key: 'event_value', header: 'Value', align: 'right', render: (val) => val ?? '-' },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'payload', header: 'Payload', render: (val) => val ? <span className="font-mono text-xs">{JSON.stringify(val).substring(0, 50)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={events.data || []}
@@ -787,10 +834,27 @@ export default function DashboardShopify() {
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => <span className="font-mono text-xs">{val?.slice(0, 8)}...</span> },
+                    { key: 'ip_address', header: 'IP', render: (val) => val || '-' },
                     { key: 'device', header: 'Device', render: (val) => val || '-' },
                     { key: 'browser', header: 'Browser', render: (val) => val || '-' },
+                    { key: 'os', header: 'OS', render: (val) => val || '-' },
                     { key: 'country', header: 'Country', render: (val) => val || '-' },
-                    { key: 'utm_source', header: 'Source', render: (val, row) => val || row.referrer || 'Direct' },
+                    { key: 'city', header: 'City', render: (val) => val || '-' },
+                    { key: 'region', header: 'Region', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'landing_page', header: 'Landing Page', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
+                    { key: 'utm_term', header: 'UTM Term', render: (val) => val || '-' },
+                    { key: 'utm_content', header: 'UTM Content', render: (val) => val || '-' },
+                    { key: 'is_mobile', header: 'Mobile', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_tablet', header: 'Tablet', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_desktop', header: 'Desktop', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'screen_width', header: 'Width', align: 'right', render: (val) => val || '-' },
+                    { key: 'screen_height', header: 'Height', align: 'right', render: (val) => val || '-' },
+                    { key: 'language', header: 'Language', render: (val) => val || '-' },
+                    { key: 'timezone', header: 'Timezone', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={visits.data || []}
@@ -811,11 +875,17 @@ export default function DashboardShopify() {
               >
                 <ShopifyTable
                   columns={[
-                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'url', header: 'URL', render: (val) => val ? <span className="font-mono text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url || '-'}</span> },
                     { key: 'title', header: 'Title', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
                     { key: 'scroll_depth', header: 'Scroll', align: 'right', render: (val) => `${val || 0}%` },
-                    { key: 'time_on_page', header: 'Time (s)', align: 'right' },
+                    { key: 'time_on_page', header: 'Time (s)', align: 'right', render: (val) => val || 0 },
                     { key: 'engaged', header: 'Engaged', align: 'center', render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'bounce', header: 'Bounce', align: 'center', render: (val) => val ? <ShopifyBadge variant="error">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'exit', header: 'Exit', align: 'center', render: (val) => val ? <ShopifyBadge variant="warning">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={pageViews.data || []}
@@ -844,10 +914,19 @@ export default function DashboardShopify() {
                         return <ShopifyBadge variant={variant}>{val}</ShopifyBadge>;
                       }
                     },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'external_product_id', header: 'External Product ID', render: (val) => val || '-' },
                     { key: 'product_title', header: 'Product', render: (val) => val || '-' },
-                    { key: 'quantity', header: 'Qty', align: 'right' },
+                    { key: 'variant_id', header: 'Variant ID', render: (val) => val || '-' },
+                    { key: 'variant_title', header: 'Variant', render: (val) => val || '-' },
+                    { key: 'quantity', header: 'Qty', align: 'right', render: (val) => val || 0 },
                     { key: 'price', header: 'Price', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'total_value', header: 'Total Value', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'cart_total', header: 'Cart Total', align: 'right', render: (val) => val ? <span className="font-semibold">{formatCurrency(val)}</span> : '-' },
+                    { key: 'discount_code', header: 'Discount Code', render: (val) => val || '-' },
+                    { key: 'discount_amount', header: 'Discount', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={cartEvents.data || []}

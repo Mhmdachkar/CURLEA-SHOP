@@ -91,10 +91,51 @@ exports.handler = async (event) => {
           }
 
           subtotal += price * quantity;
+          
+          // Parse variant information from item metadata or description
+          const metadata = (item.price && item.price.product && item.price.product.metadata) || {};
+          const variantStr = item.description || itemName;
+          
+          // Extract size and color from variant string
+          let size = metadata.size || null;
+          let color = metadata.color || null;
+          let productId = metadata.product_id || null;
+          let sku = metadata.sku || null;
+          
+          if (!size && variantStr) {
+            const sizeMatch = variantStr.match(/\b(Large|Jumbo|Midi|Small|Mini|Original|One Size)\b/i);
+            if (sizeMatch) size = sizeMatch[1];
+          }
+          
+          if (!color && variantStr) {
+            const colorMatch = variantStr.match(/\b(Purple|Pink|Brown|Green|Candy|Latte|Mulberry|Olive|Blue|Red|Black|White)\b/i);
+            if (colorMatch) color = colorMatch[1];
+          }
+          
+          // Try to match product_id from product name
+          if (!productId && itemName) {
+            const name = itemName.toLowerCase();
+            if (name.includes('dreamcurl') && name.includes('jumbo')) productId = 'dreamcurl-jumbo';
+            else if (name.includes('dreamcurl') && name.includes('midi')) productId = 'dreamcurl-midi';
+            else if (name.includes('dreamcurl') && (name.includes('original') || name.includes('large'))) productId = 'dreamcurl-original';
+            else if (name.includes('zero heat') || name.includes('mini')) productId = 'zero-heat-mini';
+            else if (name.includes('bonnet') || name.includes('bun bon')) productId = 'peau-de-soie-bonnet';
+            else if (name.includes('scrunchie')) productId = 'scrunchies-7pc';
+            else if (name.includes('korean') && name.includes('claw')) productId = 'curly-clip-2';
+            else if (name.includes('flat') && name.includes('claw')) productId = 'curly-clip-1';
+            else if (name.includes('bow tie')) productId = 'bow-tie-scrunchies';
+          }
+          
           cart.push({
             name: itemName,
             price,
             quantity,
+            product_id: productId,
+            size,
+            color,
+            sku,
+            variant: variantStr,
+            metadata,
           });
         }
 

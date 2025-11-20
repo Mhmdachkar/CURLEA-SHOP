@@ -147,10 +147,53 @@ serve(async (req) => {
         }
 
         subtotal += price * quantity;
+        
+        // Parse variant information from item metadata or description
+        const metadata = item.price?.product?.metadata || {};
+        const variantStr = item.description || itemName;
+        
+        // Extract size and color from variant string
+        let size = metadata.size || null;
+        let color = metadata.color || null;
+        let productId = metadata.product_id || null;
+        let sku = metadata.sku || null;
+        
+        if (!size && variantStr) {
+          const sizePatterns = /\b(Large|Jumbo|Midi|Small|Mini|Original|One Size)\b/i;
+          const sizeMatch = variantStr.match(sizePatterns);
+          if (sizeMatch) size = sizeMatch[1];
+        }
+        
+        if (!color && variantStr) {
+          const colorPatterns = /\b(Purple|Pink|Brown|Green|Candy|Latte|Mulberry|Olive|Blue|Red|Black|White)\b/i;
+          const colorMatch = variantStr.match(colorPatterns);
+          if (colorMatch) color = colorMatch[1];
+        }
+        
+        // Try to match product_id from product name
+        if (!productId && itemName) {
+          const name = itemName.toLowerCase();
+          if (name.includes('dreamcurl') && name.includes('jumbo')) productId = 'dreamcurl-jumbo';
+          else if (name.includes('dreamcurl') && name.includes('midi')) productId = 'dreamcurl-midi';
+          else if (name.includes('dreamcurl') && (name.includes('original') || name.includes('large'))) productId = 'dreamcurl-original';
+          else if (name.includes('zero heat') || name.includes('mini')) productId = 'zero-heat-mini';
+          else if (name.includes('bonnet') || name.includes('bun bon')) productId = 'peau-de-soie-bonnet';
+          else if (name.includes('scrunchie')) productId = 'scrunchies-7pc';
+          else if (name.includes('korean') && name.includes('claw')) productId = 'curly-clip-2';
+          else if (name.includes('flat') && name.includes('claw')) productId = 'curly-clip-1';
+          else if (name.includes('bow tie')) productId = 'bow-tie-scrunchies';
+        }
+        
         cartItems.push({
           name: itemName,
           price,
           quantity,
+          product_id: productId,
+          size,
+          color,
+          sku,
+          variant: variantStr,
+          metadata,
         });
       }
 
@@ -276,16 +319,34 @@ serve(async (req) => {
 
           // Create order items if we have cart items
           if (cartItems.length > 0 && newOrder.id) {
-            const orderItems = cartItems.map((item) => ({
-              order_id: newOrder.id,
-              product_name: item.name,
-              variant: null,
-              quantity: item.quantity,
-              unit_price: item.price,
-              total_price: item.price * item.quantity,
-              image_url: null,
-              product_metadata: null,
-            }));
+            const orderItems = cartItems.map((item) => {
+              // Build variant_details JSONB
+              const variantDetails = {
+                product_id: item.product_id,
+                size: item.size,
+                color: item.color,
+                sku: item.sku,
+                variant_name: item.variant,
+                original_metadata: item.metadata
+              };
+              
+              return {
+                order_id: newOrder.id,
+                product_name: item.name,
+                variant: item.variant || null,
+                product_id: item.product_id || null,
+                size: item.size || null,
+                color: item.color || null,
+                sku: item.sku || null,
+                variant_details: variantDetails,
+                variant_id: null, // Will be matched by trigger function
+                quantity: item.quantity,
+                unit_price: item.price,
+                total_price: item.price * item.quantity,
+                image_url: null,
+                product_metadata: item.metadata || null,
+              };
+            });
 
             const { error: itemsError } = await supabaseAdmin
               .from('order_items')
@@ -293,6 +354,8 @@ serve(async (req) => {
 
             if (itemsError) {
               console.error('Error creating order items:', itemsError);
+            } else {
+              console.log('Order items created with full variant details:', orderItems.length);
             }
           }
         }

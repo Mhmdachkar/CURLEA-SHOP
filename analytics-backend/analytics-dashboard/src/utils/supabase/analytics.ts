@@ -182,7 +182,7 @@ export async function getAbandonedCarts(days: number = 7): Promise<{
 }
 
 /**
- * Get orders for date range
+ * Get orders for date range (analytics orders table - NOT public.orders)
  */
 export async function getOrders(startDate: string, endDate: string): Promise<{
   data: Order[] | null;
@@ -191,7 +191,7 @@ export async function getOrders(startDate: string, endDate: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('id, order_id, session_id, visit_id, customer_email, customer_id, subtotal, discount_total, shipping_total, tax_total, total_value, total_cost, profit, currency, payment_method, shipping_method, source, utm_source, utm_medium, utm_campaign, discount_codes, items, status, fulfillment_status, created_at, updated_at')
       .gte('created_at', startDate)
       .lte('created_at', endDate)
       .order('created_at', { ascending: false });

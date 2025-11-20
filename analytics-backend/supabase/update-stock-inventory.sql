@@ -15,6 +15,10 @@
 -- ✅ Update existing variants with new stock quantities
 -- ✅ Add new variants that don't exist yet
 -- ✅ Not create duplicate entries
+--
+-- NOTE: Hair accessories use ON CONFLICT (sku) since they have unique SKUs
+--       Other products use ON CONFLICT (product_id, size, color)
+--       This prevents duplicate SKU errors when re-running the script
 
 -- =====================================================
 -- 1. CREATE OR UPDATE PRODUCT VARIANTS TABLE
@@ -232,46 +236,55 @@ DO UPDATE SET
 -- -----------------------------------------------
 
 -- Scrunchies (42 pcs)
+-- Use ON CONFLICT (sku) since SKU is unique and more specific
 INSERT INTO product_variants (product_id, variant_name, size, color, sku, stock_quantity, price) VALUES
 ('scrunchies-7pc', 'Scrunchies 5 Tone Satin 5pcs Set', 'One Size', NULL, 'SCRUNCHIE-5TONE-5PCS', 42, 14.99)
-ON CONFLICT (product_id, size, color) 
+ON CONFLICT (sku) 
 DO UPDATE SET 
     stock_quantity = EXCLUDED.stock_quantity,
     variant_name = EXCLUDED.variant_name,
-    sku = EXCLUDED.sku,
+    product_id = EXCLUDED.product_id,
+    size = EXCLUDED.size,
+    color = EXCLUDED.color,
     price = EXCLUDED.price,
     updated_at = NOW();
 
 -- Korean Hair Claws (40 sets)
 INSERT INTO product_variants (product_id, variant_name, size, color, sku, stock_quantity, price) VALUES
 ('curly-clip-2', 'Korean Hair Claws 10pcs Set', 'One Size', NULL, 'KOREAN-CLAW-10PCS', 40, 14.99)
-ON CONFLICT (product_id, size, color) 
+ON CONFLICT (sku) 
 DO UPDATE SET 
     stock_quantity = EXCLUDED.stock_quantity,
     variant_name = EXCLUDED.variant_name,
-    sku = EXCLUDED.sku,
+    product_id = EXCLUDED.product_id,
+    size = EXCLUDED.size,
+    color = EXCLUDED.color,
     price = EXCLUDED.price,
     updated_at = NOW();
 
 -- Flat Claw Clips (149 pcs)
 INSERT INTO product_variants (product_id, variant_name, size, color, sku, stock_quantity, price) VALUES
 ('curly-clip-1', 'Flat Claw Clips 9pcs Set', 'One Size', NULL, 'FLAT-CLAW-9PCS', 149, 14.99)
-ON CONFLICT (product_id, size, color) 
+ON CONFLICT (sku) 
 DO UPDATE SET 
     stock_quantity = EXCLUDED.stock_quantity,
     variant_name = EXCLUDED.variant_name,
-    sku = EXCLUDED.sku,
+    product_id = EXCLUDED.product_id,
+    size = EXCLUDED.size,
+    color = EXCLUDED.color,
     price = EXCLUDED.price,
     updated_at = NOW();
 
 -- Bow Tie Scrunchies (22 sets)
 INSERT INTO product_variants (product_id, variant_name, size, color, sku, stock_quantity, price) VALUES
 ('bow-tie-scrunchies', 'Bow Tie Scrunchies 7pcs Set', 'One Size', NULL, 'BOW-SCRUNCHIE-7PCS', 22, 14.99)
-ON CONFLICT (product_id, size, color) 
+ON CONFLICT (sku) 
 DO UPDATE SET 
     stock_quantity = EXCLUDED.stock_quantity,
     variant_name = EXCLUDED.variant_name,
-    sku = EXCLUDED.sku,
+    product_id = EXCLUDED.product_id,
+    size = EXCLUDED.size,
+    color = EXCLUDED.color,
     price = EXCLUDED.price,
     updated_at = NOW();
 
@@ -486,16 +499,16 @@ BEGIN
                         variant.stock_quantity,
                         variant.stock_quantity - order_item.quantity,
                         NEW.id,
-                        'Automatic reduction from Stripe order: ' || NEW.order_number,
+                        'Automatic reduction from Stripe order',
                         'system'
                     );
                 ELSE
-                    RAISE WARNING 'Insufficient stock for variant % (Order: %). Available: %, Requested: %',
-                        variant.variant_name, NEW.order_number, variant.available_quantity, order_item.quantity;
+                    RAISE WARNING 'Insufficient stock for variant % (Order ID: %). Available: %, Requested: %',
+                        variant.variant_name, NEW.id, variant.available_quantity, order_item.quantity;
                 END IF;
             ELSE
-                RAISE WARNING 'Variant not found for item: % - % (Order: %)', 
-                    order_item.product_name, order_item.variant, NEW.order_number;
+                RAISE WARNING 'Variant not found for item: % - % (Order ID: %)', 
+                    order_item.product_name, order_item.variant, NEW.id;
             END IF;
         END LOOP;
     END IF;
