@@ -199,11 +199,12 @@ export async function createStripeOrderAndItems(
       shipping_address: formattedShippingAddress,
     };
 
-    console.log('[Supabase Integration] Creating order in public.orders:', orderPayload);
+    console.log('[Supabase Integration] Creating order in public.stripe_orders:', orderPayload);
 
     // SECURITY: Use anon key with RLS policies for client-side operations
     // For order creation, we rely on RLS policies to allow inserts
-    const orderResponse = await fetch(`${supabaseUrl}/rest/v1/orders`, {
+    // NOTE: Table renamed from 'orders' to 'stripe_orders' to avoid conflict with analytics orders
+    const orderResponse = await fetch(`${supabaseUrl}/rest/v1/stripe_orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

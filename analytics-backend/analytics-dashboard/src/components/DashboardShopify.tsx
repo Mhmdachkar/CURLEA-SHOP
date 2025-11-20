@@ -23,13 +23,6 @@ import {
   useAnalyticsOrders,
   useOrderItems,
 } from '@/hooks/useSupabaseRawData';
-import {
-  useInventoryDashboard,
-  useLowStockAlerts,
-  useInventoryMovements,
-  useInventoryStats,
-  adjustStock,
-} from '@/hooks/useInventory';
 import { getActiveCampaigns, getCampaignPerformance } from '@/utils/supabase/campaigns';
 import { getVisitorStats } from '@/utils/supabase/visitorStats';
 import { PricingManagement } from '@/components/PricingManagement';
@@ -40,8 +33,7 @@ import { ShopifyBadge } from '@/components/dashboard/ShopifyBadge';
 import { ShopifyButton } from '@/components/dashboard/ShopifyButton';
 import { ShopifySidebar } from '@/components/dashboard/ShopifySidebar';
 import { ShopifyHeader } from '@/components/dashboard/ShopifyHeader';
-import { Users, DollarSign, ShoppingBag, TrendingUp, Eye, Box, Package, AlertTriangle } from 'lucide-react';
-import { testSupabaseConnection } from '@/utils/testConnection';
+import { Users, DollarSign, ShoppingBag, TrendingUp, Eye } from 'lucide-react';
 
 export default function DashboardShopify() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -78,27 +70,6 @@ export default function DashboardShopify() {
   const stripeOrders = useStripeOrders(50);
   const analyticsOrders = useAnalyticsOrders(days);
   const orderItems = useOrderItems(selectedOrderId);
-
-  // Inventory hooks
-  const inventoryDashboard = useInventoryDashboard();
-  const lowStockAlerts = useLowStockAlerts();
-  const inventoryMovements = useInventoryMovements(50);
-  const inventoryStats = useInventoryStats();
-
-  // Debug logging - log all data to console
-  useEffect(() => {
-    console.group('📊 Dashboard Data Status');
-    console.log('Visits:', { loading: visits.loading, error: visits.error, count: visits.data?.length, data: visits.data });
-    console.log('Page Views:', { loading: pageViews.loading, error: pageViews.error, count: pageViews.data?.length, data: pageViews.data });
-    console.log('Events:', { loading: events.loading, error: events.error, count: events.data?.length, data: events.data });
-    console.log('Cart Events:', { loading: cartEvents.loading, error: cartEvents.error, count: cartEvents.data?.length, data: cartEvents.data });
-    console.log('Stripe Orders:', { loading: stripeOrders.loading, error: stripeOrders.error, count: stripeOrders.data?.length, data: stripeOrders.data });
-    console.log('Analytics Orders:', { loading: analyticsOrders.loading, error: analyticsOrders.error, count: analyticsOrders.data?.length, data: analyticsOrders.data });
-    console.log('Inventory Dashboard:', { loading: inventoryDashboard.loading, error: inventoryDashboard.error, count: inventoryDashboard.data?.length, data: inventoryDashboard.data });
-    console.log('Low Stock Alerts:', { loading: lowStockAlerts.loading, error: lowStockAlerts.error, count: lowStockAlerts.data?.length, data: lowStockAlerts.data });
-    console.log('Inventory Movements:', { loading: inventoryMovements.loading, error: inventoryMovements.error, count: inventoryMovements.data?.length, data: inventoryMovements.data });
-    console.groupEnd();
-  }, [visits, pageViews, events, cartEvents, stripeOrders, analyticsOrders, inventoryDashboard, lowStockAlerts, inventoryMovements]);
 
   const [campaignsLoading, setCampaignsLoading] = useState(true);
   const [campaignsError, setCampaignsError] = useState<string | null>(null);
@@ -341,24 +312,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Stripe Orders"
-                subtitle={stripeOrders.loading ? 'Loading...' : stripeOrders.error ? `Error: ${stripeOrders.error}` : `${stripeOrders.data?.length || 0} orders from public.orders table`}
+                subtitle="All orders from Stripe payments"
                 noPadding
               >
-                {stripeOrders.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading Stripe orders:</p>
-                    <p className="text-sm mt-1">{stripeOrders.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_number', header: 'Order #', render: (val) => <span className="font-mono text-xs">{val}</span> },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || '-' },
                     { key: 'total_amount', header: 'Amount', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
-                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val}</ShopifyBadge> },
-                    { key: 'is_guest', header: 'Guest', render: (val) => val ? 'Yes' : 'No' },
-                    { key: 'stripe_session_id', header: 'Stripe Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 20)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                     { 
                       key: 'id', 
@@ -389,15 +351,10 @@ export default function DashboardShopify() {
                   <ShopifyTable
                     columns={[
                       { key: 'product_name', header: 'Product' },
-                      { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'variant', header: 'Variant', render: (val) => val || '-' },
-                      { key: 'size', header: 'Size', render: (val) => val || '-' },
-                      { key: 'color', header: 'Color', render: (val) => val || '-' },
-                      { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'quantity', header: 'Qty', align: 'right' },
                       { key: 'unit_price', header: 'Price', align: 'right', render: (val) => formatCurrency(val) },
                       { key: 'total_price', header: 'Total', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
-                      { key: 'image_url', header: 'Image', render: (val) => val ? <img src={val} alt="" className="w-10 h-10 object-cover rounded" /> : '-' },
                     ]}
                     data={orderItems.data || []}
                     loading={orderItems.loading}
@@ -408,37 +365,16 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Analytics Orders"
-                subtitle={analyticsOrders.loading ? 'Loading...' : analyticsOrders.error ? `Error: ${analyticsOrders.error}` : `${analyticsOrders.data?.length || 0} orders from orders table (analytics)`}
+                subtitle="Order tracking for analytics and reporting"
                 noPadding
               >
-                {analyticsOrders.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading analytics orders:</p>
-                    <p className="text-sm mt-1">{analyticsOrders.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_id', header: 'Order ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
-                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 15)}...</span> : '-' },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || 'Anonymous' },
-                    { key: 'customer_id', header: 'Customer ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
-                    { key: 'subtotal', header: 'Subtotal', align: 'right', render: (val) => formatCurrency(val || 0) },
-                    { key: 'discount_total', header: 'Discount', align: 'right', render: (val) => formatCurrency(val || 0) },
-                    { key: 'shipping_total', header: 'Shipping', align: 'right', render: (val) => formatCurrency(val || 0) },
-                    { key: 'tax_total', header: 'Tax', align: 'right', render: (val) => formatCurrency(val || 0) },
                     { key: 'total_value', header: 'Total', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val)}</span> },
-                    { key: 'total_cost', header: 'Cost', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
                     { key: 'profit', header: 'Profit', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
-                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
-                    { key: 'payment_method', header: 'Payment', render: (val) => val || '-' },
-                    { key: 'shipping_method', header: 'Shipping Method', render: (val) => val || '-' },
-                    { key: 'source', header: 'Source', render: (val) => val || '-' },
-                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
-                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
-                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val || '-'}</ShopifyBadge> },
-                    { key: 'fulfillment_status', header: 'Fulfillment', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                   ]}
                   data={analyticsOrders.data || []}
@@ -514,244 +450,6 @@ export default function DashboardShopify() {
                   data={topProducts.data || []}
                   loading={topProducts.loading}
                   emptyMessage="No product revenue data available"
-                />
-              </ShopifyCard>
-            </div>
-          )}
-
-          {/* Inventory Tab */}
-          {activeTab === 'inventory' && (
-            <div className="space-y-6">
-              {/* Inventory Stats */}
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-                <ShopifyStatCard
-                  title="Total Variants"
-                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalVariants || 0)}
-                  icon={<Package className="w-5 h-5" />}
-                  subtitle="Active SKUs"
-                />
-                <ShopifyStatCard
-                  title="Total Stock"
-                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalStock || 0)}
-                  icon={<Box className="w-5 h-5" />}
-                  subtitle="All units"
-                />
-                <ShopifyStatCard
-                  title="Inventory Value"
-                  value={inventoryStats.loading ? '...' : formatCurrency(inventoryStats.stats?.totalValue || 0)}
-                  icon={<DollarSign className="w-5 h-5" />}
-                  subtitle="Total value"
-                />
-                <ShopifyStatCard
-                  title="Low Stock Items"
-                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.lowStockCount || 0)}
-                  icon={<AlertTriangle className="w-5 h-5 text-yellow-500" />}
-                  subtitle="< 5 units"
-                />
-                <ShopifyStatCard
-                  title="Out of Stock"
-                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.outOfStockCount || 0)}
-                  icon={<AlertTriangle className="w-5 h-5 text-red-500" />}
-                  subtitle="0 units"
-                />
-              </div>
-
-              {/* Low Stock Alerts */}
-              {lowStockAlerts.data && lowStockAlerts.data.length > 0 && (
-                <ShopifyCard
-                  title="Low Stock Alerts"
-                  subtitle={`${lowStockAlerts.data.length} items need attention`}
-                  noPadding
-                >
-                  <ShopifyTable
-                    columns={[
-                      { key: 'product_id', header: 'Product ID' },
-                      { key: 'product_name', header: 'Product Name', render: (val) => val || '-' },
-                      { key: 'variant_name', header: 'Variant' },
-                      { key: 'sku', header: 'SKU' },
-                      { 
-                        key: 'available_quantity', 
-                        header: 'Available', 
-                        align: 'right',
-                        render: (val) => (
-                          <span className={`font-semibold ${val === 0 ? 'text-red-600' : 'text-yellow-600'}`}>
-                            {val || 0}
-                          </span>
-                        )
-                      },
-                      { 
-                        key: 'updated_at', 
-                        header: 'Last Updated', 
-                        render: (val) => new Date(val).toLocaleDateString()
-                      },
-                    ]}
-                    data={lowStockAlerts.data || []}
-                    loading={lowStockAlerts.loading}
-                    emptyMessage="No low stock alerts"
-                  />
-                </ShopifyCard>
-              )}
-
-              {/* Inventory Dashboard */}
-              <ShopifyCard
-                title="Inventory Dashboard"
-                subtitle={inventoryDashboard.loading ? 'Loading...' : inventoryDashboard.error ? `Error: ${inventoryDashboard.error}` : `${inventoryDashboard.data?.length || 0} product variants from inventory_dashboard view`}
-                noPadding
-              >
-                {inventoryDashboard.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading inventory:</p>
-                    <p className="text-sm mt-1">{inventoryDashboard.error}</p>
-                  </div>
-                )}
-                <ShopifyTable
-                  columns={[
-                    { key: 'product_id', header: 'Product ID' },
-                    { key: 'product_name', header: 'Product Name', render: (val) => val || '-' },
-                    { key: 'variant_name', header: 'Variant' },
-                    { key: 'size', header: 'Size' },
-                    { key: 'color', header: 'Color' },
-                    { key: 'sku', header: 'SKU' },
-                    { 
-                      key: 'stock_quantity', 
-                      header: 'Stock', 
-                      align: 'right',
-                      render: (val) => formatNumber(val || 0)
-                    },
-                    { 
-                      key: 'reserved_quantity', 
-                      header: 'Reserved', 
-                      align: 'right',
-                      render: (val) => formatNumber(val || 0)
-                    },
-                    { 
-                      key: 'available_quantity', 
-                      header: 'Available', 
-                      align: 'right',
-                      render: (val) => (
-                        <span className={`font-semibold ${
-                          val === 0 ? 'text-red-600' : 
-                          val < 5 ? 'text-yellow-600' : 
-                          'text-green-600'
-                        }`}>
-                          {formatNumber(val || 0)}
-                        </span>
-                      )
-                    },
-                    { 
-                      key: 'stock_status', 
-                      header: 'Status',
-                      render: (val) => (
-                        <ShopifyBadge 
-                          variant={
-                            val === 'out_of_stock' ? 'error' : 
-                            val === 'low_stock' ? 'warning' : 
-                            'success'
-                          }
-                        >
-                          {val?.replace('_', ' ').toUpperCase()}
-                        </ShopifyBadge>
-                      )
-                    },
-                    { 
-                      key: 'price', 
-                      header: 'Price', 
-                      align: 'right',
-                      render: (val) => val ? formatCurrency(val) : '-'
-                    },
-                    { 
-                      key: 'sales_last_30_days', 
-                      header: 'Sales (30d)', 
-                      align: 'right',
-                      render: (val) => formatNumber(val || 0)
-                    },
-                    { 
-                      key: 'is_active', 
-                      header: 'Active', 
-                      align: 'center',
-                      render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge>
-                    },
-                    { 
-                      key: 'updated_at', 
-                      header: 'Updated', 
-                      render: (val) => new Date(val).toLocaleDateString()
-                    },
-                  ]}
-                  data={inventoryDashboard.data || []}
-                  loading={inventoryDashboard.loading}
-                  emptyMessage="No inventory data available"
-                />
-              </ShopifyCard>
-
-              {/* Recent Inventory Movements */}
-              <ShopifyCard
-                title="Recent Inventory Movements"
-                subtitle={inventoryMovements.loading ? 'Loading...' : inventoryMovements.error ? `Error: ${inventoryMovements.error}` : `${inventoryMovements.data?.length || 0} inventory movements from inventory_movements table`}
-                noPadding
-              >
-                {inventoryMovements.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading inventory movements:</p>
-                    <p className="text-sm mt-1">{inventoryMovements.error}</p>
-                  </div>
-                )}
-                <ShopifyTable
-                  columns={[
-                    { key: 'id', header: 'ID', render: (val) => <span className="font-mono text-xs">{val.slice(0, 8)}...</span> },
-                    { key: 'variant_id', header: 'Variant ID', render: (val) => <span className="font-mono text-xs">{val.slice(0, 8)}...</span> },
-                    { 
-                      key: 'movement_type', 
-                      header: 'Type',
-                      render: (val) => (
-                        <ShopifyBadge 
-                          variant={
-                            val === 'sale' ? 'info' : 
-                            val === 'restock' ? 'success' : 
-                            val === 'return' ? 'success' :
-                            val === 'damage' ? 'error' :
-                            'neutral'
-                          }
-                        >
-                          {val?.toUpperCase()}
-                        </ShopifyBadge>
-                      )
-                    },
-                    { 
-                      key: 'quantity', 
-                      header: 'Quantity', 
-                      align: 'right',
-                      render: (val) => (
-                        <span className={val > 0 ? 'text-green-600' : 'text-red-600'}>
-                          {val > 0 ? '+' : ''}{val}
-                        </span>
-                      )
-                    },
-                    { 
-                      key: 'previous_stock', 
-                      header: 'Previous', 
-                      align: 'right',
-                      render: (val) => formatNumber(val || 0)
-                    },
-                    { 
-                      key: 'new_stock', 
-                      header: 'New Stock', 
-                      align: 'right',
-                      render: (val) => (
-                        <span className="font-semibold">{formatNumber(val || 0)}</span>
-                      )
-                    },
-                    { key: 'order_id', header: 'Order ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'notes', header: 'Notes', render: (val) => val ? <span className="text-xs">{val}</span> : '-' },
-                    { key: 'created_by', header: 'Created By', render: (val) => val || 'system' },
-                    { 
-                      key: 'created_at', 
-                      header: 'Date', 
-                      render: (val) => new Date(val).toLocaleString()
-                    },
-                  ]}
-                  data={inventoryMovements.data || []}
-                  loading={inventoryMovements.loading}
-                  emptyMessage="No inventory movements recorded"
                 />
               </ShopifyCard>
             </div>
@@ -841,24 +539,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Events"
-                subtitle={events.loading ? 'Loading...' : events.error ? `Error: ${events.error}` : `${events.data?.length || 0} events (Last ${days} days)`}
+                subtitle={`All custom events (Last ${days} days)`}
                 noPadding
               >
-                {events.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading events:</p>
-                    <p className="text-sm mt-1">{events.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
                     { key: 'event_name', header: 'Event', render: (val) => <span className="font-medium">{val}</span> },
                     { key: 'event_category', header: 'Category', render: (val) => val || '-' },
                     { key: 'event_label', header: 'Label', render: (val) => val || '-' },
                     { key: 'event_value', header: 'Value', align: 'right', render: (val) => val ?? '-' },
-                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'payload', header: 'Payload', render: (val) => val ? <span className="font-mono text-xs">{JSON.stringify(val).substring(0, 50)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={events.data || []}
@@ -874,39 +563,16 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Visits"
-                subtitle={visits.loading ? 'Loading...' : visits.error ? `Error: ${visits.error}` : `${visits.data?.length || 0} visits from visits table`}
+                subtitle="Raw visit data from visits table"
                 noPadding
               >
-                {visits.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading visits:</p>
-                    <p className="text-sm mt-1">{visits.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => <span className="font-mono text-xs">{val?.slice(0, 8)}...</span> },
-                    { key: 'ip_address', header: 'IP', render: (val) => val || '-' },
                     { key: 'device', header: 'Device', render: (val) => val || '-' },
                     { key: 'browser', header: 'Browser', render: (val) => val || '-' },
-                    { key: 'os', header: 'OS', render: (val) => val || '-' },
                     { key: 'country', header: 'Country', render: (val) => val || '-' },
-                    { key: 'city', header: 'City', render: (val) => val || '-' },
-                    { key: 'region', header: 'Region', render: (val) => val || '-' },
-                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
-                    { key: 'landing_page', header: 'Landing Page', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
-                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
-                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
-                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
-                    { key: 'utm_term', header: 'UTM Term', render: (val) => val || '-' },
-                    { key: 'utm_content', header: 'UTM Content', render: (val) => val || '-' },
-                    { key: 'is_mobile', header: 'Mobile', render: (val) => val ? 'Yes' : 'No' },
-                    { key: 'is_tablet', header: 'Tablet', render: (val) => val ? 'Yes' : 'No' },
-                    { key: 'is_desktop', header: 'Desktop', render: (val) => val ? 'Yes' : 'No' },
-                    { key: 'screen_width', header: 'Width', align: 'right', render: (val) => val || '-' },
-                    { key: 'screen_height', header: 'Height', align: 'right', render: (val) => val || '-' },
-                    { key: 'language', header: 'Language', render: (val) => val || '-' },
-                    { key: 'timezone', header: 'Timezone', render: (val) => val || '-' },
+                    { key: 'utm_source', header: 'Source', render: (val, row) => val || row.referrer || 'Direct' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={visits.data || []}
@@ -922,28 +588,16 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Page Views"
-                subtitle={pageViews.loading ? 'Loading...' : pageViews.error ? `Error: ${pageViews.error}` : `${pageViews.data?.length || 0} page views from page_views table`}
+                subtitle="Raw page view data from page_views table"
                 noPadding
               >
-                {pageViews.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading page views:</p>
-                    <p className="text-sm mt-1">{pageViews.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
-                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'url', header: 'URL', render: (val) => val ? <span className="font-mono text-xs truncate max-w-xs">{val}</span> : '-' },
-                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url || '-'}</span> },
+                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url}</span> },
                     { key: 'title', header: 'Title', render: (val) => val || '-' },
-                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
                     { key: 'scroll_depth', header: 'Scroll', align: 'right', render: (val) => `${val || 0}%` },
-                    { key: 'time_on_page', header: 'Time (s)', align: 'right', render: (val) => val || 0 },
+                    { key: 'time_on_page', header: 'Time (s)', align: 'right' },
                     { key: 'engaged', header: 'Engaged', align: 'center', render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
-                    { key: 'bounce', header: 'Bounce', align: 'center', render: (val) => val ? <ShopifyBadge variant="error">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
-                    { key: 'exit', header: 'Exit', align: 'center', render: (val) => val ? <ShopifyBadge variant="warning">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={pageViews.data || []}
@@ -959,15 +613,9 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Cart Events"
-                subtitle={cartEvents.loading ? 'Loading...' : cartEvents.error ? `Error: ${cartEvents.error}` : `${cartEvents.data?.length || 0} cart events from cart_events table`}
+                subtitle="All cart events from cart_events table"
                 noPadding
               >
-                {cartEvents.error && (
-                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p className="font-semibold">Error loading cart events:</p>
-                    <p className="text-sm mt-1">{cartEvents.error}</p>
-                  </div>
-                )}
                 <ShopifyTable
                   columns={[
                     { 
@@ -978,19 +626,10 @@ export default function DashboardShopify() {
                         return <ShopifyBadge variant={variant}>{val}</ShopifyBadge>;
                       }
                     },
-                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
-                    { key: 'external_product_id', header: 'External Product ID', render: (val) => val || '-' },
                     { key: 'product_title', header: 'Product', render: (val) => val || '-' },
-                    { key: 'variant_id', header: 'Variant ID', render: (val) => val || '-' },
-                    { key: 'variant_title', header: 'Variant', render: (val) => val || '-' },
-                    { key: 'quantity', header: 'Qty', align: 'right', render: (val) => val || 0 },
+                    { key: 'quantity', header: 'Qty', align: 'right' },
                     { key: 'price', header: 'Price', align: 'right', render: (val) => formatCurrency(val || 0) },
-                    { key: 'total_value', header: 'Total Value', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'cart_total', header: 'Cart Total', align: 'right', render: (val) => val ? <span className="font-semibold">{formatCurrency(val)}</span> : '-' },
-                    { key: 'discount_code', header: 'Discount Code', render: (val) => val || '-' },
-                    { key: 'discount_amount', header: 'Discount', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={cartEvents.data || []}
