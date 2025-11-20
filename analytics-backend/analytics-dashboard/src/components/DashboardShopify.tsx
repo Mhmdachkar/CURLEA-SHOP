@@ -41,6 +41,7 @@ import { ShopifyButton } from '@/components/dashboard/ShopifyButton';
 import { ShopifySidebar } from '@/components/dashboard/ShopifySidebar';
 import { ShopifyHeader } from '@/components/dashboard/ShopifyHeader';
 import { Users, DollarSign, ShoppingBag, TrendingUp, Eye, Box, Package, AlertTriangle } from 'lucide-react';
+import { testSupabaseConnection } from '@/utils/testConnection';
 
 export default function DashboardShopify() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -83,6 +84,21 @@ export default function DashboardShopify() {
   const lowStockAlerts = useLowStockAlerts();
   const inventoryMovements = useInventoryMovements(50);
   const inventoryStats = useInventoryStats();
+
+  // Debug logging - log all data to console
+  useEffect(() => {
+    console.group('📊 Dashboard Data Status');
+    console.log('Visits:', { loading: visits.loading, error: visits.error, count: visits.data?.length, data: visits.data });
+    console.log('Page Views:', { loading: pageViews.loading, error: pageViews.error, count: pageViews.data?.length, data: pageViews.data });
+    console.log('Events:', { loading: events.loading, error: events.error, count: events.data?.length, data: events.data });
+    console.log('Cart Events:', { loading: cartEvents.loading, error: cartEvents.error, count: cartEvents.data?.length, data: cartEvents.data });
+    console.log('Stripe Orders:', { loading: stripeOrders.loading, error: stripeOrders.error, count: stripeOrders.data?.length, data: stripeOrders.data });
+    console.log('Analytics Orders:', { loading: analyticsOrders.loading, error: analyticsOrders.error, count: analyticsOrders.data?.length, data: analyticsOrders.data });
+    console.log('Inventory Dashboard:', { loading: inventoryDashboard.loading, error: inventoryDashboard.error, count: inventoryDashboard.data?.length, data: inventoryDashboard.data });
+    console.log('Low Stock Alerts:', { loading: lowStockAlerts.loading, error: lowStockAlerts.error, count: lowStockAlerts.data?.length, data: lowStockAlerts.data });
+    console.log('Inventory Movements:', { loading: inventoryMovements.loading, error: inventoryMovements.error, count: inventoryMovements.data?.length, data: inventoryMovements.data });
+    console.groupEnd();
+  }, [visits, pageViews, events, cartEvents, stripeOrders, analyticsOrders, inventoryDashboard, lowStockAlerts, inventoryMovements]);
 
   const [campaignsLoading, setCampaignsLoading] = useState(true);
   const [campaignsError, setCampaignsError] = useState<string | null>(null);
@@ -325,9 +341,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Stripe Orders"
-                subtitle="All orders from Stripe payments"
+                subtitle={stripeOrders.loading ? 'Loading...' : stripeOrders.error ? `Error: ${stripeOrders.error}` : `${stripeOrders.data?.length || 0} orders from public.orders table`}
                 noPadding
               >
+                {stripeOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading Stripe orders:</p>
+                    <p className="text-sm mt-1">{stripeOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_number', header: 'Order #', render: (val) => <span className="font-mono text-xs">{val}</span> },
@@ -386,9 +408,15 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Analytics Orders"
-                subtitle="Order tracking for analytics and reporting"
+                subtitle={analyticsOrders.loading ? 'Loading...' : analyticsOrders.error ? `Error: ${analyticsOrders.error}` : `${analyticsOrders.data?.length || 0} orders from orders table (analytics)`}
                 noPadding
               >
+                {analyticsOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading analytics orders:</p>
+                    <p className="text-sm mt-1">{analyticsOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_id', header: 'Order ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
@@ -567,9 +595,15 @@ export default function DashboardShopify() {
               {/* Inventory Dashboard */}
               <ShopifyCard
                 title="Inventory Dashboard"
-                subtitle="All product variants and stock levels"
+                subtitle={inventoryDashboard.loading ? 'Loading...' : inventoryDashboard.error ? `Error: ${inventoryDashboard.error}` : `${inventoryDashboard.data?.length || 0} product variants from inventory_dashboard view`}
                 noPadding
               >
+                {inventoryDashboard.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading inventory:</p>
+                    <p className="text-sm mt-1">{inventoryDashboard.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'product_id', header: 'Product ID' },
@@ -652,9 +686,15 @@ export default function DashboardShopify() {
               {/* Recent Inventory Movements */}
               <ShopifyCard
                 title="Recent Inventory Movements"
-                subtitle="Last 50 stock changes"
+                subtitle={inventoryMovements.loading ? 'Loading...' : inventoryMovements.error ? `Error: ${inventoryMovements.error}` : `${inventoryMovements.data?.length || 0} inventory movements from inventory_movements table`}
                 noPadding
               >
+                {inventoryMovements.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading inventory movements:</p>
+                    <p className="text-sm mt-1">{inventoryMovements.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'id', header: 'ID', render: (val) => <span className="font-mono text-xs">{val.slice(0, 8)}...</span> },
@@ -801,9 +841,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Events"
-                subtitle={`All custom events (Last ${days} days)`}
+                subtitle={events.loading ? 'Loading...' : events.error ? `Error: ${events.error}` : `${events.data?.length || 0} events (Last ${days} days)`}
                 noPadding
               >
+                {events.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading events:</p>
+                    <p className="text-sm mt-1">{events.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'event_name', header: 'Event', render: (val) => <span className="font-medium">{val}</span> },
@@ -828,9 +874,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Visits"
-                subtitle="Raw visit data from visits table"
+                subtitle={visits.loading ? 'Loading...' : visits.error ? `Error: ${visits.error}` : `${visits.data?.length || 0} visits from visits table`}
                 noPadding
               >
+                {visits.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading visits:</p>
+                    <p className="text-sm mt-1">{visits.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => <span className="font-mono text-xs">{val?.slice(0, 8)}...</span> },
@@ -870,9 +922,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Page Views"
-                subtitle="Raw page view data from page_views table"
+                subtitle={pageViews.loading ? 'Loading...' : pageViews.error ? `Error: ${pageViews.error}` : `${pageViews.data?.length || 0} page views from page_views table`}
                 noPadding
               >
+                {pageViews.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading page views:</p>
+                    <p className="text-sm mt-1">{pageViews.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
@@ -901,9 +959,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Cart Events"
-                subtitle="All cart events from cart_events table"
+                subtitle={cartEvents.loading ? 'Loading...' : cartEvents.error ? `Error: ${cartEvents.error}` : `${cartEvents.data?.length || 0} cart events from cart_events table`}
                 noPadding
               >
+                {cartEvents.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading cart events:</p>
+                    <p className="text-sm mt-1">{cartEvents.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { 
