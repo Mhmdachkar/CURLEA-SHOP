@@ -1,6 +1,9 @@
 /**
  * Analytics Dashboard Page - Shopify Style
  * View all Supabase analytics data in one place
+ * 
+ * NOTE: This file is synced with analytics-backend/analytics-dashboard/src/components/DashboardShopify.tsx
+ * Both files should be identical (except function name)
  */
 
 import { useState, useEffect } from 'react';
@@ -176,7 +179,7 @@ export default function AnalyticsDashboard() {
       <ShopifySidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-64 w-full">
         <ShopifyHeader
           title="Analytics Dashboard"
           subtitle="View and explore your live business metrics"
@@ -186,18 +189,19 @@ export default function AnalyticsDashboard() {
           onRefresh={refreshData}
           loading={productsLoading}
           actions={
-            <ShopifyButton onClick={() => syncProducts()} loading={productsLoading}>
-              Sync Products
+            <ShopifyButton onClick={() => syncProducts()} loading={productsLoading} className="text-xs sm:text-sm">
+              <span className="hidden sm:inline">Sync Products</span>
+              <span className="sm:hidden">Sync</span>
             </ShopifyButton>
           }
         />
 
-        <div className="p-8 space-y-6">
+        <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Key Metrics */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <ShopifyStatCard
                   title="Total Visitors"
                   value={visitorStatsLoading ? '...' : formatNumber(visitorStats?.unique_visitors || 0)}
@@ -237,38 +241,38 @@ export default function AnalyticsDashboard() {
                   <div className="space-y-6">
                     {funnel.data?.[0] && (
                       <>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Visits</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].total_visits || 0)}</div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Visits</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].total_visits || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Product Views</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].product_views || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Product Views</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].product_views || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Add to Cart</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].add_to_cart || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Add to Cart</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].add_to_cart || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-gray-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Checkout Start</div>
-                            <div className="text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].checkout_start || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Checkout Start</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{formatNumber(funnel.data[0].checkout_start || 0)}</div>
                           </div>
-                          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                            <div className="text-sm font-medium text-green-700 mb-2">Purchases</div>
-                            <div className="text-3xl font-bold text-green-700">{formatNumber(funnel.data[0].purchases || 0)}</div>
+                          <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200 col-span-2 sm:col-span-1">
+                            <div className="text-xs sm:text-sm font-medium text-green-700 mb-1 sm:mb-2">Purchases</div>
+                            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700">{formatNumber(funnel.data[0].purchases || 0)}</div>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-                          <div className="p-4 bg-blue-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Visit to Cart Rate</div>
-                            <div className="text-2xl font-bold text-blue-600">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-gray-200">
+                          <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Visit to Cart Rate</div>
+                            <div className="text-xl sm:text-2xl font-bold text-blue-600">
                               {funnel.data[0].visit_to_cart_rate?.toFixed(2) || '0.00'}%
                             </div>
                           </div>
-                          <div className="p-4 bg-green-50 rounded-lg">
-                            <div className="text-sm font-medium text-gray-600 mb-2">Cart to Purchase Rate</div>
-                            <div className="text-2xl font-bold text-green-600">
+                          <div className="p-3 sm:p-4 bg-green-50 rounded-lg">
+                            <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Cart to Purchase Rate</div>
+                            <div className="text-xl sm:text-2xl font-bold text-green-600">
                               {funnel.data[0].cart_to_purchase_rate?.toFixed(2) || '0.00'}%
                             </div>
                           </div>
@@ -311,15 +315,24 @@ export default function AnalyticsDashboard() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Stripe Orders"
-                subtitle="All orders from Stripe payments"
+                subtitle={stripeOrders.loading ? 'Loading...' : stripeOrders.error ? `Error: ${stripeOrders.error}` : `${stripeOrders.data?.length || 0} orders from stripe_orders table`}
                 noPadding
               >
+                {stripeOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading Stripe orders:</p>
+                    <p className="text-sm mt-1">{stripeOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_number', header: 'Order #', render: (val) => <span className="font-mono text-xs">{val}</span> },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || '-' },
                     { key: 'total_amount', header: 'Amount', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val}</ShopifyBadge> },
+                    { key: 'is_guest', header: 'Guest', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'stripe_session_id', header: 'Stripe Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 20)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                     { 
                       key: 'id', 
@@ -350,10 +363,15 @@ export default function AnalyticsDashboard() {
                   <ShopifyTable
                     columns={[
                       { key: 'product_name', header: 'Product' },
+                      { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'variant', header: 'Variant', render: (val) => val || '-' },
+                      { key: 'size', header: 'Size', render: (val) => val || '-' },
+                      { key: 'color', header: 'Color', render: (val) => val || '-' },
+                      { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'quantity', header: 'Qty', align: 'right' },
                       { key: 'unit_price', header: 'Price', align: 'right', render: (val) => formatCurrency(val) },
                       { key: 'total_price', header: 'Total', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                      { key: 'image_url', header: 'Image', render: (val) => val ? <img src={val} alt="" className="w-10 h-10 object-cover rounded" /> : '-' },
                     ]}
                     data={orderItems.data || []}
                     loading={orderItems.loading}
@@ -364,16 +382,37 @@ export default function AnalyticsDashboard() {
 
               <ShopifyCard
                 title="Analytics Orders"
-                subtitle="Order tracking for analytics and reporting"
+                subtitle={analyticsOrders.loading ? 'Loading...' : analyticsOrders.error ? `Error: ${analyticsOrders.error}` : `${analyticsOrders.data?.length || 0} orders from orders table (analytics)`}
                 noPadding
               >
+                {analyticsOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading analytics orders:</p>
+                    <p className="text-sm mt-1">{analyticsOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_id', header: 'Order ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 15)}...</span> : '-' },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || 'Anonymous' },
+                    { key: 'customer_id', header: 'Customer ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
+                    { key: 'subtotal', header: 'Subtotal', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'discount_total', header: 'Discount', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'shipping_total', header: 'Shipping', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'tax_total', header: 'Tax', align: 'right', render: (val) => formatCurrency(val || 0) },
                     { key: 'total_value', header: 'Total', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val)}</span> },
+                    { key: 'total_cost', header: 'Cost', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
                     { key: 'profit', header: 'Profit', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
+                    { key: 'payment_method', header: 'Payment', render: (val) => val || '-' },
+                    { key: 'shipping_method', header: 'Shipping Method', render: (val) => val || '-' },
+                    { key: 'source', header: 'Source', render: (val) => val || '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val || '-'}</ShopifyBadge> },
+                    { key: 'fulfillment_status', header: 'Fulfillment', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                   ]}
                   data={analyticsOrders.data || []}
@@ -401,10 +440,10 @@ export default function AnalyticsDashboard() {
                 ) : supabaseProducts && supabaseProducts.length > 0 ? (
                   <div className="space-y-3">
                     {supabaseProducts.slice(0, 10).map((product) => (
-                      <div key={product.id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div>
-                          <div className="font-medium text-gray-900">{product.title}</div>
-                          <div className="text-sm text-gray-500">
+                      <div key={product.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm sm:text-base text-gray-900 truncate">{product.title}</div>
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             {product.category}
                             {product.subcategory && ` • ${product.subcategory}`}
                           </div>
@@ -412,14 +451,14 @@ export default function AnalyticsDashboard() {
                             <div className="text-xs text-gray-400 mt-1">SKU: {product.sku}</div>
                           )}
                         </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-gray-900">{formatCurrency(product.price)}</div>
+                        <div className="text-left sm:text-right flex-shrink-0">
+                          <div className="font-semibold text-sm sm:text-base text-gray-900">{formatCurrency(product.price)}</div>
                           {product.compare_at_price && product.compare_at_price > product.price && (
-                            <div className="text-sm text-gray-400 line-through">
+                            <div className="text-xs sm:text-sm text-gray-400 line-through">
                               {formatCurrency(product.compare_at_price)}
                             </div>
                           )}
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             Stock: {product.inventory_count || 0}
                           </div>
                         </div>
@@ -464,7 +503,7 @@ export default function AnalyticsDashboard() {
           {/* Traffic Tab */}
           {activeTab === 'traffic' && (
             <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
                 <ShopifyStatCard
                   title="Unique Visitors"
                   value={formatNumber(visitorStats?.unique_visitors || 0)}
@@ -538,15 +577,24 @@ export default function AnalyticsDashboard() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Events"
-                subtitle={`All custom events (Last ${days} days)`}
+                subtitle={events.loading ? 'Loading...' : events.error ? `Error: ${events.error}` : `${events.data?.length || 0} events (Last ${days} days)`}
                 noPadding
               >
+                {events.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading events:</p>
+                    <p className="text-sm mt-1">{events.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'event_name', header: 'Event', render: (val) => <span className="font-medium">{val}</span> },
                     { key: 'event_category', header: 'Category', render: (val) => val || '-' },
                     { key: 'event_label', header: 'Label', render: (val) => val || '-' },
                     { key: 'event_value', header: 'Value', align: 'right', render: (val) => val ?? '-' },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'payload', header: 'Payload', render: (val) => val ? <span className="font-mono text-xs">{JSON.stringify(val).substring(0, 50)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={events.data || []}
@@ -562,16 +610,39 @@ export default function AnalyticsDashboard() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Visits"
-                subtitle="Raw visit data from visits table"
+                subtitle={visits.loading ? 'Loading...' : visits.error ? `Error: ${visits.error}` : `${visits.data?.length || 0} visits from visits table`}
                 noPadding
               >
+                {visits.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading visits:</p>
+                    <p className="text-sm mt-1">{visits.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => <span className="font-mono text-xs">{val?.slice(0, 8)}...</span> },
+                    { key: 'ip_address', header: 'IP', render: (val) => val || '-' },
                     { key: 'device', header: 'Device', render: (val) => val || '-' },
                     { key: 'browser', header: 'Browser', render: (val) => val || '-' },
+                    { key: 'os', header: 'OS', render: (val) => val || '-' },
                     { key: 'country', header: 'Country', render: (val) => val || '-' },
-                    { key: 'utm_source', header: 'Source', render: (val, row) => val || row.referrer || 'Direct' },
+                    { key: 'city', header: 'City', render: (val) => val || '-' },
+                    { key: 'region', header: 'Region', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'landing_page', header: 'Landing Page', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
+                    { key: 'utm_term', header: 'UTM Term', render: (val) => val || '-' },
+                    { key: 'utm_content', header: 'UTM Content', render: (val) => val || '-' },
+                    { key: 'is_mobile', header: 'Mobile', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_tablet', header: 'Tablet', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_desktop', header: 'Desktop', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'screen_width', header: 'Width', align: 'right', render: (val) => val || '-' },
+                    { key: 'screen_height', header: 'Height', align: 'right', render: (val) => val || '-' },
+                    { key: 'language', header: 'Language', render: (val) => val || '-' },
+                    { key: 'timezone', header: 'Timezone', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={visits.data || []}
@@ -587,16 +658,28 @@ export default function AnalyticsDashboard() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Page Views"
-                subtitle="Raw page view data from page_views table"
+                subtitle={pageViews.loading ? 'Loading...' : pageViews.error ? `Error: ${pageViews.error}` : `${pageViews.data?.length || 0} page views from page_views table`}
                 noPadding
               >
+                {pageViews.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading page views:</p>
+                    <p className="text-sm mt-1">{pageViews.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
-                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'url', header: 'URL', render: (val) => val ? <span className="font-mono text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url || '-'}</span> },
                     { key: 'title', header: 'Title', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
                     { key: 'scroll_depth', header: 'Scroll', align: 'right', render: (val) => `${val || 0}%` },
-                    { key: 'time_on_page', header: 'Time (s)', align: 'right' },
+                    { key: 'time_on_page', header: 'Time (s)', align: 'right', render: (val) => val || 0 },
                     { key: 'engaged', header: 'Engaged', align: 'center', render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'bounce', header: 'Bounce', align: 'center', render: (val) => val ? <ShopifyBadge variant="error">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'exit', header: 'Exit', align: 'center', render: (val) => val ? <ShopifyBadge variant="warning">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={pageViews.data || []}
@@ -612,9 +695,15 @@ export default function AnalyticsDashboard() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Cart Events"
-                subtitle="All cart events from cart_events table"
+                subtitle={cartEvents.loading ? 'Loading...' : cartEvents.error ? `Error: ${cartEvents.error}` : `${cartEvents.data?.length || 0} cart events from cart_events table`}
                 noPadding
               >
+                {cartEvents.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading cart events:</p>
+                    <p className="text-sm mt-1">{cartEvents.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { 
@@ -625,10 +714,19 @@ export default function AnalyticsDashboard() {
                         return <ShopifyBadge variant={variant}>{val}</ShopifyBadge>;
                       }
                     },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'external_product_id', header: 'External Product ID', render: (val) => val || '-' },
                     { key: 'product_title', header: 'Product', render: (val) => val || '-' },
-                    { key: 'quantity', header: 'Qty', align: 'right' },
+                    { key: 'variant_id', header: 'Variant ID', render: (val) => val || '-' },
+                    { key: 'variant_title', header: 'Variant', render: (val) => val || '-' },
+                    { key: 'quantity', header: 'Qty', align: 'right', render: (val) => val || 0 },
                     { key: 'price', header: 'Price', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'total_value', header: 'Total Value', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'cart_total', header: 'Cart Total', align: 'right', render: (val) => val ? <span className="font-semibold">{formatCurrency(val)}</span> : '-' },
+                    { key: 'discount_code', header: 'Discount Code', render: (val) => val || '-' },
+                    { key: 'discount_amount', header: 'Discount', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={cartEvents.data || []}
@@ -651,17 +749,17 @@ export default function AnalyticsDashboard() {
                 ) : campaignsError ? (
                   <div className="text-center py-8 text-red-500">Error: {campaignsError}</div>
                 ) : campaigns && campaigns.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {campaigns.map((campaign: any) => (
-                      <div key={campaign.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-medium text-gray-900">{campaign.name}</div>
-                            <div className="text-sm text-gray-500">UTM: {campaign.utm_campaign}</div>
+                      <div key={campaign.id} className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm sm:text-base text-gray-900 truncate">{campaign.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 mt-1">UTM: {campaign.utm_campaign}</div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-500">Cost</div>
-                            <div className="font-semibold text-gray-900">{formatCurrency(campaign.cost || 0)}</div>
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className="text-xs sm:text-sm text-gray-500">Cost</div>
+                            <div className="font-semibold text-sm sm:text-base text-gray-900">{formatCurrency(campaign.cost || 0)}</div>
                           </div>
                         </div>
                       </div>
@@ -707,14 +805,14 @@ export default function AnalyticsDashboard() {
                 ) : abandoned.data && abandoned.data.length > 0 ? (
                   <div className="space-y-3">
                     {abandoned.data.slice(0, 10).map((cart: any) => (
-                      <div key={cart.session_id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div>
+                      <div key={cart.session_id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex-1 min-w-0">
                           <div className="font-mono text-xs text-gray-600">{cart.session_id.slice(0, 8)}...</div>
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             {cart.items_count} items • {formatCurrency(cart.cart_value || 0)}
                           </div>
                         </div>
-                        <div className="text-right text-sm text-gray-500">
+                        <div className="text-left sm:text-right text-xs sm:text-sm text-gray-500 flex-shrink-0">
                           {new Date(cart.last_cart_activity).toLocaleDateString()}
                         </div>
                       </div>
@@ -783,32 +881,32 @@ export default function AnalyticsDashboard() {
                       }, {});
 
                       return Object.entries(dailySummary).slice(0, 10).map(([date, metrics]: [string, any]) => (
-                        <div key={date} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                          <div className="font-medium text-gray-900 mb-3">{date}</div>
-                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                        <div key={date} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                          <div className="font-medium text-sm sm:text-base text-gray-900 mb-2 sm:mb-3">{date}</div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                             <div>
                               <div className="text-xs text-gray-500">Visits</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.total_visits)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.total_visits)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Views</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.product_views)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.product_views)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Cart</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.add_to_cart)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.add_to_cart)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Checkout</div>
-                              <div className="text-lg font-semibold text-gray-900">{formatNumber(metrics.checkout_start)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-gray-900">{formatNumber(metrics.checkout_start)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Complete</div>
-                              <div className="text-lg font-semibold text-green-600">{formatNumber(metrics.checkout_complete)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-green-600">{formatNumber(metrics.checkout_complete)}</div>
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">Revenue</div>
-                              <div className="text-lg font-semibold text-green-600">{formatCurrency(metrics.revenue)}</div>
+                              <div className="text-base sm:text-lg font-semibold text-green-600">{formatCurrency(metrics.revenue)}</div>
                             </div>
                           </div>
                         </div>
@@ -824,4 +922,3 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
-

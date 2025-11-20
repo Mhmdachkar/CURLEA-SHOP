@@ -132,3 +132,39 @@ export interface ConversionFunnel {
   created_at: string;
   updated_at: string;
 }
+
+export interface StripeOrder {
+  id: string;
+  order_number: string;
+  user_id?: string;
+  total_amount: number;
+  currency: string;
+  status: string;
+  customer_email?: string;
+  is_guest?: boolean;
+  stripe_session_id?: string;
+  stripe_payment_intent_id?: string;
+  billing_address?: any;
+  shipping_address?: any;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_name: string;
+  variant?: string;
+  product_id?: string;
+  size?: string;
+  color?: string;
+  sku?: string;
+  variant_details?: any;
+  variant_id?: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  image_url?: string;
+  product_metadata?: any;
+  created_at: string;
+}

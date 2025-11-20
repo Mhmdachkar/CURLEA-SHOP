@@ -199,6 +199,12 @@ export interface OrderItem {
   order_id: string;
   product_name: string;
   variant?: string;
+  product_id?: string;
+  size?: string;
+  color?: string;
+  sku?: string;
+  variant_details?: any;
+  variant_id?: string;
   quantity: number;
   unit_price: number;
   total_price: number;

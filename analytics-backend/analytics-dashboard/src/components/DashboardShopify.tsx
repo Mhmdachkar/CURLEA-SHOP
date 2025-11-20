@@ -312,15 +312,24 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Stripe Orders"
-                subtitle="All orders from Stripe payments"
+                subtitle={stripeOrders.loading ? 'Loading...' : stripeOrders.error ? `Error: ${stripeOrders.error}` : `${stripeOrders.data?.length || 0} orders from stripe_orders table`}
                 noPadding
               >
+                {stripeOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading Stripe orders:</p>
+                    <p className="text-sm mt-1">{stripeOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_number', header: 'Order #', render: (val) => <span className="font-mono text-xs">{val}</span> },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || '-' },
                     { key: 'total_amount', header: 'Amount', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val}</ShopifyBadge> },
+                    { key: 'is_guest', header: 'Guest', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'stripe_session_id', header: 'Stripe Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 20)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                     { 
                       key: 'id', 
@@ -351,10 +360,15 @@ export default function DashboardShopify() {
                   <ShopifyTable
                     columns={[
                       { key: 'product_name', header: 'Product' },
+                      { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'variant', header: 'Variant', render: (val) => val || '-' },
+                      { key: 'size', header: 'Size', render: (val) => val || '-' },
+                      { key: 'color', header: 'Color', render: (val) => val || '-' },
+                      { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
                       { key: 'quantity', header: 'Qty', align: 'right' },
                       { key: 'unit_price', header: 'Price', align: 'right', render: (val) => formatCurrency(val) },
                       { key: 'total_price', header: 'Total', align: 'right', render: (val) => <span className="font-semibold">{formatCurrency(val)}</span> },
+                      { key: 'image_url', header: 'Image', render: (val) => val ? <img src={val} alt="" className="w-10 h-10 object-cover rounded" /> : '-' },
                     ]}
                     data={orderItems.data || []}
                     loading={orderItems.loading}
@@ -365,16 +379,37 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Analytics Orders"
-                subtitle="Order tracking for analytics and reporting"
+                subtitle={analyticsOrders.loading ? 'Loading...' : analyticsOrders.error ? `Error: ${analyticsOrders.error}` : `${analyticsOrders.data?.length || 0} orders from orders table (analytics)`}
                 noPadding
               >
+                {analyticsOrders.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading analytics orders:</p>
+                    <p className="text-sm mt-1">{analyticsOrders.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'order_id', header: 'Order ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.substring(0, 15)}...</span> : '-' },
                     { key: 'customer_email', header: 'Customer', render: (val) => val || 'Anonymous' },
+                    { key: 'customer_id', header: 'Customer ID', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
+                    { key: 'subtotal', header: 'Subtotal', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'discount_total', header: 'Discount', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'shipping_total', header: 'Shipping', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'tax_total', header: 'Tax', align: 'right', render: (val) => formatCurrency(val || 0) },
                     { key: 'total_value', header: 'Total', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val)}</span> },
+                    { key: 'total_cost', header: 'Cost', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
                     { key: 'profit', header: 'Profit', align: 'right', render: (val) => val !== null ? formatCurrency(val) : '-' },
+                    { key: 'currency', header: 'Currency', render: (val) => val || 'USD' },
+                    { key: 'payment_method', header: 'Payment', render: (val) => val || '-' },
+                    { key: 'shipping_method', header: 'Shipping Method', render: (val) => val || '-' },
+                    { key: 'source', header: 'Source', render: (val) => val || '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
                     { key: 'status', header: 'Status', render: (val) => <ShopifyBadge variant={getStatusVariant(val)}>{val || '-'}</ShopifyBadge> },
+                    { key: 'fulfillment_status', header: 'Fulfillment', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                   ]}
                   data={analyticsOrders.data || []}
@@ -539,15 +574,24 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Events"
-                subtitle={`All custom events (Last ${days} days)`}
+                subtitle={events.loading ? 'Loading...' : events.error ? `Error: ${events.error}` : `${events.data?.length || 0} events (Last ${days} days)`}
                 noPadding
               >
+                {events.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading events:</p>
+                    <p className="text-sm mt-1">{events.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'event_name', header: 'Event', render: (val) => <span className="font-medium">{val}</span> },
                     { key: 'event_category', header: 'Category', render: (val) => val || '-' },
                     { key: 'event_label', header: 'Label', render: (val) => val || '-' },
                     { key: 'event_value', header: 'Value', align: 'right', render: (val) => val ?? '-' },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'payload', header: 'Payload', render: (val) => val ? <span className="font-mono text-xs">{JSON.stringify(val).substring(0, 50)}...</span> : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={events.data || []}
@@ -563,16 +607,39 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Visits"
-                subtitle="Raw visit data from visits table"
+                subtitle={visits.loading ? 'Loading...' : visits.error ? `Error: ${visits.error}` : `${visits.data?.length || 0} visits from visits table`}
                 noPadding
               >
+                {visits.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading visits:</p>
+                    <p className="text-sm mt-1">{visits.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { key: 'session_id', header: 'Session', render: (val) => <span className="font-mono text-xs">{val?.slice(0, 8)}...</span> },
+                    { key: 'ip_address', header: 'IP', render: (val) => val || '-' },
                     { key: 'device', header: 'Device', render: (val) => val || '-' },
                     { key: 'browser', header: 'Browser', render: (val) => val || '-' },
+                    { key: 'os', header: 'OS', render: (val) => val || '-' },
                     { key: 'country', header: 'Country', render: (val) => val || '-' },
-                    { key: 'utm_source', header: 'Source', render: (val, row) => val || row.referrer || 'Direct' },
+                    { key: 'city', header: 'City', render: (val) => val || '-' },
+                    { key: 'region', header: 'Region', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'landing_page', header: 'Landing Page', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'utm_source', header: 'UTM Source', render: (val) => val || '-' },
+                    { key: 'utm_medium', header: 'UTM Medium', render: (val) => val || '-' },
+                    { key: 'utm_campaign', header: 'UTM Campaign', render: (val) => val || '-' },
+                    { key: 'utm_term', header: 'UTM Term', render: (val) => val || '-' },
+                    { key: 'utm_content', header: 'UTM Content', render: (val) => val || '-' },
+                    { key: 'is_mobile', header: 'Mobile', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_tablet', header: 'Tablet', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'is_desktop', header: 'Desktop', render: (val) => val ? 'Yes' : 'No' },
+                    { key: 'screen_width', header: 'Width', align: 'right', render: (val) => val || '-' },
+                    { key: 'screen_height', header: 'Height', align: 'right', render: (val) => val || '-' },
+                    { key: 'language', header: 'Language', render: (val) => val || '-' },
+                    { key: 'timezone', header: 'Timezone', render: (val) => val || '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={visits.data || []}
@@ -588,16 +655,28 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Recent Page Views"
-                subtitle="Raw page view data from page_views table"
+                subtitle={pageViews.loading ? 'Loading...' : pageViews.error ? `Error: ${pageViews.error}` : `${pageViews.data?.length || 0} page views from page_views table`}
                 noPadding
               >
+                {pageViews.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading page views:</p>
+                    <p className="text-sm mt-1">{pageViews.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
-                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url}</span> },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'url', header: 'URL', render: (val) => val ? <span className="font-mono text-xs truncate max-w-xs">{val}</span> : '-' },
+                    { key: 'path', header: 'Path', render: (val, row) => <span className="font-mono text-xs">{val || row.url || '-'}</span> },
                     { key: 'title', header: 'Title', render: (val) => val || '-' },
+                    { key: 'referrer', header: 'Referrer', render: (val) => val ? <span className="text-xs truncate max-w-xs">{val}</span> : '-' },
                     { key: 'scroll_depth', header: 'Scroll', align: 'right', render: (val) => `${val || 0}%` },
-                    { key: 'time_on_page', header: 'Time (s)', align: 'right' },
+                    { key: 'time_on_page', header: 'Time (s)', align: 'right', render: (val) => val || 0 },
                     { key: 'engaged', header: 'Engaged', align: 'center', render: (val) => val ? <ShopifyBadge variant="success">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'bounce', header: 'Bounce', align: 'center', render: (val) => val ? <ShopifyBadge variant="error">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
+                    { key: 'exit', header: 'Exit', align: 'center', render: (val) => val ? <ShopifyBadge variant="warning">Yes</ShopifyBadge> : <ShopifyBadge variant="neutral">No</ShopifyBadge> },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={pageViews.data || []}
@@ -613,9 +692,15 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Cart Events"
-                subtitle="All cart events from cart_events table"
+                subtitle={cartEvents.loading ? 'Loading...' : cartEvents.error ? `Error: ${cartEvents.error}` : `${cartEvents.data?.length || 0} cart events from cart_events table`}
                 noPadding
               >
+                {cartEvents.error && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <p className="font-semibold">Error loading cart events:</p>
+                    <p className="text-sm mt-1">{cartEvents.error}</p>
+                  </div>
+                )}
                 <ShopifyTable
                   columns={[
                     { 
@@ -626,10 +711,19 @@ export default function DashboardShopify() {
                         return <ShopifyBadge variant={variant}>{val}</ShopifyBadge>;
                       }
                     },
+                    { key: 'session_id', header: 'Session', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'visit_id', header: 'Visit ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'product_id', header: 'Product ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { key: 'external_product_id', header: 'External Product ID', render: (val) => val || '-' },
                     { key: 'product_title', header: 'Product', render: (val) => val || '-' },
-                    { key: 'quantity', header: 'Qty', align: 'right' },
+                    { key: 'variant_id', header: 'Variant ID', render: (val) => val || '-' },
+                    { key: 'variant_title', header: 'Variant', render: (val) => val || '-' },
+                    { key: 'quantity', header: 'Qty', align: 'right', render: (val) => val || 0 },
                     { key: 'price', header: 'Price', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { key: 'total_value', header: 'Total Value', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'cart_total', header: 'Cart Total', align: 'right', render: (val) => val ? <span className="font-semibold">{formatCurrency(val)}</span> : '-' },
+                    { key: 'discount_code', header: 'Discount Code', render: (val) => val || '-' },
+                    { key: 'discount_amount', header: 'Discount', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
                     { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
                   ]}
                   data={cartEvents.data || []}
