@@ -153,6 +153,44 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 };
 
 // Load cart from localStorage
+const parsePriceValue = (value: string | number | undefined | null): number => {
+  if (typeof value === 'number' && !isNaN(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const numeric = parseFloat(value.replace(/[^0-9.]/g, ''));
+    if (!isNaN(numeric)) {
+      return numeric;
+    }
+  }
+
+  return 0;
+};
+
+const formatPriceString = (value: string | number | undefined | null): string => {
+  const numeric = parsePriceValue(value);
+  return `$${numeric.toFixed(2)}`;
+};
+
+const normalizeCartItem = (item: any): CartItem | null => {
+  if (!item || !item.id || !item.name) {
+    return null;
+  }
+
+  const quantity =
+    typeof item.quantity === 'number' && item.quantity > 0 ? Math.floor(item.quantity) : 1;
+
+  return {
+    ...item,
+    id: String(item.id),
+    name: String(item.name),
+    price: formatPriceString(item.price),
+    image: item.image || '/placeholder.svg',
+    quantity,
+  };
+};
+
 const loadCartFromStorage = (): CartState => {
   if (typeof window === 'undefined') {
     return { items: [], isOpen: false };
@@ -162,8 +200,13 @@ const loadCartFromStorage = (): CartState => {
     const savedCart = localStorage.getItem('curlea-cart');
     if (savedCart) {
       const parsed = JSON.parse(savedCart);
+      const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
+      const sanitizedItems = rawItems
+        .map(normalizeCartItem)
+        .filter((item): item is CartItem => Boolean(item));
+
       return {
-        items: parsed.items || [],
+        items: sanitizedItems,
         isOpen: false, // Always start with cart closed
       };
     }
@@ -194,17 +237,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [state.items]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+    const normalizedItem: CartItem = {
+      ...item,
+      price: formatPriceString(item.price),
+      quantity: 1,
+    };
+
     dispatch({
       type: 'ADD_TO_CART',
-      payload: { ...item, quantity: 1 },
+      payload: normalizedItem,
     });
 
     // Track analytics - ensure ALL add to cart events are tracked
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const priceNumber = parsePriceValue(item.price);
       const currentItems = loadCartFromStorage().items;
-      const newCartTotal = [...currentItems, { ...item, quantity: 1 }].reduce(
-        (sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity,
+      const newCartTotal = [...currentItems, normalizedItem].reduce(
+        (sum, cartItem) => sum + parsePriceValue(cartItem.price) * cartItem.quantity,
         0
       );
 
@@ -221,7 +270,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Meta + GA tracking
-    const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+    const priceNumber = parsePriceValue(item.price);
     fbTrack('AddToCart', {
       content_name: item.name,
       content_ids: [item.id],
@@ -248,10 +297,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Track analytics
     if (item && typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const priceNumber = parsePriceValue(item.price);
       const newCartTotal = currentState.items
         .filter((i) => !(i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize))
-        .reduce((sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity, 0);
+        .reduce((sum, cartItem) => sum + parsePriceValue(cartItem.price) * cartItem.quantity, 0);
 
       (window as any).analytics.trackCart('remove', {
         product_id: id,
@@ -279,7 +328,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Track analytics
     if (item && typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      const priceNumber = parsePriceValue(item.price);
       const newCartTotal = currentState.items
         .map((i) =>
           i.id === id && i.selectedColor === selectedColor && i.selectedSize === selectedSize
@@ -287,7 +336,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             : i
         )
         .filter((i) => i.quantity > 0)
-        .reduce((sum, cartItem) => sum + parseFloat(cartItem.price.replace(/[^0-9.]/g, '')) * cartItem.quantity, 0);
+        .reduce((sum, cartItem) => sum + parsePriceValue(cartItem.price) * cartItem.quantity, 0);
 
       (window as any).analytics.trackCart('update', {
         product_id: id,
