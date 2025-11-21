@@ -1,0 +1,95 @@
+═══════════════════════════════════════════════════════════════
+🚀 DEPLOY THE FIXES NOW - SIMPLE 3-STEP PROCESS
+═══════════════════════════════════════════════════════════════
+
+✅ Your fixes are ready in the dist/ folder!
+⚠️ Production is showing old cached HTML
+
+═══════════════════════════════════════════════════════════════
+OPTION 1: Auto-Deploy via Git Push (EASIEST)
+═══════════════════════════════════════════════════════════════
+
+1. Open PowerShell/Terminal in: curlea-luxe-animation-main
+2. Run these commands:
+
+   git add .
+   git commit -m "fix: resolve all console errors - CSP, NaN, preload warnings"
+   git push origin main
+
+3. Go to Netlify Dashboard:
+   → https://app.netlify.com
+   → Find your "curlea.beauty" site
+   → Click "Deploys" tab
+   → Wait for deploy to finish (usually 2-3 min)
+   → Click "Options" → "Clear cache and deploy site"
+
+4. After deploy completes:
+   → Visit: https://curlea.beauty
+   → Press: Ctrl + Shift + R (hard refresh)
+   → Open Console (F12)
+   → ✅ Should see NO CSP errors!
+
+═══════════════════════════════════════════════════════════════
+OPTION 2: Manual Upload via Netlify Dashboard
+═══════════════════════════════════════════════════════════════
+
+1. Go to: https://app.netlify.com
+2. Find your site → Click "Deploys"
+3. Scroll down to "Need to deploy manually?"
+4. Drag and drop the ENTIRE "dist" folder
+5. Wait for upload to complete
+6. Visit: https://curlea.beauty
+7. Press: Ctrl + Shift + R (hard refresh)
+8. ✅ Check console!
+
+═══════════════════════════════════════════════════════════════
+VERIFY THE FIX WORKED
+═══════════════════════════════════════════════════════════════
+
+After deploying:
+
+1. Visit: https://curlea.beauty
+2. Hard Refresh: Ctrl + Shift + R (Windows) or Cmd + Shift + R (Mac)
+3. Open Console: Press F12
+4. Look for these changes:
+
+   ✅ GOOD - Should see:
+   [Curlea Analytics] Initializing analytics SDK...
+   [Curlea Analytics] Cart event tracked: add { price: 22.99, ... }
+   
+   ❌ BAD - Should NOT see:
+   Loading the script 'https://connect.facebook.net/...' violates...
+   The resource was preloaded but not used...
+
+5. Test Facebook Pixel - Type in console:
+   typeof fbq
+   
+   Should return: "function" ✅
+
+6. Add product to cart and check:
+   Price should be: 22.99 (NOT NaN) ✅
+
+═══════════════════════════════════════════════════════════════
+IF STILL SEEING ERRORS AFTER DEPLOY
+═══════════════════════════════════════════════════════════════
+
+1. Try in Incognito/Private window (Ctrl + Shift + N)
+2. Wait 5-10 minutes for CDN cache to clear
+3. In Netlify Dashboard:
+   → Deploys → Click the green deploy
+   → Click "Deploy log"
+   → Verify it says "Finished processing build request"
+
+═══════════════════════════════════════════════════════════════
+WHAT WAS FIXED
+═══════════════════════════════════════════════════════════════
+
+✅ CSP now allows Facebook Pixel and Google Analytics
+✅ Price parsing uses regex - no more NaN
+✅ Meta tag updated to modern standard
+✅ Modulepreload hints removed to eliminate warnings
+
+All fixes are in dist/index.html - just need to deploy! 🎉
+
+═══════════════════════════════════════════════════════════════
+
