@@ -1,0 +1,55 @@
+================================================================
+⚡ QUICK FIX - 404 Error: stripe_orders Not Found
+================================================================
+
+ERROR:
+------
+GET /rest/v1/stripe_orders 404 (Not Found)
+
+PROBLEM:
+--------
+Code is querying "stripe_orders" but table doesn't exist!
+
+SOLUTION (2 minutes):
+---------------------
+
+Step 1: Open Supabase Dashboard
+  → Go to SQL Editor
+  → Click "New Query"
+
+Step 2: Copy & Paste This File:
+  analytics-backend/supabase/CREATE_OR_RENAME_TO_STRIPE_ORDERS.sql
+
+Step 3: Click "Run" (or Ctrl+Enter)
+
+Step 4: Refresh Dashboard
+  → Hard refresh: Ctrl+Shift+R
+
+DONE! ✅
+
+================================================================
+WHAT IT DOES:
+================================================================
+
+✅ Renames public.orders → stripe_orders (if exists)
+✅ Creates stripe_orders (if doesn't exist)
+✅ Updates foreign keys
+✅ Preserves all your data
+
+================================================================
+VERIFICATION:
+================================================================
+
+After fix, check browser console (F12):
+  ✅ No more 404 errors
+  ✅ Stripe Orders table shows data
+  ✅ Network tab shows 200 OK
+
+================================================================
+NEED MORE INFO?
+================================================================
+
+Read: 🚨_FIX_404_STRIPE_ORDERS.md
+
+================================================================
+

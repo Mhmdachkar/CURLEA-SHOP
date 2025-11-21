@@ -391,7 +391,7 @@ export const ProductDetailPage = () => {
 
     // Track add to cart event
     if (typeof window !== 'undefined' && (window as any).analytics) {
-      const priceNumber = parseFloat(finalPrice.replace('�', ''));
+      const priceNumber = parseFloat(finalPrice.replace(/[^0-9.]/g, '')) || 0;
       const newCartTotal = currentCartTotal + (priceNumber * quantity);
       
       (window as any).analytics.trackCart('add', {

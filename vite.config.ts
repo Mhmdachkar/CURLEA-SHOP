@@ -1,6 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import type { Plugin } from 'vite';
+
+// Plugin to remove unused modulepreload hints
+function removeUnusedPreloads(): Plugin {
+  return {
+    name: 'remove-unused-preloads',
+    transformIndexHtml(html) {
+      // Keep only the main entry point preload, remove lazy chunk preloads
+      return html.replace(
+        /<link\s+rel="modulepreload"\s+crossorigin\s+href="\/assets\/(vendor|router|animations|ui)\.[^"]+\.js">\s*/g,
+        ''
+      );
+    }
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -46,12 +61,20 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
+      // Disable modulepreload polyfill to avoid unused preload warnings
+      modulePreload: {
+        polyfill: false
+      },
       // Generate manifest for cache busting
       manifest: true,
       // Clear output directory before build
       emptyOutDir: true
     },
-    plugins: [react(), mode === "development" && componentTagger].filter(Boolean),
+    plugins: [
+      react(), 
+      mode === "development" && componentTagger,
+      mode === "production" && removeUnusedPreloads()
+    ].filter(Boolean),
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
