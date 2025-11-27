@@ -97,12 +97,6 @@ export const ProductDetailPage = () => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const {
-    variants: inventoryVariants,
-    loading: inventoryLoading,
-    error: inventoryError,
-    reload: reloadInventory,
-  } = useProductInventory(product?.id);
 
   const getCartQuantityForSelection = useCallback(() => {
     if (!product) return 0;
