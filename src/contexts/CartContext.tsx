@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useCallback } from 'react';
 import { fbTrack, gaTrack } from '@/utils/tracking';
+import { fetchVariantAvailability } from '@/utils/supabase/inventory';
 
 export interface CartItem {
   id: string;
@@ -16,6 +17,7 @@ export interface CartItem {
   isBundle?: boolean;
   images?: string[]; // for showing multiple images (e.g., 3 in a row)
   originalPrice?: string; // strikethrough original combined price
+  maxAvailable?: number | null;
 }
 
 interface CartState {
@@ -30,7 +32,8 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'TOGGLE_CART' }
   | { type: 'OPEN_CART' }
-  | { type: 'CLOSE_CART' };
+  | { type: 'CLOSE_CART' }
+  | { type: 'SET_ITEMS'; payload: CartItem[] };
 
 // Helper function to calculate promotional discount: Buy 2, Get 50% Off 3rd Item
 // Discount applies to the 3rd item selected (and every 3rd item after that) based on order added
@@ -73,7 +76,15 @@ const CartContext = createContext<{
   closeCart: () => void;
   itemCount: number;
   promoDiscount: number;
+  refreshInventory: () => Promise<void>;
 } | null>(null);
+
+const clampQuantityToAvailability = (quantity: number, maxAvailable?: number | null) => {
+  if (typeof maxAvailable === 'number' && maxAvailable >= 0) {
+    return Math.max(0, Math.min(quantity, maxAvailable));
+  }
+  return quantity;
+};
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
@@ -84,20 +95,33 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         item.selectedSize === action.payload.selectedSize
       );
 
+      const payloadQuantity = action.payload.quantity ?? 1;
+      const payloadMax = action.payload.maxAvailable ?? null;
+
       if (existingItem) {
+        const maxAvailable = payloadMax ?? existingItem.maxAvailable ?? null;
         return {
           ...state,
           items: state.items.map(item =>
             item.id === action.payload.id && item.selectedColor === action.payload.selectedColor && item.selectedSize === action.payload.selectedSize
-              ? { ...item, quantity: item.quantity + action.payload.quantity }
+              ? { 
+                  ...item, 
+                  quantity: clampQuantityToAvailability(item.quantity + payloadQuantity, maxAvailable),
+                  maxAvailable: maxAvailable
+                }
               : item
           ),
         };
       }
 
+      const initialQuantity = clampQuantityToAvailability(payloadQuantity, payloadMax);
+      if (initialQuantity <= 0 && typeof payloadMax === 'number') {
+        return state;
+      }
+
       return {
         ...state,
-        items: [...state.items, action.payload],
+        items: [...state.items, { ...action.payload, quantity: initialQuantity }],
       };
     }
 
@@ -118,7 +142,10 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           (item.id === action.payload.id &&
            item.selectedColor === action.payload.selectedColor &&
            item.selectedSize === action.payload.selectedSize)
-            ? { ...item, quantity: action.payload.quantity }
+            ? { 
+                ...item, 
+                quantity: clampQuantityToAvailability(action.payload.quantity, item.maxAvailable) 
+              }
             : item
         ).filter(item => item.quantity > 0),
       };
@@ -145,6 +172,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         isOpen: false,
+      };
+
+    case 'SET_ITEMS':
+      return {
+        ...state,
+        items: action.payload,
       };
 
     default:
@@ -367,6 +400,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'CLOSE_CART' });
   };
 
+  const refreshInventory = useCallback(async () => {
+    if (state.items.length === 0) return;
+
+    const updatedItems = await Promise.all(
+      state.items.map(async (item) => {
+        try {
+          const { available } = await fetchVariantAvailability(
+            item.id,
+            item.selectedSize,
+            item.selectedColor
+          );
+
+          if (typeof available !== 'number') {
+            return item;
+          }
+
+          const clampedQuantity = clampQuantityToAvailability(item.quantity, available);
+          return {
+            ...item,
+            quantity: clampedQuantity,
+            maxAvailable: available,
+          };
+        } catch (error) {
+          console.warn('[Cart] Failed to refresh inventory for item', item.id, error);
+          return item;
+        }
+      })
+    );
+
+    const sanitized = updatedItems.filter((item) => item.quantity > 0);
+    dispatch({ type: 'SET_ITEMS', payload: sanitized });
+  }, [state.items]);
+
   const itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
   const promoDiscount = calculatePromoDiscount(state.items);
 
@@ -383,6 +449,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         closeCart,
         itemCount,
         promoDiscount,
+      refreshInventory,
       }}
     >
       {children}

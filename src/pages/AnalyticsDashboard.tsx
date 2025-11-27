@@ -282,6 +282,7 @@ export default function AnalyticsDashboard() {
                   </div>
                 )}
               </ShopifyCard>
+
             </div>
           )}
 

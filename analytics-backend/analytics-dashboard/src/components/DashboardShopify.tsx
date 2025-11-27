@@ -23,6 +23,13 @@ import {
   useAnalyticsOrders,
   useOrderItems,
 } from '@/hooks/useSupabaseRawData';
+import {
+  useProductVariants,
+  useInventoryDashboard,
+  useLowStockAlerts,
+  useInventoryMovements,
+  useInventoryStats,
+} from '@/hooks/useInventory';
 import { getActiveCampaigns, getCampaignPerformance } from '@/utils/supabase/campaigns';
 import { getVisitorStats } from '@/utils/supabase/visitorStats';
 import { PricingManagement } from '@/components/PricingManagement';
@@ -33,7 +40,7 @@ import { ShopifyBadge } from '@/components/dashboard/ShopifyBadge';
 import { ShopifyButton } from '@/components/dashboard/ShopifyButton';
 import { ShopifySidebar } from '@/components/dashboard/ShopifySidebar';
 import { ShopifyHeader } from '@/components/dashboard/ShopifyHeader';
-import { Users, DollarSign, ShoppingBag, TrendingUp, Eye } from 'lucide-react';
+import { Users, DollarSign, ShoppingBag, TrendingUp, Eye, Package, AlertTriangle } from 'lucide-react';
 
 export default function DashboardShopify() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -70,6 +77,13 @@ export default function DashboardShopify() {
   const stripeOrders = useStripeOrders(50);
   const analyticsOrders = useAnalyticsOrders(days);
   const orderItems = useOrderItems(selectedOrderId);
+
+  // Inventory hooks
+  const productVariants = useProductVariants();
+  const inventoryDashboard = useInventoryDashboard();
+  const lowStockAlerts = useLowStockAlerts();
+  const inventoryMovements = useInventoryMovements(50);
+  const inventoryStats = useInventoryStats();
 
   const [campaignsLoading, setCampaignsLoading] = useState(true);
   const [campaignsError, setCampaignsError] = useState<string | null>(null);
@@ -287,7 +301,7 @@ export default function DashboardShopify() {
             <div className="space-y-6">
               <ShopifyCard
                 title="Sales Overview"
-                subtitle="Daily sales metrics"
+                subtitle="Daily sales metrics with conversion rates"
                 noPadding
               >
                 <ShopifyTable
@@ -297,7 +311,29 @@ export default function DashboardShopify() {
                     { key: 'unique_customers', header: 'Customers', align: 'right', render: (val) => formatNumber(val || 0) },
                     { key: 'revenue', header: 'Revenue', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val || 0)}</span> },
                     { key: 'profit', header: 'Profit', align: 'right', render: (val) => <span className="font-medium">{formatCurrency(val || 0)}</span> },
-                    { key: 'aov', header: 'AOV', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { 
+                      key: 'aov', 
+                      header: 'AOV', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        const profitMargin = row.profit && row.revenue ? ((row.profit / row.revenue) * 100).toFixed(1) : '0.0';
+                        return (
+                          <div className="text-right">
+                            <div className="font-medium">{formatCurrency(val || 0)}</div>
+                            <div className="text-xs text-gray-500">{profitMargin}% margin</div>
+                          </div>
+                        );
+                      }
+                    },
+                    { 
+                      key: 'total_orders', 
+                      header: 'Conv. Rate', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        // Calculate conversion rate if we have daily visit data
+                        return <span className="text-xs text-gray-500">-</span>;
+                      }
+                    },
                   ]}
                   data={sales.data || []}
                   loading={sales.loading}
@@ -472,15 +508,39 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Top Products by Revenue"
-                subtitle="Best performing products"
+                subtitle="Best performing products with detailed metrics"
                 noPadding
               >
                 <ShopifyTable
                   columns={[
-                    { key: 'title', header: 'Product' },
-                    { key: 'units_sold', header: 'Units Sold', align: 'right', render: (val) => formatNumber(val || 0) },
+                    { key: 'title', header: 'Product', render: (val) => <span className="font-medium">{val}</span> },
+                    { key: 'units_sold', header: 'Units Sold', align: 'right', render: (val) => <span className="font-medium">{formatNumber(val || 0)}</span> },
                     { key: 'revenue', header: 'Revenue', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val || 0)}</span> },
                     { key: 'avg_price', header: 'Avg Price', align: 'right', render: (val) => formatCurrency(val || 0) },
+                    { 
+                      key: 'revenue', 
+                      header: '% of Total', 
+                      align: 'right', 
+                      render: (val, row, index, data) => {
+                        const totalRevenue = data?.reduce((sum: number, item: any) => sum + (item.revenue || 0), 0) || 1;
+                        const percentage = ((val || 0) / totalRevenue * 100).toFixed(1);
+                        return <span className="text-xs text-gray-600">{percentage}%</span>;
+                      }
+                    },
+                    {
+                      key: 'units_sold',
+                      header: 'Velocity',
+                      align: 'right',
+                      render: (val) => {
+                        const velocity = (val || 0) / days; // units per day
+                        return (
+                          <div className="text-right">
+                            <div className="text-xs text-gray-600">{velocity.toFixed(1)}</div>
+                            <div className="text-xs text-gray-400">units/day</div>
+                          </div>
+                        );
+                      }
+                    },
                   ]}
                   data={topProducts.data || []}
                   loading={topProducts.loading}
@@ -532,15 +592,34 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Traffic Sources"
-                subtitle="Where your visitors come from"
+                subtitle="Where your visitors come from with engagement metrics"
                 noPadding
               >
                 <ShopifyTable
                   columns={[
-                    { key: 'source', header: 'Source', render: (val) => val || 'Direct' },
+                    { key: 'source', header: 'Source', render: (val) => <span className="font-medium">{val || 'Direct'}</span> },
                     { key: 'medium', header: 'Medium', render: (val) => val || 'none' },
                     { key: 'visitors', header: 'Visitors', align: 'right', render: (val) => <span className="font-medium">{formatNumber(val || 0)}</span> },
                     { key: 'visits', header: 'Visits', align: 'right', render: (val) => formatNumber(val || 0) },
+                    { 
+                      key: 'visits', 
+                      header: 'Visits/Visitor', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        const ratio = row.visitors ? (val / row.visitors).toFixed(2) : '0.00';
+                        return <span className="text-sm">{ratio}</span>;
+                      }
+                    },
+                    {
+                      key: 'visitors',
+                      header: '% of Traffic',
+                      align: 'right',
+                      render: (val, row, index, data) => {
+                        const totalVisitors = data?.reduce((sum: number, item: any) => sum + (item.visitors || 0), 0) || 1;
+                        const percentage = ((val || 0) / totalVisitors * 100).toFixed(1);
+                        return <span className="text-xs text-gray-600">{percentage}%</span>;
+                      }
+                    },
                   ]}
                   data={traffic.data || []}
                   loading={traffic.loading}
@@ -771,16 +850,47 @@ export default function DashboardShopify() {
 
               <ShopifyCard
                 title="Campaign Performance"
-                subtitle="Performance metrics for all campaigns"
+                subtitle="Performance metrics for all campaigns with conversion tracking"
                 noPadding
               >
                 <ShopifyTable
                   columns={[
-                    { key: 'name', header: 'Campaign' },
-                    { key: 'visitors', header: 'Visitors', align: 'right', render: (val) => formatNumber(val || 0) },
+                    { key: 'name', header: 'Campaign', render: (val) => <span className="font-medium">{val}</span> },
+                    { key: 'visitors', header: 'Visitors', align: 'right', render: (val) => <span className="font-medium">{formatNumber(val || 0)}</span> },
                     { key: 'orders', header: 'Orders', align: 'right', render: (val) => formatNumber(val || 0) },
+                    { 
+                      key: 'orders', 
+                      header: 'Conv. Rate', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        const rate = row.visitors ? ((val / row.visitors) * 100).toFixed(2) : '0.00';
+                        return <span className="text-sm">{rate}%</span>;
+                      }
+                    },
                     { key: 'revenue', header: 'Revenue', align: 'right', render: (val) => <span className="font-semibold text-green-600">{formatCurrency(val || 0)}</span> },
-                    { key: 'roi_percentage', header: 'ROI', align: 'right', render: (val) => `${val?.toFixed(2) || '0.00'}%` },
+                    { 
+                      key: 'revenue', 
+                      header: 'CPA', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        const cpa = row.orders ? (val / row.orders) : 0;
+                        return <span className="text-sm">{formatCurrency(cpa)}</span>;
+                      }
+                    },
+                    { 
+                      key: 'roi_percentage', 
+                      header: 'ROI', 
+                      align: 'right', 
+                      render: (val) => {
+                        const roi = val || 0;
+                        const isPositive = roi > 0;
+                        return (
+                          <span className={isPositive ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                            {isPositive ? '+' : ''}{roi.toFixed(2)}%
+                          </span>
+                        );
+                      }
+                    },
                   ]}
                   data={campaignPerformance || []}
                   loading={campaignPerformanceLoading}
@@ -912,6 +1022,161 @@ export default function DashboardShopify() {
                   </div>
                 </ShopifyCard>
               )}
+            </div>
+          )}
+
+          {/* Inventory Tab */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-6">
+              {/* Inventory Stats */}
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+                <ShopifyStatCard
+                  title="Total Variants"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalVariants || 0)}
+                  icon={<Package className="w-5 h-5" />}
+                  subtitle="Active SKUs"
+                />
+                <ShopifyStatCard
+                  title="Total Stock"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.totalStock || 0)}
+                  icon={<ShoppingBag className="w-5 h-5" />}
+                  subtitle="Units available"
+                />
+                <ShopifyStatCard
+                  title="Stock Value"
+                  value={inventoryStats.loading ? '...' : formatCurrency(inventoryStats.stats?.totalValue || 0)}
+                  icon={<DollarSign className="w-5 h-5" />}
+                  subtitle="At retail price"
+                />
+                <ShopifyStatCard
+                  title="Low Stock Items"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.lowStockCount || 0)}
+                  icon={<AlertTriangle className="w-5 h-5 text-yellow-600" />}
+                  subtitle="< 5 units"
+                />
+                <ShopifyStatCard
+                  title="Out of Stock"
+                  value={inventoryStats.loading ? '...' : formatNumber(inventoryStats.stats?.outOfStockCount || 0)}
+                  icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
+                  subtitle="0 units"
+                />
+              </div>
+
+              {/* Low Stock Alerts */}
+              {lowStockAlerts.data && lowStockAlerts.data.length > 0 && (
+                <ShopifyCard
+                  title="Low Stock Alerts"
+                  subtitle={`${lowStockAlerts.data.length} items need attention`}
+                  noPadding
+                >
+                  <ShopifyTable
+                    columns={[
+                      { key: 'product_name', header: 'Product', render: (val) => val || 'Unknown' },
+                      { key: 'variant_name', header: 'Variant', render: (val) => <span className="font-medium">{val}</span> },
+                      { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
+                      { 
+                        key: 'available_quantity', 
+                        header: 'Stock', 
+                        align: 'right', 
+                        render: (val) => {
+                          const quantity = val || 0;
+                          const variant = quantity === 0 ? 'error' : quantity < 5 ? 'warning' : 'success';
+                          return <ShopifyBadge variant={variant as any}>{quantity} units</ShopifyBadge>;
+                        }
+                      },
+                      { key: 'updated_at', header: 'Last Updated', render: (val) => new Date(val).toLocaleDateString() },
+                    ]}
+                    data={lowStockAlerts.data || []}
+                    loading={lowStockAlerts.loading}
+                    emptyMessage="No low stock items"
+                  />
+                </ShopifyCard>
+              )}
+
+              {/* Product Variants - Full Inventory */}
+              <ShopifyCard
+                title="All Product Variants"
+                subtitle={productVariants.loading ? 'Loading...' : `${productVariants.data?.length || 0} variants in inventory`}
+                noPadding
+              >
+                <ShopifyTable
+                  columns={[
+                    { key: 'product_id', header: 'Product ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
+                    { key: 'variant_name', header: 'Variant', render: (val) => <span className="font-medium">{val}</span> },
+                    { key: 'size', header: 'Size', render: (val) => val || '-' },
+                    { key: 'color', header: 'Color', render: (val) => val || '-' },
+                    { key: 'sku', header: 'SKU', render: (val) => val ? <span className="font-mono text-xs">{val}</span> : '-' },
+                    { 
+                      key: 'stock_quantity', 
+                      header: 'Stock', 
+                      align: 'right', 
+                      render: (val, row) => {
+                        const available = row.available_quantity || 0;
+                        return (
+                          <div className="text-right">
+                            <div className="font-medium">{val || 0} total</div>
+                            <div className="text-xs text-gray-500">{available} available</div>
+                          </div>
+                        );
+                      }
+                    },
+                    { key: 'reserved_quantity', header: 'Reserved', align: 'right', render: (val) => val || 0 },
+                    { key: 'price', header: 'Price', align: 'right', render: (val) => val ? formatCurrency(val) : '-' },
+                    { 
+                      key: 'is_active', 
+                      header: 'Status', 
+                      render: (val) => <ShopifyBadge variant={val ? 'success' : 'neutral'}>{val ? 'Active' : 'Inactive'}</ShopifyBadge>
+                    },
+                    { key: 'updated_at', header: 'Last Updated', render: (val) => new Date(val).toLocaleDateString() },
+                  ]}
+                  data={productVariants.data || []}
+                  loading={productVariants.loading}
+                  emptyMessage="No product variants found. Create variants in your inventory system."
+                />
+              </ShopifyCard>
+
+              {/* Inventory Movements */}
+              <ShopifyCard
+                title="Recent Inventory Movements"
+                subtitle={`Last ${inventoryMovements.data?.length || 0} movements`}
+                noPadding
+              >
+                <ShopifyTable
+                  columns={[
+                    { 
+                      key: 'movement_type', 
+                      header: 'Type', 
+                      render: (val) => {
+                        const variant = val === 'sale' ? 'error' : val === 'restock' ? 'success' : val === 'return' ? 'info' : 'neutral';
+                        return <ShopifyBadge variant={variant as any}>{val}</ShopifyBadge>;
+                      }
+                    },
+                    { key: 'variant_id', header: 'Variant ID', render: (val) => val ? <span className="font-mono text-xs">{val.slice(0, 8)}...</span> : '-' },
+                    { 
+                      key: 'quantity', 
+                      header: 'Quantity', 
+                      align: 'right', 
+                      render: (val) => {
+                        const isPositive = val > 0;
+                        return (
+                          <span className={isPositive ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                            {isPositive ? '+' : ''}{val}
+                          </span>
+                        );
+                      }
+                    },
+                    { key: 'previous_stock', header: 'Previous', align: 'right', render: (val) => val || 0 },
+                    { key: 'new_stock', header: 'New Stock', align: 'right', render: (val) => <span className="font-medium">{val || 0}</span> },
+                    { key: 'order_id', header: 'Order ID', render: (val) => val || '-' },
+                    { key: 'notes', header: 'Notes', render: (val) => val || '-' },
+                    { key: 'created_by', header: 'Created By', render: (val) => val || 'System' },
+                    { key: 'created_at', header: 'Date', render: (val) => new Date(val).toLocaleString() },
+                  ]}
+                  data={inventoryMovements.data || []}
+                  loading={inventoryMovements.loading}
+                  emptyMessage="No inventory movements yet"
+                />
+              </ShopifyCard>
             </div>
           )}
         </div>

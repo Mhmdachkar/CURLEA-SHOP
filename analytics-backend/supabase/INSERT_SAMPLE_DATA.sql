@@ -74,3 +74,4 @@ SELECT 'products' as table_name, COUNT(*) as row_count FROM products;
 -- SUCCESS! You should now see data in your dashboard
 -- =====================================================
 
+

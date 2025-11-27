@@ -279,3 +279,4 @@ AND event_object_table = 'orders';
 
 SELECT '✅ SUCCESS: All setup complete!' as final_status;
 
+

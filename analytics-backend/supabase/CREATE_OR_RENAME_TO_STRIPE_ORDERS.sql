@@ -187,3 +187,4 @@ SELECT
     '✅ stripe_orders table is ready!' as status,
     (SELECT COUNT(*) FROM public.stripe_orders) as total_orders;
 
+

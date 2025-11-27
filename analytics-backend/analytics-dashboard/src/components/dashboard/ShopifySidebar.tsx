@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
   { id: 'sales', label: 'Sales', icon: <DollarSign className="w-5 h-5" /> },
   { id: 'orders', label: 'Orders', icon: <ShoppingBag className="w-5 h-5" /> },
   { id: 'products', label: 'Products', icon: <Package className="w-5 h-5" /> },
+  { id: 'inventory', label: 'Inventory', icon: <Package className="w-5 h-5" /> },
   { id: 'pricing', label: 'Pricing', icon: <TrendingUp className="w-5 h-5" /> },
   { id: 'traffic', label: 'Traffic', icon: <Users className="w-5 h-5" /> },
   { id: 'events', label: 'Events', icon: <Activity className="w-5 h-5" /> },

@@ -1,5 +1,5 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
@@ -18,6 +18,47 @@ import { useRealtimeContext } from "@/contexts/RealtimeContext";
 import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 import { toast } from "sonner";
 import { fbTrack, gaTrack } from "@/utils/tracking";
+import { useProductInventory } from "@/hooks/useProductInventory";
+import { VariantAvailability, resolveAvailableQuantity } from "@/utils/supabase/inventory";
+
+const normalizeVariantValue = (value?: string | null) =>
+  (value ?? "")
+    .toString()
+    .trim()
+    .toLowerCase();
+
+const findVariantForSelection = (
+  variants: VariantAvailability[] = [],
+  size?: string,
+  color?: string
+) => {
+  if (!variants.length) return null;
+
+  const sizeNorm = normalizeVariantValue(size);
+  const colorNorm = normalizeVariantValue(color);
+
+  const exact = variants.find((variant) => {
+    const variantSize = normalizeVariantValue(variant.size);
+    const variantColor = normalizeVariantValue(variant.color);
+    const sizeMatches = !sizeNorm || variantSize === sizeNorm;
+    const colorMatches = !colorNorm || variantColor === colorNorm;
+    return sizeMatches && colorMatches;
+  });
+  if (exact) return exact;
+
+  if (sizeNorm || colorNorm) {
+    const fuzzy = variants.find((variant) => {
+      const variantName = normalizeVariantValue(variant.variant_name);
+      return (
+        (!!sizeNorm && variantName.includes(sizeNorm)) ||
+        (!!colorNorm && variantName.includes(colorNorm))
+      );
+    });
+    if (fuzzy) return fuzzy;
+  }
+
+  return variants[0];
+};
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
@@ -58,6 +99,35 @@ export const ProductDetailPage = () => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const {
+    variants: inventoryVariants,
+    loading: inventoryLoading,
+    error: inventoryError,
+    reload: reloadInventory,
+  } = useProductInventory(product?.id);
+
+  const getCartQuantityForSelection = useCallback(() => {
+    if (!product) return 0;
+    return cartState.items
+      .filter(
+        (item) =>
+          item.id === product.id &&
+          (item.selectedColor || '') === (selectedColor || '') &&
+          (item.selectedSize || '') === (selectedSize || '')
+      )
+      .reduce((sum, item) => sum + item.quantity, 0);
+  }, [cartState.items, product, selectedColor, selectedSize]);
+
+  const availableForSelection = useMemo(() => {
+    if (!product?.id || inventoryVariants.length === 0) {
+      return null;
+    }
+    const variant = findVariantForSelection(inventoryVariants, selectedSize, selectedColor);
+    const available = resolveAvailableQuantity(variant);
+    if (typeof available !== 'number') return null;
+    const reserved = getCartQuantityForSelection();
+    return Math.max(available - reserved, 0);
+  }, [inventoryVariants, selectedSize, selectedColor, product?.id, getCartQuantityForSelection]);
 
 
   // Validate product ID

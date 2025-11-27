@@ -190,3 +190,4 @@ Now they're **100% synchronized** and will always show the same data!
 
 **Both dashboards are now fully synchronized!** 🎉
 
+

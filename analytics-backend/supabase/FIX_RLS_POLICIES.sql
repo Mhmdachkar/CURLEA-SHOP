@@ -88,3 +88,4 @@ WHERE schemaname = 'public'
 AND tablename IN ('visits', 'page_views', 'events', 'cart_events', 'orders', 'products', 'product_variants', 'inventory_movements')
 ORDER BY tablename;
 
+

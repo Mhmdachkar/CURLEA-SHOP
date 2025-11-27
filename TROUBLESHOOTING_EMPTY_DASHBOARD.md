@@ -206,3 +206,4 @@ Once data appears in your dashboard, you're all set! 🎉
 
 The dashboard will now show real-time analytics from your Supabase database.
 
+
