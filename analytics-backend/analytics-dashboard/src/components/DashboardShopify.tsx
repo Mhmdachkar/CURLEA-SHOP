@@ -33,6 +33,10 @@ import {
 import { getActiveCampaigns, getCampaignPerformance } from '@/utils/supabase/campaigns';
 import { getVisitorStats } from '@/utils/supabase/visitorStats';
 import { PricingManagement } from '@/components/PricingManagement';
+import CampaignPerformanceDashboard from '@/components/CampaignPerformanceDashboard';
+import PixelAnalyticsDashboard from '@/components/PixelAnalyticsDashboard';
+import AdvancedConversionDashboard from '@/components/AdvancedConversionDashboard';
+import CustomerJourneyDashboard from '@/components/CustomerJourneyDashboard';
 import { ShopifyStatCard } from '@/components/dashboard/ShopifyStatCard';
 import { ShopifyCard } from '@/components/dashboard/ShopifyCard';
 import { ShopifyTable } from '@/components/dashboard/ShopifyTable';
@@ -208,6 +212,18 @@ export default function DashboardShopify() {
         />
 
         <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+          {/* Campaign Performance Dashboard */}
+          {activeTab === 'campaignperf' && <CampaignPerformanceDashboard />}
+
+          {/* Pixel Analytics Dashboard */}
+          {activeTab === 'pixelanalytics' && <PixelAnalyticsDashboard />}
+
+          {/* Advanced Conversion Dashboard */}
+          {activeTab === 'conversion' && <AdvancedConversionDashboard />}
+
+          {/* Customer Journey Dashboard */}
+          {activeTab === 'customerjourney' && <CustomerJourneyDashboard />}
+
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="space-y-6">

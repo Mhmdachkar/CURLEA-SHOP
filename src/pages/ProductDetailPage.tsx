@@ -18,8 +18,6 @@ import { useRealtimeContext } from "@/contexts/RealtimeContext";
 import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 import { toast } from "sonner";
 import { fbTrack, gaTrack } from "@/utils/tracking";
-import { useProductInventory } from "@/hooks/useProductInventory";
-import { VariantAvailability, resolveAvailableQuantity } from "@/utils/supabase/inventory";
 
 const normalizeVariantValue = (value?: string | null) =>
   (value ?? "")

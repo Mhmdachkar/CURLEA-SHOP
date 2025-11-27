@@ -5,6 +5,7 @@ import { CheckCircle, ShoppingBag, Mail } from 'lucide-react';
 import '../styles/checkout-styles.css';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { fbTrack, gaTrack } from '@/utils/tracking';
+import { getCampaignAttribution } from '@/utils/campaignTracking';
 
 export default function SuccessPage() {
   const navigate = useNavigate();
@@ -107,11 +108,8 @@ export default function SuccessPage() {
             items_count: order.cart.length,
           });
 
-          // Get UTM parameters if available
-          const urlParams = new URLSearchParams(window.location.search);
-          const utmSource = urlParams.get('utm_source') || sessionStorage.getItem('utm_source');
-          const utmMedium = urlParams.get('utm_medium') || sessionStorage.getItem('utm_medium');
-          const utmCampaign = urlParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign');
+          // Get campaign attribution
+          const campaignAttribution = getCampaignAttribution();
 
           (window as any).analytics.trackPurchase({
             order_id: order.orderId,
@@ -125,10 +123,12 @@ export default function SuccessPage() {
             currency: order.currency || 'USD',
             payment_method: 'stripe',
             shipping_method: 'standard', // Stripe checkout uses standard shipping
-            source: (window as any).analytics?.determineSource?.() || 'direct',
-            utm_source: utmSource,
-            utm_medium: utmMedium,
-            utm_campaign: utmCampaign,
+            source: campaignAttribution.source,
+            utm_source: campaignAttribution.utm_source,
+            utm_medium: campaignAttribution.utm_medium,
+            utm_campaign: campaignAttribution.utm_campaign,
+            utm_term: campaignAttribution.utm_term,
+            utm_content: campaignAttribution.utm_content,
             items: order.cart.map((item: any) => ({
               product_id: item.id || item.product_id,
               title: item.name,

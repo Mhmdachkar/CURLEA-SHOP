@@ -5,6 +5,7 @@ import { CreditCard, Truck, ArrowLeft, Check, Lock, MapPin, Phone, Mail, User, S
 import { createStripeCheckout, calculateCartTotal, parsePriceToNumber } from '@/utils/stripeCheckout';
 import { toast } from 'sonner';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
+import { getCampaignAttribution } from '@/utils/campaignTracking';
 import '../styles/checkout-styles.css';
 
 type PaymentMethod = 'stripe' | 'cod' | null;
@@ -188,6 +189,9 @@ export default function CheckoutPage() {
         });
 
         try {
+          // Get campaign attribution
+          const campaignAttribution = getCampaignAttribution();
+          
           (window as any).analytics.trackPurchase({
             order_id: orderId,
             customer_email: formData.email,
@@ -200,11 +204,16 @@ export default function CheckoutPage() {
             currency: 'USD',
             payment_method: 'cash_on_delivery',
             shipping_method: 'cash_on_delivery', // COD includes delivery fee
-            source: (window as any).analytics?.determineSource?.() || 'direct',
+            source: campaignAttribution.source,
+            utm_source: campaignAttribution.utm_source,
+            utm_medium: campaignAttribution.utm_medium,
+            utm_campaign: campaignAttribution.utm_campaign,
+            utm_term: campaignAttribution.utm_term,
+            utm_content: campaignAttribution.utm_content,
             items: items,
             status: 'completed',
           });
-          console.log('[Checkout] Analytics order tracking initiated');
+          console.log('[Checkout] Analytics order tracking initiated with campaign attribution');
         } catch (analyticsError: any) {
           console.error('[Checkout] Error tracking order in analytics:', analyticsError);
           console.error('[Checkout] Analytics error details:', analyticsError.message, analyticsError.stack);

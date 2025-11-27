@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useCallback } from 'react';
 import { fbTrack, gaTrack } from '@/utils/tracking';
-import { fetchVariantAvailability } from '@/utils/supabase/inventory';
 
 export interface CartItem {
   id: string;

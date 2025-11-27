@@ -12,7 +12,8 @@ import {
   Settings,
   Filter,
   Menu,
-  X
+  X,
+  Target
 } from 'lucide-react';
 
 interface NavItem {
@@ -28,17 +29,21 @@ interface ShopifySidebarProps {
 
 const navItems: NavItem[] = [
   { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
+  { id: 'campaignperf', label: 'Campaign Performance', icon: <TrendingUp className="w-5 h-5" /> },
+  { id: 'pixelanalytics', label: 'Pixel Analytics', icon: <Activity className="w-5 h-5" /> },
+  { id: 'conversion', label: 'Conversion Analytics', icon: <Target className="w-5 h-5" /> },
+  { id: 'customerjourney', label: 'Customer Journey', icon: <Users className="w-5 h-5" /> },
   { id: 'sales', label: 'Sales', icon: <DollarSign className="w-5 h-5" /> },
   { id: 'orders', label: 'Orders', icon: <ShoppingBag className="w-5 h-5" /> },
   { id: 'products', label: 'Products', icon: <Package className="w-5 h-5" /> },
   { id: 'inventory', label: 'Inventory', icon: <Package className="w-5 h-5" /> },
-  { id: 'pricing', label: 'Pricing', icon: <TrendingUp className="w-5 h-5" /> },
+  { id: 'pricing', label: 'Pricing', icon: <DollarSign className="w-5 h-5" /> },
   { id: 'traffic', label: 'Traffic', icon: <Users className="w-5 h-5" /> },
   { id: 'events', label: 'Events', icon: <Activity className="w-5 h-5" /> },
   { id: 'visits', label: 'Visits', icon: <Eye className="w-5 h-5" /> },
   { id: 'pageviews', label: 'Page Views', icon: <Eye className="w-5 h-5" /> },
   { id: 'cartevents', label: 'Cart Events', icon: <ShoppingCart className="w-5 h-5" /> },
-  { id: 'campaigns', label: 'Campaigns', icon: <Filter className="w-5 h-5" /> },
+  { id: 'campaigns', label: 'Campaigns (Legacy)', icon: <Filter className="w-5 h-5" /> },
   { id: 'funnel', label: 'Abandoned Carts', icon: <TrendingUp className="w-5 h-5" /> },
   { id: 'funnelhistory', label: 'Funnel History', icon: <Activity className="w-5 h-5" /> },
 ];
