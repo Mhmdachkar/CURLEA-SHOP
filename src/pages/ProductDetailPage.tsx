@@ -19,45 +19,6 @@ import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
 import { toast } from "sonner";
 import { fbTrack, gaTrack } from "@/utils/tracking";
 
-const normalizeVariantValue = (value?: string | null) =>
-  (value ?? "")
-    .toString()
-    .trim()
-    .toLowerCase();
-
-const findVariantForSelection = (
-  variants: VariantAvailability[] = [],
-  size?: string,
-  color?: string
-) => {
-  if (!variants.length) return null;
-
-  const sizeNorm = normalizeVariantValue(size);
-  const colorNorm = normalizeVariantValue(color);
-
-  const exact = variants.find((variant) => {
-    const variantSize = normalizeVariantValue(variant.size);
-    const variantColor = normalizeVariantValue(variant.color);
-    const sizeMatches = !sizeNorm || variantSize === sizeNorm;
-    const colorMatches = !colorNorm || variantColor === colorNorm;
-    return sizeMatches && colorMatches;
-  });
-  if (exact) return exact;
-
-  if (sizeNorm || colorNorm) {
-    const fuzzy = variants.find((variant) => {
-      const variantName = normalizeVariantValue(variant.variant_name);
-      return (
-        (!!sizeNorm && variantName.includes(sizeNorm)) ||
-        (!!colorNorm && variantName.includes(colorNorm))
-      );
-    });
-    if (fuzzy) return fuzzy;
-  }
-
-  return variants[0];
-};
-
 export const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
