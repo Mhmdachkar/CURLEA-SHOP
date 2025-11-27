@@ -3,8 +3,6 @@
  * Automatically tracks and associates campaigns with all user actions
  */
 
-import { supabase } from '@/lib/supabase';
-
 export interface CampaignData {
   utm_source: string | null;
   utm_medium: string | null;
@@ -101,6 +99,9 @@ export async function autoRegisterCampaign(campaignData: CampaignData): Promise<
   if (!campaignData.utm_campaign) return;
 
   try {
+    // Lazy import to avoid circular dependency
+    const { supabase } = await import('@/lib/supabase');
+    
     const { error } = await supabase
       .from('campaigns')
       .upsert(
