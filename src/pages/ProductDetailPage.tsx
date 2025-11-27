@@ -59,30 +59,6 @@ export const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const getCartQuantityForSelection = useCallback(() => {
-    if (!product) return 0;
-    return cartState.items
-      .filter(
-        (item) =>
-          item.id === product.id &&
-          (item.selectedColor || '') === (selectedColor || '') &&
-          (item.selectedSize || '') === (selectedSize || '')
-      )
-      .reduce((sum, item) => sum + item.quantity, 0);
-  }, [cartState.items, product, selectedColor, selectedSize]);
-
-  const availableForSelection = useMemo(() => {
-    if (!product?.id || inventoryVariants.length === 0) {
-      return null;
-    }
-    const variant = findVariantForSelection(inventoryVariants, selectedSize, selectedColor);
-    const available = resolveAvailableQuantity(variant);
-    if (typeof available !== 'number') return null;
-    const reserved = getCartQuantityForSelection();
-    return Math.max(available - reserved, 0);
-  }, [inventoryVariants, selectedSize, selectedColor, product?.id, getCartQuantityForSelection]);
-
-
   // Validate product ID
   if (!id || !validateProductId(id)) {
     return (
