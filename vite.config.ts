@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true
     },
     plugins: [
-      react(), 
+      react(),
       mode === "development" && componentTagger,
       mode === "production" && removeUnusedPreloads()
     ].filter(Boolean),

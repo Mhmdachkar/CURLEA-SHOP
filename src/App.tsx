@@ -29,7 +29,7 @@ const App = () => {
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       registerServiceWorker();
-      
+
       // Force check for service worker updates on page load
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.getRegistration().then((reg) => {
@@ -59,7 +59,7 @@ const App = () => {
         <TooltipProvider>
           <RealtimeProvider>
             <CartProvider>
-              <Toaster 
+              <Toaster
                 theme="dark"
                 position="top-center"
                 toastOptions={{
@@ -80,24 +80,24 @@ const App = () => {
                   v7_relativeSplatPath: true
                 }}
               >
-              <ScrollToTop />
-              <RouteAnalytics />
-              <RealtimeSync />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<CollectionPage />} />
-                <Route path="/collection" element={<CollectionPage />} />
-                <Route path="/category/:category" element={<CategoryPage />} />
-                <Route path="/product/:id" element={<ProductDetailPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/success" element={<SuccessPage />} />
-                <Route path="/analytics" element={<AnalyticsDashboard />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <CartDrawer />
-              <PromotionalPopup />
-            </BrowserRouter>
+                <ScrollToTop />
+                <RouteAnalytics />
+                <RealtimeSync />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/shop" element={<CollectionPage />} />
+                  <Route path="/collection" element={<CollectionPage />} />
+                  <Route path="/category/:category" element={<CategoryPage />} />
+                  <Route path="/product/:id" element={<ProductDetailPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/success" element={<SuccessPage />} />
+                  <Route path="/analytics" element={<AnalyticsDashboard />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <CartDrawer />
+                <PromotionalPopup />
+              </BrowserRouter>
             </CartProvider>
           </RealtimeProvider>
         </TooltipProvider>

@@ -204,8 +204,8 @@ export const products: Product[] = [
     size: "9-Piece Set",
     inStock: true,
     sizeOptions: {
-        "9-piece-complete": {
-          price: "$14.99",
+      "9-piece-complete": {
+        price: "$14.99",
         image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
         description: [
           "Complete 9-piece set with all clip sizes and styles",
@@ -580,11 +580,11 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       }
     },
     {
-    id: "curly-scarf-1",
-    name: "CURLEA Elegant Satin Scarf + Scrunchies Set",
-    price: "$11.99",
-    image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
-    category: "Hair Accessories",
+      id: "curly-scarf-1",
+      name: "CURLEA Elegant Satin Scarf + Scrunchies Set",
+      price: "$11.99",
+      image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
+      category: "Hair Accessories",
       hairType: "Curly",
       featured: true,
       description: [
