@@ -14,6 +14,7 @@ import {
   getOrders,
 } from '@/utils/supabase/analytics';
 import { getStripeOrders, getOrderItems } from '@/utils/supabase/orders';
+import { getSupabaseProducts } from '@/utils/supabase/products';
 
 export function useRecentVisits(days: number = 7) {
   const [data, setData] = useState<any[] | null>(null);
@@ -89,7 +90,7 @@ export function useRecentEvents(category?: string, days: number = 7) {
       const result = category && category !== 'all'
         ? await getEventsByCategory(category, 100)
         : await getAllEvents(days, 100);
-      
+
       if (result.error) {
         setError(result.error);
       } else {
@@ -208,7 +209,7 @@ export function useOrderItems(orderId: string | null) {
 
   const loadData = async () => {
     if (!orderId) return;
-    
+
     try {
       setLoading(true);
       const result = await getOrderItems(orderId);
@@ -227,3 +228,31 @@ export function useOrderItems(orderId: string | null) {
   return { data, loading, error, reload: loadData };
 }
 
+
+export function useSupabaseProducts() {
+  const [data, setData] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const result = await getSupabaseProducts();
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setData(result.data || []);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, reload: loadData };
+}
