@@ -6,8 +6,7 @@
 import { supabase, StripeOrder, OrderItem } from '@/lib/supabase';
 
 /**
- * Get all Stripe orders (from public.stripe_orders table)
- * NOTE: Table was renamed from 'orders' to 'stripe_orders' to avoid conflict with analytics orders table
+ * Get all Stripe orders (from public.orders table)
  */
 export async function getStripeOrders(limit: number = 50): Promise<{
   data: StripeOrder[] | null;
@@ -16,7 +15,7 @@ export async function getStripeOrders(limit: number = 50): Promise<{
   try {
     const { data, error } = await supabase
       .from('orders')
-      .select('id, order_number, user_id, total_amount, currency, status, customer_email, is_guest, stripe_session_id, stripe_payment_intent_id, billing_address, shipping_address, created_at, updated_at')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -31,7 +30,7 @@ export async function getStripeOrders(limit: number = 50): Promise<{
 }
 
 /**
- * Get order by order number (from public.stripe_orders table)
+ * Get order by order number (from public.orders table)
  */
 export async function getOrderByOrderNumber(orderNumber: string): Promise<{
   data: StripeOrder | null;
@@ -40,7 +39,7 @@ export async function getOrderByOrderNumber(orderNumber: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('orders')
-      .select('id, order_number, user_id, total_amount, currency, status, customer_email, is_guest, stripe_session_id, stripe_payment_intent_id, billing_address, shipping_address, created_at, updated_at')
+      .select('*')
       .eq('order_number', orderNumber)
       .single();
 
@@ -110,7 +109,7 @@ export async function getOrderWithItems(orderNumber: string): Promise<{
 }
 
 /**
- * Get orders by status (from public.stripe_orders table)
+ * Get orders by status (from public.orders table)
  */
 export async function getOrdersByStatus(status: string): Promise<{
   data: StripeOrder[] | null;
@@ -119,7 +118,7 @@ export async function getOrdersByStatus(status: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('orders')
-      .select('id, order_number, user_id, total_amount, currency, status, customer_email, is_guest, stripe_session_id, stripe_payment_intent_id, billing_address, shipping_address, created_at, updated_at')
+      .select('*')
       .eq('status', status)
       .order('created_at', { ascending: false });
 
@@ -134,7 +133,7 @@ export async function getOrdersByStatus(status: string): Promise<{
 }
 
 /**
- * Get orders by customer email (from public.stripe_orders table)
+ * Get orders by customer email (from public.orders table)
  */
 export async function getOrdersByEmail(email: string): Promise<{
   data: StripeOrder[] | null;
@@ -143,7 +142,7 @@ export async function getOrdersByEmail(email: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('orders')
-      .select('id, order_number, user_id, total_amount, currency, status, customer_email, is_guest, stripe_session_id, stripe_payment_intent_id, billing_address, shipping_address, created_at, updated_at')
+      .select('*')
       .eq('customer_email', email)
       .order('created_at', { ascending: false });
 
@@ -156,4 +155,3 @@ export async function getOrdersByEmail(email: string): Promise<{
     return { data: null, error: error.message };
   }
 }
-

@@ -263,7 +263,7 @@ export function mergeProductWithSupabasePrice(
   };
 
   // Use Supabase price if available, otherwise fall back to local price
-  const realPrice = supabaseProduct.price > 0 
+  const realPrice = supabaseProduct.price > 0
     ? formatPrice(supabaseProduct.price)
     : localProduct.price;
 
@@ -349,4 +349,3 @@ export async function getProductWithRealPrice(productId: string): Promise<{
     return { product: null, error: error.message };
   }
 }
-

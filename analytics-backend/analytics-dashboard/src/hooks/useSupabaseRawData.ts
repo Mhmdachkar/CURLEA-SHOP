@@ -228,7 +228,6 @@ export function useOrderItems(orderId: string | null) {
   return { data, loading, error, reload: loadData };
 }
 
-
 export function useSupabaseProducts() {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
