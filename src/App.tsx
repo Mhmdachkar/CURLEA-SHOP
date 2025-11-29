@@ -10,7 +10,8 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
-import PromotionalPopup from "@/components/PromotionalPopup";
+import BlackFridayPopup from "@/components/BlackFridayPopup";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import Index from "./pages/Index";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CollectionPage } from "./pages/CollectionPage";
@@ -25,6 +26,9 @@ import { initializeSupabaseIntegration, trackCampaignFromUrl } from "@/services/
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Initialize smooth scroll
+  useSmoothScroll();
+
   // Register Service Worker for offline support
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -96,7 +100,7 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CartDrawer />
-                <PromotionalPopup />
+                <BlackFridayPopup />
               </BrowserRouter>
             </CartProvider>
           </RealtimeProvider>

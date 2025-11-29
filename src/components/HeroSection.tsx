@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { Button } from "@/components/ui/button";
 import hero1 from "@/assets/hero-luxury-1.jpg";
 import hero2 from "@/assets/hero-luxury-2.jpg";
 import hero3 from "@/assets/hero-luxury-3.jpg";
@@ -302,7 +303,7 @@ const MagneticCTAButton = () => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!isMagneticEnabled || !buttonRef.current) return;
-    
+
     const rect = buttonRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
@@ -358,7 +359,7 @@ export const HeroSection = () => {
   const [isPageLoading, setIsPageLoading] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
-  
+
   // Always create scroll tracking but disable effects during page loading
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -433,7 +434,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <HeroContainer 
+    <HeroContainer
       ref={heroRef}
       className={`hero-section ${isPageLoading ? 'page-loading-hero' : ''}`}>
       {/* Background Video/Image Layer with Elegant Crossfade & Parallax */}
@@ -444,7 +445,7 @@ export const HeroSection = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
-          style={{ 
+          style={{
             y: (shouldUseParallax && !isPageLoading) ? y : 0,
             willChange: "auto",
             backfaceVisibility: "hidden",
@@ -453,37 +454,63 @@ export const HeroSection = () => {
         >
           <MediaContainer>
             <HeroImage
-                src={slides[currentSlide].image}
-                alt={slides[currentSlide].title}
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.02 }}
-                transition={{ duration: 12, ease: "easeOut" }}
-              />
+              src={slides[currentSlide].image}
+              alt={slides[currentSlide].title}
+              initial={{ scale: 1 }}
+              animate={{ scale: 1.02 }}
+              transition={{ duration: 12, ease: "easeOut" }}
+            />
           </MediaContainer>
 
           <GradientOverlay />
         </BackgroundLayer>
       </AnimatePresence>
-
       {/* Content */}
       <ContentContainer style={{ opacity: isPageLoading ? 1 : opacity }}>
-        <AnimatedTitle text={slides[currentSlide].title} key={`title-${currentSlide}`} />
-        
-        <Subtitle
-          key={`subtitle-${currentSlide}`}
-          initial={{ opacity: 0, y: 30 }}
+        <motion.h1
+          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {slides[currentSlide].subtitle}
-        </Subtitle>
+          Black Friday <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F2D06B]">
+            Event
+          </span>
+        </motion.h1>
+
+        <motion.p
+          className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          Our biggest offer of the year. Buy any full set and receive a luxury gift on us.
+        </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.7, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <MagneticCTAButton />
+          <Link to="/product/dreamcurl-original">
+            <Button
+              size="lg"
+              className="bg-[#D4AF37] hover:bg-[#B5952F] text-black font-bold px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
+            >
+              Shop the Offer
+            </Button>
+          </Link>
+          <Link to="/collection">
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+            >
+              View Collection
+            </Button>
+          </Link>
         </motion.div>
 
         {/* Scroll Indicator */}

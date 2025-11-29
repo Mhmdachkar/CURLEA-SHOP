@@ -4,11 +4,12 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { ProductImage } from "@/components/ProductImage";
+import { BlackFridaySection } from '@/components/modern/BlackFridaySection';
 import { MediaShowcaseSection } from "@/components/MediaShowcaseSection";
 import { ArrowLeft, Minus, Plus, Play, Pause, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight, ShoppingBag, Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollectionProducts, products, Product } from "@/data/products";
-import { getHeatlessCurlingRodProducts } from "./CategoryPage";
+import { getHeatlessCurlingRodProducts, getHeatlessCurlingRodProductById } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
 import { preloadImagesWithPriority } from "@/utils/imagePreloader";
@@ -24,7 +25,7 @@ export const ProductDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addToCart, openCart, state: cartState } = useCart();
-  
+
   // Track where user came from for proper back navigation
   // First check location.state, then fallback to document.referrer
   const referrerPath = (location.state as { from?: string })?.from || (() => {
@@ -39,20 +40,20 @@ export const ProductDetailPage = () => {
     }
     return '';
   })();
-  
+
   // Initialize advanced scroll system
   useAdvancedScroll();
-  
+
   // Ensure page loads at top when product changes
   useScrollToTop([id]);
-  
+
   // Real-time context for global state
   const { setCurrentProduct, setSelectedColor: setGlobalColor, setSelectedQuantity: setGlobalQuantity } = useRealtimeContext();
-  
+
   // Event system for instant updates
   const { selectProduct, selectColor, selectQuantity } = useEventProduct();
   const { showError, hideError } = useEventUI();
-  
+
   // State management - using regular useState for color to avoid conflicts
   const [quantity, setQuantity] = useRealtimeState(`product-${id}-quantity`, 1);
   const [selectedColor, setSelectedColor] = useState<string>("");
@@ -136,26 +137,26 @@ export const ProductDetailPage = () => {
   useEffect(() => {
     // Add loading class to prevent scroll conflicts
     document.documentElement.classList.add('page-loading');
-    
+
     // Prevent all scroll events during loading
     const preventScroll = (e: Event) => {
       e.preventDefault();
       e.stopPropagation();
       return false;
     };
-    
+
     // Add event listeners to prevent scrolling
     window.addEventListener('scroll', preventScroll, { passive: false });
     window.addEventListener('wheel', preventScroll, { passive: false });
     window.addEventListener('touchmove', preventScroll, { passive: false });
-    
+
     // Force immediate scroll to top
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: 'instant' as ScrollBehavior
     });
-    
+
     // Remove loading class and event listeners after scroll is complete
     const timeout = setTimeout(() => {
       window.removeEventListener('scroll', preventScroll);
@@ -163,7 +164,7 @@ export const ProductDetailPage = () => {
       window.removeEventListener('touchmove', preventScroll);
       document.documentElement.classList.remove('page-loading');
     }, 200);
-    
+
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('scroll', preventScroll);
@@ -178,11 +179,11 @@ export const ProductDetailPage = () => {
     // Reset quantity
     setQuantity(1);
     setGlobalQuantity(1);
-    
+
     // Reset error
     setError('');
     hideError();
-    
+
     // Reset selected color only when product changes
     if (product && product.colors && product.colors.length > 0) {
       const defaultColor = product.colors[0];
@@ -192,29 +193,29 @@ export const ProductDetailPage = () => {
       setSelectedColor('');
       setGlobalColor('');
     }
-    
+
     // Reset selected size for DreamCurl Short Set
     if (product && product.id === 'dreamcurl-short-set') {
       setSelectedSize('Original'); // Default size
     } else {
       setSelectedSize('');
     }
-    
+
     // Update global product state
     if (product) {
       setCurrentProduct(product);
       selectProduct(product);
     }
-    
+
     // Add loading class and scroll to top when product changes
     document.documentElement.classList.add('page-loading');
-    
-    window.scrollTo({ 
-      top: 0, 
+
+    window.scrollTo({
+      top: 0,
       left: 0,
-      behavior: 'instant' as ScrollBehavior 
+      behavior: 'instant' as ScrollBehavior
     });
-    
+
     // Remove loading class after scroll is complete
     setTimeout(() => {
       document.documentElement.classList.remove('page-loading');
@@ -311,7 +312,7 @@ export const ProductDetailPage = () => {
     let finalPrice = product.price;
     let finalImage = product.image;
     let finalName = product.name;
-    
+
     // Handle size options for hair clip product
     if (product.id === 'curly-clip-1' && selectedSize && product.sizeOptions && product.sizeOptions[selectedSize]) {
       const sizeOption = product.sizeOptions[selectedSize];
@@ -319,12 +320,12 @@ export const ProductDetailPage = () => {
       finalImage = sizeOption.image;
       finalName = `${product.name} - ${selectedSize.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
     }
-    
+
     // Add size to product name for DreamCurl Short Set and BUN BONS
     if ((product.id === 'dreamcurl-short-set' || product.id === 'heatless-5') && selectedSize) {
       finalName = `${product.name} - ${selectedSize} Size`;
     }
-    
+
     // Use color-specific image if a color is selected
     let cartColor = selectedColor; // Default to the selected color
     if (selectedColor) {
@@ -383,7 +384,7 @@ export const ProductDetailPage = () => {
         cartColor = 'Gold & Print';
       }
     }
-    
+
     // Get the size description for cart display
     const getSizeDescription = () => {
       if (product.id === 'curly-clip-1' && selectedSize) {
@@ -423,12 +424,12 @@ export const ProductDetailPage = () => {
       const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       return total + (price * item.quantity);
     }, 0);
-    
+
     // Add multiple quantities to cart
     for (let i = 0; i < quantity; i++) {
       addToCart(productToAdd);
     }
-    
+
     // Emit real-time events for instant updates
     selectQuantity(quantity);
     if (selectedColor) {
@@ -439,7 +440,7 @@ export const ProductDetailPage = () => {
     if (typeof window !== 'undefined' && (window as any).analytics) {
       const priceNumber = parseFloat(finalPrice.replace(/[^0-9.]/g, '')) || 0;
       const newCartTotal = currentCartTotal + (priceNumber * quantity);
-      
+
       (window as any).analytics.trackCart('add', {
         product_id: product.id,
         title: finalName,
@@ -451,7 +452,7 @@ export const ProductDetailPage = () => {
         cart_total: newCartTotal,
       });
     }
-    
+
     // Show toast notification
     toast('Added to Cart', {
       description: `${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart`,
@@ -466,13 +467,13 @@ export const ProductDetailPage = () => {
         padding: '16px',
       },
     });
-    
+
     // Open cart drawer
     openCart();
     // Ensure cart drawer/panel always opens scrolled to top
     const forceCartTop = () => {
       // Also move the page scroll to top so the cart viewport starts at top
-      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {}
+      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch { }
       const selectors = [
         '.cart-drawer', '.cart-panel', '[data-cart-panel]', '#cart',
         '.shopping-cart', '.drawer-content', '[role="dialog"]',
@@ -503,12 +504,12 @@ export const ProductDetailPage = () => {
   // Get related products - always show exactly 3 products with smart cross-collection recommendations
   const getRelatedProducts = () => {
     // Get all available products from different collections
-      const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
+    const heatlessProducts = getHeatlessCurlingRodProducts().filter(p => p.id !== product.id);
     const curlyProducts = getCurlyHairCollectionProducts().filter(p => p.id !== product.id);
-    const regularProducts = products.filter(p => 
-      p.id !== product.id && 
-      !p.id.startsWith('heatless-') && 
-      !p.id.startsWith('dreamcurl-') && 
+    const regularProducts = products.filter(p =>
+      p.id !== product.id &&
+      !p.id.startsWith('heatless-') &&
+      !p.id.startsWith('dreamcurl-') &&
       !p.id.startsWith('curly-')
     );
 
@@ -549,24 +550,24 @@ export const ProductDetailPage = () => {
         ...curlyProducts,
         ...regularProducts
       ].filter(p => !recommendations.find(r => r.id === p.id)));
-      
+
       while (recommendations.length < 3 && allOtherProducts.length > 0) {
         recommendations.push(allOtherProducts.shift()!);
       }
     }
 
     // Final check: ensure no duplicates and return exactly 3 unique products
-    const uniqueRecommendations = recommendations.filter((product, index, self) => 
+    const uniqueRecommendations = recommendations.filter((product, index, self) =>
       index === self.findIndex(p => p.id === product.id)
     );
 
     // If we still don't have 3 unique products, fill with any remaining products
     if (uniqueRecommendations.length < 3) {
       const allProducts = [...heatlessProducts, ...curlyProducts, ...regularProducts];
-      const remainingProducts = allProducts.filter(p => 
+      const remainingProducts = allProducts.filter(p =>
         !uniqueRecommendations.find(r => r.id === p.id)
       );
-      
+
       while (uniqueRecommendations.length < 3 && remainingProducts.length > 0) {
         uniqueRecommendations.push(remainingProducts.shift()!);
       }
@@ -595,7 +596,7 @@ export const ProductDetailPage = () => {
       <div className="fixed inset-0 -z-10">
         {/* Base gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
-        
+
         {/* Floating geometric shapes for depth */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Large floating circles */}
@@ -603,7 +604,7 @@ export const ProductDetailPage = () => {
           <div className="absolute top-3/4 -right-32 w-80 h-80 bg-gradient-to-br from-accent/5 to-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-muted/10 to-background/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
-        
+
         {/* Subtle grid pattern for texture */}
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
           <div className="absolute inset-0" style={{
@@ -614,1385 +615,1371 @@ export const ProductDetailPage = () => {
             backgroundSize: '50px 50px'
           }} />
         </div>
-        
+
         {/* Ambient lighting effects */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/3 to-transparent rounded-full blur-2xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-br from-accent/3 to-transparent rounded-full blur-2xl" />
       </div>
-      
+
       <Navbar />
       <div className="pt-24 pb-16 relative z-10" style={{ scrollBehavior: 'smooth' }}>
-      {/* Back Button */}
-      <div className="max-w-7xl mx-auto px-6 mb-8">
-        <motion.button
-          onClick={() => {
-            // Prefer native history for an instantaneous back with no re-render
-            if (document.referrer && window.history.length > 1) {
-              window.history.back();
-              return;
-            }
-            // Fallbacks
-            if (referrerPath) {
-              navigate(referrerPath, { replace: true });
-              return;
-            }
-            navigate('/', { replace: true });
-          }}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors relative z-[40] px-4 py-2 -ml-4"
-          whileHover={{ x: -5 }}
-          style={{
-            position: 'relative',
-            left: 0,
-            marginTop: '1rem',
-            minHeight: '44px',
-            minWidth: '100px',
-            touchAction: 'manipulation'
-          }}
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="select-none">Back</span>
-        </motion.button>
-      </div>
-
-      {/* Product Detail */}
-      <div className="max-w-7xl mx-auto px-6" key={product.id}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
-          {/* Left: Product Info */}
-          <motion.div
-            key={`product-info-${product.id}`}
-            className="order-2 md:order-1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+        {/* Back Button */}
+        <div className="max-w-7xl mx-auto px-6 mb-8">
+          <motion.button
+            onClick={() => {
+              // Prefer native history for an instantaneous back with no re-render
+              if (document.referrer && window.history.length > 1) {
+                window.history.back();
+                return;
+              }
+              // Fallbacks
+              if (referrerPath) {
+                navigate(referrerPath, { replace: true });
+                return;
+              }
+              navigate('/', { replace: true });
+            }}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors relative z-[40] px-4 py-2 -ml-4"
+            whileHover={{ x: -5 }}
+            style={{
+              position: 'relative',
+              left: 0,
+              marginTop: '1rem',
+              minHeight: '44px',
+              minWidth: '100px',
+              touchAction: 'manipulation'
+            }}
           >
-            <motion.h1
-              key={`product-name-${product.id}`}
-              className="text-4xl md:text-5xl font-bold mb-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              {product.name}
-            </motion.h1>
+            <ArrowLeft className="w-5 h-5" />
+            <span className="select-none">Back</span>
+          </motion.button>
+        </div>
 
-            <motion.p
-              key={`product-price-${product.id}`}
-              className="text-3xl text-muted-foreground font-light mb-8"
-              initial={{ opacity: 0, y: 10 }}
+        {/* Product Detail */}
+        <div className="max-w-7xl mx-auto px-6" key={product.id}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
+            {/* Left: Product Info */}
+            <motion.div
+              key={`product-info-${product.id}`}
+              className="order-2 md:order-1"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
+              transition={{ duration: 0.4 }}
             >
-              {product.id === 'curly-clip-1' && selectedSize && product.sizeOptions && product.sizeOptions[selectedSize] 
-                ? product.sizeOptions[selectedSize].price 
-                : product.price}
-            </motion.p>
-
-            {/* Pre-Order Notice for CURLEA Comb and SongMay Hair Clips */}
-            {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
-              <motion.div
+              <motion.h1
+                key={`product-name-${product.id}`}
+                className="text-4xl md:text-5xl font-bold mb-6"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-400/30 rounded-lg sm:rounded-xl shadow-lg relative overflow-hidden"
+                transition={{ duration: 0.3, delay: 0.1 }}
               >
-                {/* Decorative background pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
-                  }} />
-                </div>
-                
-                <div className="relative z-10">
-                  {/* Icon and Title */}
-                  <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                        className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-amber-500 rounded-full flex items-center justify-center"
-                      >
-                        <span className="text-white text-sm sm:text-base md:text-lg font-bold"></span>
-                      </motion.div>
+                {product.name}
+              </motion.h1>
+
+              <motion.p
+                key={`product-price-${product.id}`}
+                className="text-3xl text-muted-foreground font-light mb-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                {product.id === 'curly-clip-1' && selectedSize && product.sizeOptions && product.sizeOptions[selectedSize]
+                  ? product.sizeOptions[selectedSize].price
+                  : product.price}
+              </motion.p>
+
+              {/* Pre-Order Notice for CURLEA Comb and SongMay Hair Clips */}
+              {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  className="mb-6 sm:mb-8 p-3 sm:p-4 md:p-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-400/30 rounded-lg sm:rounded-xl shadow-lg relative overflow-hidden"
+                >
+                  {/* Decorative background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
+                    }} />
+                  </div>
+
+                  <div className="relative z-10">
+                    {/* Icon and Title */}
+                    <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <motion.div
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                          className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-amber-500 rounded-full flex items-center justify-center"
+                        >
+                          <span className="text-white text-sm sm:text-base md:text-lg font-bold"></span>
+                        </motion.div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm sm:text-base md:text-lg font-bold text-amber-900 mb-1 sm:mb-2 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+                          <span className="px-1.5 sm:px-2 py-0.5 bg-amber-500 text-white text-[10px] sm:text-xs font-extrabold uppercase tracking-wider rounded inline-block">
+                            PRE-ORDER
+                          </span>
+                          <span className="text-xs sm:text-sm md:text-base">Available Now for Pre-Order</span>
+                        </h3>
+                        <p className="text-xs sm:text-sm text-amber-800 font-semibold leading-relaxed">
+                          Estimated delivery time: <span className="text-amber-900 font-extrabold text-sm sm:text-base md:text-lg">28 days</span>
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-amber-900 mb-1 sm:mb-2 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
-                        <span className="px-1.5 sm:px-2 py-0.5 bg-amber-500 text-white text-[10px] sm:text-xs font-extrabold uppercase tracking-wider rounded inline-block">
-                          PRE-ORDER
-                        </span>
-                        <span className="text-xs sm:text-sm md:text-base">Available Now for Pre-Order</span>
-                      </h3>
-                      <p className="text-xs sm:text-sm text-amber-800 font-semibold leading-relaxed">
-                        Estimated delivery time: <span className="text-amber-900 font-extrabold text-sm sm:text-base md:text-lg">28 days</span>
+
+                    {/* Additional Info */}
+                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-amber-300/50">
+                      <p className="text-[10px] sm:text-xs text-amber-700 leading-relaxed">
+                        This item is currently available for pre-order. Your order will be processed and shipped within approximately 28 days from the date of purchase. You will receive shipping confirmation once your order is ready.
                       </p>
                     </div>
                   </div>
-                  
-                  {/* Additional Info */}
-                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-amber-300/50">
-                    <p className="text-[10px] sm:text-xs text-amber-700 leading-relaxed">
-                      This item is currently available for pre-order. Your order will be processed and shipped within approximately 28 days from the date of purchase. You will receive shipping confirmation once your order is ready.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 lg:mb-12">
-              {product.description.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-2 sm:gap-3"
-                >
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
-                  <p className={`text-sm sm:text-base lg:text-lg leading-relaxed ${item.includes('Sold as complete set') ? 'font-bold text-foreground' : 'text-black'}`}>
-                    {item.includes('**') ? (
-                      <>
-                        {item.split('**').map((part, partIndex) => 
-                          partIndex % 2 === 1 ? (
-                            <strong key={partIndex} className="font-bold text-foreground">{part}</strong>
-                          ) : (
-                            <span key={partIndex}>{part}</span>
-                          )
-                        )}
-                      </>
-                    ) : (
-                      item
-                    )}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Enhanced Quantity Selector with Bundle Discount */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium">Quantity:</span>
-                {quantity >= 2 && product.id === 'curlea-comb' && (
-                  <motion.span
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 text-xs font-semibold border border-green-500/20"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500 }}
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Save 10% - Buy 2 or more!
-                  </motion.span>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
-                >
-                  <Minus className="w-4 h-4" />
-                </motion.button>
-                <span className="w-12 text-center font-medium text-lg">{quantity}</span>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </motion.button>
-                
-                {/* Quick quantity buttons for bundles */}
-                {product.id === 'curlea-comb' && (
-                  <div className="flex items-center gap-2 ml-4 border-l border-border pl-4">
-                    <button
-                      onClick={() => setQuantity(2)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        quantity === 2 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Buy 2
-                    </button>
-                    <button
-                      onClick={() => setQuantity(3)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        quantity === 3 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Buy 3
-                    </button>
-                  </div>
-                )}
-              </div>
-              
-              {/* Price Breakdown */}
-              {quantity >= 2 && product.id === 'curlea-comb' && (
-                <motion.div
-                  className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Regular price:</span>
-                    <span className="line-through text-muted-foreground">{(12.99 * quantity).toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
-                    <span>Bundle price:</span>
-                    <span>{(12.99 * quantity * 0.9).toFixed(2)}</span>
-                  </div>
-                  <div className="text-xs text-green-600 dark:text-green-400 mt-2">
-                    You save {(12.99 * quantity * 0.1).toFixed(2)}!
-                  </div>
                 </motion.div>
               )}
-              
-              {/* Pieces Total Display - hide for curly-clip-5 and curly-clip-6 */}
-              {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && product.id !== 'curly-clip-6' && product.id !== 'curlea-comb' && (
-                <motion.div
-                  className="mt-3 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full inline-block"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <span className="text-sm font-medium text-primary">
-                    {(() => {
-                      if (product.id === 'curly-clip-1') {
-                        // Get piece count from selected size
-                        const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize] 
-                          ? (selectedSize.toLowerCase().includes('9-piece') ? 9 : 4)
-                          : 9;
-                        return pieceCount * quantity;
-                      }
-                      return product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity;
-                    })()} pieces in total
-                  </span>
-                </motion.div>
-              )}
-            </div>
 
-    {/* Enhanced Color Selection for BUN BONS */}
-    {product.id === 'heatless-5' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Color Selection for DreamCurl Short Set */}
-    {product.id === 'dreamcurl-short-set' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Size Selection for Curved Resin Hair Clip */}
-    {product.id === 'curly-clip-1' && product.sizeOptions && (
-      <motion.div 
-        className="mb-8 p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4 lg:mb-5">
-          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 tracking-tight" style={{ fontFamily: 'Georgia, Cambria, Times New Roman, Times, serif' }}>Choose Your Set</h3>
-          <p className="text-xs sm:text-sm text-gray-600">Select the perfect set size for your styling needs</p>
-        </div>
-        
-        <div
-          className="flex flex-col gap-3 lg:gap-4"
-          role="radiogroup"
-          aria-label="Choose Hair Clip Set Size"
-        >
-          {Object.entries(product.sizeOptions).map(([sizeKey, sizeOption], index) => (
-            <motion.button
-              key={sizeKey}
-              onClick={() => setSelectedSize(sizeKey)}
-              className={`group relative w-full text-left rounded-xl border p-4 sm:p-5 lg:p-6 transition-all duration-200 ${
-                selectedSize === sizeKey
-                  ? 'border-gray-900 bg-gray-900/5 shadow-lg'
-                  : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.06 * index }}
-              role="radio"
-              aria-checked={selectedSize === sizeKey}
-            >
-              <div className="flex items-center gap-4 sm:gap-5 lg:gap-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 rounded-lg overflow-hidden bg-gray-50 ring-1 ring-gray-100 flex-shrink-0">
-                  <img
-                    src={sizeOption.image}
-                    alt={`${product.name} - ${sizeKey}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-4 mb-2">
-                      <h4 className="text-base sm:text-lg lg:text-xl font-semibold tracking-wide uppercase text-gray-900 leading-snug" style={{ fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }}>
-                        {sizeKey.replace(/-/g, ' ')}
-                      </h4>
-                      <span className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 whitespace-nowrap">
-                        {sizeOption.price}
-                      </span>
-                    </div>
-                    <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed">
-                      {sizeOption.description[0]}
-                    </p>
-                  </div>
-                  {selectedSize === sizeKey ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-900 text-white px-3 py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
-                      Selected
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1.5 text-xs sm:text-sm font-medium whitespace-nowrap">
-                      Tap to select
-                    </span>
-                  )}
-                </div>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Size Selection for DreamCurl Short Set */}
-    {product.id === 'dreamcurl-short-set' && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
-          {selectedSize && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedSize}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => (
-            <motion.button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedSize === size
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {size}
-              {/* Selected indicator */}
-              {selectedSize === size && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Size Selection for BUN BONS - Heatless Curling System */}
-    {product.id === 'heatless-5' && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
-          {selectedSize && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedSize}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => {
-            const isSoldOut = size === 'Original';
-            const isSelected = selectedSize === size;
-            
-            return (
-              <motion.button
-                key={size}
-                onClick={() => !isSoldOut && setSelectedSize(size)}
-                disabled={isSoldOut}
-                className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                  isSoldOut
-                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60'
-                    : isSelected
-                    ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                    : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-                }`}
-                whileHover={!isSoldOut ? { 
-                  scale: 1.02,
-                  y: -1,
-                  transition: { duration: 0.2 }
-                } : {}}
-                whileTap={!isSoldOut ? { 
-                  scale: 0.98,
-                  transition: { duration: 0.1 }
-                } : {}}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-              >
-                {size}
-                {/* Sold Out Badge */}
-                {isSoldOut && (
-                  <motion.span
-                    className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-500 text-white rounded-full shadow-md"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
-                  >
-                    SOLD OUT
-                  </motion.span>
-                )}
-                {/* Selected indicator */}
-                {isSelected && !isSoldOut && (
+              <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 lg:mb-12">
+                {product.description.map((item, index) => (
                   <motion.div
-                    className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                )}
-                {/* Sold out overlay effect */}
-                {isSoldOut && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-300/20 to-gray-400/20 rounded pointer-events-none" />
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Color Selection for DreamCurl Midi */}
-    {product.id === 'dreamcurl-midi' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Color Selection for Bonnet */}
-    {product.id === 'heatless-6' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Color Selection for DreamCurl JUMBO */}
-    {product.id === 'dreamcurl-jumbo' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {/* Enhanced Color Selection for Zero Heat Mini */}
-    {product.id === 'zero-heat-mini' && product.colors && product.colors.length > 0 && (
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="mb-4">
-          <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-          {selectedColor && (
-            <span className="ml-2 text-sm text-primary font-medium">
-              Selected: {selectedColor}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => {
-                setSelectedColor(color);
-                setGlobalColor(color);
-                selectColor(color);
-              }}
-              className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                selectedColor === color
-                  ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
-                  : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-              }`}
-              whileHover={{ 
-                scale: 1.02,
-                y: -1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { duration: 0.1 }
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              {color}
-              {/* Selected indicator */}
-              {selectedColor === color && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-            {/* Error Display */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            {/* Pre-Order Notice - Second Location (Right Above Add to Cart Button) */}
-            {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 border-2 border-amber-500/40 rounded-lg shadow-md relative"
-              >
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-amber-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs sm:text-sm font-bold"></span>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-amber-900 leading-tight">
-                      <span className="uppercase tracking-wide">PRE-ORDER:</span> <span className="whitespace-nowrap sm:whitespace-normal">Estimated delivery time is <span className="font-extrabold">28 days</span></span>
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-start gap-2 sm:gap-3"
+                  >
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-accent mt-1.5 sm:mt-2 flex-shrink-0" />
+                    <p className={`text-sm sm:text-base lg:text-lg leading-relaxed ${item.includes('Sold as complete set') ? 'font-bold text-foreground' : 'text-black'}`}>
+                      {item.includes('**') ? (
+                        <>
+                          {item.split('**').map((part, partIndex) =>
+                            partIndex % 2 === 1 ? (
+                              <strong key={partIndex} className="font-bold text-foreground">{part}</strong>
+                            ) : (
+                              <span key={partIndex}>{part}</span>
+                            )
+                          )}
+                        </>
+                      ) : (
+                        item
+                      )}
                     </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                  </motion.div>
+                ))}
+              </div>
 
-            {/* Add to Cart Button */}
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              initial="rest"
-              animate="rest"
-              whileHover="hover"
-              onClick={handleAddToCart}
-              className="group relative w-full md:w-auto px-16 py-4 rounded-full font-semibold tracking-wide overflow-hidden focus:outline-none"
-            >
-              {/* Base layer (black to subtle white tint) */}
-              <motion.span
-                className="absolute inset-0 rounded-full bg-black"
-                variants={{
-                  rest: { backgroundColor: "#000000" },
-                  hover: { backgroundColor: "#ffffff" },
-                }}
-                transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
-              />
-              {/* Left-to-right liquid sweep overlay */}
-              <motion.span
-                className="absolute left-0 top-0 h-full rounded-full bg-white/95 backdrop-blur-[1px]"
-                style={{ width: '0%', filter: 'drop-shadow(0 6px 14px rgba(255,255,255,0.35))' }}
-                variants={{
-                  rest: { width: '0%' },
-                  hover: { width: '105%' },
-                }}
-                transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1] }}
-              />
-              {/* Radial reveal pulse for unique hover */}
-              <motion.span
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white pointer-events-none"
-                style={{ width: 0, height: 0, filter: 'blur(2px)' }}
-                variants={{
-                  rest: { opacity: 0, scale: 0 },
-                  hover: { opacity: 1, scale: 2.2 },
-                }}
-                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              />
-              {/* Soft outer glow on hover */}
-              <motion.span
-                className="absolute -inset-2 rounded-full bg-white/30 blur-xl pointer-events-none"
-                variants={{ rest: { opacity: 0 }, hover: { opacity: 0.6 } }}
-                transition={{ duration: 0.9, ease: 'easeOut' }}
-              />
-              {/* Text color invert */}
-              <motion.span
-                className="relative z-10"
-                variants={{ rest: { color: '#ffffff' }, hover: { color: '#000000' } }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              >
-                Add to Cart
-              </motion.span>
-            </motion.button>
-
-            {/* (Removed duplicate color section under Add to Cart) */}
-
-            {/* Color Selection for curly-clip-5 - Right after Add to Cart */}
-            {product.id === 'curly-clip-5' && product.colors && product.colors.length > 0 && (
-              <motion.div
-                className="mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="mb-4">
-                  <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-                  {selectedColor && (
-                    <span className="ml-2 text-sm text-primary font-medium">
-                      Selected: {selectedColor.replace(/&/g, ' & ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </span>
+              {/* Enhanced Quantity Selector with Bundle Discount */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-medium">Quantity:</span>
+                  {quantity >= 2 && product.id === 'curlea-comb' && (
+                    <motion.span
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 text-xs font-semibold border border-green-500/20"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500 }}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Save 10% - Buy 2 or more!
+                    </motion.span>
                   )}
                 </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color, index) => (
-                    <motion.button
-                      key={color}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setGlobalColor(color);
-                        selectColor(color);
-                      }}
-                      className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                        selectedColor === color
+
+                <div className="flex items-center gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </motion.button>
+                  <span className="w-12 text-center font-medium text-lg">{quantity}</span>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </motion.button>
+
+                  {/* Quick quantity buttons for bundles */}
+                  {product.id === 'curlea-comb' && (
+                    <div className="flex items-center gap-2 ml-4 border-l border-border pl-4">
+                      <button
+                        onClick={() => setQuantity(2)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${quantity === 2
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                      >
+                        Buy 2
+                      </button>
+                      <button
+                        onClick={() => setQuantity(3)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${quantity === 3
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                      >
+                        Buy 3
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Price Breakdown */}
+                {quantity >= 2 && product.id === 'curlea-comb' && (
+                  <motion.div
+                    className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Regular price:</span>
+                      <span className="line-through text-muted-foreground">{(12.99 * quantity).toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
+                      <span>Bundle price:</span>
+                      <span>{(12.99 * quantity * 0.9).toFixed(2)}</span>
+                    </div>
+                    <div className="text-xs text-green-600 dark:text-green-400 mt-2">
+                      You save {(12.99 * quantity * 0.1).toFixed(2)}!
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Pieces Total Display - hide for curly-clip-5 and curly-clip-6 */}
+                {product.id.startsWith('curly-') && product.id !== 'curly-clip-5' && product.id !== 'curly-clip-6' && product.id !== 'curlea-comb' && (
+                  <motion.div
+                    className="mt-3 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full inline-block"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <span className="text-sm font-medium text-primary">
+                      {(() => {
+                        if (product.id === 'curly-clip-1') {
+                          // Get piece count from selected size
+                          const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize]
+                            ? (selectedSize.toLowerCase().includes('9-piece') ? 9 : 4)
+                            : 9;
+                          return pieceCount * quantity;
+                        }
+                        return product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity;
+                      })()} pieces in total
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Enhanced Color Selection for BUN BONS */}
+              {product.id === 'heatless-5' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
                           ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
                           : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-                      }`}
-                      whileHover={{ 
-                        scale: 1.02,
-                        y: -1,
-                        transition: { duration: 0.2 }
-                      }}
-                      whileTap={{ 
-                        scale: 0.98,
-                        transition: { duration: 0.1 }
-                      }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                    >
-                      {color.replace(/&/g, ' & ').replace(/\b\w/g, l => l.toUpperCase())}
-                      {/* Selected indicator */}
-                      {selectedColor === color && (
-                        <motion.div
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                        />
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
 
-            {/* Enhanced Color Selection for DreamCurl - Placed after Add to Cart */}
-            {product.id === 'dreamcurl-original' && product.colors && product.colors.length > 0 && (
-              <motion.div
-                className="mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+              {/* Enhanced Color Selection for DreamCurl Short Set */}
+              {product.id === 'dreamcurl-short-set' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Size Selection for Curved Resin Hair Clip */}
+              {product.id === 'curly-clip-1' && product.sizeOptions && (
+                <motion.div
+                  className="mb-8 p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4 lg:mb-5">
+                    <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 tracking-tight" style={{ fontFamily: 'Georgia, Cambria, Times New Roman, Times, serif' }}>Choose Your Set</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">Select the perfect set size for your styling needs</p>
+                  </div>
+
+                  <div
+                    className="flex flex-col gap-3 lg:gap-4"
+                    role="radiogroup"
+                    aria-label="Choose Hair Clip Set Size"
+                  >
+                    {Object.entries(product.sizeOptions).map(([sizeKey, sizeOption], index) => (
+                      <motion.button
+                        key={sizeKey}
+                        onClick={() => setSelectedSize(sizeKey)}
+                        className={`group relative w-full text-left rounded-xl border p-4 sm:p-5 lg:p-6 transition-all duration-200 ${selectedSize === sizeKey
+                          ? 'border-gray-900 bg-gray-900/5 shadow-lg'
+                          : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.06 * index }}
+                        role="radio"
+                        aria-checked={selectedSize === sizeKey}
+                      >
+                        <div className="flex items-center gap-4 sm:gap-5 lg:gap-6">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 rounded-lg overflow-hidden bg-gray-50 ring-1 ring-gray-100 flex-shrink-0">
+                            <img
+                              src={sizeOption.image}
+                              alt={`${product.name} - ${sizeKey}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-4 mb-2">
+                                <h4 className="text-base sm:text-lg lg:text-xl font-semibold tracking-wide uppercase text-gray-900 leading-snug" style={{ fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial' }}>
+                                  {sizeKey.replace(/-/g, ' ')}
+                                </h4>
+                                <span className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 whitespace-nowrap">
+                                  {sizeOption.price}
+                                </span>
+                              </div>
+                              <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed">
+                                {sizeOption.description[0]}
+                              </p>
+                            </div>
+                            {selectedSize === sizeKey ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-gray-900 text-white px-3 py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
+                                Selected
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1.5 text-xs sm:text-sm font-medium whitespace-nowrap">
+                                Tap to select
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Size Selection for DreamCurl Short Set */}
+              {product.id === 'dreamcurl-short-set' && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
+                    {selectedSize && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedSize}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => (
+                      <motion.button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedSize === size
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {size}
+                        {/* Selected indicator */}
+                        {selectedSize === size && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Size Selection for BUN BONS - Heatless Curling System */}
+              {product.id === 'heatless-5' && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">SIZE</span>
+                    {selectedSize && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedSize}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => {
+                      const isSoldOut = size === 'Original';
+                      const isSelected = selectedSize === size;
+
+                      return (
+                        <motion.button
+                          key={size}
+                          onClick={() => !isSoldOut && setSelectedSize(size)}
+                          disabled={isSoldOut}
+                          className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${isSoldOut
+                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60'
+                            : isSelected
+                              ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                              : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                            }`}
+                          whileHover={!isSoldOut ? {
+                            scale: 1.02,
+                            y: -1,
+                            transition: { duration: 0.2 }
+                          } : {}}
+                          whileTap={!isSoldOut ? {
+                            scale: 0.98,
+                            transition: { duration: 0.1 }
+                          } : {}}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 * index }}
+                        >
+                          {size}
+                          {/* Sold Out Badge */}
+                          {isSoldOut && (
+                            <motion.span
+                              className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-500 text-white rounded-full shadow-md"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                            >
+                              SOLD OUT
+                            </motion.span>
+                          )}
+                          {/* Selected indicator */}
+                          {isSelected && !isSoldOut && (
+                            <motion.div
+                              className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 300 }}
+                            />
+                          )}
+                          {/* Sold out overlay effect */}
+                          {isSoldOut && (
+                            <div className="absolute inset-0 bg-gradient-to-br from-gray-300/20 to-gray-400/20 rounded pointer-events-none" />
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Color Selection for DreamCurl Midi */}
+              {product.id === 'dreamcurl-midi' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Color Selection for Bonnet */}
+              {product.id === 'heatless-6' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Color Selection for DreamCurl JUMBO */}
+              {product.id === 'dreamcurl-jumbo' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Color Selection for Zero Heat Mini */}
+              {product.id === 'zero-heat-mini' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-white"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Error Display */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              {/* Pre-Order Notice - Second Location (Right Above Add to Cart Button) */}
+              {(product.id === 'curlea-comb' || product.id === 'songmay-hair-clips') && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 border-2 border-amber-500/40 rounded-lg shadow-md relative"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex-shrink-0">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs sm:text-sm font-bold"></span>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-bold text-amber-900 leading-tight">
+                        <span className="uppercase tracking-wide">PRE-ORDER:</span> <span className="whitespace-nowrap sm:whitespace-normal">Estimated delivery time is <span className="font-extrabold">28 days</span></span>
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Add to Cart Button */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                initial="rest"
+                animate="rest"
+                whileHover="hover"
+                onClick={handleAddToCart}
+                className="group relative w-full md:w-auto px-16 py-4 rounded-full font-semibold tracking-wide overflow-hidden focus:outline-none"
               >
-                <div className="mb-4">
-                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Available Colors</span>
-                  {selectedColor && (
-                    <span className="ml-2 text-sm text-primary font-medium">
-                      Selected: {selectedColor}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex flex-wrap gap-2 sm:gap-3">
-                  {product.colors.map((color, index) => (
-                    <motion.button
-                      key={color}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setGlobalColor(color);
-                        selectColor(color);
-                      }}
-                      className={`relative px-4 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide transition-all duration-300 rounded-full touch-manipulation border-2 ${
-                        selectedColor === color
+                {/* Base layer (black to subtle white tint) */}
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-black"
+                  variants={{
+                    rest: { backgroundColor: "#000000" },
+                    hover: { backgroundColor: "#ffffff" },
+                  }}
+                  transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+                />
+                {/* Left-to-right liquid sweep overlay */}
+                <motion.span
+                  className="absolute left-0 top-0 h-full rounded-full bg-white/95 backdrop-blur-[1px]"
+                  style={{ width: '0%', filter: 'drop-shadow(0 6px 14px rgba(255,255,255,0.35))' }}
+                  variants={{
+                    rest: { width: '0%' },
+                    hover: { width: '105%' },
+                  }}
+                  transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1] }}
+                />
+                {/* Radial reveal pulse for unique hover */}
+                <motion.span
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white pointer-events-none"
+                  style={{ width: 0, height: 0, filter: 'blur(2px)' }}
+                  variants={{
+                    rest: { opacity: 0, scale: 0 },
+                    hover: { opacity: 1, scale: 2.2 },
+                  }}
+                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                />
+                {/* Soft outer glow on hover */}
+                <motion.span
+                  className="absolute -inset-2 rounded-full bg-white/30 blur-xl pointer-events-none"
+                  variants={{ rest: { opacity: 0 }, hover: { opacity: 0.6 } }}
+                  transition={{ duration: 0.9, ease: 'easeOut' }}
+                />
+                {/* Text color invert */}
+                <motion.span
+                  className="relative z-10"
+                  variants={{ rest: { color: '#ffffff' }, hover: { color: '#000000' } }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  Add to Cart
+                </motion.span>
+              </motion.button>
+
+              {/* (Removed duplicate color section under Add to Cart) */}
+
+              {/* Color Selection for curly-clip-5 - Right after Add to Cart */}
+              {product.id === 'curly-clip-5' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor.replace(/&/g, ' & ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
+                          ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
+                          : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        whileHover={{
+                          scale: 1.02,
+                          y: -1,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color.replace(/&/g, ' & ').replace(/\b\w/g, l => l.toUpperCase())}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Enhanced Color Selection for DreamCurl - Placed after Add to Cart */}
+              {product.id === 'dreamcurl-original' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Available Colors</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide transition-all duration-300 rounded-full touch-manipulation border-2 ${selectedColor === color
                           ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25'
                           : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/60 border-muted hover:border-primary/50'
-                      }`}
-                      whileHover={{ 
-                        scale: 1.05,
-                        y: -2,
-                        transition: { duration: 0.2 }
-                      }}
-                      whileTap={{ 
-                        scale: 0.95,
-                        transition: { duration: 0.1 }
-                      }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                    >
-                      {color}
-                      {/* Selected indicator */}
-                      {selectedColor === color && (
-                        <motion.div
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-background"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        />
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-                
-              </motion.div>
-            )}
+                          }`}
+                        whileHover={{
+                          scale: 1.05,
+                          y: -2,
+                          transition: { duration: 0.2 }
+                        }}
+                        whileTap={{
+                          scale: 0.95,
+                          transition: { duration: 0.1 }
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {/* Selected indicator */}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full border-2 border-background"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
 
-            {/* Color Selection for SongMay - Right after Add to Cart */}
-            {product.id === 'songmay-hair-clips' && product.colors && product.colors.length > 0 && (
-              <motion.div
-                className="mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="mb-4">
-                  <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
-                  {selectedColor && (
-                    <span className="ml-2 text-sm text-primary font-medium">
-                      Selected: {selectedColor}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color, index) => (
-                    <motion.button
-                      key={color}
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setGlobalColor(color);
-                        selectColor(color);
-                      }}
-                      className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${
-                        selectedColor === color
+                </motion.div>
+              )}
+
+              {/* Color Selection for SongMay - Right after Add to Cart */}
+              {product.id === 'songmay-hair-clips' && product.colors && product.colors.length > 0 && (
+                <motion.div
+                  className="mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">COLOUR</span>
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-primary font-medium">
+                        Selected: {selectedColor}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <motion.button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setGlobalColor(color);
+                          selectColor(color);
+                        }}
+                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all duration-300 border-2 ${selectedColor === color
                           ? 'bg-gray-800 text-white border-gray-800 shadow-lg'
                           : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:shadow-md'
-                      }`}
-                      whileHover={{ scale: 1.02, y: -1, transition: { duration: 0.2 } }}
-                      whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                    >
-                      {color}
-                      {selectedColor === color && (
-                        <motion.div
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 300 }}
-                        />
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
+                          }`}
+                        whileHover={{ scale: 1.02, y: -1, transition: { duration: 0.2 } }}
+                        whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        {color}
+                        {selectedColor === color && (
+                          <motion.div
+                            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
 
-          {/* Right: Product Image Gallery */}
-          <motion.div
-            key={`product-image-${product.id}`}
-            className="order-1 md:order-2"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            {product.id === 'curly-clip-5' ? (
-              <CurlyClip5ImageGallery 
-                key={`curly-clip-5-gallery-${product.id}`} 
-                product={product}
-                selectedColor={selectedColor}
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id.startsWith('curly-') ? (
-              <CurlyHairCollectionImageGallery key={`curly-gallery-${product.id}`} product={product} />
-            ) : product.id === 'dreamcurl-original' ? (
-              <DreamCurlImageGallery 
-                key={`dreamcurl-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'dreamcurl-short-set' ? (
-              <ShortSetImageGallery 
-                key={`shortset-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'dreamcurl-midi' ? (
-              <MidiImageGallery 
-                key={`midi-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'dreamcurl-jumbo' ? (
-              <JumboImageGallery 
-                key={`jumbo-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'heatless-5' ? (
-              <BunBonsImageGallery 
-                key={`bunbons-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'zero-heat-mini' ? (
-              <ZeroHeatMiniImageGallery
-                key={`zeroheatmini-gallery-${product.id}`}
-                product={product}
-                selectedColor={selectedColor}
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'heatless-6' ? (
-              <BonnetImageGallery 
-                key={`bonnet-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : product.id === 'curly-clip-1' || product.id === 'curly-clip-6' || product.id === 'satin-scrunchies-french-5pc' ? (
-              <CurlyHairCollectionImageGallery 
-                key={`hairclip-gallery-${product.id}`}
-                product={product}
-                selectedSize={selectedSize}
-                setSelectedSize={setSelectedSize}
-              />
-            ) : product.id === 'songmay-hair-clips' ? (
-              <SongMayImageGallery 
-                key={`songmay-gallery-${product.id}`}
-                product={product} 
-                selectedColor={selectedColor} 
-                onColorSelect={setSelectedColor}
-              />
-            ) : (
+            {/* Right: Product Image Gallery */}
             <motion.div
-              key={`product-img-${product.id}`}
-              className="relative"
+              key={`product-image-${product.id}`}
+              className="order-1 md:order-2"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Cleaner container for products without custom galleries */}
-              <div className="relative rounded-3xl">
-                <ProductImage
-                  src={product.image}
-                  alt={product.name}
-                  className={`w-full ${product.id === 'curlea-comb' ? 'h-[520px]' : 'h-auto'} object-contain rounded-2xl`}
-                  priority={true}
-                  productId={product.id}
+              {product.id === 'curly-clip-5' ? (
+                <CurlyClip5ImageGallery
+                  key={`curly-clip-5-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
                 />
-              </div>
-            </motion.div>
-            )}
-          </motion.div>
-        </div>
-
-        {/* 1. The "Media Showcase" Section - Elegant 3-column layout */}
-        {product.id !== 'curly-claw-1' && product.id !== 'songmay-hair-clips' && (
-          <MediaShowcaseSection key={`media-${product.id}`} product={product} />
-        )}
-
-        {/* Usage Steps Section - for all products with usageSteps */}
-        {product.usageSteps && (
-          <UsageStepsSection key={`usage-${product.id}`} product={product} />
-        )}
-
-        {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
-        {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && product.id !== 'satin-scrunchies-french-5pc' && (
-          <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
-        )}
-
-        {/* 5. Frequently Bought Together (LIMITED TIME OFFER | STARTER KIT) - All Pages */}
-        <FrequentlyBoughtTogetherSection key={`fbt-${product.id}`} product={product} />
-
-
-        {/* Size Guide Section - Only for DreamCurl Short Set */}
-        {product.id === 'dreamcurl-short-set' && (
-          <motion.section
-            className="py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            <div className="max-w-6xl mx-auto">
-              <motion.div
-                className="text-center mb-16"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                  Choose Your Perfect Size
-                </h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Find the ideal DreamCurl size for your hair length and desired curl style
-                </p>
-              </motion.div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Short Set */}
+              ) : product.id.startsWith('curly-') ? (
+                <CurlyHairCollectionImageGallery key={`curly-gallery-${product.id}`} product={product} />
+              ) : product.id === 'dreamcurl-original' ? (
+                <DreamCurlImageGallery
+                  key={`dreamcurl-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'dreamcurl-short-set' ? (
+                <ShortSetImageGallery
+                  key={`shortset-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'dreamcurl-midi' ? (
+                <MidiImageGallery
+                  key={`midi-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'dreamcurl-jumbo' ? (
+                <JumboImageGallery
+                  key={`jumbo-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'heatless-5' ? (
+                <BunBonsImageGallery
+                  key={`bunbons-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'zero-heat-mini' ? (
+                <ZeroHeatMiniImageGallery
+                  key={`zeroheatmini-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'heatless-6' ? (
+                <BonnetImageGallery
+                  key={`bonnet-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : product.id === 'curly-clip-1' || product.id === 'curly-clip-6' || product.id === 'satin-scrunchies-french-5pc' ? (
+                <CurlyHairCollectionImageGallery
+                  key={`hairclip-gallery-${product.id}`}
+                  product={product}
+                  selectedSize={selectedSize}
+                  setSelectedSize={setSelectedSize}
+                />
+              ) : product.id === 'songmay-hair-clips' ? (
+                <SongMayImageGallery
+                  key={`songmay-gallery-${product.id}`}
+                  product={product}
+                  selectedColor={selectedColor}
+                  onColorSelect={setSelectedColor}
+                />
+              ) : (
                 <motion.div
-                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border-2 border-primary shadow-lg overflow-hidden group"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1, duration: 0.6 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.05, y: -10 }}
+                  key={`product-img-${product.id}`}
+                  className="relative"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold">
-                    YOU'RE HERE
-                  </div>
-                  <div className="text-center mb-6">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                      <span className="text-3xl font-bold text-white">S</span>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2">Short Set</h3>
-                    <p className="text-sm text-muted-foreground">Compact & Versatile</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
-                      <p className="text-sm text-muted-foreground">Short to medium hair (shoulder length and above)</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
-                      <p className="text-sm text-muted-foreground">Tighter, bouncier curls with more definition</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
-                      <p className="text-sm text-muted-foreground">4-6 hours or overnight</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
-                      <p className="text-sm text-muted-foreground">Want long-lasting, defined curls with maximum hold</p>
-                    </div>
+                  {/* Cleaner container for products without custom galleries */}
+                  <div className="relative rounded-3xl">
+                    <ProductImage
+                      src={product.image}
+                      alt={product.name}
+                      className={`w-full ${product.id === 'curlea-comb' ? 'h-[520px]' : 'h-auto'} object-contain rounded-2xl`}
+                      priority={true}
+                      productId={product.id}
+                    />
                   </div>
                 </motion.div>
+              )}
+            </motion.div>
+          </div>
 
-                {/* Original/Midi Set */}
+          {/* 1. The "Media Showcase" Section - Elegant 3-column layout */}
+          {product.id !== 'curly-claw-1' && product.id !== 'songmay-hair-clips' && (
+            <MediaShowcaseSection key={`media-${product.id}`} product={product} />
+          )}
+
+          {/* Usage Steps Section - for all products with usageSteps */}
+          {product.usageSteps && (
+            <UsageStepsSection key={`usage-${product.id}`} product={product} />
+          )}
+
+          {/* 3. The "Science & Soul" Ingredient Spotlight - Only for specific products */}
+          {!product.id.startsWith('heatless-') && !product.id.startsWith('dreamcurl-') && !product.id.startsWith('curly-') && product.id !== 'curlea-comb' && product.id !== 'songmay-hair-clips' && product.id !== 'zero-heat-mini' && product.id !== 'satin-scrunchies-french-5pc' && (
+            <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
+          )}
+
+          {/* 5. Black Friday Exclusive Section */}
+          <BlackFridaySection key={`black-friday-${product.id}`} product={product} />
+
+
+          {/* Size Guide Section - Only for DreamCurl Short Set */}
+          {product.id === 'dreamcurl-short-set' && (
+            <motion.section
+              className="py-24 px-6 bg-gradient-to-b from-muted/20 to-background"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, margin: "-100px" }}
+            >
+              <div className="max-w-6xl mx-auto">
                 <motion.div
-                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
+                  className="text-center mb-16"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.05, y: -10 }}
                 >
-                  <div className="text-center mb-6">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-white">M</span>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2">Midi Set</h3>
-                    <p className="text-sm text-muted-foreground">Balanced & Popular</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
-                      <p className="text-sm text-muted-foreground">Medium to long hair (shoulder to mid-back)</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
-                      <p className="text-sm text-muted-foreground">Medium curls with beautiful bounce and volume</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
-                      <p className="text-sm text-muted-foreground">6-8 hours for best results</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
-                      <p className="text-sm text-muted-foreground">Want versatile curls that last all day</p>
-                    </div>
-                  </div>
+                  <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                    Choose Your Perfect Size
+                  </h2>
+                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                    Find the ideal DreamCurl size for your hair length and desired curl style
+                  </p>
                 </motion.div>
 
-                {/* Original Set */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Short Set */}
+                  <motion.div
+                    className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border-2 border-primary shadow-lg overflow-hidden group"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                  >
+                    <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold">
+                      YOU'RE HERE
+                    </div>
+                    <div className="text-center mb-6">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white">S</span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">Short Set</h3>
+                      <p className="text-sm text-muted-foreground">Compact & Versatile</p>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Best For:</p>
+                        <p className="text-sm text-muted-foreground">Short to medium hair (shoulder length and above)</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                        <p className="text-sm text-muted-foreground">Tighter, bouncier curls with more definition</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                        <p className="text-sm text-muted-foreground">4-6 hours or overnight</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                        <p className="text-sm text-muted-foreground">Want long-lasting, defined curls with maximum hold</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Original/Midi Set */}
+                  <motion.div
+                    className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                  >
+                    <div className="text-center mb-6">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white">M</span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">Midi Set</h3>
+                      <p className="text-sm text-muted-foreground">Balanced & Popular</p>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Best For:</p>
+                        <p className="text-sm text-muted-foreground">Medium to long hair (shoulder to mid-back)</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                        <p className="text-sm text-muted-foreground">Medium curls with beautiful bounce and volume</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                        <p className="text-sm text-muted-foreground">6-8 hours for best results</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                        <p className="text-sm text-muted-foreground">Want versatile curls that last all day</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Original Set */}
+                  <motion.div
+                    className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                  >
+                    <div className="text-center mb-6">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white">O</span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">Original Set</h3>
+                      <p className="text-sm text-muted-foreground">Soft & Voluminous</p>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Best For:</p>
+                        <p className="text-sm text-muted-foreground">Long to very long hair (mid-back and beyond)</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                        <p className="text-sm text-muted-foreground">Soft, loose waves with natural flow</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                        <p className="text-sm text-muted-foreground">6-8 hours or overnight</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                        <p className="text-sm text-muted-foreground">Want effortless, beachy waves with volume</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
                 <motion.div
-                  className="relative p-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg overflow-hidden group"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="text-center mt-12 p-6 bg-primary/10 rounded-2xl border border-primary/20"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.6 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.05, y: -10 }}
                 >
-                  <div className="text-center mb-6">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-white">O</span>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2">Original Set</h3>
-                    <p className="text-sm text-muted-foreground">Soft & Voluminous</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
-                      <p className="text-sm text-muted-foreground">Long to very long hair (mid-back and beyond)</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
-                      <p className="text-sm text-muted-foreground">Soft, loose waves with natural flow</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
-                      <p className="text-sm text-muted-foreground">6-8 hours or overnight</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
-                      <p className="text-sm text-muted-foreground">Want effortless, beachy waves with volume</p>
-                    </div>
-                  </div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    ?? <strong>Pro Tip:</strong> For tighter curls on longer hair, choose the Short Set. For looser waves on shorter hair, go with the Midi or Original Set.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Still unsure? The Short Set offers the most versatility for all hair types and lengths!
+                  </p>
                 </motion.div>
               </div>
+            </motion.section>
+          )}
 
-              <motion.div
-                className="text-center mt-12 p-6 bg-primary/10 rounded-2xl border border-primary/20"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <p className="text-sm text-muted-foreground mb-2">
-                  ?? <strong>Pro Tip:</strong> For tighter curls on longer hair, choose the Short Set. For looser waves on shorter hair, go with the Midi or Original Set.
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Still unsure? The Short Set offers the most versatility for all hair types and lengths!
-                </p>
-              </motion.div>
-            </div>
-          </motion.section>
-        )}
-        
         </div>
 
 
         {/* Complete Your Routine Section */}
         {relatedProducts.length > 0 && (
-          <motion.section 
+          <motion.section
             className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -2014,17 +2001,17 @@ export const ProductDetailPage = () => {
                   {product.id.startsWith('heatless-') || product.id === 'dreamcurl-original'
                     ? "Enhance your heatless styling with complementary products from our collections"
                     : product.id.startsWith('curly-')
-                    ? "Complete your curly hair care routine with our premium styling tools"
-                    : "Discover products that work perfectly together"
+                      ? "Complete your curly hair care routine with our premium styling tools"
+                      : "Discover products that work perfectly together"
                   }
                 </p>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <AnimatePresence mode="popLayout">
-            {relatedProducts.slice(0, 3).map((relatedProduct, index) => (
-              <motion.div
-                key={relatedProduct.id}
+                  {relatedProducts.slice(0, 3).map((relatedProduct, index) => (
+                    <motion.div
+                      key={relatedProduct.id}
                       className="w-full min-w-0"
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -2316,22 +2303,22 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setVideoError(false);
     setVideoLoaded(false);
     setLoadAttempted(false);
-    
+
     if (videoRef.current) {
       // Pause and reset
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
-      
+
       // Ensure DreamCurl Midi is always muted
       if (product.id === 'dreamcurl-midi') {
         videoRef.current.muted = true;
         videoRef.current.volume = 0;
       }
-      
+
       // Don't force load immediately - let intersection observer handle it
       videoRef.current.preload = 'none';
     }
-    
+
     // Cleanup function to prevent memory leaks
     return () => {
       if (videoRef.current) {
@@ -2346,7 +2333,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
   const isHeatlessProduct = product.id.startsWith('heatless-');
   const isDreamCurlProduct = product.id.startsWith('dreamcurl-');
   const isCurlyHairProduct = product.id.startsWith('curly-') || product.id === 'curlea-comb';
-  
+
   // Video event handlers with robust error handling
   const handleVideoLoad = () => {
     setIsVideoLoading(false);
@@ -2357,7 +2344,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     if (!(e.target instanceof HTMLVideoElement)) return;
-    
+
     // Clear loading state and set error
     setIsVideoLoading(false);
     setVideoError(true);
@@ -2370,56 +2357,56 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       networkState: videoElement.networkState,
       readyState: videoElement.readyState
     });
-    
+
     // Multiple retry attempts with exponential backoff
     const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
       if (attempt > maxAttempts) {
         console.error(`Failed to load video after ${maxAttempts} attempts for ${product.name}`);
         return;
       }
-      
+
       // Exponential backoff delay
       const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-      
+
       setTimeout(() => {
         if (!videoRef.current || !specialVideo) return;
-        
+
         console.log(`Retry attempt ${attempt}/${maxAttempts} for ${product.name}`);
-        
+
         // Full reset of video element
         videoRef.current.pause();
         videoRef.current.removeAttribute('src');
         videoRef.current.load();
-        
+
         // Try to preload first
         const preloadVideo = new Image();
         preloadVideo.src = specialVideo;
         preloadVideo.onload = () => {
           if (!videoRef.current) return;
-          
+
           // Set source and reload
           const source = videoRef.current.querySelector('source');
           if (source) {
             source.src = specialVideo;
             videoRef.current.load();
-            
+
             // Only set error handler for actual failures
             videoRef.current.onerror = () => {
               // Use a different source URL pattern on failure
               const fallbackUrl = specialVideo.replace('/videos/', '/fallback-videos/');
               source.src = fallbackUrl;
               videoRef.current?.load();
-              
+
               // If still fails, try next attempt
               videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
             };
           }
         };
-        
+
         preloadVideo.onerror = () => retryVideo(attempt + 1, maxAttempts);
       }, delay);
     };
-    
+
     // Start retry process
     retryVideo();
   };
@@ -2428,7 +2415,7 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
     setIsVideoLoading(false);
     setVideoLoaded(true);
     setVideoError(false);
-    
+
     // Auto-play when video is ready (with error handling)
     if (videoRef.current && isInView) {
       const playPromise = videoRef.current.play();
@@ -2465,53 +2452,53 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
       });
     }
   };
-  
+
   // Use product.video if available, otherwise use fallback video logic
-  const specialVideo = product.video ? product.video : 
-    (isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) 
+  const specialVideo = product.video ? product.video :
+    (isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct)
       ? product.id === 'dreamcurl-original'
         ? '/videos/dreamcurl-original-guide.mp4'
         : product.id === 'dreamcurl-midi'
-        ? '/videos/dreamcurl-midi-guide.mp4'
-        : product.id === 'dreamcurl-jumbo'
-        ? '/videos/dreamcurl-jumbo-guide.mp4'
-        : product.id === 'heatless-5'
-        ? '/videos/bun-bons-guide.mp4'
-        : product.id === 'heatless-6'
-        ? '/videos/bonnet-guide.mp4'
-        : '/videos/heatless-guide.mp4'
+          ? '/videos/dreamcurl-midi-guide.mp4'
+          : product.id === 'dreamcurl-jumbo'
+            ? '/videos/dreamcurl-jumbo-guide.mp4'
+            : product.id === 'heatless-5'
+              ? '/videos/bun-bons-guide.mp4'
+              : product.id === 'heatless-6'
+                ? '/videos/bonnet-guide.mp4'
+                : '/videos/heatless-guide.mp4'
       : product.id === 'curly-clip-1'
         ? '/videos/hair-clips-guide.mp4'
         : product.id === 'curly-scarf-1'
-        ? '/videos/satin-scarves-guide.mp4'
-        : product.id === 'curly-claw-1'
-        ? '/videos/claw-clips-guide.mp4'
-        : product.id === 'curlea-comb'
-        ? '/videos/curlea-comb-guide.mp4'
-        : null;
+          ? '/videos/satin-scarves-guide.mp4'
+          : product.id === 'curly-claw-1'
+            ? '/videos/claw-clips-guide.mp4'
+            : product.id === 'curlea-comb'
+              ? '/videos/curlea-comb-guide.mp4'
+              : null;
 
   // Simplified video loading when section comes into view
   useEffect(() => {
     if (isInView && videoRef.current && specialVideo && !loadAttempted) {
       setLoadAttempted(true);
-      
+
       const video = videoRef.current;
-      
+
       // Ensure DreamCurl Midi is always muted
       if (product.id === 'dreamcurl-midi') {
         video.muted = true;
         video.volume = 0;
       }
-      
+
       // Simple and reliable loading strategy
       video.preload = 'auto';
       video.load();
-      
+
       // Wait for video to be ready
       const handleCanPlayThrough = () => {
         setIsVideoLoading(false);
         setVideoLoaded(true);
-        
+
         // Try to play the video
         video.play()
           .then(() => {
@@ -2519,23 +2506,23 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
             console.log('Video autoplay successful for:', product.name);
           })
           .catch((error) => {
-        if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+            if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
               console.warn('Autoplay prevented for:', product.name, error);
             }
             setIsVideoPlaying(false);
             setIsVideoLoading(false);
           });
       };
-      
+
       // Set a timeout to hide loading state even if video doesn't fully load
       const loadingTimeout = setTimeout(() => {
         if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
           setIsVideoLoading(false);
         }
       }, 3000); // Hide loading after 3 seconds max
-      
+
       video.addEventListener('canplaythrough', handleCanPlayThrough);
-      
+
       return () => {
         video.removeEventListener('canplaythrough', handleCanPlayThrough);
         clearTimeout(loadingTimeout);
@@ -2559,164 +2546,163 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                {isHeatlessProduct 
-                  ? product.id === 'heatless-5' ? "BUN BONS in Motion" 
-                    : product.id === 'heatless-6' ? "Peau de Soie Bonnet in Action"
-                    : "Heatless Curling in Motion"
-                  : isCurlyHairProduct
-                  ? product.id === 'curly-clip-1' ? "Hair Clips in Action" 
-                    : product.id === 'curly-scarf-1' ? "Satin Scarves in Action"
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            {isHeatlessProduct
+              ? product.id === 'heatless-5' ? "BUN BONS in Motion"
+                : product.id === 'heatless-6' ? "Peau de Soie Bonnet in Action"
+                  : "Heatless Curling in Motion"
+              : isCurlyHairProduct
+                ? product.id === 'curly-clip-1' ? "Hair Clips in Action"
+                  : product.id === 'curly-scarf-1' ? "Satin Scarves in Action"
                     : product.id === 'curly-claw-1' ? "Hair Claw Clips in Action"
-                    : "Hair Accessories in Action"
-                  : "The Curlea Ritual in Motion"
-                }
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4 sm:px-0">
-                {isHeatlessProduct 
-                  ? product.id === 'heatless-5'
-                    ? "Experience the revolutionary BUN BONS system - the innovation that transformed heatless hairstyling. Watch how our unique curling system creates overnight blowout-style volume with exceptional comfort."
-                    : product.id === 'heatless-6'
-                    ? "Discover the luxurious comfort and protection of our Peau de Soie XL Overnight Bonnet. Watch how this premium sleep cap preserves your hairstyle while providing ultimate comfort throughout the night."
-                    : "Watch how to achieve beautiful, damage-free curls with our innovative heatless curling rod."
-                  : isCurlyHairProduct
-                  ? product.id === 'curly-clip-1' 
-                    ? "See how our comfortable curved resin hair clips work their magic for secure and stylish hair styling."
-                    : product.id === 'curly-scarf-1'
+                      : "Hair Accessories in Action"
+                : "The Curlea Ritual in Motion"
+            }
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4 sm:px-0">
+            {isHeatlessProduct
+              ? product.id === 'heatless-5'
+                ? "Experience the revolutionary BUN BONS system - the innovation that transformed heatless hairstyling. Watch how our unique curling system creates overnight blowout-style volume with exceptional comfort."
+                : product.id === 'heatless-6'
+                  ? "Discover the luxurious comfort and protection of our Peau de Soie XL Overnight Bonnet. Watch how this premium sleep cap preserves your hairstyle while providing ultimate comfort throughout the night."
+                  : "Watch how to achieve beautiful, damage-free curls with our innovative heatless curling rod."
+              : isCurlyHairProduct
+                ? product.id === 'curly-clip-1'
+                  ? "See how our comfortable curved resin hair clips work their magic for secure and stylish hair styling."
+                  : product.id === 'curly-scarf-1'
                     ? "Discover how our elegant satin hair bands and scrunchies protect and style your hair beautifully."
                     : product.id === 'curly-claw-1'
-                    ? "Watch how our fashion-forward geometric hair claw clips provide secure hold with elegant style."
-                    : "Experience how our premium hair accessories transform your styling routine."
-                  : "Experience the transformative power of our products as they work their magic on your hair."
-                }
-              </p>
+                      ? "Watch how our fashion-forward geometric hair claw clips provide secure hold with elegant style."
+                      : "Experience how our premium hair accessories transform your styling routine."
+                : "Experience the transformative power of our products as they work their magic on your hair."
+            }
+          </p>
         </motion.div>
 
-            <motion.div
-              className={`relative rounded-2xl overflow-hidden shadow-2xl w-full ${
-                (isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo 
-                  ? "aspect-[16/10] sm:aspect-[16/10] min-h-[250px] sm:min-h-[400px] md:min-h-[500px]" 
-                  : "aspect-video"
-              }`}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-            >
-              {(isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo ? (
-                <>
-                  {/* Actual Video for Special Products */}
-                  <video
-                    ref={videoRef}
-                    className="w-full h-full object-cover sm:object-contain bg-gray-900"
-                    preload="none"
-                    playsInline
-                    webkit-playsinline="true"
-                    x5-playsinline="true"
-                    disablePictureInPicture
-                    controlsList="nodownload noplaybackrate"
-                    controls={product.id === 'dreamcurl-midi' ? false : isVideoPlaying}
-                    muted
-                    loop
-                    onLoadStart={handleVideoLoadStart}
-                    onLoadedData={handleVideoLoad}
-                    onCanPlay={handleVideoCanPlay}
-                    onError={handleVideoError}
-                    onPlay={() => setIsVideoPlaying(true)}
-                    onPause={() => setIsVideoPlaying(false)}
-                    onVolumeChange={(e) => {
-                      // Force mute for DreamCurl Midi
-                      if (product.id === 'dreamcurl-midi' && e.currentTarget) {
-                        e.currentTarget.muted = true;
-                        e.currentTarget.volume = 0;
-                      }
-                    }}
+        <motion.div
+          className={`relative rounded-2xl overflow-hidden shadow-2xl w-full ${(isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo
+            ? "aspect-[16/10] sm:aspect-[16/10] min-h-[250px] sm:min-h-[400px] md:min-h-[500px]"
+            : "aspect-video"
+            }`}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
+          {(isHeatlessProduct || isDreamCurlProduct || isCurlyHairProduct) && specialVideo ? (
+            <>
+              {/* Actual Video for Special Products */}
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover sm:object-contain bg-gray-900"
+                preload="none"
+                playsInline
+                webkit-playsinline="true"
+                x5-playsinline="true"
+                disablePictureInPicture
+                controlsList="nodownload noplaybackrate"
+                controls={product.id === 'dreamcurl-midi' ? false : isVideoPlaying}
+                muted
+                loop
+                onLoadStart={handleVideoLoadStart}
+                onLoadedData={handleVideoLoad}
+                onCanPlay={handleVideoCanPlay}
+                onError={handleVideoError}
+                onPlay={() => setIsVideoPlaying(true)}
+                onPause={() => setIsVideoPlaying(false)}
+                onVolumeChange={(e) => {
+                  // Force mute for DreamCurl Midi
+                  if (product.id === 'dreamcurl-midi' && e.currentTarget) {
+                    e.currentTarget.muted = true;
+                    e.currentTarget.volume = 0;
+                  }
+                }}
+              >
+                <source src={specialVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+
+              {/* Loading Overlay */}
+              {isVideoLoading && (
+                <motion.div
+                  className="absolute inset-0 bg-black/50 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <motion.div
+                    className="flex flex-col items-center gap-4"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                   >
-                    <source src={specialVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  
-                  {/* Loading Overlay */}
-                  {isVideoLoading && (
-                    <motion.div
-                      className="absolute inset-0 bg-black/50 flex items-center justify-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <motion.div
-                        className="flex flex-col items-center gap-4"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      >
-                        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full" />
-                        <p className="text-white text-sm">Loading video...</p>
-                      </motion.div>
-                    </motion.div>
-                  )}
+                    <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full" />
+                    <p className="text-white text-sm">Loading video...</p>
+                  </motion.div>
+                </motion.div>
+              )}
 
-                  {/* Error Overlay */}
-                  {videoError && (
-                    <motion.div
-                      className="absolute inset-0 bg-black/70 flex items-center justify-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
+              {/* Error Overlay */}
+              {videoError && (
+                <motion.div
+                  className="absolute inset-0 bg-black/70 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="text-center text-white">
+                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm mb-4">Video failed to load</p>
+                    <button
+                      onClick={() => {
+                        setVideoError(false);
+                        setIsVideoLoading(true);
+                        if (videoRef.current) {
+                          videoRef.current.load();
+                        }
+                      }}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
                     >
-                      <div className="text-center text-white">
-                        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                          </svg>
-                        </div>
-                        <p className="text-sm mb-4">Video failed to load</p>
-                        <button
-                          onClick={() => {
-                            setVideoError(false);
-                            setIsVideoLoading(true);
-                            if (videoRef.current) {
-                              videoRef.current.load();
-                            }
-                          }}
-                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                        >
-                          Retry
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Play Button Overlay (when not playing and video is loaded) */}
-                  {!isVideoPlaying && !isVideoLoading && !videoError && videoLoaded && (
-                    <motion.div
-                      className="absolute inset-0 bg-black/30 flex items-center justify-center cursor-pointer"
-                      onClick={handleVideoPlay}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <motion.div
-                        className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Play className="w-8 h-8 text-white ml-1" />
-                      </motion.div>
-                    </motion.div>
-                  )}
-                  
-                  {/* Video controls overlay */}
-                  <div className="absolute bottom-6 left-6 text-white">
-                    <p className="text-sm opacity-80">
-                      {isHeatlessProduct 
-                        ? "Watch the heatless curling technique"
-                        : isCurlyHairProduct
-                        ? product.id === 'curly-clip-1' ? "See the hair clips in action" : "See the satin scarves in action"
-                        : "Experience the product"
-                      }
-                    </p>
+                      Retry
+                    </button>
                   </div>
-                </>
-              ) : (
+                </motion.div>
+              )}
+
+              {/* Play Button Overlay (when not playing and video is loaded) */}
+              {!isVideoPlaying && !isVideoLoading && !videoError && videoLoaded && (
+                <motion.div
+                  className="absolute inset-0 bg-black/30 flex items-center justify-center cursor-pointer"
+                  onClick={handleVideoPlay}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <motion.div
+                    className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Play className="w-8 h-8 text-white ml-1" />
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Video controls overlay */}
+              <div className="absolute bottom-6 left-6 text-white">
+                <p className="text-sm opacity-80">
+                  {isHeatlessProduct
+                    ? "Watch the heatless curling technique"
+                    : isCurlyHairProduct
+                      ? product.id === 'curly-clip-1' ? "See the hair clips in action" : "See the satin scarves in action"
+                      : "Experience the product"
+                  }
+                </p>
+              </div>
+            </>
+          ) : (
             <>
               {/* Placeholder for other products */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/30 to-primary/20 flex items-center justify-center">
@@ -2728,10 +2714,10 @@ const RitualInMotionSection = ({ product }: { product: Product }) => {
                   <Play className="w-8 h-8 text-white ml-1" />
                 </motion.div>
               </div>
-              
+
               {/* Video overlay with product application scene */}
               <div className="absolute inset-0 bg-black/20" />
-              
+
               {/* Video controls overlay */}
               <div className="absolute bottom-6 left-6 text-white">
                 <p className="text-sm opacity-80">Experience the Curlea ritual</p>
@@ -2815,31 +2801,31 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
       image: stepImages[8] || product.image
     }
   ] : product.id.startsWith('curly-') ? [] : [
-      {
-        number: 1,
-        title: "Emulsify",
-        description: "Warm a small amount between your palms to activate the luxurious texture.",
-        image: product.image
-      },
-      {
-        number: 2,
-        title: "Apply",
-        description: "Gently work through damp hair, focusing on mid-lengths to ends for optimal absorption.",
-        image: product.image
-      },
-      {
-        number: 3,
-        title: "Define",
-        description: "Use your fingers or a wide-tooth comb to shape and define your natural pattern.",
-        image: product.image
-      },
-      {
-        number: 4,
-        title: "Air Dry",
-        description: "Allow to dry naturally for the most beautiful, defined results that last all day.",
-        image: product.image
-      }
-    ];
+    {
+      number: 1,
+      title: "Emulsify",
+      description: "Warm a small amount between your palms to activate the luxurious texture.",
+      image: product.image
+    },
+    {
+      number: 2,
+      title: "Apply",
+      description: "Gently work through damp hair, focusing on mid-lengths to ends for optimal absorption.",
+      image: product.image
+    },
+    {
+      number: 3,
+      title: "Define",
+      description: "Use your fingers or a wide-tooth comb to shape and define your natural pattern.",
+      image: product.image
+    },
+    {
+      number: 4,
+      title: "Air Dry",
+      description: "Allow to dry naturally for the most beautiful, defined results that last all day.",
+      image: product.image
+    }
+  ];
 
   // Don't render if there are no steps
   if (steps.length === 0) {
@@ -2857,304 +2843,295 @@ const InteractiveStepGuide = ({ product }: { product: Product }) => {
       {/* Enhanced 3D section background */}
       <div className="absolute inset-0 bg-white/80 dark:bg-white/5 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl" />
       <div className="relative z-10">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            {isHeatlessProduct ? "How to Use It: Step-by-Step Guide" : "Your Perfect Ritual"}
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {isHeatlessProduct 
-              ? "Here is a detailed guide on how to use the heatless curling rod for the best results."
-              : `Follow these simple steps to unlock the full potential of your ${product.name}.`
-            }
-          </p>
-        </motion.div>
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">
+              {isHeatlessProduct ? "How to Use It: Step-by-Step Guide" : "Your Perfect Ritual"}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              {isHeatlessProduct
+                ? "Here is a detailed guide on how to use the heatless curling rod for the best results."
+                : `Follow these simple steps to unlock the full potential of your ${product.name}.`
+              }
+            </p>
+          </motion.div>
 
-        {/* Elegant Interactive Digital Guide */}
-        {isHeatlessProduct ? (
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-              {/* Fixed Step Grid - Left Side (Desktop) / Top (Mobile) */}
-              <motion.div 
-                className="lg:col-span-2 space-y-4 order-2 lg:order-1"
+          {/* Elegant Interactive Digital Guide */}
+          {isHeatlessProduct ? (
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
+                {/* Fixed Step Grid - Left Side (Desktop) / Top (Mobile) */}
+                <motion.div
+                  className="lg:col-span-2 space-y-4 order-2 lg:order-1"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+                  transition={{ delay: 0.4, duration: 0.8 }}
+                >
+                  <div className="lg:sticky lg:top-8">
+                    <h3 className="text-2xl font-semibold text-muted-foreground mb-8 tracking-wide">
+                      Step Guide
+                    </h3>
+
+                    {/* Step Navigation Grid */}
+                    <div className="space-y-2 sm:space-y-3">
+                      {steps.map((step, index) => (
+                        <motion.button
+                          key={step.number}
+                          className={`w-full text-left p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-500 group ${activeStep === index
+                            ? "border-primary bg-primary/5 shadow-lg"
+                            : "border-muted/30 bg-background hover:border-primary/50 hover:bg-primary/2"
+                            }`}
+                          onClick={() => setActiveStep(index)}
+                          whileHover={{ x: 8, transition: { duration: 0.2 } }}
+                          whileTap={{ scale: 0.98 }}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                          transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
+                        >
+                          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                            {/* Step Number Circle */}
+                            <motion.div
+                              className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 ${activeStep === index
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground"
+                                }`}
+                              animate={{
+                                scale: activeStep === index ? 1.1 : 1,
+                              }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {step.number}
+                            </motion.div>
+
+                            {/* Step Title */}
+                            <div className="flex-1">
+                              <h4 className={`text-sm sm:text-base lg:text-lg font-semibold transition-colors duration-300 ${activeStep === index ? "text-primary" : "text-foreground"
+                                }`}>
+                                {step.title}
+                              </h4>
+                            </div>
+
+                            {/* Active Indicator */}
+                            {activeStep === index && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.1, duration: 0.3 }}
+                                className="w-2 h-2 bg-primary rounded-full"
+                              />
+                            )}
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Dynamic Content Reveal Area - Right Side (Desktop) / Top (Mobile) */}
+                <motion.div
+                  className="lg:col-span-3 order-1 lg:order-2"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                >
+                  <div className="lg:sticky lg:top-8">
+                    {/* Step Header */}
+                    <motion.div
+                      key={`header-${activeStep}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="mb-8"
+                    >
+                      <div className="flex items-center gap-4 mb-4">
+                        <motion.div
+                          className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl shadow-lg"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 0.6, ease: "backOut" }}
+                        >
+                          {steps[activeStep].number}
+                        </motion.div>
+                        <h2 className="text-2xl lg:text-4xl font-bold text-foreground">
+                          {steps[activeStep].title}
+                        </h2>
+                      </div>
+                    </motion.div>
+
+                    {/* Dynamic Image Display */}
+                    <motion.div
+                      key={`image-${activeStep}`}
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.7, ease: "easeOut" }}
+                      className="mb-8"
+                    >
+                      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-muted/20 to-muted/5">
+                        <motion.img
+                          src={steps[activeStep].image}
+                          alt={`Step ${steps[activeStep].number}: ${steps[activeStep].title}`}
+                          className="w-full h-full object-cover"
+                          initial={{ scale: 1.1 }}
+                          animate={{ scale: 1 }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                        />
+
+                        {/* Elegant Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                      </div>
+                    </motion.div>
+
+                    {/* Dynamic Text Content */}
+                    <motion.div
+                      key={`content-${activeStep}`}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="prose prose-lg max-w-none"
+                    >
+                      <p className="text-lg leading-relaxed text-muted-foreground mb-8">
+                        {steps[activeStep].description}
+                      </p>
+                    </motion.div>
+
+                    {/* Navigation Arrows */}
+                    <motion.div
+                      className="flex flex-col sm:flex-row items-center justify-between gap-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                      <motion.button
+                        className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all duration-300 ${activeStep === 0
+                          ? "border-muted/30 text-muted-foreground cursor-not-allowed"
+                          : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary"
+                          }`}
+                        onClick={() => activeStep > 0 && setActiveStep(activeStep - 1)}
+                        disabled={activeStep === 0}
+                        whileHover={activeStep > 0 ? { scale: 1.05 } : {}}
+                        whileTap={activeStep > 0 ? { scale: 0.95 } : {}}
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                        Previous Step
+                      </motion.button>
+
+                      <span className="text-sm text-muted-foreground">
+                        Step {activeStep + 1} of {steps.length}
+                      </span>
+
+                      <motion.button
+                        className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all duration-300 ${activeStep === steps.length - 1
+                          ? "border-muted/30 text-muted-foreground cursor-not-allowed"
+                          : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary"
+                          }`}
+                        onClick={() => activeStep < steps.length - 1 && setActiveStep(activeStep + 1)}
+                        disabled={activeStep === steps.length - 1}
+                        whileHover={activeStep < steps.length - 1 ? { scale: 1.05 } : {}}
+                        whileTap={activeStep < steps.length - 1 ? { scale: 0.95 } : {}}
+                      >
+                        Next Step
+                        <ArrowLeft className="w-5 h-5 rotate-180" />
+                      </motion.button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          ) : (
+            // Regular Products - 2 Column Layout with Visual
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Visual */}
+              <motion.div
+                className="relative"
                 initial={{ opacity: 0, x: -50 }}
                 animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
               >
-                <div className="lg:sticky lg:top-8">
-                  <h3 className="text-2xl font-semibold text-muted-foreground mb-8 tracking-wide">
-                    Step Guide
-                  </h3>
-                  
-                  {/* Step Navigation Grid */}
-                  <div className="space-y-2 sm:space-y-3">
-                    {steps.map((step, index) => (
-                      <motion.button
-                        key={step.number}
-                        className={`w-full text-left p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-500 group ${
-                          activeStep === index
-                            ? "border-primary bg-primary/5 shadow-lg"
-                            : "border-muted/30 bg-background hover:border-primary/50 hover:bg-primary/2"
-                        }`}
-                        onClick={() => setActiveStep(index)}
-                        whileHover={{ x: 8, transition: { duration: 0.2 } }}
-                        whileTap={{ scale: 0.98 }}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                        transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                      >
-                        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-                          {/* Step Number Circle */}
-                          <motion.div
-                            className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 ${
-                              activeStep === index
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
-                            }`}
-                            animate={{
-                              scale: activeStep === index ? 1.1 : 1,
-                            }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            {step.number}
-                          </motion.div>
-                          
-                          {/* Step Title */}
-                          <div className="flex-1">
-                            <h4 className={`text-sm sm:text-base lg:text-lg font-semibold transition-colors duration-300 ${
-                              activeStep === index ? "text-primary" : "text-foreground"
-                            }`}>
-                              {step.title}
-                            </h4>
-                          </div>
-
-                          {/* Active Indicator */}
-                          {activeStep === index && (
-                            <motion.div
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.1, duration: 0.3 }}
-                              className="w-2 h-2 bg-primary rounded-full"
-                            />
-                          )}
-                        </div>
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Dynamic Content Reveal Area - Right Side (Desktop) / Top (Mobile) */}
-              <motion.div 
-                className="lg:col-span-3 order-1 lg:order-2"
-                initial={{ opacity: 0, x: 50 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-              >
-                <div className="lg:sticky lg:top-8">
-                  {/* Step Header */}
-                  <motion.div
-                    key={`header-${activeStep}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="mb-8"
-                  >
-                    <div className="flex items-center gap-4 mb-4">
-                      <motion.div
-                        className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl shadow-lg"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 0.6, ease: "backOut" }}
-                      >
-                        {steps[activeStep].number}
-                      </motion.div>
-                      <h2 className="text-2xl lg:text-4xl font-bold text-foreground">
-                        {steps[activeStep].title}
-                      </h2>
-                    </div>
-                  </motion.div>
-
-                  {/* Dynamic Image Display */}
-                  <motion.div
-                    key={`image-${activeStep}`}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                    className="mb-8"
-                  >
-                    <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-muted/20 to-muted/5">
+                <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
                   <motion.img
-                        src={steps[activeStep].image}
-                        alt={`Step ${steps[activeStep].number}: ${steps[activeStep].title}`}
-                        className="w-full h-full object-cover"
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                      />
-                      
-                      {/* Elegant Overlay Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                    src={steps[activeStep].image}
+                    alt={`Step ${activeStep + 1}`}
+                    className="w-full h-full object-cover"
+                    key={activeStep}
+                    initial={{ scale: 1.1, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
                 </div>
-                  </motion.div>
 
-                  {/* Dynamic Text Content */}
-                  <motion.div
-                    key={`content-${activeStep}`}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="prose prose-lg max-w-none"
-                  >
-                    <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-                      {steps[activeStep].description}
-                    </p>
-                  </motion.div>
-
-                  {/* Navigation Arrows */}
-                  <motion.div
-                    className="flex flex-col sm:flex-row items-center justify-between gap-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                  >
-                    <motion.button
-                      className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all duration-300 ${
-                        activeStep === 0
-                          ? "border-muted/30 text-muted-foreground cursor-not-allowed"
-                          : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary"
-                      }`}
-                      onClick={() => activeStep > 0 && setActiveStep(activeStep - 1)}
-                      disabled={activeStep === 0}
-                      whileHover={activeStep > 0 ? { scale: 1.05 } : {}}
-                      whileTap={activeStep > 0 ? { scale: 0.95 } : {}}
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                      Previous Step
-                    </motion.button>
-
-                    <span className="text-sm text-muted-foreground">
-                      Step {activeStep + 1} of {steps.length}
-                    </span>
-
-                    <motion.button
-                      className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all duration-300 ${
-                        activeStep === steps.length - 1
-                          ? "border-muted/30 text-muted-foreground cursor-not-allowed"
-                          : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary"
-                      }`}
-                      onClick={() => activeStep < steps.length - 1 && setActiveStep(activeStep + 1)}
-                      disabled={activeStep === steps.length - 1}
-                      whileHover={activeStep < steps.length - 1 ? { scale: 1.05 } : {}}
-                      whileTap={activeStep < steps.length - 1 ? { scale: 0.95 } : {}}
-                    >
-                      Next Step
-                      <ArrowLeft className="w-5 h-5 rotate-180" />
-                    </motion.button>
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        ) : (
-          // Regular Products - 2 Column Layout with Visual
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Visual */}
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: -50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-            >
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
-                <motion.img
-                  src={steps[activeStep].image}
-                  alt={`Step ${activeStep + 1}`}
-                  className="w-full h-full object-cover"
-                  key={activeStep}
-                  initial={{ scale: 1.1, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                />
-              </div>
-              
-              {/* Floating step indicator */}
-              <motion.div
-                className="absolute -top-6 -right-6 w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl shadow-lg"
-                initial={{ scale: 0, rotate: -180 }}
-                animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
-                transition={{ delay: 0.6, duration: 0.8, ease: "backOut" }}
-              >
-                {activeStep + 1}
-              </motion.div>
-            </motion.div>
-
-            {/* Right: Steps */}
-            <div className="space-y-4 sm:space-y-6">
-              {steps.map((step, index) => (
+                {/* Floating step indicator */}
                 <motion.div
-                  key={step.number}
-                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-500 cursor-pointer ${
-                    activeStep === index
+                  className="absolute -top-6 -right-6 w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl shadow-lg"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
+                  transition={{ delay: 0.6, duration: 0.8, ease: "backOut" }}
+                >
+                  {activeStep + 1}
+                </motion.div>
+              </motion.div>
+
+              {/* Right: Steps */}
+              <div className="space-y-4 sm:space-y-6">
+                {steps.map((step, index) => (
+                  <motion.div
+                    key={step.number}
+                    className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-500 cursor-pointer ${activeStep === index
                       ? 'border-primary bg-primary/5 shadow-lg'
                       : 'border-border/50 bg-background hover:border-primary/50'
-                  }`}
-                  onClick={() => setActiveStep(index)}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-                  transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <motion.div
-                      className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 ${
-                        activeStep === index
+                      }`}
+                    onClick={() => setActiveStep(index)}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+                    transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <motion.div
+                        className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 ${activeStep === index
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted text-muted-foreground'
-                      }`}
-                      animate={{
-                        scale: activeStep === index ? 1.1 : 1,
-                        rotate: activeStep === index ? 360 : 0
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {step.number}
-                    </motion.div>
-                    
-                    <div className="flex-1">
-                      <h3 className={`text-base sm:text-lg lg:text-xl font-semibold mb-2 transition-colors duration-300 ${
-                        activeStep === index ? 'text-primary' : 'text-foreground'
-                      }`}>
-                        {step.title}
-                  </h3>
-                      <p className={`text-sm sm:text-base transition-colors duration-300 ${
-                        activeStep === index ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
-                        {step.description}
-                      </p>
-                    </div>
-
-                    {activeStep === index && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, duration: 0.3 }}
+                          }`}
+                        animate={{
+                          scale: activeStep === index ? 1.1 : 1,
+                          rotate: activeStep === index ? 360 : 0
+                        }}
+                        transition={{ duration: 0.3 }}
                       >
-                        <CheckCircle className="w-6 h-6 text-primary" />
+                        {step.number}
                       </motion.div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+
+                      <div className="flex-1">
+                        <h3 className={`text-base sm:text-lg lg:text-xl font-semibold mb-2 transition-colors duration-300 ${activeStep === index ? 'text-primary' : 'text-foreground'
+                          }`}>
+                          {step.title}
+                        </h3>
+                        <p className={`text-sm sm:text-base transition-colors duration-300 ${activeStep === index ? 'text-foreground' : 'text-muted-foreground'
+                          }`}>
+                          {step.description}
+                        </p>
+                      </div>
+
+                      {activeStep === index && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2, duration: 0.3 }}
+                        >
+                          <CheckCircle className="w-6 h-6 text-primary" />
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       </div>
     </motion.section>
   );
@@ -3188,7 +3165,7 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
         soul: 'Nature\'s own building block for strong, healthy hair. Our keratin is derived from sustainable sources and processed using gentle methods that preserve its natural integrity and effectiveness.'
       },
     };
-    
+
     return ingredientMap[product.id] || ingredientMap['1'];
   };
 
@@ -3232,7 +3209,7 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             {/* Floating ingredient name */}
             <motion.div
               className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg"
@@ -3254,27 +3231,25 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
           >
             {/* Tab Navigation */}
             <div className="flex gap-2 p-2 bg-muted/30 rounded-xl">
-                  <motion.button
-                className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
-                  activeTab === 'science'
-                    ? 'bg-white text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+              <motion.button
+                className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${activeTab === 'science'
+                  ? 'bg-white text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 onClick={() => setActiveTab('science')}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <div className="flex items-center justify-center gap-2">
                   <Leaf className="w-5 h-5" />
                   The Science
                 </div>
-                  </motion.button>
+              </motion.button>
               <motion.button
-                className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
-                  activeTab === 'soul'
-                    ? 'bg-white text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all duration-300 ${activeTab === 'soul'
+                  ? 'bg-white text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 onClick={() => setActiveTab('soul')}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -3298,23 +3273,23 @@ const ScienceAndSoulSection = ({ product }: { product: Product }) => {
                 <p className="text-lg leading-relaxed text-foreground">
                   {activeTab === 'science' ? ingredient.science : ingredient.soul}
                 </p>
-                </div>
-              </motion.div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
-        </div>
+      </div>
     </motion.section>
   );
 };
 
 // Curly Hair Collection Image Gallery Component
-const CurlyHairCollectionImageGallery = ({ 
-  product, 
-  selectedSize, 
-  setSelectedSize 
-}: { 
-  product: Product; 
-  selectedSize?: string; 
+const CurlyHairCollectionImageGallery = ({
+  product,
+  selectedSize,
+  setSelectedSize
+}: {
+  product: Product;
+  selectedSize?: string;
   setSelectedSize?: (size: string) => void;
 }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -3359,23 +3334,23 @@ const CurlyHairCollectionImageGallery = ({
     // Only show the 2 specified images in main gallery
     new URL('../assets/curly hair collection/product5/candy&marchmello.webp', import.meta.url).href,
     new URL('../assets/curly hair collection/product5/olive&latte.webp4.webp', import.meta.url).href,
-    ] : product.id === 'curly-clip-6' ? [
-      // Images for Cream Coffee Hair Scrunchies Vintage from product6 folder only
-      new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href,
-    ] : product.id === 'curlea-comb' ? [
-      // Images for CURLEA Comb from product7 folder
-      new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
+  ] : product.id === 'curly-clip-6' ? [
+    // Images for Cream Coffee Hair Scrunchies Vintage from product6 folder only
+    new URL('../assets/curly hair collection/product6/placeholder.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/H2a4a1357fa684cb9b8e88b438e1511e8X.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/H49b2b312a2804aa492a955afc061a94cF.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/information.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product6/information1.webp', import.meta.url).href,
+  ] : product.id === 'curlea-comb' ? [
+    // Images for CURLEA Comb from product7 folder
+    new URL('../assets/curly hair collection/product7/product7.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/product7/Gemini_Generated_Image_vpzo3jvpzo3jvpzo.png', import.meta.url).href,
   ] : product.id === 'satin-scrunchies-french-5pc' ? [
-      // Images for Satin Scrunchies Luxury French 5 Piece
-      new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/scrunchies/scrunchiess.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/scrunchies/scrunchiesss.webp', import.meta.url).href,
-      new URL('../assets/curly hair collection/scrunchies/guide-scrunchies.webp', import.meta.url).href,
+    // Images for Satin Scrunchies Luxury French 5 Piece
+    new URL('../assets/curly hair collection/scrunchies/scrunchies.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/scrunchies/scrunchiess.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/scrunchies/scrunchiesss.webp', import.meta.url).href,
+    new URL('../assets/curly hair collection/scrunchies/guide-scrunchies.webp', import.meta.url).href,
   ] : [
     // Images for claw clips product
     new URL('../assets/curly hair collection/product3/ppp1.jpg', import.meta.url).href,
@@ -3422,11 +3397,11 @@ const CurlyHairCollectionImageGallery = ({
   useEffect(() => {
     if (product.id === 'curly-clip-1') {
       let imageIndex = 0; // default to 9-piece
-      
+
       if (selectedSize) {
         imageIndex = getImageIndexFromSize(selectedSize);
       }
-      
+
       setSelectedImageIndex(imageIndex);
     }
   }, [selectedSize, product.id]);
@@ -3435,11 +3410,10 @@ const CurlyHairCollectionImageGallery = ({
     <div className="space-y-4">
       {/* Main Image Display */}
       <motion.div
-        className={`relative overflow-hidden ${
-          product.id === 'curlea-comb' 
-            ? 'aspect-[4/3] rounded-xl bg-transparent' 
-            : 'aspect-square rounded-lg bg-muted'
-        }`}
+        className={`relative overflow-hidden ${product.id === 'curlea-comb'
+          ? 'aspect-[4/3] rounded-xl bg-transparent'
+          : 'aspect-square rounded-lg bg-muted'
+          }`}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -3450,46 +3424,43 @@ const CurlyHairCollectionImageGallery = ({
           className={product.id === 'curlea-comb' ? 'w-full h-[520px] object-contain' : 'object-cover'}
           priority={true}
         />
-        
+
         {/* Navigation Arrows */}
         {curlyHairImages.length > 1 && (
           <>
             <button
-              onClick={() => setSelectedImageIndex((prev) => 
+              onClick={() => setSelectedImageIndex((prev) =>
                 prev > 0 ? prev - 1 : curlyHairImages.length - 1
               )}
-              className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${
-                product.id === 'curlea-comb'
-                  ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
-                  : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
-              }`}
+              className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${product.id === 'curlea-comb'
+                ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
+                : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
+                }`}
               aria-label="Previous image"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => setSelectedImageIndex((prev) => 
+              onClick={() => setSelectedImageIndex((prev) =>
                 prev < curlyHairImages.length - 1 ? prev + 1 : 0
               )}
-              className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${
-                product.id === 'curlea-comb'
-                  ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
-                  : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
-              }`}
+              className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-colors touch-manipulation ${product.id === 'curlea-comb'
+                ? 'bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg'
+                : 'bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 active:bg-black/80'
+                }`}
               aria-label="Next image">
               <ChevronRight className="w-5 h-5" />
             </button>
           </>
         )}
-        
+
         {/* Image Counter */}
-        <div className={`absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs sm:text-sm ${
-          product.id === 'curlea-comb'
-            ? 'bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg'
-            : 'bg-black/50 backdrop-blur-sm text-white'
-        }`}>
+        <div className={`absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs sm:text-sm ${product.id === 'curlea-comb'
+          ? 'bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg'
+          : 'bg-black/50 backdrop-blur-sm text-white'
+          }`}>
           {selectedImageIndex + 1} / {curlyHairImages.length}
-      </div>
+        </div>
       </motion.div>
 
       {/* Thumbnail Gallery for curly-clip-6 and scrunchies - Always show thumbnails */}
@@ -3499,11 +3470,10 @@ const CurlyHairCollectionImageGallery = ({
             <button
               key={index}
               onClick={() => setSelectedImageIndex(index)}
-              className={`relative aspect-square rounded-xl overflow-hidden border transition-all duration-200 shadow-sm ${
-                selectedImageIndex === index
-                  ? 'border-primary/80 ring-1 ring-primary/20'
-                  : 'border-gray-200 hover:border-primary/40'
-              }`}
+              className={`relative aspect-square rounded-xl overflow-hidden border transition-all duration-200 shadow-sm ${selectedImageIndex === index
+                ? 'border-primary/80 ring-1 ring-primary/20'
+                : 'border-gray-200 hover:border-primary/40'
+                }`}
             >
               <OptimizedImage
                 src={imgSrc}
@@ -3519,12 +3489,12 @@ const CurlyHairCollectionImageGallery = ({
       {/* Thumbnail Gallery with Pagination - for other products with many images */}
       {product.id !== 'curly-clip-6' && product.id !== 'satin-scrunchies-french-5pc' && curlyHairImages.length > 6 && (
         <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-6 gap-2">
             {curlyHairImages.slice(thumbnailStartIndex, thumbnailStartIndex + 6).map((imgSrc, index) => {
-            const actualIndex = thumbnailStartIndex + index;
-            return (
+              const actualIndex = thumbnailStartIndex + index;
+              return (
                 <button
-                key={actualIndex}
+                  key={actualIndex}
                   onClick={() => {
                     setSelectedImageIndex(actualIndex);
                     // Update size selection for hair clip product
@@ -3539,11 +3509,10 @@ const CurlyHairCollectionImageGallery = ({
                       setSelectedSize(newSize);
                     }
                   }}
-                  className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-                  selectedImageIndex === actualIndex
-                      ? 'ring-2 ring-primary scale-105'
-                      : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-                  }`}
+                  className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${selectedImageIndex === actualIndex
+                    ? 'ring-2 ring-primary scale-105'
+                    : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+                    }`}
                 >
                   <OptimizedImage
                     src={imgSrc}
@@ -3551,7 +3520,7 @@ const CurlyHairCollectionImageGallery = ({
                     className="object-cover"
                     // placeholderSrc={placeholderImage}
                     priority={false}
-                  onError={(e) => {
+                    onError={(e) => {
                       console.error(`Failed to load thumbnail: ${imgSrc}`);
                       if (e.currentTarget) {
                         e.currentTarget.src = product.images?.[0] || '';
@@ -3559,9 +3528,9 @@ const CurlyHairCollectionImageGallery = ({
                     }}
                   />
                 </button>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
 
           {/* Pagination Controls */}
           <div className="flex items-center justify-between">
@@ -3593,8 +3562,8 @@ const CurlyHairCollectionImageGallery = ({
               Next Set <ChevronRight className="w-4 h-4 inline ml-1" />
             </motion.button>
           </div>
-          </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
@@ -3650,18 +3619,17 @@ const BunBonsImageGallery = ({ product, selectedColor, onColorSelect }: { produc
             <button
               key={color}
               onClick={() => onColorSelect(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                selectedColor === color
-                  ? 'border-primary shadow-lg'
-                  : 'border-gray-200 hover:border-primary/50'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedColor === color
+                ? 'border-primary shadow-lg'
+                : 'border-gray-200 hover:border-primary/50'
+                }`}
             >
               <img
                 src={getColorSpecificImage(color)}
                 alt={`${product.name} - ${color} color preview`}
                 className="w-full h-full object-cover"
               />
-              
+
               {selectedColor === color && (
                 <div className="absolute inset-0 bg-primary/20" />
               )}
@@ -3735,9 +3703,8 @@ const ZeroHeatMiniImageGallery = ({ product, selectedColor, onColorSelect }: { p
             <button
               key={color}
               onClick={() => handleColorClick(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-                selectedColor === color ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${selectedColor === color ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+                }`}
             >
               <ProductImage
                 src={getColorSpecificImage(color)}
@@ -3751,9 +3718,8 @@ const ZeroHeatMiniImageGallery = ({ product, selectedColor, onColorSelect }: { p
           {/* Guide thumbnail */}
           <button
             onClick={handleGuideClick}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              isViewingGuide ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-            }`}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${isViewingGuide ? 'ring-2 ring-primary scale-105' : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
           >
             <ProductImage
               src={miniImages.GUIDE}
@@ -3816,18 +3782,17 @@ const BonnetImageGallery = ({ product, selectedColor, onColorSelect }: { product
             <button
               key={color}
               onClick={() => onColorSelect(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                selectedColor === color
-                  ? 'border-primary shadow-lg'
-                  : 'border-gray-200 hover:border-primary/50'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedColor === color
+                ? 'border-primary shadow-lg'
+                : 'border-gray-200 hover:border-primary/50'
+                }`}
             >
               <img
                 src={getColorSpecificImage(color)}
                 alt={`${product.name} - ${color} color preview`}
-          className="w-full h-full object-cover"
+                className="w-full h-full object-cover"
               />
-              
+
               {selectedColor === color && (
                 <div className="absolute inset-0 bg-primary/20" />
               )}
@@ -3885,39 +3850,38 @@ const ShortSetImageGallery = ({ product, selectedColor, onColorSelect }: { produ
 
       {/* Thumbnail Gallery (original photos) */}
       {product.colors && product.colors.length > 0 && (
-      <div className="space-y-4">
-        <div className="text-center">
-          <span className="text-sm text-muted-foreground">Available Colors</span>
-        </div>
+        <div className="space-y-4">
+          <div className="text-center">
+            <span className="text-sm text-muted-foreground">Available Colors</span>
+          </div>
           <div className="grid grid-cols-4 gap-2">
             {product.colors.map((color, index) => (
-            <motion.button
-              key={color}
-              onClick={() => onColorSelect(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                selectedColor === color
+              <motion.button
+                key={color}
+                onClick={() => onColorSelect(color)}
+                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedColor === color
                   ? 'border-primary shadow-lg'
                   : 'border-gray-200 hover:border-primary/50'
-              }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
+                  }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
                 <ProductImage
-                src={getColorSpecificImage(color)}
-                alt={`${product.name} - ${color} color preview`}
+                  src={getColorSpecificImage(color)}
+                  alt={`${product.name} - ${color} color preview`}
                   className="w-full h-full"
                   productId={product.id}
                 />
-              {selectedColor === color && (
-                <div className="absolute inset-0 bg-primary/20" />
-              )}
-            </motion.button>
-          ))}
+                {selectedColor === color && (
+                  <div className="absolute inset-0 bg-primary/20" />
+                )}
+              </motion.button>
+            ))}
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
@@ -3974,9 +3938,8 @@ const CurlyClip5ImageGallery = ({ product, selectedColor, onColorSelect }: { pro
             <motion.button
               key={color}
               onClick={() => onColorSelect(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                current === color ? 'border-primary shadow-lg' : 'border-gray-200 hover:border-primary/50'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${current === color ? 'border-primary shadow-lg' : 'border-gray-200 hover:border-primary/50'
+                }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0, y: 20 }}
@@ -4029,10 +3992,10 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
   };
 
   // Get the current main image based on selected color or guide view
-  const currentMainImage = isViewingGuide 
-    ? guideImage 
-    : selectedColor 
-      ? getColorSpecificImage(selectedColor) 
+  const currentMainImage = isViewingGuide
+    ? guideImage
+    : selectedColor
+      ? getColorSpecificImage(selectedColor)
       : getColorSpecificImage('MULBERRY');
 
   // Handle clicking on guide image
@@ -4076,11 +4039,10 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
             <button
               key={color}
               onClick={() => handleColorClick(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-                selectedColor === color 
-                  ? 'ring-2 ring-primary scale-105' 
-                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${selectedColor === color
+                ? 'ring-2 ring-primary scale-105'
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+                }`}
             >
               <ProductImage
                 src={getColorSpecificImage(color)}
@@ -4090,15 +4052,14 @@ const MidiImageGallery = ({ product, selectedColor, onColorSelect }: { product: 
               />
             </button>
           ))}
-          
+
           {/* Guide image */}
           <button
             onClick={handleGuideClick}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              isViewingGuide
-                ? 'ring-2 ring-primary scale-105'
-                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-            }`}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${isViewingGuide
+              ? 'ring-2 ring-primary scale-105'
+              : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
           >
             <ProductImage
               src={guideImage}
@@ -4140,10 +4101,10 @@ const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product:
   };
 
   // Get the current main image based on selected color or guide view
-  const currentMainImage = isViewingGuide 
-    ? guideImage 
-    : selectedColor 
-      ? getColorSpecificImage(selectedColor) 
+  const currentMainImage = isViewingGuide
+    ? guideImage
+    : selectedColor
+      ? getColorSpecificImage(selectedColor)
       : getColorSpecificImage('LATTE');
 
   // Handle clicking on guide image
@@ -4187,11 +4148,10 @@ const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product:
             <button
               key={color}
               onClick={() => handleColorClick(color)}
-              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-                selectedColor === color 
-                  ? 'ring-2 ring-primary scale-105' 
-                  : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-              }`}
+              className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${selectedColor === color
+                ? 'ring-2 ring-primary scale-105'
+                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+                }`}
             >
               <ProductImage
                 src={getColorSpecificImage(color)}
@@ -4201,18 +4161,17 @@ const JumboImageGallery = ({ product, selectedColor, onColorSelect }: { product:
               />
             </button>
           ))}
-          
+
           {/* Guide image */}
           <button
             onClick={() => setIsViewingGuide(true)}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-            isViewingGuide
-                ? 'ring-2 ring-primary scale-105'
-                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-            }`}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${isViewingGuide
+              ? 'ring-2 ring-primary scale-105'
+              : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
           >
             <ProductImage
-            src={guideImage}
+              src={guideImage}
               alt={`${product.name} - Usage Guide`}
               className="object-cover"
               productId={product.id}
@@ -4282,11 +4241,10 @@ const SongMayImageGallery = ({ product, selectedColor, onColorSelect }: { produc
               onClick={() => {
                 setSongMayMainIndex(index);
               }}
-              className={`relative aspect-square rounded-xl overflow-hidden border transition-all duration-200 shadow-sm ${
-                songMayMainIndex === index
-                  ? 'border-primary/80 ring-1 ring-primary/20'
-                  : 'border-gray-200 hover:border-primary/40'
-              }`}
+              className={`relative aspect-square rounded-xl overflow-hidden border transition-all duration-200 shadow-sm ${songMayMainIndex === index
+                ? 'border-primary/80 ring-1 ring-primary/20'
+                : 'border-gray-200 hover:border-primary/40'
+                }`}
             >
               <ProductImage
                 src={image}
@@ -4314,7 +4272,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     "curlea-comb": true,
     "curly-clip-1": true
   });
-  
+
   // Define bundle products with real color options
   const bundleProducts = [
     {
@@ -4349,7 +4307,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   // Calculate pricing based on selected products
   const selectedProductIds = Object.keys(selectedProducts).filter(id => selectedProducts[id]);
   const selectedCount = selectedProductIds.length;
-  
+
   // Calculate total price before discount
   const totalPrice = selectedProductIds.reduce((sum, id) => {
     const product = bundleProducts.find(p => p.id === id);
@@ -4358,7 +4316,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
     const priceValue = parseFloat(product.price.replace('$', ''));
     return sum + priceValue;
   }, 0);
-  
+
   // Apply tiered discounts: 3 products = 25%, 2 products = 10%, 1 product = 0%
   let discountPercent = 0;
   if (selectedCount === 3) {
@@ -4366,7 +4324,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
   } else if (selectedCount === 2) {
     discountPercent = 10;
   }
-  
+
   const discountMultiplier = 1 - (discountPercent / 100);
   const bundlePrice = totalPrice * discountMultiplier;
   const savings = totalPrice - bundlePrice;
@@ -4435,7 +4393,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           transition={{ duration: 4, repeat: Infinity }}
         />
         {/* Title */}
-        <motion.h2 
+        <motion.h2
           className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -4467,9 +4425,8 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
               <button
                 key={c.name}
                 onClick={() => setSelectedColor(c.name)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                  selectedColor === c.name ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300 hover:border-gray-500'
-                }`}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${selectedColor === c.name ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300 hover:border-gray-500'
+                  }`}
               >
                 {c.name.replace(/_/g, ' ')}
               </button>
@@ -4478,7 +4435,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
         )}
 
         {/* Images row */}
-        <motion.div 
+        <motion.div
           className="flex items-center justify-center gap-6 mb-8"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
@@ -4487,13 +4444,13 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           {selectedProductIds.map((productId, index) => {
             const product = bundleProducts.find(p => p.id === productId);
             if (!product) return null;
-            
+
             return (
               <div key={productId} className="flex items-center">
-                <img 
-                  src={getSelectedProductImage(productId)} 
-                  alt={product.name} 
-                  className="w-20 md:w-24 rounded-lg shadow-sm border border-gray-100" 
+                <img
+                  src={getSelectedProductImage(productId)}
+                  alt={product.name}
+                  className="w-20 md:w-24 rounded-lg shadow-sm border border-gray-100"
                 />
                 {index < selectedProductIds.length - 1 && (
                   <span className="text-2xl font-bold text-gray-500 ml-6">+</span>
@@ -4504,7 +4461,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
         </motion.div>
 
         {/* Pricing */}
-        <motion.div 
+        <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -4531,7 +4488,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
         </motion.div>
 
         {/* Add to Cart */}
-        <motion.button 
+        <motion.button
           className="group relative inline-flex items-center justify-center px-10 py-3 mb-8 rounded-full font-extrabold tracking-wide uppercase text-sm text-white focus:outline-none"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -4546,12 +4503,12 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
           <span className="absolute -inset-[2px] rounded-full bg-gradient-to-r from-amber-400/40 to-rose-400/40 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <span className="relative z-10 flex items-center gap-2">
             Add to Cart
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5l7 7-7 7" /></svg>
           </span>
         </motion.button>
 
         {/* Items breakdown */}
-        <motion.div 
+        <motion.div
           className="mt-8 text-left space-y-4"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -4562,11 +4519,11 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
               {/* Item */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-t border-gray-200 pt-4">
                 <div className="flex items-center space-x-3">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={selectedProducts[product.id]}
                     onChange={() => handleCheckboxToggle(product.id)}
-                    className="w-5 h-5 accent-gray-900 cursor-pointer" 
+                    className="w-5 h-5 accent-gray-900 cursor-pointer"
                   />
                   <span className="font-semibold text-gray-900 text-sm md:text-base" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: 600 }}>
                     {product.name}
@@ -4576,7 +4533,7 @@ const FrequentlyBoughtTogetherSection = ({ product }: { product: Product }) => {
                   {product.price}
                 </span>
               </div>
-              
+
               {/* Color options for DreamCurl Short Set */}
               {product.hasColorOptions && selectedProducts[product.id] && (
                 <div className="ml-8 mt-3">
@@ -4687,30 +4644,30 @@ const UsageStepsSection = ({ product }: { product: Product }) => {
             ?? Tip: For best results, always follow the recommended wait time and handle your hair gently
           </p>
         </motion.div>
-                </div>
+      </div>
     </motion.section>
   );
 };
 
 // DreamCurl Image Gallery Component
-const DreamCurlImageGallery = ({ 
-  product, 
-  selectedColor, 
-  onColorSelect 
-}: { 
-  product: Product; 
-  selectedColor: string; 
+const DreamCurlImageGallery = ({
+  product,
+  selectedColor,
+  onColorSelect
+}: {
+  product: Product;
+  selectedColor: string;
   onColorSelect: (color: string) => void;
 }) => {
   const [isViewingExtra, setIsViewingExtra] = useState(false);
-  
+
   // Reset extra view when selectedColor changes (from color buttons)
   useEffect(() => {
     if (selectedColor) {
       setIsViewingExtra(false);
     }
   }, [selectedColor]);
-  
+
   // All images for DreamCurl Original
   const dreamCurlImages = [
     new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
@@ -4753,14 +4710,14 @@ const DreamCurlImageGallery = ({
           priority={true}
           productId={product.id}
         />
-        
+
         {/* Navigation Arrows - always available */}
         {product.colors && product.colors.length > 1 && (
           <>
             <button
               onClick={() => {
                 setIsViewingExtra(false);
-                const currentIndex = selectedColor 
+                const currentIndex = selectedColor
                   ? product.colors!.indexOf(selectedColor)
                   : 0;
                 const prevIndex = currentIndex > 0 ? currentIndex - 1 : product.colors!.length - 1;
@@ -4776,7 +4733,7 @@ const DreamCurlImageGallery = ({
             <button
               onClick={() => {
                 setIsViewingExtra(false);
-                const currentIndex = selectedColor 
+                const currentIndex = selectedColor
                   ? product.colors!.indexOf(selectedColor)
                   : 0;
                 const nextIndex = currentIndex < product.colors!.length - 1 ? currentIndex + 1 : 0;
@@ -4804,11 +4761,10 @@ const DreamCurlImageGallery = ({
               setIsViewingExtra(false);
               onColorSelect(color);
             }}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              selectedColor === color 
-                ? 'ring-2 ring-primary scale-105' 
-                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
-            }`}
+            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${selectedColor === color
+              ? 'ring-2 ring-primary scale-105'
+              : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+              }`}
           >
             <OptimizedImage
               src={getColorSpecificImage(color)}
@@ -4825,14 +4781,13 @@ const DreamCurlImageGallery = ({
             />
           </button>
         ))}
-        
+
         {/* Guide image */}
-          <button
-            onClick={() => setIsViewingExtra(true)}
-            className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${
-              isViewingExtra
-                ? 'ring-2 ring-primary scale-105'
-                : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
+        <button
+          onClick={() => setIsViewingExtra(true)}
+          className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 touch-manipulation ${isViewingExtra
+            ? 'ring-2 ring-primary scale-105'
+            : 'hover:scale-105 opacity-70 hover:opacity-100 active:scale-95'
             }`}
         >
           <OptimizedImage
@@ -4849,8 +4804,8 @@ const DreamCurlImageGallery = ({
             }}
           />
         </button>
-              </div>
-                </div>
+      </div>
+    </div>
   );
 };
 
@@ -4890,7 +4845,7 @@ const HairClipImageGallery = ({ product, selectedSize, setSelectedSize }: { prod
           productId={product.id}
         />
       </motion.div>
-      
+
       {/* Size Options Thumbnails */}
       {product.sizeOptions && (
         <div className="mt-4">
@@ -4900,11 +4855,10 @@ const HairClipImageGallery = ({ product, selectedSize, setSelectedSize }: { prod
               <motion.button
                 key={sizeKey}
                 onClick={() => setSelectedSize(sizeKey)}
-                className={`relative aspect-square rounded-md overflow-hidden border transition-all duration-150 ${
-                  selectedSize === sizeKey
-                    ? 'border-primary ring-1 ring-primary/30'
-                    : 'border-gray-200 hover:border-primary/40'
-                }`}
+                className={`relative aspect-square rounded-md overflow-hidden border transition-all duration-150 ${selectedSize === sizeKey
+                  ? 'border-primary ring-1 ring-primary/30'
+                  : 'border-gray-200 hover:border-primary/40'
+                  }`}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
@@ -4918,10 +4872,10 @@ const HairClipImageGallery = ({ product, selectedSize, setSelectedSize }: { prod
                 )}
               </motion.button>
             ))}
-              </div>
-                </div>
+          </div>
+        </div>
       )}
-              </div>
+    </div>
   );
 };
 
@@ -4950,24 +4904,24 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
       setIsVideoLoading(false);
       setVideoError(true);
       setVideoLoaded(false);
-      
+
       // Multiple retry attempts with increasing delays
       const retryVideo = (attempt: number = 1, maxAttempts: number = 3) => {
         if (attempt > maxAttempts) {
           console.error(`Failed to load video after ${maxAttempts} attempts`);
           return;
         }
-        
+
         const delay = attempt * 1500; // Increase delay with each attempt
         setTimeout(() => {
           if (videoRef.current) {
             console.log(`Retry attempt ${attempt}/${maxAttempts} for Hair Accessories video`);
-            
+
             // Reset video element
             videoRef.current.pause();
             videoRef.current.removeAttribute('src');
             videoRef.current.load();
-            
+
             // Set source again
             const sources = videoRef.current.querySelectorAll('source');
             sources.forEach((source, index) => {
@@ -4976,13 +4930,13 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
               }
             });
             videoRef.current.load();
-            
+
             // If still fails, try next attempt
             videoRef.current.onerror = () => retryVideo(attempt + 1, maxAttempts);
           }
         }, delay);
       };
-      
+
       retryVideo();
     }
     // Silently ignore source element errors as they're handled by fallback sources
@@ -5016,18 +4970,18 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
   useEffect(() => {
     if (isInView && videoRef.current && !loadAttempted) {
       setLoadAttempted(true);
-      
+
       const video = videoRef.current;
-      
+
       // Simple and reliable loading strategy
       video.preload = 'auto';
       video.load();
-      
+
       // Wait for video to be ready
       const handleCanPlayThrough = () => {
         setIsVideoLoading(false);
         setVideoLoaded(true);
-        
+
         // Try to play the video
         video.play()
           .then(() => {
@@ -5042,16 +4996,16 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
             setIsVideoLoading(false);
           });
       };
-      
+
       // Set a timeout to hide loading state even if video doesn't fully load
       const loadingTimeout = setTimeout(() => {
         if (video.readyState >= 2) { // HAVE_CURRENT_DATA or better
           setIsVideoLoading(false);
         }
       }, 3000); // Hide loading after 3 seconds max
-      
+
       video.addEventListener('canplaythrough', handleCanPlayThrough);
-      
+
       return () => {
         video.removeEventListener('canplaythrough', handleCanPlayThrough);
         clearTimeout(loadingTimeout);
@@ -5186,7 +5140,7 @@ const HairAccessoriesInActionSection = ({ product }: { product: Product }) => {
           transition={{ delay: 0.8, duration: 0.6 }}
         >
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Experience the effortless styling power of our premium hair claw clips. 
+            Experience the effortless styling power of our premium hair claw clips.
             Perfect for securing hair in elegant updos, half-styles, and everyday looks with comfort and style.
           </p>
         </motion.div>

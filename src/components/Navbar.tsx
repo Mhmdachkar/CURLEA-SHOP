@@ -10,7 +10,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
    STYLED COMPONENTS - MOBILE FIRST
    ============================================ */
 
-const NavContainer = styled(motion.nav)<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
+const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -22,7 +22,22 @@ const NavContainer = styled(motion.nav)<{ $isScrolled: boolean; $isProductDetail
     $isScrolled ? `${theme.colors.background}f2` : 'transparent'};
   backdrop-filter: ${({ $isScrolled }) => ($isScrolled ? 'blur(12px)' : 'none')};
   box-shadow: ${({ $isScrolled, theme }) =>
-    $isScrolled ? theme.shadows.md : 'none'};
+    $isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.1)' : 'none'};
+  border-bottom: ${({ $isScrolled }) =>
+    $isScrolled ? '1px solid rgba(212, 175, 55, 0.3)' : 'none'};
+  
+  /* Gold gradient line at the bottom */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+    opacity: ${({ $isScrolled }) => ($isScrolled ? 1 : 0)};
+    transition: opacity 0.3s ease;
+  }
   
   /* Force black text when on product detail page */
   ${({ $isProductDetailPage }) => $isProductDetailPage && `
@@ -53,7 +68,7 @@ const NavInner = styled.div`
   }
 `;
 
-const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
+const Logo = styled(motion.a) <{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   font-family: "Montserrat", "Optima", ${({ theme }) => theme.typography.fontFamily.sans};
   font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
   font-weight: 300;
@@ -106,14 +121,14 @@ const Logo = styled(motion.a)<{ $isScrolled: boolean; $isProductDetailPage?: boo
   /* Ensure black text when background is white */
   @media (prefers-color-scheme: light) {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.foreground : '#ffffff'};
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
 
   &:hover {
     letter-spacing: 0.35em;
     transform: scale(1.02);
     text-shadow: ${({ $isScrolled }) =>
-      $isScrolled ? '0 2px 4px rgba(0, 0, 0, 0.15)' : '0 4px 16px rgba(0, 0, 0, 0.5)'};
+    $isScrolled ? '0 2px 4px rgba(0, 0, 0, 0.15)' : '0 4px 16px rgba(0, 0, 0, 0.5)'};
   }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
@@ -136,14 +151,14 @@ const DesktopNav = styled.div<{ $isScrolled: boolean; $isProductDetailPage?: boo
     gap: ${({ theme }) => theme.spacing.lg};
     position: relative;
     color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
-      ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
+    ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
     transition: color 0.3s ease;
   }
 
   /* Ensure black text when background is white */
   @media (prefers-color-scheme: light) {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.foreground : '#ffffff'};
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
 
   @media ${({ theme }) => theme.mediaQueries.desktop} {
@@ -151,7 +166,7 @@ const DesktopNav = styled.div<{ $isScrolled: boolean; $isProductDetailPage?: boo
   }
 `;
 
-const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
+const NavLink = styled(motion.button) <{ $isScrolled: boolean }>`
   background: none;
   border: none;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
@@ -199,10 +214,10 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
 
   &:hover {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.accent : '#ffffff'};
+    $isScrolled ? theme.colors.accent : '#ffffff'};
     opacity: 1;
     text-shadow: ${({ $isScrolled }) =>
-      $isScrolled ? 'none' : '0 0 12px rgba(255, 255, 255, 0.4)'};
+    $isScrolled ? 'none' : '0 0 12px rgba(255, 255, 255, 0.4)'};
 
     &::after {
       width: 100%;
@@ -220,18 +235,18 @@ const NavLink = styled(motion.button)<{ $isScrolled: boolean }>`
   /* Ensure black text when background is white */
   @media (prefers-color-scheme: light) {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.foreground : '#ffffff'};
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
     
     &:hover {
       color: ${({ $isScrolled, theme }) =>
-        $isScrolled ? theme.colors.accent : '#ffffff'};
+    $isScrolled ? theme.colors.accent : '#ffffff'};
     }
   }
 
   /* Active state for current page */
   &[data-active="true"] {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.accent : '#ffffff'};
+    $isScrolled ? theme.colors.accent : '#ffffff'};
     
     &::after {
       width: 100%;
@@ -258,7 +273,7 @@ const IconsContainer = styled.div<{ $isScrolled: boolean; $isProductDetailPage?:
   /* Ensure black text when background is white */
   @media (prefers-color-scheme: light) {
     color: ${({ $isScrolled, theme }) =>
-      $isScrolled ? theme.colors.foreground : '#ffffff'};
+    $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
@@ -270,7 +285,7 @@ const IconsContainer = styled.div<{ $isScrolled: boolean; $isProductDetailPage?:
   }
 `;
 
-const IconButton = styled(motion.button)<{ $isProductDetailPage?: boolean }>`
+const IconButton = styled(motion.button) <{ $isProductDetailPage?: boolean }>`
   background: none;
   border: none;
   color: inherit;
@@ -310,14 +325,14 @@ const IconButton = styled(motion.button)<{ $isProductDetailPage?: boolean }>`
   }
 `;
 
-const CartBadge = styled(motion.div)<{ $isProductDetailPage?: boolean }>`
+const CartBadge = styled(motion.div) <{ $isProductDetailPage?: boolean }>`
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
   min-width: 1.25rem;
   height: 1.25rem;
   background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ $isProductDetailPage }) => 
+  color: ${({ $isProductDetailPage }) =>
     $isProductDetailPage ? '#ffffff !important' : 'inherit'};
   border-radius: ${({ theme }) => theme.borderRadius.full};
   display: flex;
@@ -449,11 +464,11 @@ const MagneticButton = ({ children, onClick, $isProductDetailPage }: MagneticBut
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!isMagneticEnabled) return;
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     x.set((e.clientX - centerX) * 0.3);
     y.set((e.clientY - centerY) * 0.3);
   };
@@ -498,7 +513,7 @@ export const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -529,7 +544,7 @@ export const Navbar = () => {
 
   const handleNavClick = (href: string) => {
     setIsMobileMenuOpen(false);
-    
+
     if (href.startsWith("/")) {
       navigate(href);
     } else if (href.startsWith("#")) {
@@ -562,9 +577,9 @@ export const Navbar = () => {
             className="flex items-center justify-center gap-[0.25em]"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            whileHover={{ 
+            whileHover={{
               scale: 1.05,
-              transition: { 
+              transition: {
                 duration: 0.4,
                 ease: [0.215, 0.61, 0.355, 1]
               }
@@ -574,13 +589,13 @@ export const Navbar = () => {
               <motion.span
                 key={index}
                 style={{ display: 'inline-block' }}
-                initial={{ 
+                initial={{
                   opacity: 0,
                   scale: 2,
                   filter: "blur(20px)",
                   y: Math.random() * 40 - 20
                 }}
-                animate={{ 
+                animate={{
                   opacity: 1,
                   scale: 1,
                   filter: "blur(0px)",
@@ -612,6 +627,36 @@ export const Navbar = () => {
                 {letter}
               </motion.span>
             ))}
+
+            {/* Black Friday Badge - Only visible when scrolled */}
+            <AnimatePresence>
+              {isScrolled && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -10, scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  style={{
+                    marginLeft: '12px',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    background: 'linear-gradient(135deg, #D4AF37 0%, #B5952F 100%)',
+                    color: '#000',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 2px 10px rgba(212, 175, 55, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    pointerEvents: 'none' // Don't interfere with logo click
+                  }}
+                >
+                  <span style={{ fontSize: '12px' }}>?</span> BLACK FRIDAY
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Logo>
 
           {/* Desktop Navigation */}
@@ -624,7 +669,7 @@ export const Navbar = () => {
                   $isScrolled={isScrolled}
                   onClick={() => handleNavClick(link.href)}
                   data-active={isActive}
-                  whileHover={{ 
+                  whileHover={{
                     y: -2,
                     transition: { type: "spring", stiffness: 300 }
                   }}
@@ -688,7 +733,7 @@ export const Navbar = () => {
             >
               {/* Mobile Menu Header with Close Button */}
               <div className="flex items-center justify-between mb-8">
-                <motion.h2 
+                <motion.h2
                   className="text-2xl font-bold text-foreground"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -709,7 +754,7 @@ export const Navbar = () => {
                   <X className="w-6 h-6" />
                 </motion.button>
               </div>
-              
+
               <MobileMenuList>
                 {navLinks.map((link, index) => (
                   <MobileMenuLink
