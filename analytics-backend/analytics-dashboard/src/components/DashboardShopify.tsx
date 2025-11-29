@@ -7,7 +7,14 @@ import { useState } from 'react';
 import { ModernLayout } from './modern/ModernLayout';
 import { OverviewView } from './modern/OverviewView';
 import { OrdersView } from './modern/OrdersView';
-import { Calendar } from 'lucide-react';
+import { InventoryView } from './modern/InventoryView';
+import { MarketingView } from './modern/MarketingView';
+import { FunnelView } from './modern/FunnelView';
+import { BehaviorView } from './modern/BehaviorView';
+import { CustomersView } from './modern/CustomersView';
+import { ProductsView } from './modern/ProductsView';
+import { RealtimeView } from './modern/RealtimeView';
+import { PricingManagement } from './PricingManagement';
 
 export default function DashboardShopify() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -19,6 +26,22 @@ export default function DashboardShopify() {
         return <OverviewView days={days} />;
       case 'orders':
         return <OrdersView />;
+      case 'inventory':
+        return <InventoryView />;
+      case 'marketing':
+        return <MarketingView />;
+      case 'funnel':
+        return <FunnelView />;
+      case 'behavior':
+        return <BehaviorView />;
+      case 'customers':
+        return <CustomersView />;
+      case 'products':
+        return <ProductsView />;
+      case 'analytics':
+        return <RealtimeView />;
+      case 'pricing':
+        return <PricingManagement />;
       default:
         return (
           <div className="flex items-center justify-center h-96 text-zinc-500">
@@ -41,8 +64,8 @@ export default function DashboardShopify() {
               key={d}
               onClick={() => setDays(d)}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${days === d
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-zinc-800 text-white shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
               {d}d

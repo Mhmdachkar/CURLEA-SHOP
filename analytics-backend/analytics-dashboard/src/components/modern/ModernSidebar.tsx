@@ -2,13 +2,16 @@ import {
     LayoutDashboard,
     ShoppingBag,
     Users,
-    BarChart2,
     Settings,
     Package,
     CreditCard,
     LogOut,
     Menu,
-    X
+    X,
+    Activity,
+    Megaphone,
+    Smartphone,
+    Filter
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -23,10 +26,14 @@ export function ModernSidebar({ activeTab, onTabChange }: ModernSidebarProps) {
 
     const menuItems = [
         { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+        { id: 'funnel', label: 'Funnel', icon: Filter },
+        { id: 'marketing', label: 'Marketing', icon: Megaphone },
+        { id: 'behavior', label: 'Behavior', icon: Smartphone },
         { id: 'orders', label: 'Orders', icon: ShoppingBag },
-        { id: 'products', label: 'Products', icon: Package },
+        { id: 'inventory', label: 'Inventory', icon: Package },
         { id: 'customers', label: 'Customers', icon: Users },
-        { id: 'analytics', label: 'Analytics', icon: BarChart2 },
+        { id: 'analytics', label: 'Realtime', icon: Activity },
+        { id: 'products', label: 'Products', icon: Package },
         { id: 'pricing', label: 'Pricing', icon: CreditCard },
         { id: 'settings', label: 'Settings', icon: Settings },
     ];
