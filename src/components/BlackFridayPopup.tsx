@@ -56,18 +56,18 @@ export default function BlackFridayPopup() {
             style={{ pointerEvents: 'auto' }}
           />
 
-          {/* Popup Container - Flying in from bottom */}
+          {/* Popup Container - Flying in from top */}
           <motion.div
-            initial={{ y: '100vh', opacity: 0, scale: 0.8 }}
+            initial={{ y: '-100vh', opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: '100vh', opacity: 0, scale: 0.8 }}
+            exit={{ y: '-100vh', opacity: 0, scale: 0.8 }}
             transition={{ 
               type: 'spring',
               damping: 25,
               stiffness: 150,
               duration: 0.6
             }}
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none"
+            className="fixed top-0 left-0 right-0 z-[10000] flex items-start justify-center p-4 pt-8 md:pt-12 pointer-events-none"
           >
             <div 
               className="relative w-full max-w-2xl pointer-events-auto"
