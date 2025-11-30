@@ -705,6 +705,11 @@ export default function CheckoutPage() {
                                             <p className="text-sm font-medium text-gray-900 line-clamp-1" style={typography}>
                                                 {item.name}
                                             </p>
+                                            {item.originalPrice && item.price === 0 && (
+                                                <span className="inline-block mt-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded" style={typography}>
+                                                    🎁 FREE GIFT
+                                                </span>
+                                            )}
                                             {(item.selectedColor || item.selectedSize) && (
                                                 <div className="flex gap-1.5 mt-1">
                                                     {item.selectedColor && (
@@ -727,7 +732,7 @@ export default function CheckoutPage() {
                                                             ${item.originalPrice.toFixed(2)}
                                                         </span>
                                                     )}
-                                                    <span className="text-sm font-medium text-gray-900" style={typography}>
+                                                    <span className={`text-sm font-medium ${item.price === 0 ? 'text-green-600' : 'text-gray-900'}`} style={typography}>
                                                         ${item.price.toFixed(2)}
                                                     </span>
                                                 </div>

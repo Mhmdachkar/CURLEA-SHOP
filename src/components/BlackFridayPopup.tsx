@@ -144,10 +144,13 @@ export default function BlackFridayPopup() {
                     className="mb-8 space-y-3"
                   >
                     <p className="text-white text-lg md:text-xl leading-relaxed">
-                      Purchase any <span className="text-[#D4AF37] font-bold">DreamCurl™ Full Set</span> and receive our premium Hair Claw Clip
+                      Purchase any <span className="text-[#D4AF37] font-bold">DreamCurl™ Full Set</span> and receive our
+                    </p>
+                    <p className="text-white text-lg md:text-xl leading-relaxed">
+                      <span className="text-[#F2D06B] font-bold">CURLEA Geometric Flower Hair Claw Clip Set</span>
                     </p>
                     <p className="text-[#D4AF37] text-2xl md:text-3xl font-bold">
-                      (Worth $11.99) ABSOLUTELY FREE
+                      (Worth $15.99) ABSOLUTELY FREE
                     </p>
                   </motion.div>
 

@@ -67,8 +67,8 @@ export default function AnalyticsDashboard() {
             >
               {d}d
             </button>
-          ))}
-        </div>
+                    ))}
+                  </div>
       }
     >
       {renderContent()}

@@ -14,7 +14,7 @@
 /* Advanced Scroll System - Professional & Elegant */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: 140px; /* Mobile: Account for taller promotional banner + navbar */
   overflow-x: hidden;
   /* Enhanced smoothness with CSS custom easing */
   scroll-snap-type: none;
@@ -22,10 +22,39 @@ html {
   overscroll-behavior: none;
 }
 
+/* Responsive scroll padding for desktop */
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 120px; /* Desktop: Account for shorter promotional banner + navbar */
+  }
+}
+
 body {
   /* Prevent scroll bounce and overscroll */
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  /* Account for fixed promotional banner - Mobile: taller banner */
+  padding-top: 70px; /* Mobile: Promotional banner height when text stacks */
+}
+
+/* Responsive body padding for desktop */
+@media (min-width: 768px) {
+  body {
+    padding-top: 52px; /* Desktop: Promotional banner height (single line) */
+  }
+}
+
+/* Ensure pages always start at top */
+@layer base {
+  html, body {
+    scroll-behavior: auto;
+  }
+  
+  html::before {
+    content: '';
+    display: block;
+    height: 0;
+  }
 }
 
 /* Elegant scroll momentum - Apple-style */

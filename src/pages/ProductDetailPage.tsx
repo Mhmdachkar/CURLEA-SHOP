@@ -16,7 +16,7 @@ import { preloadImagesWithPriority } from "@/utils/imagePreloader";
 import { useRealtimeState } from "@/hooks/useRealtimeState";
 import { useEventProduct, useEventUI, EVENTS } from "@/hooks/useEventSystem";
 import { useRealtimeContext } from "@/contexts/RealtimeContext";
-import { useAdvancedScroll, useScrollToTop } from "@/hooks/useAdvancedScroll";
+import { useAdvancedScroll } from "@/hooks/useAdvancedScroll";
 import { toast } from "sonner";
 import { fbTrack, gaTrack } from "@/utils/tracking";
 
@@ -44,8 +44,102 @@ export const ProductDetailPage = () => {
   // Initialize advanced scroll system
   useAdvancedScroll();
 
-  // Ensure page loads at top when product changes
-  useScrollToTop([id]);
+  // Ensure page loads at top when product changes - BUT skip if hash is present
+  useEffect(() => {
+    // Skip scroll-to-top if there's a hash in the URL (for direct navigation to sections)
+    if (location.hash) {
+      return; // Don't scroll to top if hash is present
+    }
+    
+    // Prevent scroll restoration
+    window.history.scrollRestoration = 'manual';
+    
+    // Force scroll to top IMMEDIATELY
+    window.scrollTo(0, 0);
+    
+    // Execute once more after DOM is ready with slight delay
+    const timeout = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+    
+    return () => {
+      clearTimeout(timeout);
+      window.history.scrollRestoration = 'auto';
+    };
+  }, [id, location.hash]); // Include location.hash in dependencies
+
+  // Handle hash navigation to Black Friday section
+  // This MUST run immediately and with high priority
+  useEffect(() => {
+    if (location.hash === '#black-friday-section') {
+      // Prevent any scroll-to-top behavior immediately
+      window.history.scrollRestoration = 'manual';
+      
+      let scrollTimeout: NodeJS.Timeout | null = null;
+      let scrollInterval: NodeJS.Timeout | null = null;
+      
+      // Reliable scroll function that accounts for responsive heights
+      const scrollToSection = (immediate = false) => {
+        const section = document.getElementById('black-friday-section');
+        if (section) {
+          // Calculate responsive offsets
+          const isMobile = window.innerWidth < 768;
+          const bannerHeight = isMobile ? 70 : 52; // Mobile: 70px, Desktop: 52px
+          const navbarHeight = 80; // Approximate navbar height
+          const extraSpacing = 30; // Extra spacing for better visibility
+          const offset = bannerHeight + navbarHeight + extraSpacing;
+          
+          // Get element position relative to document
+          const elementTop = section.getBoundingClientRect().top + window.pageYOffset;
+          const scrollPosition = Math.max(0, elementTop - offset);
+
+          if (immediate) {
+            // Immediate scroll (no animation) to prevent conflicts
+            window.scrollTo(0, scrollPosition);
+          } else {
+            // Smooth scroll for better UX
+            window.scrollTo({
+              top: scrollPosition,
+              behavior: 'smooth'
+            });
+          }
+          return true; // Successfully scrolled
+        }
+        return false; // Element not found
+      };
+
+      // Try immediate scroll first (in case element is already in DOM)
+      if (!scrollToSection(true)) {
+        // If element not found, wait and retry
+        scrollTimeout = setTimeout(() => {
+          if (!scrollToSection(false)) {
+            // If still not found, retry with multiple attempts
+            let retries = 0;
+            const maxRetries = 30; // Try for up to 3 seconds (30 * 100ms)
+            
+            scrollInterval = setInterval(() => {
+              if (scrollToSection(false) || retries >= maxRetries) {
+                if (scrollInterval) {
+                  clearInterval(scrollInterval);
+                  scrollInterval = null;
+                }
+              }
+              retries++;
+            }, 100);
+          }
+        }, 100); // Shorter initial delay since ScrollToTop is now disabled
+      }
+
+      return () => {
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout);
+        }
+        if (scrollInterval) {
+          clearInterval(scrollInterval);
+        }
+      };
+    }
+  }, [location.hash, id]);
 
   // Real-time context for global state
   const { setCurrentProduct, setSelectedColor: setGlobalColor, setSelectedQuantity: setGlobalQuantity } = useRealtimeContext();
@@ -868,6 +962,10 @@ export const ProductDetailPage = () => {
                             ? (selectedSize.toLowerCase().includes('9-piece') ? 9 : 4)
                             : 9;
                           return pieceCount * quantity;
+                        }
+                        if (product.id === 'curly-claw-1') {
+                          // Geometric Flower Hair Claw Clip Set - 10 pieces
+                          return 10 * quantity;
                         }
                         return product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity;
                       })()} pieces in total

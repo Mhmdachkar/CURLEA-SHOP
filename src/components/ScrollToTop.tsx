@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
  * Provides sophisticated scroll-to-top with elegant animations
  */
 export const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const previousPathname = useRef(pathname);
 
   // Apple-style heavy scroll with physics
@@ -49,6 +49,13 @@ export const ScrollToTop = () => {
   useEffect(() => {
     // Only scroll to top if the pathname actually changed
     if (previousPathname.current !== pathname) {
+      // CRITICAL: Skip scroll-to-top if there's a hash in the URL
+      // This allows hash navigation (like #black-friday-section) to work properly
+      if (hash) {
+        previousPathname.current = pathname;
+        return; // Don't scroll to top, let the page handle hash navigation
+      }
+      
       // Don't interfere with CollectionPage animation
       // Skip scroll animation when navigating TO collection/shop pages
       if (pathname === '/collection' || pathname === '/shop') {
@@ -102,7 +109,7 @@ export const ScrollToTop = () => {
         document.documentElement.classList.remove('page-loading');
       };
     }
-  }, [pathname]);
+  }, [pathname, hash]); // Include hash in dependencies
 
   // Enhanced browser back/forward handling
   useEffect(() => {

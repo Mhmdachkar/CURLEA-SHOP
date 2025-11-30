@@ -748,13 +748,17 @@ export const ProductDetailPage = () => {
                       transition={{ delay: 0.2 }}
                     >
                       <span className="text-sm font-medium text-primary">
-                        � {(() => {
+                        �                         {(() => {
                           if (product.id === 'curly-clip-1') {
                             // Get piece count from selected size
                             const pieceCount = selectedSize && product.sizeOptions && product.sizeOptions[selectedSize]
                               ? (selectedSize.toLowerCase().includes('9-piece') ? 9 : 4)
                               : 9;
                             return pieceCount * quantity;
+                          }
+                          if (product.id === 'curly-claw-1') {
+                            // Geometric Flower Hair Claw Clip Set - 10 pieces
+                            return 10 * quantity;
                           }
                           return product.id === 'curly-scarf-1' ? 7 * quantity : 16 * quantity;
                         })()} pieces in total

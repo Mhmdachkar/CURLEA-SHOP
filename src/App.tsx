@@ -11,6 +11,7 @@ import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import BlackFridayPopup from "@/components/BlackFridayPopup";
+import PromotionalBanner from "@/components/PromotionalBanner";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import Index from "./pages/Index";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
@@ -84,6 +85,7 @@ const App = () => {
                   v7_relativeSplatPath: true
                 }}
               >
+                <PromotionalBanner />
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />

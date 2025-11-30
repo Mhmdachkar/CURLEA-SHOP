@@ -12,10 +12,10 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   position: fixed;
-  top: 0;
+  top: 70px; /* Mobile: Height of promotional banner when text stacks (py-3.5 * 2 + text height) */
   left: 0;
   right: 0;
-  z-index: ${({ theme }) => theme.zIndex.sticky};
+  z-index: 9998; /* Below promotional banner (1000) but above content */
   width: 100%;
   transition: ${({ theme }) => theme.transitions.smooth};
   background-color: ${({ $isScrolled, theme }) =>
@@ -25,6 +25,11 @@ const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetai
     $isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.1)' : 'none'};
   border-bottom: ${({ $isScrolled }) =>
     $isScrolled ? '1px solid rgba(212, 175, 55, 0.3)' : 'none'};
+  
+  /* Responsive positioning - adjust for desktop where banner is shorter */
+  @media ${({ theme }) => theme.mediaQueries.tablet} {
+    top: 52px; /* Desktop: Banner is single line, shorter height */
+  }
   
   /* Gold gradient line at the bottom */
   &::after {
@@ -505,13 +510,45 @@ export const Navbar = () => {
   const { itemCount, openCart } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
+  const [navbarOpacity, setNavbarOpacity] = useState(1);
 
   // Check if we're on a product detail page
   const isProductDetailPage = location.pathname.startsWith('/product/');
 
+  // Scroll direction and opacity detection
   useEffect(() => {
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          // Set scrolled state
+          setIsScrolled(currentScrollY > 50);
+          
+          // Detect scroll direction and set opacity
+          if (currentScrollY < 50) {
+            // At top of page - always show
+            setNavbarOpacity(1);
+            setScrollDirection('down');
+          } else if (currentScrollY > lastScrollY) {
+            // Scrolling DOWN - show navbar (opacity = 1)
+            setScrollDirection('down');
+            setNavbarOpacity(1);
+          } else if (currentScrollY < lastScrollY) {
+            // Scrolling UP - hide navbar (opacity = 0)
+            setScrollDirection('up');
+            setNavbarOpacity(0);
+          }
+          
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -561,8 +598,15 @@ export const Navbar = () => {
         $isScrolled={isScrolled}
         $isProductDetailPage={isProductDetailPage}
         initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        animate={{ 
+          y: 0,
+          opacity: navbarOpacity,
+        }}
+        transition={{ 
+          duration: 0.4, 
+          ease: "easeInOut",
+          opacity: { duration: 0.3, ease: "easeInOut" }
+        }}
       >
         <NavInner>
           {/* Logo */}
@@ -587,7 +631,7 @@ export const Navbar = () => {
           >
             {"CURLEA".split('').map((letter, index) => (
               <motion.span
-                key={index}
+                key={`${location.pathname}-${index}`}
                 style={{ display: 'inline-block' }}
                 initial={{
                   opacity: 0,

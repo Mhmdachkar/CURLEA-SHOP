@@ -319,11 +319,11 @@ export const products: Product[] = [
       "Perfect for women and girls with thick hair",
       "Versatile styling for various hair lengths",
       "Comfortable to wear all day long",
-      "**Comes as complete set - includes 16 pieces total**",
+      "**Comes as complete set - includes 10 pieces total**",
       "Full collection provides variety for all styling needs"
     ],
     ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
-    size: "16-Piece Set",
+    size: "10-Piece Set",
     inStock: true,
     video: new URL('../assets/curly hair collection/product3/Screen Recording 2025-10-05 155052.mp4', import.meta.url).href,
     images: [
@@ -644,11 +644,11 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
         "Perfect for women and girls with thick hair",
         "Versatile styling for various hair lengths",
         "Comfortable to wear all day long",
-        "**Comes as complete set - includes 16 pieces total**",
+        "**Comes as complete set - includes 10 pieces total**",
         "Full collection provides variety for all styling needs"
       ],
       ingredients: ["High-Quality Plastic", "Matte Finish", "Strong Claw Mechanism"],
-      size: "16-Piece Set",
+      size: "10-Piece Set",
       inStock: true,
     },
     {

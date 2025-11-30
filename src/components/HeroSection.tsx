@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { Button } from "@/components/ui/button";
 import hero1 from "@/assets/hero-luxury-1.jpg";
@@ -233,6 +233,99 @@ const ScrollIndicatorDot = styled(motion.div)`
   border-radius: ${({ theme }) => theme.borderRadius.full};
   will-change: transform;
 `;
+
+/* ============================================
+   SHOP OFFER BUTTON COMPONENT
+   ============================================ */
+
+const ShopOfferButton = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleShopOffer = () => {
+    // Check if we're already on the product page
+    const isOnProductPage = location.pathname.startsWith('/product/');
+    
+    // Navigate to product page with hash
+    navigate('/product/dreamcurl-original#black-friday-section', { replace: false });
+    
+    // Use a more reliable scroll method that waits for the element
+    const scrollToSection = () => {
+      const section = document.getElementById('black-friday-section');
+      if (section) {
+        // Calculate responsive offsets
+        const isMobile = window.innerWidth < 768;
+        const bannerHeight = isMobile ? 70 : 52; // Mobile: 70px, Desktop: 52px
+        const navbarHeight = 80; // Approximate navbar height
+        const extraSpacing = 30; // Extra spacing for better visibility
+        const offset = bannerHeight + navbarHeight + extraSpacing;
+        
+        // Get element position relative to document
+        const elementTop = section.getBoundingClientRect().top + window.pageYOffset;
+        const scrollPosition = elementTop - offset;
+
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
+        });
+        return true; // Successfully scrolled
+      }
+      return false; // Element not found
+    };
+
+    // If already on product page, try scrolling immediately
+    if (isOnProductPage) {
+      // Small delay to let React Router update
+      setTimeout(() => {
+        if (!scrollToSection()) {
+          // Retry with multiple attempts
+          let retries = 0;
+          const maxRetries = 20;
+          const checkInterval = setInterval(() => {
+            if (scrollToSection() || retries >= maxRetries) {
+              clearInterval(checkInterval);
+            }
+            retries++;
+          }, 100);
+        }
+      }, 100);
+    } else {
+      // If navigating to new page, wait longer for page to load
+      setTimeout(() => {
+        if (!scrollToSection()) {
+          let retries = 0;
+          const maxRetries = 25; // More retries for new page load
+          const checkInterval = setInterval(() => {
+            if (scrollToSection() || retries >= maxRetries) {
+              clearInterval(checkInterval);
+            }
+            retries++;
+          }, 100);
+        }
+      }, 500);
+    }
+  };
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleShopOffer}
+    >
+      <Button
+        size="lg"
+        className="relative bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] hover:from-[#B5952F] hover:to-[#D4AF37] text-black font-bold px-10 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:shadow-[0_0_50px_rgba(212,175,55,0.8)] overflow-hidden cursor-pointer"
+      >
+        <span className="relative z-10">Shop the Offer</span>
+        <motion.div
+          className="absolute inset-0 bg-white/20"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        />
+      </Button>
+    </motion.div>
+  );
+};
 
 /* ============================================
    SLIDE DATA
@@ -467,49 +560,91 @@ export const HeroSection = () => {
       </AnimatePresence>
       {/* Content */}
       <ContentContainer style={{ opacity: isPageLoading ? 1 : opacity }}>
-        <motion.h1
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
         >
-          Black Friday <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F2D06B]">
-            Event
-          </span>
-        </motion.h1>
+          {/* Animated background glow */}
+          <motion.div
+            className="absolute inset-0 blur-3xl opacity-30"
+            animate={{
+              background: [
+                'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.3), transparent 70%)',
+                'radial-gradient(circle at 50% 50%, rgba(242,208,107,0.4), transparent 70%)',
+                'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.3), transparent 70%)',
+              ]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <motion.h1
+            className="relative text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.215, 0.61, 0.355, 1] }}
+          >
+            <motion.span
+              className="inline-block"
+              animate={{ 
+                textShadow: [
+                  '0 0 20px rgba(255,255,255,0.3)',
+                  '0 0 40px rgba(255,255,255,0.5)',
+                  '0 0 20px rgba(255,255,255,0.3)',
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              Black Friday
+            </motion.span>
+            <br />
+            <motion.span 
+              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F2D06B] to-[#D4AF37]"
+              style={{
+                backgroundSize: '200% auto',
+              }}
+              animate={{
+                backgroundPosition: ['0% center', '100% center', '0% center'],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            >
+              Event
+            </motion.span>
+          </motion.h1>
+        </motion.div>
 
         <motion.p
-          className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light"
+          className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          Our biggest offer of the year. Buy any full set and receive a luxury gift on us.
+          <span className="font-semibold text-white">Our biggest offer of the year.</span>
+          <br />
+          Buy any full set and receive a luxury gift on us.
         </motion.p>
 
         <motion.div
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          <Link to="/product/dreamcurl-original">
-            <Button
-              size="lg"
-              className="bg-[#D4AF37] hover:bg-[#B5952F] text-black font-bold px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
-            >
-              Shop the Offer
-            </Button>
-          </Link>
+          <ShopOfferButton />
           <Link to="/collection">
-            <Button
-              variant="outline"
-              size="lg"
-              className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
-              View Collection
-            </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="bg-transparent border-2 border-white/50 text-white hover:bg-white/10 hover:border-white px-10 py-6 text-lg rounded-full backdrop-blur-sm transition-all duration-300"
+              >
+                View Collection
+              </Button>
+            </motion.div>
           </Link>
         </motion.div>
 

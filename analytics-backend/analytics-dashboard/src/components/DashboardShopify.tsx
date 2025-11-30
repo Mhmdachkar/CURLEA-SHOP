@@ -70,8 +70,8 @@ export default function DashboardShopify() {
             >
               {d}d
             </button>
-          ))}
-        </div>
+                    ))}
+                  </div>
       }
     >
       {renderContent()}
