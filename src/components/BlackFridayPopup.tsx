@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Gift, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Sparkles, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -119,7 +119,6 @@ export default function BlackFridayPopup() {
                     transition={{ delay: 0.2 }}
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] text-black px-6 py-2 rounded-full mb-6 font-bold text-sm shadow-lg"
                   >
-                    <Gift className="w-4 h-4" />
                     <span>BLACK FRIDAY EXCLUSIVE</span>
                   </motion.div>
 

@@ -41,10 +41,10 @@ const FULL_SETS = [
         name: 'DreamCurl™ Original Set',
         price: 24.99,
         colors: {
-            'Mulberry': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
-            'Candy': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
-            'Latte': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
-            'Olive': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+            'Mulberry': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
+            'Candy': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_686ff861-b01d-41ef-9c4c-0684df944cd6.webp', import.meta.url).href,
+            'Latte': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_bf658774-aed4-4c4a-be42-ef9707a47f3e.webp', import.meta.url).href,
+            'Olive': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
         }
     },
     {
@@ -108,7 +108,6 @@ export const BlackFridaySection = () => {
             price: `$${selectedSet.price.toFixed(2)}`,
             image: currentImage,
             selectedColor: selectedColor,
-            quantity: 1,
         });
 
         // 2. Add the Free Gift (Claw Clip Set)
@@ -118,8 +117,6 @@ export const BlackFridaySection = () => {
             price: '$0.00', // Free!
             originalPrice: '$15.99',
             image: giftImage,
-            quantity: 1,
-            isFreeGift: true,
         });
 
         // Small delay for animation
