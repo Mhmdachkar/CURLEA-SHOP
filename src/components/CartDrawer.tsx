@@ -562,15 +562,6 @@ export const CartDrawer = () => {
                     ))}
                   </ItemsList>
 
-                  {/* Promotional Discount */}
-                  {promoDiscount > 0 && (
-                    <DiscountRow>
-                      <DiscountLabel>
-                        <span>🎉</span> Buy 2 Get 50% Off 3rd
-                      </DiscountLabel>
-                      <DiscountAmount>-{formatPrice(promoDiscount)}</DiscountAmount>
-                    </DiscountRow>
-                  )}
 
                   {/* Checkout Button and Total */}
                   <ButtonGroup>

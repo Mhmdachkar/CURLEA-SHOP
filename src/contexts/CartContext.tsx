@@ -35,33 +35,10 @@ type CartAction =
   | { type: 'SET_ITEMS'; payload: CartItem[] };
 
 // Helper function to calculate promotional discount: Buy 2, Get 50% Off 3rd Item
-// Discount applies to the 3rd item selected (and every 3rd item after that) based on order added
+// DISABLED: This promotion has been removed
 export const calculatePromoDiscount = (items: CartItem[]): number => {
-  // Flatten items array to get individual units in the order they appear in cart
-  // This preserves the order items were added (items are added to end of array)
-  const itemUnits: Array<{ price: number }> = [];
-  
-  for (const item of items) {
-    const price = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
-    // Add each unit of this item to the array
-    for (let i = 0; i < item.quantity; i++) {
-      itemUnits.push({ price });
-    }
-  }
-
-  let totalDiscount = 0;
-  
-  // Apply 50% discount to every 3rd item (3rd, 6th, 9th, etc.)
-  // Index is 0-based, so we check if (index + 1) % 3 === 0
-  for (let i = 0; i < itemUnits.length; i++) {
-    // Check if this is the 3rd, 6th, 9th, etc. item (1-indexed position is divisible by 3)
-    if ((i + 1) % 3 === 0) {
-      // Apply 50% discount to this specific item's price
-      totalDiscount += itemUnits[i].price * 0.5;
-    }
-  }
-
-  return totalDiscount;
+  // Promotion disabled - always return 0
+  return 0;
 };
 
 const CartContext = createContext<{

@@ -781,21 +781,6 @@ export default function CheckoutPage() {
                                     <span className="text-gray-600 flex-shrink-0" style={typography}>Subtotal</span>
                                     <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>${subtotal.toFixed(2)}</span>
                                 </motion.div>
-                                {promoDiscount > 0 && (
-                                    <motion.div
-                                        className="flex justify-between items-center gap-2 text-sm bg-gradient-to-r from-[#A4193D]/5 to-[#D4AF37]/5 -mx-2 px-2 py-1.5 rounded-lg"
-                                        whileHover={{ x: 2, scale: 1.02, transition: { duration: 0.2 } }}
-                                        initial={{ opacity: 0, y: -5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                    >
-                                        <span className="text-[#A4193D] font-semibold flex-shrink min-w-0 text-xs sm:text-sm flex items-center gap-1" style={typography}>
-                                            <span className="text-base">🎉</span> Buy 2 Get 50% Off 3rd
-                                        </span>
-                                        <span className="font-bold text-[#A4193D] flex-shrink-0 whitespace-nowrap" style={typography}>
-                                            -${promoDiscount.toFixed(2)}
-                                        </span>
-                                    </motion.div>
-                                )}
                                 {stripeDiscount > 0 && (
                                     <motion.div
                                         className="flex justify-between items-center gap-2 text-sm"
