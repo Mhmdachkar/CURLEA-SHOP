@@ -579,7 +579,7 @@ export const HeroSection = () => {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <motion.h1
+        <motion.h1
             className="relative text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -595,7 +595,7 @@ export const HeroSection = () => {
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
+        >
               Black Friday
             </motion.span>
             <br />
@@ -609,9 +609,9 @@ export const HeroSection = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
-              Event
+            Event
             </motion.span>
-          </motion.h1>
+        </motion.h1>
         </motion.div>
 
         <motion.p
@@ -630,20 +630,20 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
-        >
+            >
           <ShopOfferButton />
           <Link to="/collection">
             <motion.div
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Button
-                variant="outline"
-                size="lg"
+            <Button
+              variant="outline"
+              size="lg"
                 className="bg-transparent border-2 border-white/50 text-white hover:bg-white/10 hover:border-white px-10 py-6 text-lg rounded-full backdrop-blur-sm transition-all duration-300"
-              >
-                View Collection
-              </Button>
+            >
+              View Collection
+            </Button>
             </motion.div>
           </Link>
         </motion.div>

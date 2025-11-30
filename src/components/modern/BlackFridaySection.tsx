@@ -251,14 +251,14 @@ export const BlackFridaySection = () => {
                         </motion.div>
 
                         {/* Value badge - Responsive */}
-                        <motion.div
+                            <motion.div
                             className="absolute -top-2 -left-2 sm:-top-3 sm:-left-3 md:-top-4 md:-left-4 bg-rose-500 text-white font-bold px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full shadow-xl transform -rotate-12 text-xs sm:text-sm md:text-base"
                             initial={{ scale: 0, rotate: -180 }}
                             animate={isInView ? { scale: 1, rotate: -12 } : {}}
                             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                         >
                             Save $15.99
-                        </motion.div>
+                            </motion.div>
                     </div>
 
                     {/* Right: Enhanced Content */}
@@ -325,7 +325,7 @@ export const BlackFridaySection = () => {
                                                 selectedSetId === set.id
                                                     ? 'bg-gradient-to-r from-[#D4AF37]/10 to-[#F2D06B]/10 border-[#D4AF37] text-black shadow-lg'
                                                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-[#D4AF37]/50'
-                                            }`}
+                                                }`}
                                             whileHover={{ scale: 1.02, x: 5 }}
                                             whileTap={{ scale: 0.98 }}
                                             initial={{ opacity: 0, x: -20 }}
@@ -358,8 +358,8 @@ export const BlackFridaySection = () => {
                                         
                                         return (
                                             <motion.button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
+                                            key={color}
+                                            onClick={() => setSelectedColor(color)}
                                                 className={`px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all border-2 ${
                                                     isSelected
                                                         ? 'shadow-lg scale-105'
@@ -375,8 +375,8 @@ export const BlackFridaySection = () => {
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={isInView ? { opacity: 1, scale: isSelected ? 1.05 : 1 } : {}}
                                                 transition={{ delay: 0.7 + index * 0.05 }}
-                                            >
-                                                {color}
+                                        >
+                                            {color}
                                             </motion.button>
                                         );
                                     })}
