@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
@@ -8,38 +8,20 @@ import { toast } from "sonner";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    strokeWidth={1.5} 
-    stroke="currentColor" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
     className="w-6 h-6"
   >
-    <path 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" 
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
     />
   </svg>
-);
-
-// Tooltip Component
-const ColorTooltip = ({ colorName, isVisible }: { colorName: string; isVisible: boolean }) => (
-  <AnimatePresence>
-    {isVisible && (
-      <motion.div
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 5 }}
-        transition={{ duration: 0.15 }}
-        className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none"
-      >
-        {colorName}
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
-      </motion.div>
-    )}
-  </AnimatePresence>
 );
 
 interface ColorOption {
@@ -71,14 +53,14 @@ const formatColorName = (color: string): string => {
     'candy&marchmello': 'Candy & Marshmallow',
     'olive&latte': 'Olive & Latte'
   };
-  
+
   return displayMap[color.toUpperCase()] || color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
 };
 
 // Helper function to convert product colors to color options
 const getColorOptions = (colors?: string[]): ColorOption[] => {
   if (!colors || colors.length === 0) return [];
-  
+
   const colorMap: Record<string, string> = {
     'grey': 'bg-gray-400',
     'gray': 'bg-gray-400',
@@ -141,7 +123,6 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
       'CANDY': new URL('../assets/Heatless Hair Curling Rod/product5/pppp2.webp', import.meta.url).href,
       'LATTE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp1.webp', import.meta.url).href,
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/product5/pppp3.webp', import.meta.url).href,
-      
     },
     'zero-heat-mini': {
       'OLIVE': new URL('../assets/Heatless Hair Curling Rod/mini-size/mini-olive.webp', import.meta.url).href,
@@ -167,20 +148,20 @@ const getColorVariantImage = (productId: string, colorName: string, defaultImage
   return defaultImage;
 };
 
-export const ProductCard = ({ 
-  id, 
-  name, 
-  price, 
-  image, 
+const ProductCardComponent = ({
+  id,
+  name,
+  price,
+  image,
   colors,
   images,
-  onClick, 
-  onAddToCart 
+  onClick,
+  onAddToCart
 }: ProductCardProps) => {
   const { addToCart, openCart } = useCart();
-  
+
   const colorOptions = getColorOptions(colors);
-  
+
   // Set default active color (special cases for Trending section cards)
   const getInitialColor = (): ColorOption | null => {
     if (colorOptions.length === 0) return null;
@@ -196,18 +177,18 @@ export const ProductCard = ({
   };
 
   const [activeColor, setActiveColor] = useState<ColorOption | null>(getInitialColor());
-  
+
   // Track which color swatch is being hovered for tooltip
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   // Get the current image based on selected color
-  const currentImage = activeColor 
+  const currentImage = activeColor
     ? getColorVariantImage(id, activeColor.name, image, images)
     : image;
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     // Call the onAddToCart prop if provided
     if (onAddToCart) {
       onAddToCart({
@@ -227,7 +208,7 @@ export const ProductCard = ({
         selectedColor: activeColor?.name
       });
     }
-    
+
     // Show beautiful success message
     toast.success(
       `Added to your cart! 🎉`,
@@ -246,63 +227,73 @@ export const ProductCard = ({
         icon: '✨',
       }
     );
-    
+
     // Automatically open cart dashboard
     openCart();
-  };
+  }, [id, name, price, currentImage, activeColor, onAddToCart, addToCart, openCart]);
+
+  const handleColorSelect = useCallback((e: React.MouseEvent, color: ColorOption) => {
+    e.stopPropagation();
+    setActiveColor(color);
+  }, []);
+
+  const handleColorHover = useCallback((colorName: string) => {
+    setHoveredColor(colorName);
+  }, []);
+
+  const handleColorLeave = useCallback(() => {
+    setHoveredColor(null);
+  }, []);
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full bg-white rounded-lg shadow-md overflow-hidden flex flex-col cursor-pointer hover:shadow-xl transition-shadow duration-300"
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
       onClick={onClick}
     >
-      
+
       {/* 1. Product Image - 1:1 Aspect Ratio */}
       <div className="relative w-full aspect-square">
         <OptimizedImage
           src={currentImage}
-            alt={name}
+          alt={name}
           className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
         />
       </div>
 
       {/* 2. Product Details */}
       <div className="p-4 flex justify-between items-start">
-        
+
         {/* Left Side: Title, Price, Colors */}
         <div className="flex-1 pr-2">
           <h3 className="text-base font-semibold text-gray-900 line-clamp-2 mb-1 font-sharp-serif">
             {name}
           </h3>
           <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
-          
+
           {/* 3. Enhanced Color Swatches */}
           {colorOptions.length > 0 && (
             <div className="flex gap-2 mt-3 flex-wrap relative">
-              {colorOptions.map((color, index) => {
+              {colorOptions.map((color) => {
                 const isSelected = activeColor?.name === color.name;
                 const isHovered = hoveredColor === color.name;
-                
+
                 return (
                   <div key={color.name} className="relative">
                     <motion.button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveColor(color);
-                      }}
-                      onMouseEnter={() => setHoveredColor(color.name)}
-                      onMouseLeave={() => setHoveredColor(null)}
+                      onClick={(e) => handleColorSelect(e, color)}
+                      onMouseEnter={() => handleColorHover(color.name)}
+                      onMouseLeave={handleColorLeave}
                       className={`
                         relative w-8 h-8 rounded-full flex-shrink-0
                         transition-all duration-200 ease-in-out
                         cursor-pointer
                         border-2 border-gray-200
                         ${color.bgClass}
-                        ${isSelected 
-                          ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg' 
+                        ${isSelected
+                          ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg'
                           : 'hover:scale-110 hover:shadow-md focus:ring-2 focus:ring-blue-600 focus:ring-offset-2'
                         }
                       `}
@@ -321,20 +312,19 @@ export const ProductCard = ({
                             transition={{ duration: 0.2, ease: "backOut" }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <Check 
-                              className={`w-4 h-4 ${
-                                color.bgClass === 'bg-white' || 
-                                color.bgClass === 'bg-amber-200' || 
-                                color.bgClass === 'bg-yellow-500'
-                                  ? 'text-gray-900' 
+                            <Check
+                              className={`w-4 h-4 ${color.bgClass === 'bg-white' ||
+                                  color.bgClass === 'bg-amber-200' ||
+                                  color.bgClass === 'bg-yellow-500'
+                                  ? 'text-gray-900'
                                   : 'text-white'
-                              } stroke-[3]`}
+                                } stroke-[3]`}
                             />
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </motion.button>
-                    
+
                     {/* Tooltip - positioned absolutely relative to the wrapper */}
                     {isHovered && !isSelected && (
                       <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
@@ -363,12 +353,12 @@ export const ProductCard = ({
             type="button"
             className="group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex-shrink-0 overflow-hidden"
             aria-label="Add to cart"
-            whileHover={{ 
+            whileHover={{
               scale: 1.1,
               rotate: 5,
               transition: { duration: 0.2, ease: "easeOut" }
             }}
-            whileTap={{ 
+            whileTap={{
               scale: 0.95,
               transition: { duration: 0.1 }
             }}
@@ -381,18 +371,18 @@ export const ProductCard = ({
               whileHover={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             />
-            
+
             {/* Icon with enhanced hover effects */}
             <motion.div
               className="relative z-10 text-black group-hover:text-white transition-colors duration-300"
-              whileHover={{ 
+              whileHover={{
                 rotate: 360,
                 transition: { duration: 0.6, ease: "easeInOut" }
               }}
             >
               <CartIcon />
             </motion.div>
-            
+
             {/* Subtle glow effect on hover */}
             <motion.div
               className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100"
@@ -409,3 +399,6 @@ export const ProductCard = ({
     </motion.div>
   );
 };
+
+// Wrap with React.memo to prevent unnecessary re-renders
+export const ProductCard = memo(ProductCardComponent);

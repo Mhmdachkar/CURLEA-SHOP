@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useCallback, useMemo } from 'react';
 import { fbTrack, gaTrack } from '@/utils/tracking';
 
 export interface CartItem {
@@ -65,8 +65,8 @@ const clampQuantityToAvailability = (quantity: number, maxAvailable?: number | n
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
-      const existingItem = state.items.find(item => 
-        item.id === action.payload.id && 
+      const existingItem = state.items.find(item =>
+        item.id === action.payload.id &&
         item.selectedColor === action.payload.selectedColor &&
         item.selectedSize === action.payload.selectedSize
       );
@@ -80,11 +80,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           ...state,
           items: state.items.map(item =>
             item.id === action.payload.id && item.selectedColor === action.payload.selectedColor && item.selectedSize === action.payload.selectedSize
-              ? { 
-                  ...item, 
-                  quantity: clampQuantityToAvailability(item.quantity + payloadQuantity, maxAvailable),
-                  maxAvailable: maxAvailable
-                }
+              ? {
+                ...item,
+                quantity: clampQuantityToAvailability(item.quantity + payloadQuantity, maxAvailable),
+                maxAvailable: maxAvailable
+              }
               : item
           ),
         };
@@ -104,8 +104,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'REMOVE_FROM_CART':
       return {
         ...state,
-        items: state.items.filter(item => 
-          !(item.id === action.payload.id && 
+        items: state.items.filter(item =>
+          !(item.id === action.payload.id &&
             item.selectedColor === action.payload.selectedColor &&
             item.selectedSize === action.payload.selectedSize)
         ),
@@ -116,12 +116,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         items: state.items.map(item =>
           (item.id === action.payload.id &&
-           item.selectedColor === action.payload.selectedColor &&
-           item.selectedSize === action.payload.selectedSize)
-            ? { 
-                ...item, 
-                quantity: clampQuantityToAvailability(action.payload.quantity, item.maxAvailable) 
-              }
+            item.selectedColor === action.payload.selectedColor &&
+            item.selectedSize === action.payload.selectedSize)
+            ? {
+              ...item,
+              quantity: clampQuantityToAvailability(action.payload.quantity, item.maxAvailable)
+            }
             : item
         ).filter(item => item.quantity > 0),
       };
@@ -204,7 +204,7 @@ const loadCartFromStorage = (): CartState => {
   if (typeof window === 'undefined') {
     return { items: [], isOpen: false };
   }
-  
+
   try {
     const savedCart = localStorage.getItem('curlea-cart');
     if (savedCart) {
@@ -222,14 +222,14 @@ const loadCartFromStorage = (): CartState => {
   } catch (error) {
     console.error('Error loading cart from localStorage:', error);
   }
-  
+
   return { items: [], isOpen: false };
 };
 
 // Save cart to localStorage
 const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.setItem('curlea-cart', JSON.stringify({ items }));
   } catch (error) {
@@ -412,22 +412,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const itemCount = state.items.reduce((total, item) => total + item.quantity, 0);
   const promoDiscount = calculatePromoDiscount(state.items);
 
-  return (
-    <CartContext.Provider
-      value={{
-        state,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        toggleCart,
-        openCart,
-        closeCart,
-        itemCount,
-        promoDiscount,
+  // Memoize context value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({
+      state,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      toggleCart,
+      openCart,
+      closeCart,
+      itemCount,
+      promoDiscount,
       refreshInventory,
-      }}
-    >
+    }),
+    [state, addToCart, removeFromCart, updateQuantity, clearCart, toggleCart, openCart, closeCart, itemCount, promoDiscount, refreshInventory]
+  );
+
+  return (
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

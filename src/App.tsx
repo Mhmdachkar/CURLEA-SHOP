@@ -13,16 +13,29 @@ import { registerServiceWorker } from "@/utils/serviceWorker";
 import BlackFridayPopup from "@/components/BlackFridayPopup";
 import PromotionalBanner from "@/components/PromotionalBanner";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
-import Index from "./pages/Index";
-import { ProductDetailPage } from "./pages/ProductDetailPage";
-import { CollectionPage } from "./pages/CollectionPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import SuccessPage from "./pages/SuccessPage";
-import { CategoryPage } from "./pages/CategoryPage";
-import AnalyticsDashboard from "./pages/AnalyticsDashboard";
-import NotFound from "./pages/NotFound";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { initializeSupabaseIntegration, trackCampaignFromUrl } from "@/services/supabaseIntegration";
+
+// Lazy load pages for better performance (code splitting)
+const Index = lazy(() => import("./pages/Index"));
+const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage").then(m => ({ default: m.ProductDetailPage })));
+const CollectionPage = lazy(() => import("./pages/CollectionPage").then(m => ({ default: m.CollectionPage })));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const SuccessPage = lazy(() => import("./pages/SuccessPage"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage").then(m => ({ default: m.CategoryPage })));
+const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="text-center">
+      <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+        <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+      </div>
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -89,18 +102,20 @@ const App = () => {
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/shop" element={<CollectionPage />} />
-                  <Route path="/collection" element={<CollectionPage />} />
-                  <Route path="/category/:category" element={<CategoryPage />} />
-                  <Route path="/product/:id" element={<ProductDetailPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/success" element={<SuccessPage />} />
-                  <Route path="/analytics" element={<AnalyticsDashboard />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/shop" element={<CollectionPage />} />
+                    <Route path="/collection" element={<CollectionPage />} />
+                    <Route path="/category/:category" element={<CategoryPage />} />
+                    <Route path="/product/:id" element={<ProductDetailPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/success" element={<SuccessPage />} />
+                    <Route path="/analytics" element={<AnalyticsDashboard />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
                 <CartDrawer />
                 <BlackFridayPopup />
               </BrowserRouter>
@@ -108,7 +123,7 @@ const App = () => {
           </RealtimeProvider>
         </TooltipProvider>
       </QueryClientProvider>
-    </ErrorBoundary>
+    </ErrorBoundary >
   );
 };
 
