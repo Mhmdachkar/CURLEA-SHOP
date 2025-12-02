@@ -37,46 +37,46 @@ export function normalizeColor(color: string): string {
 
 // Current Inventory Data (from CSV dataset with pricing)
 const inventoryData: InventoryItem[] = [
-    // Full Sets (DreamCurl™ Original Set) - Price: $22.99-$24.99
-    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Original Set', size: 'large', color: 'purple', quantity: 6, sellingPrice: 24.99, costPerUnit: 7, profit: 17.99, key: 'dreamcurl-original|large|purple' },
-    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Original Set', size: 'large', color: 'pink', quantity: 2, sellingPrice: 24.99, costPerUnit: 7, profit: 17.99, key: 'dreamcurl-original|large|pink' },
-    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Original Set', size: 'large', color: 'brown', quantity: 10, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-original|large|brown' },
-    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Original Set', size: 'large', color: 'green', quantity: 9, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-original|large|green' },
+    // Full Sets (DreamCurl™ Full Set Original) - Price: $22.99-$24.99
+    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Full Set Original', size: 'large', color: 'purple', quantity: 6, sellingPrice: 24.99, costPerUnit: 7, profit: 17.99, key: 'dreamcurl-original|large|purple' },
+    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Full Set Original', size: 'large', color: 'pink', quantity: 2, sellingPrice: 24.99, costPerUnit: 7, profit: 17.99, key: 'dreamcurl-original|large|pink' },
+    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Full Set Original', size: 'large', color: 'brown', quantity: 10, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-original|large|brown' },
+    { productId: 'dreamcurl-original', productName: 'CURLEA DreamCurl™ Full Set Original', size: 'large', color: 'green', quantity: 9, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-original|large|green' },
 
-    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Jumbo Size', size: 'jumbo', color: 'brown', quantity: 10, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|brown' },
-    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Jumbo Size', size: 'jumbo', color: 'purple', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|purple' },
-    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Jumbo Size', size: 'jumbo', color: 'green', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|green' },
-    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Jumbo Size', size: 'jumbo', color: 'pink', quantity: 12, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|pink' },
+    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Full Set Jumbo', size: 'jumbo', color: 'brown', quantity: 10, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|brown' },
+    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Full Set Jumbo', size: 'jumbo', color: 'purple', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|purple' },
+    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Full Set Jumbo', size: 'jumbo', color: 'green', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|green' },
+    { productId: 'dreamcurl-jumbo', productName: 'CURLEA DreamCurl™ Full Set Jumbo', size: 'jumbo', color: 'pink', quantity: 12, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-jumbo|jumbo|pink' },
 
-    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Midi', size: 'midi', color: 'green', quantity: 11, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|green' },
-    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Midi', size: 'midi', color: 'purple', quantity: 12, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|purple' },
-    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Midi', size: 'midi', color: 'pink', quantity: 12, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|pink' },
-    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Midi', size: 'midi', color: 'brown', quantity: 11, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|brown' },
+    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Full Set Midi', size: 'midi', color: 'green', quantity: 11, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|green' },
+    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Full Set Midi', size: 'midi', color: 'purple', quantity: 12, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|purple' },
+    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Full Set Midi', size: 'midi', color: 'pink', quantity: 12, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|pink' },
+    { productId: 'dreamcurl-midi', productName: 'CURLEA DreamCurl™ Full Set Midi', size: 'midi', color: 'brown', quantity: 11, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-midi|midi|brown' },
 
     { productId: 'zero-heat-mini', productName: 'CURLEA Zero Heat Mini Set', size: 'small', color: 'purple', quantity: 9, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'zero-heat-mini|small|purple' },
     { productId: 'zero-heat-mini', productName: 'CURLEA Zero Heat Mini Set', size: 'small', color: 'brown', quantity: 8, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'zero-heat-mini|small|brown' },
     { productId: 'zero-heat-mini', productName: 'CURLEA Zero Heat Mini Set', size: 'small', color: 'pink', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'zero-heat-mini|small|pink' },
     { productId: 'zero-heat-mini', productName: 'CURLEA Zero Heat Mini Set', size: 'small', color: 'green', quantity: 11, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'zero-heat-mini|small|green' },
 
-    // Single Sets (DreamCurl™ Short Set) - Price: $16.99-$22.99
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'mini', color: 'pink', quantity: 2, sellingPrice: 18.50, costPerUnit: 3.5, profit: 15.00, key: 'dreamcurl-short-set|mini|pink' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'mini', color: 'brown', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|brown' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'mini', color: 'purple', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|purple' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'mini', color: 'green', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|green' },
+    // Single Sets (DreamCurl™ Single Set) - Price: $16.99-$22.99
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'mini', color: 'pink', quantity: 2, sellingPrice: 18.50, costPerUnit: 3.5, profit: 15.00, key: 'dreamcurl-short-set|mini|pink' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'mini', color: 'brown', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|brown' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'mini', color: 'purple', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|purple' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'mini', color: 'green', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|mini|green' },
 
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'midi', color: 'green', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|green' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'midi', color: 'purple', quantity: 2, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|purple' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'midi', color: 'pink', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|pink' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'midi', color: 'brown', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|brown' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'midi', color: 'green', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|green' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'midi', color: 'purple', quantity: 2, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|purple' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'midi', color: 'pink', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|pink' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'midi', color: 'brown', quantity: 3, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|midi|brown' },
 
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'original', color: 'green', quantity: 3, sellingPrice: 16.99, costPerUnit: 4, profit: 12.99, key: 'dreamcurl-short-set|original|green' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'original', color: 'brown', quantity: 1, sellingPrice: 16.99, costPerUnit: 4, profit: 12.99, key: 'dreamcurl-short-set|original|brown' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'original', color: 'purple', quantity: 2, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|original|purple' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'original', color: 'green', quantity: 3, sellingPrice: 16.99, costPerUnit: 4, profit: 12.99, key: 'dreamcurl-short-set|original|green' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'original', color: 'brown', quantity: 1, sellingPrice: 16.99, costPerUnit: 4, profit: 12.99, key: 'dreamcurl-short-set|original|brown' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'original', color: 'purple', quantity: 2, sellingPrice: 20.00, costPerUnit: 3, profit: 17.00, key: 'dreamcurl-short-set|original|purple' },
 
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'jumbo', color: 'brown', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|brown' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'jumbo', color: 'pink', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|pink' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'jumbo', color: 'purple', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|purple' },
-    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Short Set', size: 'jumbo', color: 'green', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|green' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'jumbo', color: 'brown', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|brown' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'jumbo', color: 'pink', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|pink' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'jumbo', color: 'purple', quantity: 3, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|purple' },
+    { productId: 'dreamcurl-short-set', productName: 'CURLEA DreamCurl™ Single Set', size: 'jumbo', color: 'green', quantity: 2, sellingPrice: 22.99, costPerUnit: 4, profit: 18.99, key: 'dreamcurl-short-set|jumbo|green' },
 
     // Heat Bun Bons - Price: $19.99
     { productId: 'heatless-5', productName: 'CURLEA Bun Bons Heatless Curling System', size: 'mini', color: 'purple', quantity: 3, sellingPrice: 19.99, costPerUnit: 4, profit: 15.99, key: 'heatless-5|mini|purple' },

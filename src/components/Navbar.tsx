@@ -15,7 +15,7 @@ const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetai
   top: 70px; /* Mobile: Height of promotional banner when text stacks (py-3.5 * 2 + text height) */
   left: 0;
   right: 0;
-  z-index: 9998; /* Below promotional banner (1000) but above content */
+  z-index: ${({ theme }) => theme.zIndex.sticky}; /* Below drawer (1500) but above content */
   width: 100%;
   transition: ${({ theme }) => theme.transitions.smooth};
   background-color: ${({ $isScrolled, theme }) =>
@@ -330,22 +330,24 @@ const IconButton = styled(motion.button) <{ $isProductDetailPage?: boolean }>`
   }
 `;
 
-const CartBadge = styled(motion.div) <{ $isProductDetailPage?: boolean }>`
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ $isProductDetailPage }) =>
-    $isProductDetailPage ? '#ffffff !important' : 'inherit'};
-  border-radius: ${({ theme }) => theme.borderRadius.full};
+const CartBadge = styled(motion.span) <{ $isProductDetailPage?: boolean }>`
+ position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.accent};
+  color: ${({ theme }) => theme.colors.background};
+  font-size: 11px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  padding: 0 0.25rem;
+  padding: 0 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  pointer-events: none;
 
   /* Force white text on product detail pages */
   ${({ $isProductDetailPage }) => $isProductDetailPage && `
@@ -520,15 +522,15 @@ export const Navbar = () => {
   useEffect(() => {
     let ticking = false;
     let lastScrollY = window.scrollY;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
-          
+
           // Set scrolled state
           setIsScrolled(currentScrollY > 50);
-          
+
           // Detect scroll direction and set opacity
           if (currentScrollY < 50) {
             // At top of page - always show
@@ -543,7 +545,7 @@ export const Navbar = () => {
             setScrollDirection('up');
             setNavbarOpacity(0);
           }
-          
+
           lastScrollY = currentScrollY;
           ticking = false;
         });
@@ -598,12 +600,12 @@ export const Navbar = () => {
         $isScrolled={isScrolled}
         $isProductDetailPage={isProductDetailPage}
         initial={{ y: -100 }}
-        animate={{ 
+        animate={{
           y: 0,
           opacity: navbarOpacity,
         }}
-        transition={{ 
-          duration: 0.4, 
+        transition={{
+          duration: 0.4,
           ease: "easeInOut",
           opacity: { duration: 0.3, ease: "easeInOut" }
         }}

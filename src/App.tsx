@@ -80,15 +80,12 @@ const App = () => {
               <Toaster
                 theme="dark"
                 position="top-center"
+                richColors={false}
                 toastOptions={{
-                  style: {
-                    background: '#000',
-                    color: '#fff',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    fontSize: '14px',
-                    padding: '16px',
+                  unstyled: false,
+                  classNames: {
+                    toast: 'elegant-toast-container',
                   },
-                  duration: 3000,
                 }}
                 closeButton
               />

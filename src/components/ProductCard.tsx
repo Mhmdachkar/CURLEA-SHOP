@@ -209,22 +209,39 @@ const ProductCardComponent = ({
       });
     }
 
-    // Show beautiful success message
+    // Automatically open cart dashboard
+    openCart();
+
+    // Show elegant success toast with larger product image
     toast.success(
-      `Added to your cart! 🎉`,
+      name,
       {
+        description: `Added to your shopping cart${activeColor ? ` • ${formatColorName(activeColor.name)}` : ''}`,
         duration: 3000,
+        icon: (
+          <img
+            src={currentImage}
+            alt={name}
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '12px',
+              objectFit: 'cover',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+            }}
+          />
+        ),
         style: {
-          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-          border: '2px solid #22c55e',
-          boxShadow: '0 10px 40px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)',
+          background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.1)',
           padding: '20px 24px',
-          borderRadius: '16px',
-          fontSize: '16px',
-          fontWeight: '600',
-          color: '#065f46',
+          borderRadius: '12px',
+          color: '#ffffff',
+          minWidth: '380px',
         },
-        icon: '✨',
+        className: 'elegant-toast',
       }
     );
 
@@ -314,10 +331,10 @@ const ProductCardComponent = ({
                           >
                             <Check
                               className={`w-4 h-4 ${color.bgClass === 'bg-white' ||
-                                  color.bgClass === 'bg-amber-200' ||
-                                  color.bgClass === 'bg-yellow-500'
-                                  ? 'text-gray-900'
-                                  : 'text-white'
+                                color.bgClass === 'bg-amber-200' ||
+                                color.bgClass === 'bg-yellow-500'
+                                ? 'text-gray-900'
+                                : 'text-white'
                                 } stroke-[3]`}
                             />
                           </motion.div>

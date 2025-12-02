@@ -35,10 +35,28 @@ type CartAction =
   | { type: 'SET_ITEMS'; payload: CartItem[] };
 
 // Helper function to calculate promotional discount: Buy 2, Get 50% Off 3rd Item
-// DISABLED: This promotion has been removed
 export const calculatePromoDiscount = (items: CartItem[]): number => {
-  // Promotion disabled - always return 0
-  return 0;
+  // Count total items across all cart entries
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Only apply discount if there are exactly 3 or more items (but only to the 3rd item)
+  if (totalItems < 3) return 0;
+
+  // Sort items by price (highest first) to maximize discount value
+  const sortedItems = [...items].sort((a, b) => {
+    const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
+    const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
+    return priceB - priceA;
+  });
+
+  // Apply 50% discount to ONLY the most expensive item (since user has 3+)
+  const mostExpensiveItem = sortedItems[0];
+  const itemPrice = parseFloat(mostExpensiveItem.price.replace(/[^0-9.]/g, ''));
+
+  // 50% off the most expensive item (this represents the "3rd item" discount)
+  const discount = itemPrice * 0.5;
+
+  return discount;
 };
 
 const CartContext = createContext<{

@@ -45,7 +45,7 @@ export const CategoryPage = () => {
       return () => clearInterval(interval);
     }
   }, [normalizedCategory]);
-  
+
   if (!normalizedCategory || !validCategories.includes(normalizedCategory)) {
     return (
       <div className="min-h-screen bg-white relative pt-24 pb-16 flex items-center justify-center">
@@ -76,7 +76,7 @@ export const CategoryPage = () => {
       accentColor: "text-blue-600"
     },
     curly: {
-      title: "Curly Hair Collection", 
+      title: "Curly Hair Collection",
       subtitle: "",
       description: "Discover our curated collection of premium hair accessories specifically designed for curly hair. From comfortable hair clips to styling tools, each piece is crafted to enhance your natural curl pattern while providing comfort and style.",
       gradient: "from-amber-500/10 via-orange-500/20 to-red-500/10",
@@ -86,7 +86,7 @@ export const CategoryPage = () => {
       title: "Curlea® Satin Rituals™ Collection",
       subtitle: "Coming Soon - Achieve smooth, sleek perfection",
       description: "Transform your straight hair with our premium collection designed for smoothness and shine. From smoothing treatments to lightweight styling products, achieve the sleek look you desire.",
-      gradient: "from-slate-500/10 via-gray-500/20 to-zinc-500/10", 
+      gradient: "from-slate-500/10 via-gray-500/20 to-zinc-500/10",
       accentColor: "text-slate-600",
       comingSoon: true
     }
@@ -98,12 +98,12 @@ export const CategoryPage = () => {
     return (
       <div className="min-h-screen bg-white relative">
         <Navbar />
-        
+
         {/* Hero Section with Coming Soon */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background with gradient */}
           <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`} />
-          
+
           {/* Content */}
           <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
             <motion.div
@@ -119,11 +119,11 @@ export const CategoryPage = () => {
               >
                 <motion.div
                   className="w-3 h-3 bg-white rounded-full"
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.3, 1],
                     opacity: [0.7, 1, 0.7]
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut"
@@ -132,11 +132,11 @@ export const CategoryPage = () => {
                 <span className="text-white font-semibold text-lg">Coming Soon</span>
                 <motion.div
                   className="w-3 h-3 bg-white rounded-full"
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.3, 1],
                     opacity: [0.7, 1, 0.7]
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut",
@@ -144,19 +144,19 @@ export const CategoryPage = () => {
                   }}
                 />
               </motion.div>
-              
+
               <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 ${config.accentColor}`}>
                 {config.title}
               </h1>
-              
+
               <p className="text-xl sm:text-2xl text-black mb-8 max-w-2xl mx-auto">
                 {config.subtitle}
               </p>
-              
+
               <p className="text-base sm:text-lg text-black mb-12 max-w-3xl mx-auto leading-relaxed">
                 {config.description}
               </p>
-              
+
               <motion.div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 initial={{ opacity: 0, y: 20 }}
@@ -184,11 +184,11 @@ export const CategoryPage = () => {
   }
 
   // Get products for this category
-  const categoryProducts = normalizedCategory === 'wavy' 
+  const categoryProducts = normalizedCategory === 'wavy'
     ? getHeatlessCurlingRodProducts() // Special products for heatless curling rods
     : normalizedCategory === 'curly'
-    ? getCurlyHairCollectionProducts() // Special products for curly hair collection
-    : getProductsByHairType(
+      ? getCurlyHairCollectionProducts() // Special products for curly hair collection
+      : getProductsByHairType(
         normalizedCategory.charAt(0).toUpperCase() + normalizedCategory.slice(1)
       );
 
@@ -215,11 +215,10 @@ export const CategoryPage = () => {
       <Navbar />
       {/* Hero Section */}
       <motion.section
-        className={`relative overflow-hidden ${
-          (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-            ? 'bg-center bg-no-repeat' 
+        className={`relative overflow-hidden ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+            ? 'bg-center bg-no-repeat'
             : `bg-gradient-to-br ${config.gradient} py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8`
-        }`}
+          }`}
         style={{
           minHeight: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '100vh' : 'auto',
           width: '100%',
@@ -241,9 +240,9 @@ export const CategoryPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ 
-                  duration: 1.2, 
-                  ease: [0.43, 0.13, 0.23, 0.96] 
+                transition={{
+                  duration: 1.2,
+                  ease: [0.43, 0.13, 0.23, 0.96]
                 }}
                 className="absolute inset-0"
                 style={{
@@ -332,40 +331,38 @@ export const CategoryPage = () => {
         {(normalizedCategory === 'wavy' || normalizedCategory === 'curly') && (
           <div className="absolute inset-0 bg-black/30" />
         )}
-        
-        <div className={`max-w-7xl mx-auto text-center relative z-10 ${
-          (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+
+        <div className={`max-w-7xl mx-auto text-center relative z-10 ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
             ? 'h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8'
             : ''
-        }`}>
+          }`}>
           {/* Animated Title with Word-by-Word Reveal - Sharp & Elegant */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-              <motion.h1 
-                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                    ? 'text-white' 
-                    : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
+            <motion.h1
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                  ? 'text-white'
+                  : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
                 }`}
-                style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3)' 
-                    : 'none',
-                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
-                  fontWeight: 900,
-                  letterSpacing: '-0.04em',
-                  WebkitFontSmoothing: 'antialiased',
-                  MozOsxFontSmoothing: 'grayscale',
-                  filter: 'contrast(1.1) brightness(1.05)'
-                }}
+              style={{
+                textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                  ? '0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3)'
+                  : 'none',
+                fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                fontWeight: 900,
+                letterSpacing: '-0.04em',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                filter: 'contrast(1.1) brightness(1.05)'
+              }}
               initial={{ opacity: 0, y: 60, scale: 0.85, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              transition={{ 
-                duration: 1.5, 
-                delay: 0.4, 
+              transition={{
+                duration: 1.5,
+                delay: 0.4,
                 ease: [0.25, 0.46, 0.45, 0.94],
                 type: "spring",
                 stiffness: 120,
@@ -383,23 +380,23 @@ export const CategoryPage = () => {
                     delay: 0.5 + index * 0.15,
                     ease: [0.43, 0.13, 0.23, 0.96]
                   }}
-                  whileHover={{ 
-                    scale: 1.05, 
-                    transition: { duration: 0.3 } 
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.3 }
                   }}
                 >
                   {word === "Curlea®" ? (
                     <motion.span
                       className="relative inline-block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
-                      initial={{ 
-                        opacity: 0, 
-                        scale: 0.8, 
+                      initial={{
+                        opacity: 0,
+                        scale: 0.8,
                         rotateY: -180,
                         filter: "blur(10px)"
                       }}
-                      animate={{ 
-                        opacity: 1, 
-                        scale: 1, 
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
                         rotateY: 0,
                         filter: "blur(0px)"
                       }}
@@ -410,10 +407,10 @@ export const CategoryPage = () => {
                         type: "spring",
                         stiffness: 100
                       }}
-                      whileHover={{ 
-                        scale: 1.1, 
+                      whileHover={{
+                        scale: 1.1,
                         rotateY: 10,
-                        transition: { duration: 0.4, ease: "easeOut" } 
+                        transition: { duration: 0.4, ease: "easeOut" }
                       }}
                       style={{
                         textShadow: "0 0 30px rgba(0,0,0,0.3)",
@@ -431,8 +428,8 @@ export const CategoryPage = () => {
                           delay: 0.8 + index * 0.15,
                           ease: "easeOut"
                         }}
-                        whileHover={{ 
-                          scale: 1.2, 
+                        whileHover={{
+                          scale: 1.2,
                           opacity: 0.8,
                           transition: { duration: 0.3 }
                         }}
@@ -476,29 +473,28 @@ export const CategoryPage = () => {
             </motion.h1>
           </motion.div>
 
-            {/* Animated Subtitle with Elegant Transition */}
-            {config.subtitle && (
-              <motion.p 
-                className={`text-lg sm:text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed px-4 font-normal ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                    ? 'text-white' 
-                    : 'text-gray-800'
+          {/* Animated Subtitle with Elegant Transition */}
+          {config.subtitle && (
+            <motion.p
+              className={`text-lg sm:text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed px-4 font-normal ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                  ? 'text-white'
+                  : 'text-gray-800'
                 }`}
-                style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 2px 15px rgba(0,0,0,0.4)' 
-                    : 'none',
-                  fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
-                  WebkitFontSmoothing: 'antialiased',
-                  MozOsxFontSmoothing: 'grayscale',
-                  letterSpacing: '-0.02em'
-                }}
+              style={{
+                textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                  ? '0 2px 15px rgba(0,0,0,0.4)'
+                  : 'none',
+                fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                letterSpacing: '-0.02em'
+              }}
               initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ 
-                duration: 1.2, 
-                delay: 1.2, 
-                ease: [0.25, 0.46, 0.45, 0.94] 
+              transition={{
+                duration: 1.2,
+                delay: 1.2,
+                ease: [0.25, 0.46, 0.45, 0.94]
               }}
             >
               {config.subtitle.split('').map((char, index) => (
@@ -512,44 +508,43 @@ export const CategoryPage = () => {
                     delay: 1.3 + index * 0.025,
                     ease: [0.25, 0.46, 0.45, 0.94]
                   }}
-                  whileHover={{ 
-                    scale: 1.15, 
+                  whileHover={{
+                    scale: 1.15,
                     color: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '#fbbf24' : undefined,
-                    textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                      ? '0 0 20px rgba(251,191,36,0.8)' 
+                    textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                      ? '0 0 20px rgba(251,191,36,0.8)'
                       : 'none',
-                    transition: { duration: 0.25 } 
+                    transition: { duration: 0.25 }
                   }}
                 >
                   {char}
                 </motion.span>
               ))}
             </motion.p>
-            )}
+          )}
 
-            {/* Animated Description with Staggered Lines - Sharp & Clean */}
-            <motion.p 
-              className={`text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 px-4 font-light ${
-                (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                  ? 'text-white' 
-                  : 'text-gray-700'
+          {/* Animated Description with Staggered Lines - Sharp & Clean */}
+          <motion.p
+            className={`text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 px-4 font-light ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                ? 'text-white'
+                : 'text-gray-700'
               }`}
-              style={{
-                textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                  ? '0 1px 8px rgba(0,0,0,0.3)' 
-                  : 'none',
-                fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
-                WebkitFontSmoothing: 'antialiased',
-                MozOsxFontSmoothing: 'grayscale',
-                lineHeight: '1.7',
-                letterSpacing: '-0.01em'
-              }}
+            style={{
+              textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                ? '0 1px 8px rgba(0,0,0,0.3)'
+                : 'none',
+              fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              lineHeight: '1.7',
+              letterSpacing: '-0.01em'
+            }}
             initial={{ opacity: 0, filter: 'blur(8px)' }}
             animate={{ opacity: 1, filter: 'blur(0px)' }}
-            transition={{ 
-              duration: 1.0, 
-              delay: 1.8, 
-              ease: [0.25, 0.46, 0.45, 0.94] 
+            transition={{
+              duration: 1.0,
+              delay: 1.8,
+              ease: [0.25, 0.46, 0.45, 0.94]
             }}
           >
             {config.description.split('.').map((sentence, sentenceIndex) => (
@@ -569,39 +564,38 @@ export const CategoryPage = () => {
             ))}
           </motion.p>
 
-            {/* Animated Category Stats - Sharp & Professional */}
-            <motion.div
-              className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16"
+          {/* Animated Category Stats - Sharp & Professional */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 2.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {/* Stat 1: Products Count */}
-            <motion.div 
+            <motion.div
               className="text-center relative group"
               initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              transition={{ 
-                duration: 0.9, 
+              transition={{
+                duration: 0.9,
                 delay: 2.3,
                 ease: [0.25, 0.46, 0.45, 0.94],
                 type: "spring",
                 stiffness: 100,
                 damping: 10
               }}
-              whileHover={{ 
-                scale: 1.15, 
+              whileHover={{
+                scale: 1.15,
                 y: -8,
-                transition: { duration: 0.4, ease: "easeOut" } 
+                transition: { duration: 0.4, ease: "easeOut" }
               }}
             >
-              <motion.div 
-                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
-                }`}
+              <motion.div
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   fontWeight: 900,
@@ -611,8 +605,8 @@ export const CategoryPage = () => {
                 }}
                 initial={{ scale: 0, rotateY: -180 }}
                 animate={{ scale: 1, rotateY: 0 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   delay: 2.4,
                   ease: [0.25, 0.46, 0.45, 0.94],
                   type: "spring",
@@ -622,13 +616,12 @@ export const CategoryPage = () => {
               >
                 {categoryProducts.length}
               </motion.div>
-              <motion.div 
-                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
-                }`}
+              <motion.div
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 1px 8px rgba(0,0,0,0.4)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   WebkitFontSmoothing: 'antialiased',
@@ -644,31 +637,30 @@ export const CategoryPage = () => {
             </motion.div>
 
             {/* Stat 2: 100% Natural */}
-            <motion.div 
+            <motion.div
               className="text-center relative group"
               initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              transition={{ 
-                duration: 0.9, 
+              transition={{
+                duration: 0.9,
                 delay: 2.4,
                 ease: [0.25, 0.46, 0.45, 0.94],
                 type: "spring",
                 stiffness: 100,
                 damping: 10
               }}
-              whileHover={{ 
-                scale: 1.15, 
+              whileHover={{
+                scale: 1.15,
                 y: -8,
-                transition: { duration: 0.4, ease: "easeOut" } 
+                transition: { duration: 0.4, ease: "easeOut" }
               }}
             >
-              <motion.div 
-                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
-                }`}
+              <motion.div
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   fontWeight: 900,
@@ -678,8 +670,8 @@ export const CategoryPage = () => {
                 }}
                 initial={{ scale: 0, rotateY: -180 }}
                 animate={{ scale: 1, rotateY: 0 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   delay: 2.5,
                   ease: [0.25, 0.46, 0.45, 0.94],
                   type: "spring",
@@ -689,13 +681,12 @@ export const CategoryPage = () => {
               >
                 100%
               </motion.div>
-              <motion.div 
-                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
-                }`}
+              <motion.div
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 1px 8px rgba(0,0,0,0.4)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   WebkitFontSmoothing: 'antialiased',
@@ -711,31 +702,30 @@ export const CategoryPage = () => {
             </motion.div>
 
             {/* Stat 3: Premium Quality */}
-            <motion.div 
+            <motion.div
               className="text-center relative group"
               initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              transition={{ 
-                duration: 0.9, 
+              transition={{
+                duration: 0.9,
                 delay: 2.5,
                 ease: [0.25, 0.46, 0.45, 0.94],
                 type: "spring",
                 stiffness: 100,
                 damping: 10
               }}
-              whileHover={{ 
-                scale: 1.15, 
+              whileHover={{
+                scale: 1.15,
                 y: -8,
-                transition: { duration: 0.4, ease: "easeOut" } 
+                transition: { duration: 0.4, ease: "easeOut" }
               }}
             >
-              <motion.div 
-                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
-                }`}
+              <motion.div
+                className={`text-4xl sm:text-5xl md:text-6xl font-black relative tracking-tight ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-primary'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 4px 20px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   fontWeight: 900,
@@ -745,8 +735,8 @@ export const CategoryPage = () => {
                 }}
                 initial={{ scale: 0, rotateY: -180 }}
                 animate={{ scale: 1, rotateY: 0 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   delay: 2.6,
                   ease: [0.25, 0.46, 0.45, 0.94],
                   type: "spring",
@@ -756,13 +746,12 @@ export const CategoryPage = () => {
               >
                 Premium
               </motion.div>
-              <motion.div 
-                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${
-                  (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
-                }`}
+              <motion.div
+                className={`text-xs sm:text-sm font-semibold uppercase tracking-wider mt-2 ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? 'text-white' : 'text-gray-600'
+                  }`}
                 style={{
-                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') 
-                    ? '0 1px 8px rgba(0,0,0,0.4)' 
+                  textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
+                    ? '0 1px 8px rgba(0,0,0,0.4)'
                     : 'none',
                   fontFamily: "'Inter', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif",
                   WebkitFontSmoothing: 'antialiased',
@@ -786,11 +775,10 @@ export const CategoryPage = () => {
               <motion.button
                 key={index}
                 onClick={() => setCurlyHeroIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  curlyHeroIndex === index
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${curlyHeroIndex === index
                     ? 'bg-white w-8'
                     : 'bg-white/40 hover:bg-white/60'
-                }`}
+                  }`}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -815,14 +803,14 @@ export const CategoryPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-             <h2 className="fluid-text-3xl lg:fluid-text-4xl font-bold mb-4">
-               {normalizedCategory === 'wavy' 
-                 ? 'Effortless curls, no heat, no damage'
-                 : `Products for Your ${normalizedCategory.charAt(0).toUpperCase() + normalizedCategory.slice(1)} Hair`
-               }
-             </h2>
+            <h2 className="fluid-text-3xl lg:fluid-text-4xl font-bold mb-4">
+              {normalizedCategory === 'wavy'
+                ? 'Effortless curls, no heat, no damage'
+                : `Products for Your ${normalizedCategory.charAt(0).toUpperCase() + normalizedCategory.slice(1)} Hair`
+              }
+            </h2>
             <p className="fluid-text-base lg:fluid-text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              {normalizedCategory === 'wavy' 
+              {normalizedCategory === 'wavy'
                 ? 'Professional curls made easy — protect your hair while you style.'
                 : 'Carefully selected products to enhance your natural hair texture'
               }
@@ -838,14 +826,14 @@ export const CategoryPage = () => {
                     initial={{ opacity: 0, y: 50, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -50, scale: 0.9 }}
-                    transition={{ 
-                      delay: index * 0.1, 
+                    transition={{
+                      delay: index * 0.1,
                       duration: 0.6,
                       ease: [0.43, 0.13, 0.23, 0.96]
                     }}
                     className="group bg-transparent cursor-pointer flex flex-col items-center text-center"
                     onClick={() => navigate(`/product/${product.id}`)}
-                    whileHover={{ 
+                    whileHover={{
                       y: -8,
                       scale: 1.02,
                       transition: { duration: 0.3, ease: "easeOut" }
@@ -869,10 +857,10 @@ export const CategoryPage = () => {
                           alt={product.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            try { (e.currentTarget as HTMLImageElement).src = CURLY_PLACEHOLDER; } catch {}
+                            try { (e.currentTarget as HTMLImageElement).src = CURLY_PLACEHOLDER; } catch { }
                           }}
                         />
-                        
+
                         {/* Advanced background masking system */}
                         <div className="absolute inset-0 pointer-events-none">
                           {/* Gradient overlay to blend white edges */}
@@ -881,7 +869,7 @@ export const CategoryPage = () => {
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/2 to-transparent" />
                           <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/2 to-transparent" />
                         </div>
-                        
+
                         {/* Soft vignette effect to mask edges */}
                         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-white/10 pointer-events-none" />
                       </motion.div>
@@ -910,7 +898,7 @@ export const CategoryPage = () => {
                           {product.size}
                         </span>
                       </div>
-                      
+
                       {/* Color Options Display - Simplified on mobile */}
                       {product.colors && product.colors.length > 0 && (
                         <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-1 sm:pt-2">
@@ -1004,14 +992,14 @@ export const getHeatlessCurlingRodProducts = (): Product[] => {
     // DreamCurl™ Short Set - Second in the collection
     {
       id: "dreamcurl-short-set",
-      name: "DreamCurl™ Short Set",
+      name: "DreamCurl™ Single Set",
       price: "$16.99",
       image: product1Image,
       category: "DreamCurl™ Collection",
       hairType: "All Types",
       featured: true,
       description: [
-        "The Short Set Collection - Perfect for every hair type and style",
+        "The Single Set Collection - Perfect for every hair type and style",
         "Create beautiful curls without heat damage",
         "Professional heatless curling system designed for versatility",
         "Soft, flexible material that's gentle on your hair",

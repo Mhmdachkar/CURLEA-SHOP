@@ -38,7 +38,7 @@ const COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = 
 const FULL_SETS = [
     {
         id: 'dreamcurl-original',
-        name: 'DreamCurl™ Original Set',
+        name: 'DreamCurl™ Full Set Original',
         price: 24.99,
         colors: {
             'Mulberry': new URL('../../assets/Heatless Hair Curling Rod/PRODUCT7/FullSizeRender_3b575993-8e6a-413e-9f88-d95395c19980.webp', import.meta.url).href,
@@ -49,7 +49,7 @@ const FULL_SETS = [
     },
     {
         id: 'dreamcurl-jumbo',
-        name: 'DreamCurl™ Jumbo Size',
+        name: 'DreamCurl™ Full Set Jumbo',
         price: 22.99,
         colors: {
             'Latte': new URL('../../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
@@ -60,7 +60,7 @@ const FULL_SETS = [
     },
     {
         id: 'dreamcurl-midi',
-        name: 'DreamCurl™ Midi',
+        name: 'DreamCurl™ Full Set Midi',
         price: 20.00,
         colors: {
             'Mulberry': new URL('../../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
@@ -162,7 +162,7 @@ export const BlackFridaySection = () => {
                     animate={isInView ? { y: 0, opacity: 1 } : {}}
                     transition={{ type: 'spring', damping: 20 }}
                 >
-                    <div 
+                    <div
                         className="inline-flex items-center bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] text-black px-4 sm:px-6 md:px-10 py-2 sm:py-3 md:py-4 rounded-full shadow-2xl border-2 border-[#F2D06B]/50"
                         style={{
                             fontFamily: 'system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
@@ -213,14 +213,14 @@ export const BlackFridaySection = () => {
                             <motion.div
                                 className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 md:border-4 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.4)] sm:shadow-[0_0_30px_rgba(212,175,55,0.5)] md:shadow-[0_0_40px_rgba(212,175,55,0.6)] bg-white"
                                 initial={{ x: 100, y: 100, opacity: 0, rotate: -10 }}
-                                animate={isInView ? { 
-                                    x: 0, 
-                                    y: 0, 
-                                    opacity: 1, 
+                                animate={isInView ? {
+                                    x: 0,
+                                    y: 0,
+                                    opacity: 1,
                                     rotate: 0,
                                     scale: [1, 1.05, 1]
                                 } : {}}
-                                transition={{ 
+                                transition={{
                                     delay: 0.5,
                                     duration: 0.6,
                                     scale: {
@@ -230,7 +230,7 @@ export const BlackFridaySection = () => {
                                     }
                                 }}
                             >
-                                <motion.div 
+                                <motion.div
                                     className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] text-center text-black py-0.5 sm:py-1 md:py-1.5 flex items-center justify-center"
                                     animate={{ scale: [1, 1.05, 1] }}
                                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -248,14 +248,14 @@ export const BlackFridaySection = () => {
                         </motion.div>
 
                         {/* Value badge - Responsive */}
-                            <motion.div
+                        <motion.div
                             className="absolute -top-2 -left-2 sm:-top-3 sm:-left-3 md:-top-4 md:-left-4 bg-rose-500 text-white font-bold px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full shadow-xl transform -rotate-12 text-xs sm:text-sm md:text-base"
                             initial={{ scale: 0, rotate: -180 }}
                             animate={isInView ? { scale: 1, rotate: -12 } : {}}
                             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                         >
                             Save $15.99
-                            </motion.div>
+                        </motion.div>
                     </div>
 
                     {/* Right: Enhanced Content */}
@@ -278,7 +278,7 @@ export const BlackFridaySection = () => {
                             >
                                 Buy One, Get One Free
                             </motion.h2>
-                            <motion.p 
+                            <motion.p
                                 className="text-gray-700 text-base sm:text-lg md:text-xl leading-relaxed"
                                 initial={{ opacity: 0 }}
                                 animate={isInView ? { opacity: 1 } : {}}
@@ -291,7 +291,7 @@ export const BlackFridaySection = () => {
                         </div>
 
                         {/* Enhanced Selection Controls */}
-                        <motion.div 
+                        <motion.div
                             className="space-y-4 sm:space-y-6 bg-gray-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 border-gray-200"
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -299,7 +299,7 @@ export const BlackFridaySection = () => {
                         >
                             {/* Product Selector */}
                             <div className="space-y-2 sm:space-y-3">
-                                <label 
+                                <label
                                     className="text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 text-black"
                                     style={{
                                         fontFamily: 'system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
@@ -318,8 +318,7 @@ export const BlackFridaySection = () => {
                                                 setSelectedSetId(set.id);
                                                 setSelectedColor(Object.keys(set.colors)[0]);
                                             }}
-                                            className={`flex items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all ${
-                                                selectedSetId === set.id
+                                            className={`flex items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all ${selectedSetId === set.id
                                                     ? 'bg-gradient-to-r from-[#D4AF37]/10 to-[#F2D06B]/10 border-[#D4AF37] text-black shadow-lg'
                                                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-[#D4AF37]/50'
                                                 }`}
@@ -338,7 +337,7 @@ export const BlackFridaySection = () => {
 
                             {/* Color Selector */}
                             <div className="space-y-3">
-                                <label 
+                                <label
                                     className="text-xs sm:text-sm uppercase tracking-wider text-black"
                                     style={{
                                         fontFamily: 'system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
@@ -352,16 +351,15 @@ export const BlackFridaySection = () => {
                                     {availableColors.map((color, index) => {
                                         const colorInfo = COLOR_MAP[color] || { bg: '#000', text: '#fff', border: '#000' };
                                         const isSelected = selectedColor === color;
-                                        
+
                                         return (
                                             <motion.button
-                                            key={color}
-                                            onClick={() => setSelectedColor(color)}
-                                                className={`px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all border-2 ${
-                                                    isSelected
+                                                key={color}
+                                                onClick={() => setSelectedColor(color)}
+                                                className={`px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all border-2 ${isSelected
                                                         ? 'shadow-lg scale-105'
                                                         : 'hover:scale-105'
-                                                }`}
+                                                    }`}
                                                 style={{
                                                     backgroundColor: isSelected ? colorInfo.bg : 'white',
                                                     color: isSelected ? colorInfo.text : '#374151',
@@ -372,8 +370,8 @@ export const BlackFridaySection = () => {
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={isInView ? { opacity: 1, scale: isSelected ? 1.05 : 1 } : {}}
                                                 transition={{ delay: 0.7 + index * 0.05 }}
-                                        >
-                                            {color}
+                                            >
+                                                {color}
                                             </motion.button>
                                         );
                                     })}

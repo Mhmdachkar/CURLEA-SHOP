@@ -398,8 +398,8 @@ export default function CheckoutPage() {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setPaymentMethod('stripe')}
                                 className={`group cursor-pointer rounded-sm p-4 border transition-all relative overflow-hidden ${paymentMethod === 'stripe'
-                                        ? 'bg-gradient-to-br from-[#A4193D]/10 to-[#D4AF37]/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/20 shadow-sm'
-                                        : 'bg-white border-gray-200 hover:border-[#D4AF37] hover:shadow-md'
+                                    ? 'bg-gradient-to-br from-[#A4193D]/10 to-[#D4AF37]/10 border-[#D4AF37] ring-2 ring-[#D4AF37]/20 shadow-sm'
+                                    : 'bg-white border-gray-200 hover:border-[#D4AF37] hover:shadow-md'
                                     }`}
                             >
                                 {/* Animated gradient on hover */}
@@ -415,13 +415,13 @@ export default function CheckoutPage() {
                                         <motion.div
                                             whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
                                             className={`p-2 rounded-lg transition-all duration-300 ${paymentMethod === 'stripe'
-                                                    ? 'bg-gradient-to-br from-[#A4193D] to-[#D4AF37]'
-                                                    : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-[#A4193D] group-hover:to-[#D4AF37]'
+                                                ? 'bg-gradient-to-br from-[#A4193D] to-[#D4AF37]'
+                                                : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-[#A4193D] group-hover:to-[#D4AF37]'
                                                 }`}
                                         >
                                             <CreditCard className={`w-4 h-4 transition-colors duration-300 ${paymentMethod === 'stripe'
-                                                    ? 'text-white'
-                                                    : 'text-gray-600 group-hover:text-white'
+                                                ? 'text-white'
+                                                : 'text-gray-600 group-hover:text-white'
                                                 }`} />
                                         </motion.div>
                                         <div>
@@ -462,8 +462,8 @@ export default function CheckoutPage() {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setPaymentMethod('cod')}
                                 className={`group cursor-pointer rounded-sm p-4 border transition-all relative overflow-hidden ${paymentMethod === 'cod'
-                                        ? 'bg-gray-50 border-gray-900 ring-2 ring-gray-900/10 shadow-sm'
-                                        : 'bg-white border-gray-200 hover:border-gray-400 hover:shadow-md'
+                                    ? 'bg-gray-50 border-gray-900 ring-2 ring-gray-900/10 shadow-sm'
+                                    : 'bg-white border-gray-200 hover:border-gray-400 hover:shadow-md'
                                     }`}
                             >
                                 {/* Animated gradient on hover */}
@@ -479,13 +479,13 @@ export default function CheckoutPage() {
                                         <motion.div
                                             whileHover={{ x: [0, 3, 0], transition: { duration: 0.5, repeat: Infinity } }}
                                             className={`p-2 rounded-lg transition-all duration-300 ${paymentMethod === 'cod'
-                                                    ? 'bg-gray-900'
-                                                    : 'bg-gray-100 group-hover:bg-gray-900'
+                                                ? 'bg-gray-900'
+                                                : 'bg-gray-100 group-hover:bg-gray-900'
                                                 }`}
                                         >
                                             <Truck className={`w-4 h-4 transition-colors duration-300 ${paymentMethod === 'cod'
-                                                    ? 'text-white'
-                                                    : 'text-gray-600 group-hover:text-white'
+                                                ? 'text-white'
+                                                : 'text-gray-600 group-hover:text-white'
                                                 }`} />
                                         </motion.div>
                                         <div>
@@ -545,8 +545,8 @@ export default function CheckoutPage() {
                                                     onBlur={() => handleBlur('name')}
 
                                                     className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.name
-                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                        : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                         }`}
                                                     style={typography}
                                                 />
@@ -567,8 +567,8 @@ export default function CheckoutPage() {
                                                         onChange={(e) => handleInputChange('phone', e.target.value)}
                                                         onBlur={() => handleBlur('phone')}
                                                         className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.phone
-                                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                                : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                             }`}
                                                         style={typography}
                                                     />
@@ -588,8 +588,8 @@ export default function CheckoutPage() {
                                                         onBlur={() => handleBlur('email')}
 
                                                         className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.email
-                                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                                : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                             }`}
                                                         style={typography}
                                                     />
@@ -611,8 +611,8 @@ export default function CheckoutPage() {
                                                     onBlur={() => handleBlur('address')}
                                                     placeholder="123 Main Street"
                                                     className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.address
-                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                        : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                         }`}
                                                     style={typography}
                                                 />
@@ -634,8 +634,8 @@ export default function CheckoutPage() {
                                                         onBlur={() => handleBlur('city')}
                                                         placeholder="Beirut"
                                                         className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.city
-                                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                                : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                             }`}
                                                         style={typography}
                                                     />
@@ -655,8 +655,8 @@ export default function CheckoutPage() {
                                                         onBlur={() => handleBlur('zipCode')}
                                                         placeholder="1107"
                                                         className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.zipCode
-                                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                                                : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
+                                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                            : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
                                                             }`}
                                                         style={typography}
                                                     />
@@ -791,6 +791,19 @@ export default function CheckoutPage() {
                                         <span className="text-green-600 font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>Stripe Discount (5%)</span>
                                         <span className="font-semibold text-green-600 flex-shrink-0 whitespace-nowrap" style={typography}>
                                             -${stripeDiscount.toFixed(2)}
+                                        </span>
+                                    </motion.div>
+                                )}
+                                {promoDiscount > 0 && (
+                                    <motion.div
+                                        className="flex justify-between items-center gap-2 text-sm"
+                                        whileHover={{ x: 2, transition: { duration: 0.2 } }}
+                                        initial={{ opacity: 0, y: -5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        <span className="text-[#A4193D] font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>50% OFF 3RD ITEM</span>
+                                        <span className="font-semibold text-[#A4193D] flex-shrink-0 whitespace-nowrap" style={typography}>
+                                            -${promoDiscount.toFixed(2)}
                                         </span>
                                     </motion.div>
                                 )}

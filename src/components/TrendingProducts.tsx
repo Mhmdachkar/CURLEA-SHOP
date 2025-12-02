@@ -88,8 +88,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 60,
     scale: 0.9,
     filter: "blur(8px)"
@@ -107,13 +107,13 @@ const itemVariants = {
 };
 
 const titleVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 40,
     scale: 0.95
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     scale: 1,
     transition: {
@@ -128,11 +128,11 @@ export const TrendingProducts = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
 
-  // Get specific trending products: DreamCurl™ Short Set, DreamCurl™ Midi, Curved Resin Hair Clip
+  // Get specific trending products: DreamCurl™ Single Set, DreamCurl™ Full Set Midi, Curved Resin Hair Clip
   const allProducts = [...getHeatlessCurlingRodProducts(), ...getCurlyHairCollectionProducts()];
-  const trendingProducts = allProducts.filter(product => 
-    product.id === 'dreamcurl-short-set' || 
-    product.id === 'dreamcurl-midi' || 
+  const trendingProducts = allProducts.filter(product =>
+    product.id === 'dreamcurl-short-set' ||
+    product.id === 'dreamcurl-midi' ||
     product.id === 'curly-clip-1'
   );
 
@@ -153,8 +153,8 @@ export const TrendingProducts = () => {
           animate={isInView ? "visible" : "hidden"}
         >
           {trendingProducts.map((product, index) => (
-            <motion.div 
-              key={product.id} 
+            <motion.div
+              key={product.id}
               variants={itemVariants}
             >
               <ProductCard

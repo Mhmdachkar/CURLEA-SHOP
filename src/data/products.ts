@@ -28,7 +28,7 @@ export interface Product {
 export const products: Product[] = [
   {
     id: "dreamcurl-original",
-    name: "CURLEA DreamCurl™ Original Set",
+    name: "CURLEA DreamCurl™ Full Set Original",
     price: "$22.99",
     image: new URL('../assets/Heatless Hair Curling Rod/PRODUCT7/CFE0DE6D-F7E6-42F3-91A4-16C049F5ADA9.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -60,7 +60,7 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-short-set",
-    name: "CURLEA DreamCurl™ Short Set",
+    name: "CURLEA DreamCurl™ Single Set",
     price: "$16.99",
     image: new URL('../assets/Heatless Hair Curling Rod/product-1.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -90,7 +90,7 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-midi",
-    name: "CURLEA DreamCurl™ Midi",
+    name: "CURLEA DreamCurl™ Full Set Midi",
     price: "$22.99",
     image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -121,7 +121,7 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-jumbo",
-    name: "CURLEA DreamCurl™ Jumbo Size",
+    name: "CURLEA DreamCurl™ Full Set Jumbo",
     price: "$22.99",
     image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -204,8 +204,8 @@ export const products: Product[] = [
     size: "9-Piece Set",
     inStock: true,
     sizeOptions: {
-        "9-piece-complete": {
-          price: "$14.99",
+      "9-piece-complete": {
+        price: "$14.99",
         image: new URL('../assets/curly hair collection/product1/p1.jpg', import.meta.url).href,
         description: [
           "Complete 9-piece set with all clip sizes and styles",
@@ -406,7 +406,7 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-midi",
-    name: "CURLEA DreamCurl™ Midi",
+    name: "CURLEA DreamCurl™ Full Set Midi",
     price: "$22.99",
     image: new URL('../assets/Heatless Hair Curling Rod/midi_size/midi_purple.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -438,7 +438,7 @@ export const products: Product[] = [
   },
   {
     id: "dreamcurl-jumbo",
-    name: "CURLEA DreamCurl™ Jumbo Size",
+    name: "CURLEA DreamCurl™ Full Set Jumbo",
     price: "$22.99",
     image: new URL('../assets/Heatless Hair Curling Rod/Jumbo_size/latte_jumbo.webp', import.meta.url).href,
     category: "DreamCurl™ Collection",
@@ -580,11 +580,11 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       }
     },
     {
-    id: "curly-scarf-1",
+      id: "curly-scarf-1",
       name: "CURLEA Elegant Satin Scarf + Scrunchies Set",
-    price: "$11.99",
-    image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
-    category: "Hair Accessories",
+      price: "$11.99",
+      image: new URL('../assets/curly hair collection/product2/pp1.jpg', import.meta.url).href,
+      category: "Hair Accessories",
       hairType: "Curly",
       featured: true,
       description: [

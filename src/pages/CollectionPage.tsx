@@ -16,15 +16,15 @@ import { toast } from "sonner";
 export const CollectionPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
-  
+
   // Check if coming from product detail page to skip animation
   const [showLoader, setShowLoader] = useState(() => {
     // Check if we're coming from a product detail page
-    const isFromProductDetail = window.location.search.includes('from=product') || 
-                                document.referrer.includes('/product/');
+    const isFromProductDetail = window.location.search.includes('from=product') ||
+      document.referrer.includes('/product/');
     return !isFromProductDetail; // Only show loader if NOT coming from product detail
   });
-  
+
   // Elegant section animations with professional timing
   const sectionVariants = {
     hidden: { opacity: 0 },
@@ -42,26 +42,26 @@ export const CollectionPage = () => {
   useEffect(() => {
     // Add loading class to prevent scroll conflicts
     document.documentElement.classList.add('page-loading');
-    
+
     // Prevent all scroll events during loading
     const preventScroll = (e: Event) => {
       e.preventDefault();
       e.stopPropagation();
       return false;
     };
-    
+
     // Add event listeners to prevent scrolling
     window.addEventListener('scroll', preventScroll, { passive: false });
     window.addEventListener('wheel', preventScroll, { passive: false });
     window.addEventListener('touchmove', preventScroll, { passive: false });
-    
+
     // Force immediate scroll to top
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: 'instant' as ScrollBehavior
     });
-    
+
     // Remove loading class and event listeners after scroll is complete
     const timeout = setTimeout(() => {
       window.removeEventListener('scroll', preventScroll);
@@ -69,7 +69,7 @@ export const CollectionPage = () => {
       window.removeEventListener('touchmove', preventScroll);
       document.documentElement.classList.remove('page-loading');
     }, 200);
-    
+
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('scroll', preventScroll);
@@ -82,14 +82,14 @@ export const CollectionPage = () => {
   useEffect(() => {
     console.log("CollectionPage: Component mounted, showLoader:", showLoader);
     console.log("CollectionPage: Current URL:", window.location.pathname);
-    
+
     // Only show animation if not coming from product detail page
     if (showLoader) {
-    const timer = setTimeout(() => {
+      const timer = setTimeout(() => {
         console.log("CollectionPage: Hiding loader after 4000ms");
-      setShowLoader(false);
+        setShowLoader(false);
       }, 4000);
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
     }
   }, [showLoader]);
 
@@ -99,16 +99,16 @@ export const CollectionPage = () => {
   return (
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
-      
+
       {/* Modern Elegant Brand Loader */}
       <AnimatePresence mode="wait">
         {showLoader && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            style={{ 
+            style={{
               position: 'fixed',
               top: 0,
               left: 0,
@@ -120,13 +120,13 @@ export const CollectionPage = () => {
               height: '100vh',
               overflow: 'hidden'
             }}
-            >
-              <CurleaBrandAnimation />
+          >
+            <CurleaBrandAnimation />
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div 
+      <motion.div
         className="bg-white"
         variants={sectionVariants}
         initial="hidden"
@@ -154,11 +154,11 @@ export const CollectionPage = () => {
 // Modern Elegant Brand Animation Component
 const CurleaBrandAnimation = () => {
   const brandName = "CURLEA";
-  
+
   return (
-    <div 
-      style={{ 
-        position: 'relative', 
+    <div
+      style={{
+        position: 'relative',
         zIndex: 100000,
         width: '100%',
         height: '100%',
@@ -185,8 +185,8 @@ const CurleaBrandAnimation = () => {
               transform: 'translate(-50%, -50%)'
             }}
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: 1, 
+            animate={{
+              scale: 1,
               opacity: 1,
               rotate: 360
             }}
@@ -215,31 +215,31 @@ const CurleaBrandAnimation = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
       >
-      {brandName.split("").map((letter, index) => (
-        <motion.span
-          key={index}
-            style={{ 
+        {brandName.split("").map((letter, index) => (
+          <motion.span
+            key={index}
+            style={{
               display: 'inline-block',
               marginRight: '0.1em',
               position: 'relative'
             }}
-          initial={{ 
-            opacity: 0, 
+            initial={{
+              opacity: 0,
               y: 100,
               rotateX: 90
-          }}
-          animate={{ 
-            opacity: 1, 
-            y: 0, 
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
               rotateX: 0
-          }}
-          transition={{
-            duration: 0.8,
+            }}
+            transition={{
+              duration: 0.8,
               delay: 0.8 + index * 0.15,
               ease: [0.25, 0.46, 0.45, 0.94]
             }}
-            >
-              {letter}
+          >
+            {letter}
             {/* Elegant underline effect */}
             <motion.div
               style={{
@@ -259,7 +259,7 @@ const CurleaBrandAnimation = () => {
                 ease: "easeOut"
               }}
             />
-        </motion.span>
+          </motion.span>
         ))}
       </motion.div>
 
@@ -294,7 +294,7 @@ const CurleaBrandAnimation = () => {
             left: `${Math.random() * 100}%`,
           }}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 0],
             scale: [0, 1, 0],
             y: [0, -50, -100]
@@ -346,7 +346,7 @@ const ShopTheLookSection = () => {
     },
     {
       id: 3,
-      name: "DreamCurl™ Short Set",
+      name: "DreamCurl™ Single Set",
       productId: "dreamcurl-short-set",
       top: "60%",   // Pink curler set on table
       left: "20%",
@@ -357,7 +357,7 @@ const ShopTheLookSection = () => {
   return (
     <motion.section
       className="relative w-full py-16 sm:py-20 md:py-24 bg-gradient-to-b from-muted/10 to-white overflow-hidden"
-          initial={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
@@ -383,7 +383,7 @@ const ShopTheLookSection = () => {
       />
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
         {/* Section Header - Mobile Optimized */}
-          <motion.div
+        <motion.div
           className="text-center mb-8 sm:mb-12 md:mb-16 px-2"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -399,7 +399,7 @@ const ShopTheLookSection = () => {
         </motion.div>
 
         {/* Interactive Image with Hotspots - Mobile Optimized */}
-            <motion.div
+        <motion.div
           className="relative max-w-4xl sm:max-w-5xl mx-auto rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -409,17 +409,17 @@ const ShopTheLookSection = () => {
           {/* Base Image */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[4/3] md:aspect-[16/10]">
             <img
-                src={getTheWavyLook}
+              src={getTheWavyLook}
               alt="Shop the Look - Hair Styling"
-                className="w-full h-full object-cover"
-              />
+              className="w-full h-full object-cover"
+            />
 
             {/* Interactive Hotspots */}
             {hotspots.map((hotspot, index) => (
-            <motion.div 
+              <motion.div
                 key={hotspot.id}
                 className="absolute"
-                  style={{
+                style={{
                   top: hotspot.top,
                   left: hotspot.left,
                   transform: "translate(-50%, -50%)"
@@ -427,8 +427,8 @@ const ShopTheLookSection = () => {
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ 
-                  duration: 0.6, 
+                transition={{
+                  duration: 0.6,
                   delay: 0.4 + index * 0.2,
                   type: "spring",
                   stiffness: 200
@@ -472,7 +472,7 @@ const ShopTheLookSection = () => {
                 {/* Shop Now Overlay - Desktop */}
                 <AnimatePresence>
                   {hoveredHotspot === hotspot.id && (
-                  <motion.div 
+                    <motion.div
                       className="hidden md:block absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 min-w-[240px] border border-gray-100 z-10"
                       initial={{ opacity: 0, x: -10, scale: 0.9 }}
                       animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -481,7 +481,7 @@ const ShopTheLookSection = () => {
                     >
                       {/* Arrow pointer */}
                       <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-white border-b-8 border-b-transparent" />
-                      
+
                       <h3 className="font-bold text-sm sm:text-base text-foreground mb-1">
                         {hotspot.name}
                       </h3>
@@ -490,15 +490,15 @@ const ShopTheLookSection = () => {
                       </p>
                       <div className="bg-foreground text-background px-4 py-2 rounded-md text-center font-semibold text-sm hover:bg-accent transition-colors cursor-pointer">
                         SHOP NOW
-          </div>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-                  
+
                 {/* Shop Now Overlay - Mobile Optimized */}
                 <AnimatePresence>
                   {hoveredHotspot === hotspot.id && (
-                  <motion.div
+                    <motion.div
                       className="md:hidden absolute top-full mt-3 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-xl p-3 sm:p-4 min-w-[160px] sm:min-w-[180px] max-w-[200px] border border-gray-100 z-10"
                       initial={{ opacity: 0, y: -10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -511,33 +511,33 @@ const ShopTheLookSection = () => {
                       <p className="text-xs text-muted-foreground mb-3 text-center">
                         {hotspot.description}
                       </p>
-                      <div 
+                      <div
                         className="bg-foreground text-background px-3 py-2 rounded-md text-center font-semibold text-xs sm:text-sm hover:bg-accent transition-colors cursor-pointer touch-manipulation"
                         onClick={() => navigate(`/product/${hotspot.productId}`)}
                       >
                         SHOP NOW
                       </div>
-                  </motion.div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
-                </motion.div>
-              ))}
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
         {/* CTA Below Image - Mobile Optimized */}
         <motion.div
           className="text-center mt-8 sm:mt-10 md:mt-12 px-4"
-              initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.8 }}
-            >
+        >
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
             Tap the circles to explore each product
           </p>
-          </motion.div>
-          </div>
+        </motion.div>
+      </div>
     </motion.section>
   );
 };
@@ -553,7 +553,7 @@ const BeautifulAnimatedTitle = () => {
       transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
     >
       {/* Animated Background Elements */}
-        <motion.div
+      <motion.div
         className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.3, 1],
@@ -571,7 +571,7 @@ const BeautifulAnimatedTitle = () => {
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
-      
+
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -625,14 +625,14 @@ const BeautifulAnimatedTitle = () => {
             transition={{ delay: 0.8, duration: 1.0 }}
             className="mb-12"
           >
-              <motion.p
-                className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-light max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: 1.0, duration: 1.2 }}
-              >
-              <TypewriterText 
+            <motion.p
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-light max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 1.0, duration: 1.2 }}
+            >
+              <TypewriterText
                 text="Discover our complete collection featuring the original DreamCurl™ heatless curlers and premium curly hair accessories. Professional styling made easy — protect your hair while you style."
                 speed={50}
               />
@@ -774,15 +774,15 @@ const AnimatedText = ({ text }: { text: string }) => {
         <motion.span
           key={index}
           className="relative inline-block mr-4"
-          initial={{ 
-            opacity: 0, 
-            y: 50, 
+          initial={{
+            opacity: 0,
+            y: 50,
             rotateX: -90,
             filter: "blur(10px)"
           }}
-          whileInView={{ 
-            opacity: 1, 
-            y: 0, 
+          whileInView={{
+            opacity: 1,
+            y: 0,
             rotateX: 0,
             filter: "blur(0px)"
           }}
@@ -800,15 +800,15 @@ const AnimatedText = ({ text }: { text: string }) => {
           {word === "Curlea®" ? (
             <motion.span
               className="relative inline-block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
-              initial={{ 
-                opacity: 0, 
-                scale: 0.8, 
+              initial={{
+                opacity: 0,
+                scale: 0.8,
                 rotateY: -180,
                 filter: "blur(10px)"
               }}
-              whileInView={{ 
-                opacity: 1, 
-                scale: 1, 
+              whileInView={{
+                opacity: 1,
+                scale: 1,
                 rotateY: 0,
                 filter: "blur(0px)"
               }}
@@ -819,10 +819,10 @@ const AnimatedText = ({ text }: { text: string }) => {
                 type: "spring",
                 stiffness: 100
               }}
-              whileHover={{ 
-                scale: 1.1, 
+              whileHover={{
+                scale: 1.1,
                 rotateY: 10,
-                transition: { duration: 0.4, ease: "easeOut" } 
+                transition: { duration: 0.4, ease: "easeOut" }
               }}
               style={{
                 textShadow: "0 0 30px rgba(0,0,0,0.3)",
@@ -837,8 +837,8 @@ const AnimatedText = ({ text }: { text: string }) => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: 0.8 + index * 0.2, duration: 1.2, ease: "easeOut" }}
-                whileHover={{ 
-                  scale: 1.3, 
+                whileHover={{
+                  scale: 1.3,
                   opacity: 0.8,
                   transition: { duration: 0.3 }
                 }}
@@ -931,11 +931,11 @@ const TypewriterText = ({ text, speed = 50 }: { text: string; speed?: number }) 
 };
 
 // Interactive Filter Bar Component
-const InteractiveFilterBar = ({ 
-  selectedFilter, 
-  setSelectedFilter, 
-  selectedHairType, 
-  setSelectedHairType 
+const InteractiveFilterBar = ({
+  selectedFilter,
+  setSelectedFilter,
+  selectedHairType,
+  setSelectedHairType
 }: {
   selectedFilter: string;
   setSelectedFilter: (filter: string) => void;
@@ -946,33 +946,32 @@ const InteractiveFilterBar = ({
   const hairTypes = ["All Types", "Medium to Long", "All Types", "Curly"];
 
   return (
-        <motion.div
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.4, duration: 0.6 }}
-        >
+    <motion.div
+      className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2.4, duration: 0.6 }}
+    >
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center justify-center">
         {/* Category Filters */}
         <div className="flex flex-col items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground">Filter by:</span>
+          <span className="text-sm font-medium text-muted-foreground">Filter by:</span>
           <div className="flex flex-wrap gap-2 relative">
             {categories.map((filter) => (
-                <motion.button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
-                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${
-                    selectedFilter === filter
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+              <motion.button
+                key={filter}
+                onClick={() => setSelectedFilter(filter)}
+                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${selectedFilter === filter
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 animate={{
                   opacity: selectedFilter === filter ? 1 : 0.7
                 }}
-                >
-                  {filter}
+              >
+                {filter}
                 {selectedFilter === filter && (
                   <motion.div
                     layoutId="category-underline"
@@ -985,31 +984,30 @@ const InteractiveFilterBar = ({
                     }}
                   />
                 )}
-                </motion.button>
-              ))}
-            </div>
+              </motion.button>
+            ))}
+          </div>
         </div>
 
         {/* Hair Type Filters */}
         <div className="flex flex-col items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground">Hair Type:</span>
+          <span className="text-sm font-medium text-muted-foreground">Hair Type:</span>
           <div className="flex flex-wrap gap-2 relative">
             {hairTypes.map((type) => (
-                <motion.button
-                  key={type}
-                  onClick={() => setSelectedHairType(type)}
-                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${
-                    selectedHairType === type
-                    ? "text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+              <motion.button
+                key={type}
+                onClick={() => setSelectedHairType(type)}
+                className={`relative px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 touch-target ${selectedHairType === type
+                  ? "text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 animate={{
                   opacity: selectedHairType === type ? 1 : 0.7
                 }}
-                >
-                  {type}
+              >
+                {type}
                 {selectedHairType === type && (
                   <motion.div
                     layoutId="hairtype-underline"
@@ -1022,19 +1020,19 @@ const InteractiveFilterBar = ({
                     }}
                   />
                 )}
-                </motion.button>
-              ))}
-            </div>
-            </div>
+              </motion.button>
+            ))}
           </div>
-        </motion.div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
 // Old Product Grid with Cursor Follower Component (keeping for reference)
-const ProductGridWithCursorFollowerOld = ({ 
-  displayedProducts, 
-  setQuickViewProduct, 
+const ProductGridWithCursorFollowerOld = ({
+  displayedProducts,
+  setQuickViewProduct,
   navigate,
   addToCart,
   openCart
@@ -1174,9 +1172,9 @@ const ProductGridWithCursorFollowerOld = ({
 };
 
 // Featured Product Card Component
-const FeaturedProductCard = ({ 
-  product, 
-  setQuickViewProduct, 
+const FeaturedProductCard = ({
+  product,
+  setQuickViewProduct,
   navigate,
   addToCart,
   openCart,
@@ -1195,10 +1193,10 @@ const FeaturedProductCard = ({
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const deltaX = (e.clientX - centerX) / (rect.width / 2);
     const deltaY = (e.clientY - centerY) / (rect.height / 2);
-    
+
     setMousePosition({ x: deltaX, y: deltaY });
   };
 
@@ -1237,10 +1235,10 @@ const FeaturedProductCard = ({
             decoding="async"
           />
         </div>
-        
+
         {/* Subtle Border for Definition */}
         <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
-        
+
         {/* Enhanced Overlay Buttons */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 p-4"
@@ -1264,7 +1262,7 @@ const FeaturedProductCard = ({
             onClick={(e) => {
               e.stopPropagation();
               addToCart(product);
-              
+
               // Track add to cart event
               if (typeof window !== 'undefined' && (window as any).analytics) {
                 const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
@@ -1276,7 +1274,7 @@ const FeaturedProductCard = ({
                   total_value: priceNumber,
                 });
               }
-              
+
               openCart();
             }}
             className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-semibold rounded-xl px-6 py-3 flex items-center gap-2 hover:bg-primary transition-all duration-200 shadow-xl group"
@@ -1338,9 +1336,9 @@ const FeaturedProductCard = ({
 };
 
 // Medium Product Card Component
-const MediumProductCard = ({ 
-  product, 
-  setQuickViewProduct, 
+const MediumProductCard = ({
+  product,
+  setQuickViewProduct,
   navigate,
   addToCart,
   openCart,
@@ -1359,10 +1357,10 @@ const MediumProductCard = ({
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const deltaX = (e.clientX - centerX) / (rect.width / 2);
     const deltaY = (e.clientY - centerY) / (rect.height / 2);
-    
+
     setMousePosition({ x: deltaX, y: deltaY });
   };
 
@@ -1401,10 +1399,10 @@ const MediumProductCard = ({
             decoding="async"
           />
         </div>
-        
+
         {/* Subtle Border for Definition */}
         <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
-        
+
         {/* Enhanced Overlay Buttons */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-3"
@@ -1428,7 +1426,7 @@ const MediumProductCard = ({
             onClick={(e) => {
               e.stopPropagation();
               addToCart(product);
-              
+
               // Track add to cart event
               if (typeof window !== 'undefined' && (window as any).analytics) {
                 const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
@@ -1440,7 +1438,7 @@ const MediumProductCard = ({
                   total_value: priceNumber,
                 });
               }
-              
+
               openCart();
             }}
             className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-semibold rounded-lg px-4 py-2 flex items-center gap-1.5 hover:bg-primary transition-all duration-200 shadow-lg group"
@@ -1500,10 +1498,10 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
       const rect = ref.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
+
       const deltaX = (e.clientX - centerX) / (rect.width / 2);
       const deltaY = (e.clientY - centerY) / (rect.height / 2);
-      
+
       setMousePosition({ x: deltaX, y: deltaY });
     }
   };
@@ -1514,19 +1512,19 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
   };
 
   return (
-                <motion.div
+    <motion.div
       ref={ref}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.1,
-                    layout: { duration: 0.4 },
-                    ease: [0.43, 0.13, 0.23, 0.96],
-                  }}
-                  className="group relative bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500"
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        layout: { duration: 0.4 },
+        ease: [0.43, 0.13, 0.23, 0.96],
+      }}
+      className="group relative bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={handleMouseLeave}
@@ -1534,104 +1532,104 @@ const ProductCard3D = React.forwardRef<HTMLDivElement, {
         transform: `perspective(1000px) rotateX(${mousePosition.y * -1}deg) rotateY(${mousePosition.x * 1}deg) translateZ(0)`,
         transformStyle: "preserve-3d",
       }}
-                >
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-card/60">
-                    {/* Enhanced Image Container */}
-                    <div className="absolute inset-1.5 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
-                        style={{
-                          filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
-                          imageRendering: 'auto' as const,
-                        }}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    
-                    {/* Subtle Border for Definition */}
-                    <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
-                    
-                    {/* Enhanced Overlay Buttons */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col items-end justify-between p-2"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
-                    >
-                      {/* Top Row - Quick View Button */}
-                      <motion.button
-                        onClick={() => setQuickViewProduct(product)}
-                        className="bg-white/95 backdrop-blur-sm text-black font-medium rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200 flex items-center gap-1.5 group"
-                        whileHover={{ scale: 1.05, rotate: 2 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                        }}
-                      >
-                        <Eye className="w-3 h-3 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-semibold hidden sm:block">View</span>
-                      </motion.button>
-                      
-                      {/* Bottom Row - Add to Cart Button */}
-                      <motion.button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(product);
-                          
-                          // Track add to cart event
-                          if (typeof window !== 'undefined' && (window as any).analytics) {
-                            const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
-                            (window as any).analytics.trackCart('add', {
-                              product_id: product.id,
-                              title: product.name,
-                              price: priceNumber,
-                              quantity: 1,
-                              total_value: priceNumber,
-                            });
-                          }
-                          
-                          openCart();
-                        }}
-                        className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-medium rounded-full p-2 shadow-lg hover:bg-primary transition-all duration-200 flex items-center gap-1.5 group"
-                        whileHover={{ scale: 1.05, rotate: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                        }}
-                      >
-                        <Plus className="w-3 h-3 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-semibold hidden sm:block">Add</span>
-                      </motion.button>
-                    </motion.div>
-                  </div>
+    >
+      <div className="relative aspect-square overflow-hidden rounded-lg bg-card/60">
+        {/* Enhanced Image Container */}
+        <div className="absolute inset-1.5 rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-contain object-center transition-all duration-500 ease-out group-hover:scale-102"
+            style={{
+              filter: 'contrast(1.05) brightness(1.02) saturate(1.1)',
+              imageRendering: 'auto' as const,
+            }}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
-                  <div className="p-3 sm:p-4 md:p-6">
-                    <h3
-                      className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2 font-sharp-serif"
-                      onClick={() => {
-                        // Track product view
-                        if (typeof window !== 'undefined' && (window as any).analytics) {
-                          (window as any).analytics.track('ProductViewed', {
-                            product_id: product.id,
-                            product_name: product.name,
-                            price: product.price,
-                            category: product.category,
-                            page: 'Collection'
-                          });
-                        }
-                        navigate(`/product/${product.id}`);
-                      }}
-                    >
-                      {product.name}
-                    </h3>
-                    <p className="text-lg sm:text-xl md:text-2xl font-light text-muted-foreground font-sharp-serif">
-                      {product.price}
-                    </p>
-                  </div>
-                </motion.div>
+        {/* Subtle Border for Definition */}
+        <div className="absolute inset-0 rounded-lg border border-white/10 pointer-events-none" />
+
+        {/* Enhanced Overlay Buttons */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col items-end justify-between p-2"
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
+        >
+          {/* Top Row - Quick View Button */}
+          <motion.button
+            onClick={() => setQuickViewProduct(product)}
+            className="bg-white/95 backdrop-blur-sm text-black font-medium rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200 flex items-center gap-1.5 group"
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            whileTap={{ scale: 0.98 }}
+            style={{
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Eye className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-semibold hidden sm:block">View</span>
+          </motion.button>
+
+          {/* Bottom Row - Add to Cart Button */}
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product);
+
+              // Track add to cart event
+              if (typeof window !== 'undefined' && (window as any).analytics) {
+                const priceNumber = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+                (window as any).analytics.trackCart('add', {
+                  product_id: product.id,
+                  title: product.name,
+                  price: priceNumber,
+                  quantity: 1,
+                  total_value: priceNumber,
+                });
+              }
+
+              openCart();
+            }}
+            className="bg-primary/95 backdrop-blur-sm text-primary-foreground font-medium rounded-full p-2 shadow-lg hover:bg-primary transition-all duration-200 flex items-center gap-1.5 group"
+            whileHover={{ scale: 1.05, rotate: -2 }}
+            whileTap={{ scale: 0.98 }}
+            style={{
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Plus className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-semibold hidden sm:block">Add</span>
+          </motion.button>
+        </motion.div>
+      </div>
+
+      <div className="p-3 sm:p-4 md:p-6">
+        <h3
+          className="font-semibold text-sm sm:text-base md:text-xl mb-1 sm:mb-2 cursor-pointer hover:text-primary transition-colors line-clamp-2 font-sharp-serif"
+          onClick={() => {
+            // Track product view
+            if (typeof window !== 'undefined' && (window as any).analytics) {
+              (window as any).analytics.track('ProductViewed', {
+                product_id: product.id,
+                product_name: product.name,
+                price: product.price,
+                category: product.category,
+                page: 'Collection'
+              });
+            }
+            navigate(`/product/${product.id}`);
+          }}
+        >
+          {product.name}
+        </h3>
+        <p className="text-lg sm:text-xl md:text-2xl font-light text-muted-foreground font-sharp-serif">
+          {product.price}
+        </p>
+      </div>
+    </motion.div>
   );
 });
 
@@ -1647,15 +1645,15 @@ const HeroTitle = ({ text }: { text: string }) => {
         <motion.span
           key={index}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-bold text-white drop-shadow-2xl inline-block mr-2 sm:mr-4"
-          initial={{ 
-            opacity: 0, 
-            y: 80, 
+          initial={{
+            opacity: 0,
+            y: 80,
             rotateX: -90,
             filter: "blur(10px)"
           }}
-          animate={{ 
-            opacity: 1, 
-            y: 0, 
+          animate={{
+            opacity: 1,
+            y: 0,
             rotateX: 0,
             filter: "blur(0px)"
           }}
@@ -1688,7 +1686,7 @@ const HeroTitle = ({ text }: { text: string }) => {
           )}
         </motion.span>
       ))}
-        </div>
+    </div>
   );
 };
 
@@ -1697,7 +1695,7 @@ const HeroSubtitle = ({ text }: { text: string }) => {
   const characters = text.split("");
 
   return (
-    <motion.p 
+    <motion.p
       className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/95 mb-8 sm:mb-12 font-light leading-relaxed px-4 sm:px-0"
       style={{ textShadow: "0 0 20px rgba(0,0,0,0.3)" }}
     >
@@ -1705,15 +1703,15 @@ const HeroSubtitle = ({ text }: { text: string }) => {
         <motion.span
           key={index}
           className="inline-block"
-          initial={{ 
-            opacity: 0, 
-            y: 30, 
+          initial={{
+            opacity: 0,
+            y: 30,
             scale: 0.8,
             filter: "blur(5px)"
           }}
-          animate={{ 
-            opacity: 1, 
-            y: 0, 
+          animate={{
+            opacity: 1,
+            y: 0,
             scale: 1,
             filter: "blur(0px)"
           }}
@@ -1722,8 +1720,8 @@ const HeroSubtitle = ({ text }: { text: string }) => {
             delay: 3.0 + index * 0.03,
             ease: [0.43, 0.13, 0.23, 0.96],
           }}
-          whileHover={{ 
-            scale: 1.2, 
+          whileHover={{
+            scale: 1.2,
             color: "hsl(var(--accent))",
             y: -2,
             transition: { duration: 0.2 }
@@ -1741,7 +1739,7 @@ const HeroSubtitle = ({ text }: { text: string }) => {
 const HeroSectionWithRotation = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
-  
+
   // Import the specific hero images you requested
   const heroImages = [
     new URL('../assets/hero-1.png', import.meta.url).href,
@@ -1754,7 +1752,7 @@ const HeroSectionWithRotation = () => {
     target: heroRef,
     offset: ["start start", "end start"]
   });
-  
+
   // Reduce parallax intensity to prevent rendering issues
   const y = useTransform(scrollYProgress, [0, 1], [0, 30]);
   const opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.9, 0.5]);
@@ -1767,8 +1765,8 @@ const HeroSectionWithRotation = () => {
   }, [heroImages.length]);
 
   return (
-    <motion.section 
-      ref={heroRef} 
+    <motion.section
+      ref={heroRef}
       className="relative h-screen-safe sm:h-screen w-full overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -1776,14 +1774,14 @@ const HeroSectionWithRotation = () => {
     >
       {/* Background Image Layer with Optimized Performance */}
       <AnimatePresence mode="sync">
-            <motion.div
+        <motion.div
           key={currentImageIndex}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 1.8, ease: [0.43, 0.13, 0.23, 0.96] }}
           className="absolute inset-0"
-          style={{ 
+          style={{
             y,
             willChange: "auto",
             backfaceVisibility: "hidden",
@@ -1813,7 +1811,7 @@ const HeroSectionWithRotation = () => {
       </AnimatePresence>
 
       {/* Content with Professional Fade */}
-      <motion.div 
+      <motion.div
         className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6"
         style={{ opacity }}
       >
@@ -1825,10 +1823,10 @@ const HeroSectionWithRotation = () => {
         >
           {/* Main Title with Word-by-Word Animation */}
           <HeroTitle text="Discover Your Perfect Routine" />
-          
+
           {/* Subtitle with Character-by-Character Reveal */}
           <HeroSubtitle text="Unlock the science of your unique hair" />
-            </motion.div>
+        </motion.div>
       </motion.div>
 
     </motion.section>
@@ -1836,21 +1834,21 @@ const HeroSectionWithRotation = () => {
 };
 
 // Elegant Product Grid Component
-const ElegantProductGrid = ({ 
-  displayedProducts, 
-  navigate 
-}: { 
-  displayedProducts: Product[]; 
-  navigate: (path: string) => void; 
+const ElegantProductGrid = ({
+  displayedProducts,
+  navigate
+}: {
+  displayedProducts: Product[];
+  navigate: (path: string) => void;
 }) => {
   const { addToCart } = useCart();
 
-  const handleAddToCart = (product: { 
-    id: string; 
-    name: string; 
-    price: string; 
-    image: string; 
-    activeColor: { name: string; bgClass: string } | null 
+  const handleAddToCart = (product: {
+    id: string;
+    name: string;
+    price: string;
+    image: string;
+    activeColor: { name: string; bgClass: string } | null
   }) => {
     console.log('🛒 Product added to cart:', {
       productId: product.id,
@@ -1870,22 +1868,36 @@ const ElegantProductGrid = ({
       selectedColor: product.activeColor?.name
     });
 
-    // Show beautiful success message
+    // Show elegant success toast with product image
     toast.success(
-      `Added to your cart! 🎉`,
+      product.name,
       {
+        description: `Added to your shopping cart${product.activeColor ? ` • ${product.activeColor.name}` : ''}`,
         duration: 3000,
+        icon: (
+          <img
+            src={product.image}
+            alt={product.name}
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '12px',
+              objectFit: 'cover',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+            }}
+          />
+        ),
         style: {
-          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-          border: '2px solid #22c55e',
-          boxShadow: '0 10px 40px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)',
+          background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.1)',
           padding: '20px 24px',
-          borderRadius: '16px',
-          fontSize: '16px',
-          fontWeight: '600',
-          color: '#065f46',
+          borderRadius: '12px',
+          color: '#ffffff',
+          minWidth: '380px',
         },
-        icon: '✨',
+        className: 'elegant-toast',
       }
     );
   };
@@ -1907,7 +1919,7 @@ const ElegantProductGrid = ({
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -1918,7 +1930,7 @@ const ElegantProductGrid = ({
               Our Complete Collection
             </span>
           </motion.h2>
-          
+
           <motion.p
             className="text-sm sm:text-base md:text-lg lg:text-xl text-black max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed mb-4 sm:mb-6 px-2"
             initial={{ opacity: 0 }}
