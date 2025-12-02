@@ -35,8 +35,8 @@ export default function BlackFridayPopup() {
 
   const handleShopNow = () => {
     setIsOpen(false);
-    // Navigate to a product page or collection
-    navigate('/shop');
+    // Navigate to the product page with the Black Friday offer and scroll to section
+    navigate('/product/dreamcurl-original#black-friday-section');
   };
 
   if (!mounted) return null;
@@ -61,7 +61,7 @@ export default function BlackFridayPopup() {
             initial={{ y: '-100vh', opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: '-100vh', opacity: 0, scale: 0.8 }}
-            transition={{ 
+            transition={{
               type: 'spring',
               damping: 25,
               stiffness: 150,
@@ -69,7 +69,7 @@ export default function BlackFridayPopup() {
             }}
             className="fixed top-0 left-0 right-0 z-[10000] flex items-start justify-center p-4 pt-8 md:pt-12 pointer-events-none"
           >
-            <div 
+            <div
               className="relative w-full max-w-2xl pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -190,7 +190,7 @@ export default function BlackFridayPopup() {
                       <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
                       <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
                     </button>
-                    
+
                     <button
                       onClick={handleClose}
                       className="sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl border border-white/20 transition-all duration-300"

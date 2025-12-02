@@ -78,20 +78,22 @@ export const ProductDetailPage = () => {
       let scrollTimeout: NodeJS.Timeout | null = null;
       let scrollInterval: NodeJS.Timeout | null = null;
 
-      // Reliable scroll function that accounts for responsive heights
+      // Reliable scroll function that accounts for responsive heights and centers the element
       const scrollToSection = (immediate = false) => {
         const section = document.getElementById('black-friday-section');
         if (section) {
-          // Calculate responsive offsets
-          const isMobile = window.innerWidth < 768;
-          const bannerHeight = isMobile ? 70 : 52; // Mobile: 70px, Desktop: 52px
-          const navbarHeight = 80; // Approximate navbar height
-          const extraSpacing = 30; // Extra spacing for better visibility
-          const offset = bannerHeight + navbarHeight + extraSpacing;
+          // Get element dimensions and position
+          const rect = section.getBoundingClientRect();
+          const elementTop = rect.top + window.pageYOffset;
+          const elementHeight = rect.height;
+          const windowHeight = window.innerHeight;
 
-          // Get element position relative to document
-          const elementTop = section.getBoundingClientRect().top + window.pageYOffset;
-          const scrollPosition = Math.max(0, elementTop - offset);
+          // Calculate position to center the element
+          // Formula: Element Top - (Window Height / 2) + (Element Height / 2)
+          let scrollPosition = elementTop - (windowHeight / 2) + (elementHeight / 2);
+
+          // Ensure we don't scroll past the top
+          scrollPosition = Math.max(0, scrollPosition);
 
           if (immediate) {
             // Immediate scroll (no animation) to prevent conflicts
@@ -229,6 +231,9 @@ export const ProductDetailPage = () => {
 
   // Scroll to top instantly when page loads
   useEffect(() => {
+    // Skip if there's a hash (let the hash navigation handle it)
+    if (location.hash) return;
+
     // Add loading class to prevent scroll conflicts
     document.documentElement.classList.add('page-loading');
 
@@ -266,7 +271,7 @@ export const ProductDetailPage = () => {
       window.removeEventListener('touchmove', preventScroll);
       document.documentElement.classList.remove('page-loading');
     };
-  }, []);
+  }, [location.hash]);
 
   // Reset all state when product ID changes (navigating between products)
   useEffect(() => {
@@ -301,19 +306,21 @@ export const ProductDetailPage = () => {
       selectProduct(product);
     }
 
-    // Add loading class and scroll to top when product changes
-    document.documentElement.classList.add('page-loading');
+    // Add loading class and scroll to top when product changes - BUT skip if hash is present
+    if (!location.hash) {
+      document.documentElement.classList.add('page-loading');
 
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant' as ScrollBehavior
-    });
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant' as ScrollBehavior
+      });
 
-    // Remove loading class after scroll is complete
-    setTimeout(() => {
-      document.documentElement.classList.remove('page-loading');
-    }, 100);
+      // Remove loading class after scroll is complete
+      setTimeout(() => {
+        document.documentElement.classList.remove('page-loading');
+      }, 100);
+    }
   }, [product?.id]); // Only depend on product.id to prevent unnecessary resets
 
   // Aggressive image preloading for instant display
