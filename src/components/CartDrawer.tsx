@@ -564,34 +564,37 @@ export const CartDrawer = () => {
     return `$${price.toFixed(2)}`;
   };
 
-  // Helper: Get items that receive discount
-  const getDiscountedItems = () => {
-    const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-    const discountedItemsCount = Math.floor(totalItems / 3);
+  // Helper: Get items that receive discount - memoized for performance
+  const getDiscountedItems = useMemo(() => {
+    return () => {
+      // Filter out free items ($0) - they don't count toward the promotion
+      const paidItems = state.items.filter(item => {
+        const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+        return price > 0;
+      });
 
-    if (discountedItemsCount === 0) return new Set();
+      const totalPaidItems = paidItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    // Sort by price (highest first)
-    const sortedItems = [...state.items].sort((a, b) => {
-      const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-      const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-      return priceB - priceA;
-    });
+      if (totalPaidItems < 3) return new Set();
 
-    const discountedIds = new Set<string>();
-    let remaining = discountedItemsCount;
+      // Sort PAID items by price (highest first)
+      const sortedPaidItems = [...paidItems].sort((a, b) => {
+        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
+        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
+        return priceB - priceA;
+      });
 
-    for (const item of sortedItems) {
-      if (remaining === 0) break;
-      const itemsToDiscount = Math.min(item.quantity, remaining);
-      if (itemsToDiscount > 0) {
-        discountedIds.add(`${item.id}-${item.selectedColor || 'default'}`);
+      const discountedIds = new Set<string>();
+
+      // Only the most expensive PAID item gets the discount
+      if (sortedPaidItems.length > 0) {
+        const mostExpensiveItem = sortedPaidItems[0];
+        discountedIds.add(`${mostExpensiveItem.id}-${mostExpensiveItem.selectedColor || 'default'}`);
       }
-      remaining -= itemsToDiscount;
-    }
 
-    return discountedIds;
-  };
+      return discountedIds;
+    };
+  }, [state.items]);
 
   const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {
     updateQuantity(item.id, newQuantity, item.selectedColor, item.selectedSize);
