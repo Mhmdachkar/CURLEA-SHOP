@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { ProductImage } from "@/components/ProductImage";
-import { BlackFridaySection } from '@/components/modern/BlackFridaySection';
+
 import { MediaShowcaseSection } from "@/components/MediaShowcaseSection";
 import { ArrowLeft, Minus, Plus, Play, Pause, CheckCircle, Leaf, Users, Heart, ChevronLeft, ChevronRight, ShoppingBag, Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -68,7 +68,7 @@ export const ProductDetailPage = () => {
     };
   }, [id, location.hash]); // Include location.hash in dependencies
 
-  // Handle hash navigation to Black Friday section
+
   // This MUST run immediately and with high priority
   useEffect(() => {
     if (location.hash === '#black-friday-section') {
@@ -1918,8 +1918,7 @@ export const ProductDetailPage = () => {
             <ScienceAndSoulSection key={`science-${product.id}`} product={product} />
           )}
 
-          {/* 5. Black Friday Exclusive Section */}
-          <BlackFridaySection key={`black-friday-${product.id}`} product={product} />
+
 
 
           {/* Size Guide Section - Only for DreamCurl Short Set */}

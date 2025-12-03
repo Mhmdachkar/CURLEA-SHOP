@@ -14,6 +14,7 @@ export interface Product {
   colors?: string[];
   usageSteps?: string[];
   inStock?: boolean;
+  comingSoon?: boolean; // Flag for coming soon products
   video?: string;
   images?: string[];
   sizeOptions?: {
@@ -341,6 +342,7 @@ export const products: Product[] = [
     category: "Hair Accessories",
     hairType: "Curly",
     featured: true,
+    comingSoon: true,
     description: [
       "Includes both Gold and Print colors in one package (not sold separately)",
       "Premium alloy construction with elegant gold finish for luxury styling",
@@ -474,6 +476,7 @@ export const products: Product[] = [
     category: "Hair Accessories",
     hairType: "Curly",
     featured: true,
+    comingSoon: true,
     description: [
       "Are you tired of losing your curls' bounce and definition after brushing? Say hello to a game-changer that has taken the beauty world by storm—our specially designed curl comb!",
       "Widely celebrated and going viral numerous times, this innovative tool is crafted to preserve your curls' integrity while achieving that effortlessly chic \"brushed out\" look.",
@@ -659,6 +662,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       category: "Hair Accessories",
       hairType: "Curly",
       featured: true,
+      comingSoon: true,
       description: [
         "Includes both Gold and Print colors in one package (not sold separately)",
         "Premium alloy construction with elegant gold finish for luxury styling",
@@ -685,6 +689,7 @@ export const getCurlyHairCollectionProducts = (): Product[] => {
       category: "Hair Accessories",
       hairType: "Curly",
       featured: true,
+      comingSoon: true,
       description: [
         "Are you tired of losing your curls' bounce and definition after brushing? Say hello to a game-changer that has taken the beauty world by storm—our specially designed curl comb!",
         "Widely celebrated and going viral numerous times, this innovative tool is crafted to preserve your curls' integrity while achieving that effortlessly chic \"brushed out\" look.",

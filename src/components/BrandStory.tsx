@@ -261,7 +261,7 @@ export const BrandStory = () => {
   const textRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
-  
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -279,6 +279,11 @@ export const BrandStory = () => {
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.9]);
   const rotate = useTransform(scrollYProgress, [0, 1], shouldUseParallax ? [0, 2] : [0, 0]);
 
+  // Parallax values for the second blob – defined unconditionally to keep hook order stable
+  const blob2Y = useTransform(scrollYProgress, [0, 1], [-100, 100]);
+  const blob2Scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.2, 1, 0.8]);
+  const blob2Rotate = useTransform(scrollYProgress, [0, 1], [0, -2]);
+
   return (
     <Section ref={sectionRef}>
       {/* Enhanced Parallax Background Elements */}
@@ -295,11 +300,15 @@ export const BrandStory = () => {
         }}
       />
       <ParallaxBlob2
-        style={shouldUseParallax ? { 
-          y: useTransform(scrollYProgress, [0, 1], [-100, 100]),
-          scale: useTransform(scrollYProgress, [0, 0.5, 1], [1.2, 1, 0.8]),
-          rotate: useTransform(scrollYProgress, [0, 1], [0, -2])
-        } : {}}
+        style={
+          shouldUseParallax
+            ? {
+                y: blob2Y,
+                scale: blob2Scale,
+                rotate: blob2Rotate,
+              }
+            : {}
+        }
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.2, 0.4, 0.2],

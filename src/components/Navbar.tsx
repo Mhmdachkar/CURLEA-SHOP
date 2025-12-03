@@ -673,36 +673,6 @@ export const Navbar = () => {
                 {letter}
               </motion.span>
             ))}
-
-            {/* Black Friday Badge - Only visible when scrolled */}
-            <AnimatePresence>
-              {isScrolled && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -10, scale: 0.8 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  style={{
-                    marginLeft: '12px',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    background: 'linear-gradient(135deg, #D4AF37 0%, #B5952F 100%)',
-                    color: '#000',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                    boxShadow: '0 2px 10px rgba(212, 175, 55, 0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    pointerEvents: 'none' // Don't interfere with logo click
-                  }}
-                >
-                  <span style={{ fontSize: '12px' }}>?</span> BLACK FRIDAY
-                </motion.div>
-              )}
-            </AnimatePresence>
           </Logo>
 
           {/* Desktop Navigation */}

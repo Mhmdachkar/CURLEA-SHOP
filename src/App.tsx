@@ -10,7 +10,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
-import BlackFridayPopup from "@/components/BlackFridayPopup";
+
 import PromotionalBanner from "@/components/PromotionalBanner";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { lazy, Suspense, useEffect } from "react";
@@ -114,7 +114,7 @@ const App = () => {
                   </Routes>
                 </Suspense>
                 <CartDrawer />
-                <BlackFridayPopup />
+
               </BrowserRouter>
             </CartProvider>
           </RealtimeProvider>

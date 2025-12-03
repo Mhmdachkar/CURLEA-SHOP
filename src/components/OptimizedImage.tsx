@@ -83,10 +83,10 @@ export const OptimizedImage = ({
 
     const img = new Image();
     img.src = src;
-    
+
     // Set image immediately, don't wait for full load
     setCurrentSrc(src);
-    
+
     img.onload = () => {
       imageCache.set(src, true); // Cache the loaded image
       setIsLoaded(true);
@@ -147,14 +147,14 @@ export const OptimizedImage = ({
           aria-hidden
         />
       )}
-      
+
       {/* Actual image */}
       {currentSrc && (
         <img
           src={currentSrc}
           alt={alt}
           className={`w-full h-full ${className} ${shouldRemoveBlackBorders ? 'remove-black-borders' : ''}`}
-          style={{ 
+          style={{
             objectFit,
             ...(shouldRemoveBlackBorders && {
               filter: 'contrast(1.1) brightness(1.05) saturate(1.1)',
@@ -172,6 +172,7 @@ export const OptimizedImage = ({
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
           fetchPriority={priority ? 'high' : 'auto'}
+          {...({} as any)} // Suppress React DOM warning
         />
       )}
     </div>

@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 
 const PromotionalBanner = () => {
   const location = useLocation();
-  const [currentOffer, setCurrentOffer] = useState(0);
-
-  // Rotate between offers every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentOffer((prev) => (prev + 1) % 2);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // No rotation needed - only one offer
+  const currentOffer = 0;
 
   // Hide banner on checkout page
   if (location.pathname === '/checkout') {
@@ -23,12 +15,6 @@ const PromotionalBanner = () => {
   const offers = [
     {
       id: 0,
-      title: "BLACK FRIDAY EXCLUSIVE",
-      subtitle: "Buy 1 Full Set, Get a FREE Gift",
-      gradient: "from-black via-gray-900 to-black"
-    },
-    {
-      id: 1,
       title: "SPECIAL OFFER",
       subtitle: "Buy 2 Items, Get 50% OFF 3rd Item",
       gradient: "from-black via-gray-900 to-black"

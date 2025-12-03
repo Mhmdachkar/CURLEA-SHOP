@@ -155,6 +155,7 @@ const ProductCardComponent = ({
   image,
   colors,
   images,
+  comingSoon,
   onClick,
   onAddToCart
 }: ProductCardProps) => {
@@ -264,10 +265,10 @@ const ProductCardComponent = ({
 
   return (
     <motion.div
-      className="w-full bg-white rounded-lg shadow-md overflow-hidden flex flex-col cursor-pointer hover:shadow-xl transition-shadow duration-300"
-      whileHover={{ y: -4 }}
+      className={`w-full bg-white rounded-lg shadow-md overflow-hidden flex flex-col ${comingSoon ? 'pointer-events-none' : 'cursor-pointer hover:shadow-xl'} transition-shadow duration-300 relative`}
+      whileHover={comingSoon ? {} : { y: -4 }}
       transition={{ duration: 0.2 }}
-      onClick={onClick}
+      onClick={comingSoon ? undefined : onClick}
     >
 
       {/* 1. Product Image - 1:1 Aspect Ratio */}
@@ -275,144 +276,338 @@ const ProductCardComponent = ({
         <OptimizedImage
           src={currentImage}
           alt={name}
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${comingSoon ? 'blur-sm grayscale' : ''}`}
         />
+
+        {/* Ultra-Premium Coming Soon Overlay */}
+        {comingSoon && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0 flex items-center justify-center z-10 overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(250, 250, 250, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            }}
+          >
+            {/* Floating Gold Particles */}
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F2D06B]"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  boxShadow: '0 0 8px rgba(212, 175, 55, 0.6)',
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [1, 1.5, 1],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+
+            {/* Elegant shine effect */}
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                background: [
+                  'linear-gradient(120deg, transparent 30%, rgba(212, 175, 55, 0.08) 50%, transparent 70%)',
+                  'linear-gradient(120deg, transparent 30%, rgba(212, 175, 55, 0.08) 50%, transparent 70%)',
+                ],
+                backgroundPosition: ['-100% 0', '200% 0'],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                backgroundSize: '200% 100%',
+              }}
+            />
+
+            {/* Premium borders */}
+            <div className="absolute inset-0">
+              <motion.div
+                className="absolute inset-0 rounded-lg"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, transparent 50%, rgba(212, 175, 55, 0.15) 100%)',
+                  backgroundSize: '200% 200%',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+              <div className="absolute inset-0 border-2 border-[#D4AF37]/10 rounded-lg" />
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-20 text-center px-8">
+              {/* Luxury Icon */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  delay: 0.3,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15
+                }}
+                className="mb-6"
+              >
+                <div className="relative w-16 h-16 mx-auto">
+                  {/* Rotating outer ring */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-[#D4AF37]/20"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 20,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                  {/* Inner circle with icon */}
+                  <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <svg className="w-6 h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Exclusive Typography */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="space-y-3"
+              >
+                {/* Badge */}
+                <motion.div
+                  className="inline-block"
+                  animate={{
+                    boxShadow: [
+                      '0 0 0 0 rgba(212, 175, 55, 0)',
+                      '0 0 0 8px rgba(212, 175, 55, 0.1)',
+                      '0 0 0 0 rgba(212, 175, 55, 0)',
+                    ]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                >
+                  <span className="px-4 py-1.5 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[10px] font-medium tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
+                    Exclusive Launch
+                  </span>
+                </motion.div>
+
+                {/* Main Title */}
+                <h3 className="text-2xl md:text-3xl font-serif text-gray-900 tracking-tight" style={{
+                  fontWeight: 300,
+                  letterSpacing: '0.02em'
+                }}>
+                  Unveiling Soon
+                </h3>
+
+                {/* Decorative divider */}
+                <div className="flex items-center justify-center gap-3 py-2">
+                  <motion.div
+                    className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.div
+                    className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 1, 0.6]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.div
+                    className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  />
+                </div>
+
+                {/* Subtitle */}
+                <p className="text-xs md:text-sm text-gray-500 font-light tracking-[0.15em] uppercase">
+                  A New Addition to Our Collection
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
-      {/* 2. Product Details */}
-      <div className="p-4 flex justify-between items-start">
+      {/* 2. Product Details - Hidden for Coming Soon */}
+      {!comingSoon && (
+        <div className="p-4 flex justify-between items-start">
 
-        {/* Left Side: Title, Price, Colors */}
-        <div className="flex-1 pr-2">
-          <h3 className="text-base font-semibold text-gray-900 line-clamp-2 mb-1 font-sharp-serif">
-            {name}
-          </h3>
-          <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
+          {/* Left Side: Title, Price, Colors */}
+          <div className="flex-1 pr-2">
+            <h3 className="text-base font-semibold text-gray-900 line-clamp-2 mb-1 font-sharp-serif">
+              {name}
+            </h3>
+            <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
 
-          {/* 3. Enhanced Color Swatches */}
-          {colorOptions.length > 0 && (
-            <div className="flex gap-2 mt-3 flex-wrap relative">
-              {colorOptions.map((color) => {
-                const isSelected = activeColor?.name === color.name;
-                const isHovered = hoveredColor === color.name;
+            {/* 3. Enhanced Color Swatches */}
+            {colorOptions.length > 0 && (
+              <div className="flex gap-2 mt-3 flex-wrap relative">
+                {colorOptions.map((color) => {
+                  const isSelected = activeColor?.name === color.name;
+                  const isHovered = hoveredColor === color.name;
 
-                return (
-                  <div key={color.name} className="relative">
-                    <motion.button
-                      type="button"
-                      onClick={(e) => handleColorSelect(e, color)}
-                      onMouseEnter={() => handleColorHover(color.name)}
-                      onMouseLeave={handleColorLeave}
-                      className={`
+                  return (
+                    <div key={color.name} className="relative">
+                      <motion.button
+                        type="button"
+                        onClick={(e) => handleColorSelect(e, color)}
+                        onMouseEnter={() => handleColorHover(color.name)}
+                        onMouseLeave={handleColorLeave}
+                        className={`
                         relative w-8 h-8 rounded-full flex-shrink-0
                         transition-all duration-200 ease-in-out
                         cursor-pointer
                         border-2 border-gray-200
                         ${color.bgClass}
                         ${isSelected
-                          ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg'
-                          : 'hover:scale-110 hover:shadow-md focus:ring-2 focus:ring-blue-600 focus:ring-offset-2'
-                        }
+                            ? 'ring-2 ring-blue-600 ring-offset-2 shadow-lg'
+                            : 'hover:scale-110 hover:shadow-md focus:ring-2 focus:ring-blue-600 focus:ring-offset-2'
+                          }
                       `}
-                      whileHover={{ scale: isSelected ? 1 : 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label={`Select color ${color.name}`}
-                      aria-pressed={isSelected}
-                    >
-                      {/* Checkmark for selected state */}
-                      <AnimatePresence>
-                        {isSelected && (
+                        whileHover={{ scale: isSelected ? 1 : 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label={`Select color ${color.name}`}
+                        aria-pressed={isSelected}
+                      >
+                        {/* Checkmark for selected state */}
+                        <AnimatePresence>
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ duration: 0.2, ease: "backOut" }}
+                              className="absolute inset-0 flex items-center justify-center"
+                            >
+                              <Check
+                                className={`w-4 h-4 ${color.bgClass === 'bg-white' ||
+                                  color.bgClass === 'bg-amber-200' ||
+                                  color.bgClass === 'bg-yellow-500'
+                                  ? 'text-gray-900'
+                                  : 'text-white'
+                                  } stroke-[3]`}
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.button>
+
+                      {/* Tooltip - positioned absolutely relative to the wrapper */}
+                      {isHovered && !isSelected && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
                           <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            transition={{ duration: 0.2, ease: "backOut" }}
-                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 5 }}
+                            transition={{ duration: 0.15 }}
+                            className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap"
                           >
-                            <Check
-                              className={`w-4 h-4 ${color.bgClass === 'bg-white' ||
-                                color.bgClass === 'bg-amber-200' ||
-                                color.bgClass === 'bg-yellow-500'
-                                ? 'text-gray-900'
-                                : 'text-white'
-                                } stroke-[3]`}
-                            />
+                            {formatColorName(color.name)}
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
                           </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                    {/* Tooltip - positioned absolutely relative to the wrapper */}
-                    {isHovered && !isSelected && (
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 5 }}
-                          transition={{ duration: 0.15 }}
-                          className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap"
-                        >
-                          {formatColorName(color.name)}
-                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
-                        </motion.div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* 4. Right Side: Add to Cart Button */}
-        <div className="flex items-end">
-          <motion.button
-            type="button"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex-shrink-0 overflow-hidden"
-            aria-label="Add to cart"
-            whileHover={{
-              scale: 1.1,
-              rotate: 5,
-              transition: { duration: 0.2, ease: "easeOut" }
-            }}
-            whileTap={{
-              scale: 0.95,
-              transition: { duration: 0.1 }
-            }}
-            onClick={handleAddToCart}
-          >
-            {/* Hover background effect */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"
-              initial={{ opacity: 0 }}
-              whileHover={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            />
-
-            {/* Icon with enhanced hover effects */}
-            <motion.div
-              className="relative z-10 text-black group-hover:text-white transition-colors duration-300"
-              whileHover={{
-                rotate: 360,
-                transition: { duration: 0.6, ease: "easeInOut" }
+          {/* 4. Right Side: Add to Cart Button */}
+          <div className="flex items-end">
+            <motion.button
+              type="button"
+              className={`group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md transition-all duration-300 flex-shrink-0 overflow-hidden ${comingSoon ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl cursor-pointer'}`}
+              aria-label="Add to cart"
+              disabled={comingSoon}
+              whileHover={comingSoon ? {} : {
+                scale: 1.1,
+                rotate: 5,
+                transition: { duration: 0.2, ease: "easeOut" }
               }}
+              whileTap={comingSoon ? {} : {
+                scale: 0.95,
+                transition: { duration: 0.1 }
+              }}
+              onClick={comingSoon ? undefined : handleAddToCart}
             >
-              <CartIcon />
-            </motion.div>
+              {/* Hover background effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
 
-            {/* Subtle glow effect on hover */}
-            <motion.div
-              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100"
-              style={{
-                background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))',
-                filter: 'blur(8px)',
-                zIndex: -1
-              }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.button>
+              {/* Icon with enhanced hover effects */}
+              <motion.div
+                className="relative z-10 text-black group-hover:text-white transition-colors duration-300"
+                whileHover={{
+                  rotate: 360,
+                  transition: { duration: 0.6, ease: "easeInOut" }
+                }}
+              >
+                <CartIcon />
+              </motion.div>
+
+              {/* Subtle glow effect on hover */}
+              <motion.div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100"
+                style={{
+                  background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))',
+                  filter: 'blur(8px)',
+                  zIndex: -1
+                }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
+          </div>
         </div>
-      </div>
+      )}
     </motion.div>
   );
 };

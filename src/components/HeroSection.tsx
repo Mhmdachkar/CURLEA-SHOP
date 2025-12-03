@@ -245,10 +245,10 @@ const ShopOfferButton = () => {
   const handleShopOffer = () => {
     // Check if we're already on the product page
     const isOnProductPage = location.pathname.startsWith('/product/');
-    
+
     // Navigate to product page with hash
     navigate('/product/dreamcurl-original#black-friday-section', { replace: false });
-    
+
     // Use a more reliable scroll method that waits for the element
     const scrollToSection = () => {
       const section = document.getElementById('black-friday-section');
@@ -259,7 +259,7 @@ const ShopOfferButton = () => {
         const navbarHeight = 80; // Approximate navbar height
         const extraSpacing = 30; // Extra spacing for better visibility
         const offset = bannerHeight + navbarHeight + extraSpacing;
-        
+
         // Get element position relative to document
         const elementTop = section.getBoundingClientRect().top + window.pageYOffset;
         const scrollPosition = elementTop - offset;
@@ -579,7 +579,7 @@ export const HeroSection = () => {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-        <motion.h1
+          <motion.h1
             className="relative text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -587,7 +587,7 @@ export const HeroSection = () => {
           >
             <motion.span
               className="inline-block"
-              animate={{ 
+              animate={{
                 textShadow: [
                   '0 0 20px rgba(255,255,255,0.3)',
                   '0 0 40px rgba(255,255,255,0.5)',
@@ -595,11 +595,11 @@ export const HeroSection = () => {
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-              Black Friday
+            >
+              CURLEA
             </motion.span>
             <br />
-            <motion.span 
+            <motion.span
               className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F2D06B] to-[#D4AF37]"
               style={{
                 backgroundSize: '200% auto',
@@ -609,9 +609,9 @@ export const HeroSection = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
-            Event
+              Special Offer
             </motion.span>
-        </motion.h1>
+          </motion.h1>
         </motion.div>
 
         <motion.p
@@ -620,7 +620,7 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          <span className="font-semibold text-white">Our biggest offer of the year.</span>
+          <span className="font-semibold text-white">CURLEA Special Offer.</span>
           <br />
           Buy any full set and receive a luxury gift on us.
         </motion.p>
@@ -630,20 +630,20 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
-            >
+        >
           <ShopOfferButton />
           <Link to="/collection">
             <motion.div
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-            <Button
-              variant="outline"
-              size="lg"
+              <Button
+                variant="outline"
+                size="lg"
                 className="bg-transparent border-2 border-white/50 text-white hover:bg-white/10 hover:border-white px-10 py-6 text-lg rounded-full backdrop-blur-sm transition-all duration-300"
-            >
-              View Collection
-            </Button>
+              >
+                View Collection
+              </Button>
             </motion.div>
           </Link>
         </motion.div>

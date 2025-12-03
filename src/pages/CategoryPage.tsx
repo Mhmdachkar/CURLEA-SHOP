@@ -216,8 +216,8 @@ export const CategoryPage = () => {
       {/* Hero Section */}
       <motion.section
         className={`relative overflow-hidden ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-            ? 'bg-center bg-no-repeat'
-            : `bg-gradient-to-br ${config.gradient} py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8`
+          ? 'bg-center bg-no-repeat'
+          : `bg-gradient-to-br ${config.gradient} py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8`
           }`}
         style={{
           minHeight: (normalizedCategory === 'wavy' || normalizedCategory === 'curly') ? '100vh' : 'auto',
@@ -333,8 +333,8 @@ export const CategoryPage = () => {
         )}
 
         <div className={`max-w-7xl mx-auto text-center relative z-10 ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-            ? 'h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8'
-            : ''
+          ? 'h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8'
+          : ''
           }`}>
           {/* Animated Title with Word-by-Word Reveal - Sharp & Elegant */}
           <motion.div
@@ -344,8 +344,8 @@ export const CategoryPage = () => {
           >
             <motion.h1
               className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                  ? 'text-white'
-                  : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
+                ? 'text-white'
+                : 'bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent'
                 }`}
               style={{
                 textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
@@ -477,8 +477,8 @@ export const CategoryPage = () => {
           {config.subtitle && (
             <motion.p
               className={`text-lg sm:text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed px-4 font-normal ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                  ? 'text-white'
-                  : 'text-gray-800'
+                ? 'text-white'
+                : 'text-gray-800'
                 }`}
               style={{
                 textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
@@ -526,8 +526,8 @@ export const CategoryPage = () => {
           {/* Animated Description with Staggered Lines - Sharp & Clean */}
           <motion.p
             className={`text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 px-4 font-light ${(normalizedCategory === 'wavy' || normalizedCategory === 'curly')
-                ? 'text-white'
-                : 'text-gray-700'
+              ? 'text-white'
+              : 'text-gray-700'
               }`}
             style={{
               textShadow: (normalizedCategory === 'wavy' || normalizedCategory === 'curly')
@@ -776,8 +776,8 @@ export const CategoryPage = () => {
                 key={index}
                 onClick={() => setCurlyHeroIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${curlyHeroIndex === index
-                    ? 'bg-white w-8'
-                    : 'bg-white/40 hover:bg-white/60'
+                  ? 'bg-white w-8'
+                  : 'bg-white/40 hover:bg-white/60'
                   }`}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -831,14 +831,14 @@ export const CategoryPage = () => {
                       duration: 0.6,
                       ease: [0.43, 0.13, 0.23, 0.96]
                     }}
-                    className="group bg-transparent cursor-pointer flex flex-col items-center text-center"
-                    onClick={() => navigate(`/product/${product.id}`)}
-                    whileHover={{
+                    className={`group bg-transparent flex flex-col items-center text-center ${product.comingSoon ? 'pointer-events-none' : 'cursor-pointer'}`}
+                    onClick={product.comingSoon ? undefined : () => navigate(`/product/${product.id}`)}
+                    whileHover={product.comingSoon ? {} : {
                       y: -8,
                       scale: 1.02,
                       transition: { duration: 0.3, ease: "easeOut" }
                     }}
-                    whileTap={{ scale: 0.98 }}
+                    whileTap={product.comingSoon ? {} : { scale: 0.98 }}
                   >
                     {/* Floating Product Image */}
                     <div className="relative mb-3 sm:mb-6 w-full">
@@ -855,11 +855,181 @@ export const CategoryPage = () => {
                         <OptimizedImage
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full object-cover ${product.comingSoon ? 'blur-sm grayscale' : ''}`}
                           onError={(e) => {
                             try { (e.currentTarget as HTMLImageElement).src = CURLY_PLACEHOLDER; } catch { }
                           }}
                         />
+
+                        {/* Ultra-Premium Coming Soon Overlay */}
+                        {product.comingSoon && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="absolute inset-0 flex items-center justify-center z-10 overflow-hidden"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(250, 250, 250, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
+                              backdropFilter: 'blur(20px) saturate(180%)',
+                              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                            }}
+                          >
+                            {/* Floating Gold Particles */}
+                            {[...Array(8)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className="absolute w-1 h-1 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F2D06B]"
+                                style={{
+                                  left: `${Math.random() * 100}%`,
+                                  top: `${Math.random() * 100}%`,
+                                  boxShadow: '0 0 8px rgba(212, 175, 55, 0.6)',
+                                }}
+                                animate={{
+                                  y: [0, -25, 0],
+                                  x: [0, Math.random() * 15 - 7.5, 0],
+                                  opacity: [0.3, 0.8, 0.3],
+                                  scale: [1, 1.4, 1],
+                                }}
+                                transition={{
+                                  duration: 2.5 + Math.random() * 1.5,
+                                  repeat: Infinity,
+                                  delay: Math.random() * 2,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            ))}
+
+                            {/* Elegant shine effect */}
+                            <motion.div
+                              className="absolute inset-0"
+                              animate={{
+                                background: [
+                                  'linear-gradient(120deg, transparent 30%, rgba(212, 175, 55, 0.08) 50%, transparent 70%)',
+                                  'linear-gradient(120deg, transparent 30%, rgba(212, 175, 55, 0.08) 50%, transparent 70%)',
+                                ],
+                                backgroundPosition: ['-100% 0', '200% 0'],
+                              }}
+                              transition={{
+                                duration: 3.5,
+                                repeat: Infinity,
+                                ease: "linear"
+                              }}
+                              style={{
+                                backgroundSize: '200% 100%',
+                              }}
+                            />
+
+                            {/* Premium borders */}
+                            <div className="absolute inset-0">
+                              <motion.div
+                                className="absolute inset-0 rounded-lg"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, transparent 50%, rgba(212, 175, 55, 0.12) 100%)',
+                                  backgroundSize: '200% 200%',
+                                }}
+                                animate={{
+                                  backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                                }}
+                                transition={{
+                                  duration: 8,
+                                  repeat: Infinity,
+                                  ease: "linear"
+                                }}
+                              />
+                              <div className="absolute inset-0 border border-[#D4AF37]/10" />
+                              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent" />
+                              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent" />
+                            </div>
+
+                            {/* Content */}
+                            <div className="relative z-20 text-center px-6">
+                              {/* Luxury Icon */}
+                              <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{
+                                  delay: 0.3,
+                                  type: "spring",
+                                  stiffness: 200,
+                                  damping: 15
+                                }}
+                                className="mb-4"
+                              >
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto">
+                                  <motion.div
+                                    className="absolute inset-0 rounded-full border-2 border-[#D4AF37]/20"
+                                    animate={{ rotate: 360 }}
+                                    transition={{
+                                      duration: 20,
+                                      repeat: Infinity,
+                                      ease: "linear"
+                                    }}
+                                  />
+                                  <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
+                                    <motion.div
+                                      animate={{ scale: [1, 1.15, 1] }}
+                                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                    >
+                                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                      </svg>
+                                    </motion.div>
+                                  </div>
+                                </div>
+                              </motion.div>
+
+                              {/* Exclusive Typography */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.8 }}
+                                className="space-y-2"
+                              >
+                                <motion.div
+                                  className="inline-block"
+                                  animate={{
+                                    boxShadow: [
+                                      '0 0 0 0 rgba(212, 175, 55, 0)',
+                                      '0 0 0 8px rgba(212, 175, 55, 0.1)',
+                                      '0 0 0 0 rgba(212, 175, 55, 0)',
+                                    ]
+                                  }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                  <span className="px-3 py-1 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[9px] sm:text-[10px] font-medium tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
+                                    Exclusive Launch
+                                  </span>
+                                </motion.div>
+
+                                <h3 className="text-xl sm:text-2xl font-serif text-gray-900 tracking-tight" style={{ fontWeight: 300, letterSpacing: '0.02em' }}>
+                                  Unveiling Soon
+                                </h3>
+
+                                <div className="flex items-center justify-center gap-2 py-1">
+                                  <motion.div
+                                    className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  />
+                                  <motion.div
+                                    className="w-1 h-1 rounded-full bg-[#D4AF37]/60"
+                                    animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  />
+                                  <motion.div
+                                    className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                                  />
+                                </div>
+
+                                <p className="text-[10px] sm:text-xs text-gray-500 font-light tracking-[0.15em] uppercase">
+                                  A New Addition to Our Collection
+                                </p>
+                              </motion.div>
+                            </div>
+                          </motion.div>
+                        )}
 
                         {/* Advanced background masking system */}
                         <div className="absolute inset-0 pointer-events-none">
@@ -882,39 +1052,41 @@ export const CategoryPage = () => {
                       </div>
                     </div>
 
-                    {/* Elegant Product Info */}
-                    <div className="space-y-2 sm:space-y-4 w-full px-1 sm:px-0">
-                      <h3 className="font-semibold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2 font-sharp-serif">
-                        {product.name}
-                      </h3>
-                      <p className="text-[10px] sm:text-sm font-light leading-relaxed text-black line-clamp-2 sm:line-clamp-3 hidden sm:block">
-                        {product.description[0]}
-                      </p>
-                      <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 pt-1 sm:pt-2">
-                        <span className="text-sm sm:text-2xl font-semibold text-primary font-sharp-serif">
-                          {product.price}
-                        </span>
-                        <span className="text-[10px] sm:text-sm text-muted-foreground font-light">
-                          {product.size}
-                        </span>
-                      </div>
-
-                      {/* Color Options Display - Simplified on mobile */}
-                      {product.colors && product.colors.length > 0 && (
-                        <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-1 sm:pt-2">
-                          {product.colors.slice(0, 2).map((color, index) => (
-                            <span key={index} className="text-[9px] sm:text-xs bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-muted-foreground">
-                              {color}
-                            </span>
-                          ))}
-                          {product.colors.length > 2 && (
-                            <span className="text-[9px] sm:text-xs text-muted-foreground">
-                              +{product.colors.length - 2}
-                            </span>
-                          )}
+                    {/* Product Info - Hidden for Coming Soon */}
+                    {!product.comingSoon && (
+                      <div className="space-y-2 sm:space-y-4 w-full px-1 sm:px-0">
+                        <h3 className="font-semibold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2 font-sharp-serif">
+                          {product.name}
+                        </h3>
+                        <p className="text-[10px] sm:text-sm font-light leading-relaxed text-black line-clamp-2 sm:line-clamp-3 hidden sm:block">
+                          {product.description[0]}
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 pt-1 sm:pt-2">
+                          <span className="text-sm sm:text-2xl font-semibold text-primary font-sharp-serif">
+                            {product.price}
+                          </span>
+                          <span className="text-[10px] sm:text-sm text-muted-foreground font-light">
+                            {product.size}
+                          </span>
                         </div>
-                      )}
-                    </div>
+
+                        {/* Color Options Display - Simplified on mobile */}
+                        {product.colors && product.colors.length > 0 && (
+                          <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-1 sm:pt-2">
+                            {product.colors.slice(0, 2).map((color, index) => (
+                              <span key={index} className="text-[9px] sm:text-xs bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-muted-foreground">
+                                {color}
+                              </span>
+                            ))}
+                            {product.colors.length > 2 && (
+                              <span className="text-[9px] sm:text-xs text-muted-foreground">
+                                +{product.colors.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </AnimatePresence>

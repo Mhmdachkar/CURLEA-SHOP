@@ -7,19 +7,20 @@
 export const SECURITY_HEADERS = {
   'Content-Security-Policy': [
     "default-src 'self'",
-    "img-src 'self' https://images.unsplash.com https://lovable.dev data: blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "img-src 'self' https://images.unsplash.com https://lovable.dev https://*.stripe.com https://www.facebook.com data: blob:",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com",
+    "script-src-elem 'self' 'unsafe-inline' https://js.stripe.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
     "media-src 'self' https://cdn.pixabay.com blob: data:",
-    "connect-src 'self' https: http://localhost:* blob:",
+    "connect-src 'self' https: http://localhost:* blob: https://*.stripe.com https://www.google-analytics.com https://www.googletagmanager.com",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://checkout.stripe.com",
     "object-src 'none'",
-    "frame-src 'none'"
+    "frame-src https://checkout.stripe.com https://hooks.stripe.com"
   ].join('; '),
-  
+
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-XSS-Protection': '1; mode=block',
@@ -57,7 +58,11 @@ export const ALLOWED_DOMAINS = {
   ],
   scripts: [
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    'connect.facebook.net',
+    'www.googletagmanager.com',
+    'www.google-analytics.com',
+    'js.stripe.com'
   ]
 };
 
@@ -93,12 +98,12 @@ export const sanitizeInput = (input: string): string => {
 export const validateSecureUrl = (url: string): boolean => {
   try {
     const urlObj = new URL(url);
-    
+
     // Check protocol
     if (!['http:', 'https:'].includes(urlObj.protocol)) {
       return false;
     }
-    
+
     // Check for suspicious patterns
     const suspiciousPatterns = [
       /javascript:/i,
@@ -111,11 +116,11 @@ export const validateSecureUrl = (url: string): boolean => {
       /<object/i,
       /<embed/i
     ];
-    
+
     if (suspiciousPatterns.some(pattern => pattern.test(url))) {
       return false;
     }
-    
+
     return true;
   } catch {
     return false;
@@ -155,7 +160,7 @@ export const secureStorage = {
       console.warn('Failed to set secure storage item:', error);
     }
   },
-  
+
   getItem: (key: string): string | null => {
     try {
       const sanitizedKey = sanitizeInput(key);
@@ -165,7 +170,7 @@ export const secureStorage = {
       return null;
     }
   },
-  
+
   removeItem: (key: string): void => {
     try {
       const sanitizedKey = sanitizeInput(key);
