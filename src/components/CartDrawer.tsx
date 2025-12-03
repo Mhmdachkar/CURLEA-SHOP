@@ -481,42 +481,49 @@ export const CartDrawer = () => {
     return state.items.reduce((sum, item) => sum + item.quantity, 0);
   }, [state.items]);
 
-  // Lock body scroll when cart is open
+  // Lock body scroll when cart is open and preserve scroll position
   useEffect(() => {
     if (state.isOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
+      // Save current scroll position BEFORE any changes
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
 
-      // Store scroll position in a data attribute
+      // Store scroll position in a data attribute and sessionStorage for reliability
       document.body.setAttribute('data-scroll-y', scrollY.toString());
+      sessionStorage.setItem('cart-scroll-y', scrollY.toString());
 
       // Lock body scroll using multiple techniques for maximum compatibility
+      // Use position: fixed to prevent scroll without changing scroll position
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100%';
       document.body.style.touchAction = 'none';
       document.body.style.paddingRight = '0px'; // Prevent layout shift
 
       // Also lock html element for iOS
       document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100%';
 
       return () => {
-        // Restore body scroll
+        // Restore scroll position BEFORE removing styles
+        const savedScrollY = parseInt(sessionStorage.getItem('cart-scroll-y') || scrollY.toString(), 10);
+        
+        // Restore body styles
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
         document.body.style.overflow = '';
-        document.body.style.height = '';
         document.body.style.touchAction = '';
         document.body.style.paddingRight = '';
 
         // Restore HTML element
         document.documentElement.style.overflow = '';
-        document.documentElement.style.height = '';
 
-        // Restore scroll position
-        const savedScrollY = document.body.getAttribute('data-scroll-y');
-        if (savedScrollY) {
-          window.scrollTo(0, parseInt(savedScrollY, 10));
-          document.body.removeAttribute('data-scroll-y');
-        }
+        // Restore scroll position immediately
+        window.scrollTo(0, savedScrollY);
+
+        // Clean up
+        document.body.removeAttribute('data-scroll-y');
+        sessionStorage.removeItem('cart-scroll-y');
       };
     }
   }, [state.isOpen]);
@@ -573,26 +580,37 @@ export const CartDrawer = () => {
         return price > 0;
       });
 
-      const totalPaidItems = paidItems.reduce((sum, item) => sum + item.quantity, 0);
-
-      if (totalPaidItems < 3) return new Set();
-
-      // Sort PAID items by price (highest first)
-      const sortedPaidItems = [...paidItems].sort((a, b) => {
-        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-        return priceB - priceA;
-      });
-
-      const discountedIds = new Set<string>();
-
-      // Only the most expensive PAID item gets the discount
-      if (sortedPaidItems.length > 0) {
-        const mostExpensiveItem = sortedPaidItems[0];
-        discountedIds.add(`${mostExpensiveItem.id}-${mostExpensiveItem.selectedColor || 'default'}`);
+      // Flatten all items into individual units (respecting quantity) to find the 3rd item
+      const flattenedItems: Array<{ item: CartItem; unitIndex: number }> = [];
+      for (const item of paidItems) {
+        // Add each quantity as a separate unit
+        for (let i = 0; i < item.quantity; i++) {
+          flattenedItems.push({ item, unitIndex: i });
+        }
       }
 
-      return discountedIds;
+      const totalPaidItems = flattenedItems.length;
+
+      if (totalPaidItems < 3) return { discountedIds: new Set<string>(), thirdUnitInfo: null };
+
+      // The 3rd item (index 2) gets the discount
+      const thirdItem = flattenedItems[2];
+      const discountedItem = thirdItem.item;
+      const thirdUnitIndex = thirdItem.unitIndex;
+
+      const discountedIds = new Set<string>();
+      // Mark the item that contains the 3rd unit
+      const itemKey = `${discountedItem.id}-${discountedItem.selectedColor || 'default'}-${discountedItem.selectedSize || 'default'}`;
+      discountedIds.add(itemKey);
+
+      return { 
+        discountedIds, 
+        thirdUnitInfo: { 
+          itemKey, 
+          unitIndex: thirdUnitIndex,
+          item: discountedItem
+        } 
+      };
     };
   }, [state.items]);
 
@@ -730,10 +748,14 @@ export const CartDrawer = () => {
               ) : (
                 <ItemsList>
                   {(() => {
-                    const discountedIds = getDiscountedItems();
+                    const { discountedIds, thirdUnitInfo } = getDiscountedItems();
                     return state.items.map((item) => {
-                      const itemKey = `${item.id}-${item.selectedColor || 'default'}`;
+                      // Match the key format used in getDiscountedItems
+                      const itemKey = `${item.id}-${item.selectedColor || 'default'}-${item.selectedSize || 'default'}`;
                       const hasDiscount = discountedIds.has(itemKey);
+                      // Check if this item contains the 3rd unit and which unit index it is
+                      const isThirdUnitItem = thirdUnitInfo?.itemKey === itemKey;
+                      const thirdUnitIndex = thirdUnitInfo?.unitIndex ?? -1;
 
                       return (
                         <CartItemCard
@@ -769,7 +791,30 @@ export const CartDrawer = () => {
                               <ProductVariant>Size: {item.size}</ProductVariant>
                             )}
                             <ProductPrice>
-                              {hasDiscount ? (
+                              {hasDiscount && isThirdUnitItem ? (
+                                (() => {
+                                  const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+                                  const fullPriceUnits = item.quantity - 1; // All units except the 3rd one
+                                  const discountedUnitPrice = itemPrice * 0.5; // 50% off for 3rd unit
+                                  const totalPrice = (itemPrice * fullPriceUnits) + discountedUnitPrice;
+                                  return (
+                                    <>
+                                      {item.quantity > 1 && (
+                                        <span style={{ fontSize: '0.75rem', opacity: 0.7, marginRight: '0.5rem' }}>
+                                          {item.quantity - 1} × {formatPrice(itemPrice)} + 1 × {formatPrice(discountedUnitPrice)} =
+                                        </span>
+                                      )}
+                                      <span style={{
+                                        color: '#A4193D',
+                                        fontWeight: 600,
+                                        fontSize: '1rem'
+                                      }}>
+                                        {formatPrice(totalPrice)}
+                                      </span>
+                                    </>
+                                  );
+                                })()
+                              ) : hasDiscount ? (
                                 <>
                                   <span style={{
                                     textDecoration: 'line-through',

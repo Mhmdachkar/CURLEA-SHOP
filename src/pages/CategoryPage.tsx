@@ -942,7 +942,7 @@ export const CategoryPage = () => {
                             </div>
 
                             {/* Content */}
-                            <div className="relative z-20 text-center px-6">
+                            <div className="relative z-20 text-center px-2 sm:px-3 md:px-4 lg:px-6">
                               {/* Luxury Icon */}
                               <motion.div
                                 initial={{ scale: 0, rotate: -180 }}
@@ -953,9 +953,9 @@ export const CategoryPage = () => {
                                   stiffness: 200,
                                   damping: 15
                                 }}
-                                className="mb-4"
+                                className="mb-1.5 sm:mb-2 md:mb-3 lg:mb-4"
                               >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto">
+                                <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 mx-auto">
                                   <motion.div
                                     className="absolute inset-0 rounded-full border-2 border-[#D4AF37]/20"
                                     animate={{ rotate: 360 }}
@@ -965,12 +965,12 @@ export const CategoryPage = () => {
                                       ease: "linear"
                                     }}
                                   />
-                                  <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
+                                  <div className="absolute inset-1.5 sm:inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
                                     <motion.div
                                       animate={{ scale: [1, 1.15, 1] }}
                                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                                     >
-                                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                                      <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                       </svg>
                                     </motion.div>
@@ -983,7 +983,7 @@ export const CategoryPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5, duration: 0.8 }}
-                                className="space-y-2"
+                                className="space-y-1.5 sm:space-y-2"
                               >
                                 <motion.div
                                   className="inline-block"
@@ -996,34 +996,34 @@ export const CategoryPage = () => {
                                   }}
                                   transition={{ duration: 2, repeat: Infinity }}
                                 >
-                                  <span className="px-3 py-1 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[9px] sm:text-[10px] font-medium tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
+                                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-medium tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
                                     Exclusive Launch
                                   </span>
                                 </motion.div>
 
-                                <h3 className="text-xl sm:text-2xl font-serif text-gray-900 tracking-tight" style={{ fontWeight: 300, letterSpacing: '0.02em' }}>
+                                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-serif text-gray-900 tracking-tight" style={{ fontWeight: 300, letterSpacing: '0.02em' }}>
                                   Unveiling Soon
                                 </h3>
 
-                                <div className="flex items-center justify-center gap-2 py-1">
+                                <div className="flex items-center justify-center gap-1.5 sm:gap-2 py-0.5 sm:py-1">
                                   <motion.div
-                                    className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                                    className="h-[1px] w-6 sm:w-8 md:w-10 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
                                     animate={{ opacity: [0.4, 1, 0.4] }}
                                     transition={{ duration: 2, repeat: Infinity }}
                                   />
                                   <motion.div
-                                    className="w-1 h-1 rounded-full bg-[#D4AF37]/60"
+                                    className="w-0.5 h-0.5 sm:w-1 sm:h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#D4AF37]/60"
                                     animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
                                     transition={{ duration: 2, repeat: Infinity }}
                                   />
                                   <motion.div
-                                    className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                                    className="h-[1px] w-6 sm:w-8 md:w-10 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
                                     animate={{ opacity: [0.4, 1, 0.4] }}
                                     transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                                   />
                                 </div>
 
-                                <p className="text-[10px] sm:text-xs text-gray-500 font-light tracking-[0.15em] uppercase">
+                                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-gray-500 font-light tracking-[0.08em] sm:tracking-[0.1em] md:tracking-[0.15em] uppercase px-1 sm:px-2">
                                   A New Addition to Our Collection
                                 </p>
                               </motion.div>

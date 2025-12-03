@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { Button } from "@/components/ui/button";
 import hero1 from "@/assets/hero-luxury-1.jpg";
@@ -240,83 +240,22 @@ const ScrollIndicatorDot = styled(motion.div)`
 
 const ShopOfferButton = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleShopOffer = () => {
-    // Check if we're already on the product page
-    const isOnProductPage = location.pathname.startsWith('/product/');
-
-    // Navigate to product page with hash
-    navigate('/product/dreamcurl-original#black-friday-section', { replace: false });
-
-    // Use a more reliable scroll method that waits for the element
-    const scrollToSection = () => {
-      const section = document.getElementById('black-friday-section');
-      if (section) {
-        // Calculate responsive offsets
-        const isMobile = window.innerWidth < 768;
-        const bannerHeight = isMobile ? 70 : 52; // Mobile: 70px, Desktop: 52px
-        const navbarHeight = 80; // Approximate navbar height
-        const extraSpacing = 30; // Extra spacing for better visibility
-        const offset = bannerHeight + navbarHeight + extraSpacing;
-
-        // Get element position relative to document
-        const elementTop = section.getBoundingClientRect().top + window.pageYOffset;
-        const scrollPosition = elementTop - offset;
-
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'smooth'
-        });
-        return true; // Successfully scrolled
-      }
-      return false; // Element not found
-    };
-
-    // If already on product page, try scrolling immediately
-    if (isOnProductPage) {
-      // Small delay to let React Router update
-      setTimeout(() => {
-        if (!scrollToSection()) {
-          // Retry with multiple attempts
-          let retries = 0;
-          const maxRetries = 20;
-          const checkInterval = setInterval(() => {
-            if (scrollToSection() || retries >= maxRetries) {
-              clearInterval(checkInterval);
-            }
-            retries++;
-          }, 100);
-        }
-      }, 100);
-    } else {
-      // If navigating to new page, wait longer for page to load
-      setTimeout(() => {
-        if (!scrollToSection()) {
-          let retries = 0;
-          const maxRetries = 25; // More retries for new page load
-          const checkInterval = setInterval(() => {
-            if (scrollToSection() || retries >= maxRetries) {
-              clearInterval(checkInterval);
-            }
-            retries++;
-          }, 100);
-        }
-      }, 500);
-    }
+  const handleShopNow = () => {
+    navigate('/collection');
   };
 
   return (
     <motion.div
       whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      onClick={handleShopOffer}
+      onClick={handleShopNow}
     >
       <Button
         size="lg"
         className="relative bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] hover:from-[#B5952F] hover:to-[#D4AF37] text-black font-bold px-10 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:shadow-[0_0_50px_rgba(212,175,55,0.8)] overflow-hidden cursor-pointer"
       >
-        <span className="relative z-10">Shop the Offer</span>
+        <span className="relative z-10">Shop Now</span>
         <motion.div
           className="absolute inset-0 bg-white/20"
           animate={{ x: ['-100%', '100%'] }}

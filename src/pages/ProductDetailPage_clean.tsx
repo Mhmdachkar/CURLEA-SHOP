@@ -458,12 +458,11 @@ export const ProductDetailPage = () => {
       },
     });
 
-    // Open cart drawer
+    // Open cart drawer (without scrolling page to top)
     openCart();
-    // Ensure cart drawer/panel always opens scrolled to top
+    // Ensure cart drawer/panel always opens scrolled to top (only the cart content, not the page)
     const forceCartTop = () => {
-      // Also move the page scroll to top so the cart viewport starts at top
-      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch { }
+      // Only scroll the cart drawer content to top, NOT the page
       const selectors = [
         '.cart-drawer', '.cart-panel', '[data-cart-panel]', '#cart',
         '.shopping-cart', '.drawer-content', '[role="dialog"]',

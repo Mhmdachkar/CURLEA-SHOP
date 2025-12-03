@@ -360,7 +360,7 @@ const ProductCardComponent = ({
             </div>
 
             {/* Content */}
-            <div className="relative z-20 text-center px-8">
+            <div className="relative z-20 text-center px-2 sm:px-4 md:px-6 lg:px-8">
               {/* Luxury Icon */}
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -371,9 +371,9 @@ const ProductCardComponent = ({
                   stiffness: 200,
                   damping: 15
                 }}
-                className="mb-6"
+                className="mb-2 sm:mb-3 md:mb-4 lg:mb-6"
               >
-                <div className="relative w-16 h-16 mx-auto">
+                <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 mx-auto">
                   {/* Rotating outer ring */}
                   <motion.div
                     className="absolute inset-0 rounded-full border-2 border-[#D4AF37]/20"
@@ -385,7 +385,7 @@ const ProductCardComponent = ({
                     }}
                   />
                   {/* Inner circle with icon */}
-                  <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
+                  <div className="absolute inset-1.5 sm:inset-2 rounded-full bg-gradient-to-br from-[#D4AF37]/5 to-[#B5952F]/10 border border-[#D4AF37]/20 flex items-center justify-center backdrop-blur-sm">
                     <motion.div
                       animate={{
                         scale: [1, 1.15, 1],
@@ -396,7 +396,7 @@ const ProductCardComponent = ({
                         ease: "easeInOut"
                       }}
                     >
-                      <svg className="w-6 h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                     </motion.div>
@@ -409,7 +409,7 @@ const ProductCardComponent = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
-                className="space-y-3"
+                className="space-y-2 sm:space-y-2.5 md:space-y-3"
               >
                 {/* Badge */}
                 <motion.div
@@ -426,13 +426,13 @@ const ProductCardComponent = ({
                     repeat: Infinity,
                   }}
                 >
-                  <span className="px-4 py-1.5 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[10px] font-medium tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 lg:px-4 bg-gradient-to-r from-[#D4AF37]/10 via-[#F2D06B]/10 to-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-medium tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase text-[#B5952F] backdrop-blur-sm">
                     Exclusive Launch
                   </span>
                 </motion.div>
 
                 {/* Main Title */}
-                <h3 className="text-2xl md:text-3xl font-serif text-gray-900 tracking-tight" style={{
+                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-serif text-gray-900 tracking-tight" style={{
                   fontWeight: 300,
                   letterSpacing: '0.02em'
                 }}>
@@ -440,14 +440,14 @@ const ProductCardComponent = ({
                 </h3>
 
                 {/* Decorative divider */}
-                <div className="flex items-center justify-center gap-3 py-2">
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 py-0.5 sm:py-1 md:py-1.5 lg:py-2">
                   <motion.div
-                    className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                    className="h-[1px] w-6 sm:w-8 md:w-10 lg:w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
                     animate={{ opacity: [0.4, 1, 0.4] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
                   <motion.div
-                    className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60"
+                    className="w-0.5 h-0.5 sm:w-1 sm:h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#D4AF37]/60"
                     animate={{
                       scale: [1, 1.3, 1],
                       opacity: [0.6, 1, 0.6]
@@ -455,14 +455,14 @@ const ProductCardComponent = ({
                     transition={{ duration: 2, repeat: Infinity }}
                   />
                   <motion.div
-                    className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
+                    className="h-[1px] w-6 sm:w-8 md:w-10 lg:w-12 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent"
                     animate={{ opacity: [0.4, 1, 0.4] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                   />
                 </div>
 
                 {/* Subtitle */}
-                <p className="text-xs md:text-sm text-gray-500 font-light tracking-[0.15em] uppercase">
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-gray-500 font-light tracking-[0.08em] sm:tracking-[0.1em] md:tracking-[0.15em] uppercase px-1 sm:px-2">
                   A New Addition to Our Collection
                 </p>
               </motion.div>

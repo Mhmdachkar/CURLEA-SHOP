@@ -93,8 +93,8 @@ export const CollectionPage = () => {
     }
   }, [showLoader]);
 
-  // Display all products from the products.ts file
-  const displayedProducts = products;
+  // Display all products from the products.ts file, excluding coming soon products
+  const displayedProducts = products.filter(product => !product.comingSoon);
 
   return (
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
@@ -1900,6 +1900,9 @@ const ElegantProductGrid = ({
         className: 'elegant-toast',
       }
     );
+
+    // Open cart drawer (without scrolling page to top)
+    openCart();
   };
 
   return (

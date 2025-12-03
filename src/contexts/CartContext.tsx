@@ -42,25 +42,28 @@ export const calculatePromoDiscount = (items: CartItem[]): number => {
     return price > 0;
   });
 
-  // Count total PAID items across all cart entries
-  const totalPaidItems = paidItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Flatten all items into individual units (respecting quantity) to find the 3rd item
+  const flattenedItems: Array<{ price: number; item: CartItem }> = [];
+  for (const item of paidItems) {
+    const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+    // Add each quantity as a separate unit
+    for (let i = 0; i < item.quantity; i++) {
+      flattenedItems.push({ price: itemPrice, item });
+    }
+  }
+
+  // Count total PAID items
+  const totalPaidItems = flattenedItems.length;
 
   // Only apply discount if there are 3 or more PAID items
   if (totalPaidItems < 3) return 0;
 
-  // Sort PAID items by price (highest first) to maximize discount value
-  const sortedPaidItems = [...paidItems].sort((a, b) => {
-    const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-    const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-    return priceB - priceA;
-  });
+  // The 3rd item (index 2) gets the discount
+  const thirdItem = flattenedItems[2];
+  const thirdItemPrice = thirdItem.price;
 
-  // Apply 50% discount to ONLY the most expensive PAID item
-  const mostExpensiveItem = sortedPaidItems[0];
-  const itemPrice = parseFloat(mostExpensiveItem.price.replace(/[^0-9.]/g, ''));
-
-  // 50% off the most expensive paid item (this represents the "3rd item" discount)
-  const discount = itemPrice * 0.5;
+  // 50% off the 3rd item specifically
+  const discount = thirdItemPrice * 0.5;
 
   return discount;
 };
