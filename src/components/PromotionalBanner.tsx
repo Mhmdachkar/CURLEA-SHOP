@@ -6,11 +6,6 @@ const PromotionalBanner = () => {
   const location = useLocation();
   const [currentOffer, setCurrentOffer] = useState(0);
 
-  // Hide banner on checkout page
-  if (location.pathname === '/checkout') {
-    return null;
-  }
-
   // Rotate between offers every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -19,6 +14,11 @@ const PromotionalBanner = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Hide banner on checkout page
+  if (location.pathname === '/checkout') {
+    return null;
+  }
 
   const offers = [
     {
