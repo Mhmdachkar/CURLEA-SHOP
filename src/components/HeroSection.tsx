@@ -609,7 +609,7 @@ export const HeroSection = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
-              Special Offer
+              Signature Collection
             </motion.span>
           </motion.h1>
         </motion.div>
@@ -620,9 +620,9 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          <span className="font-semibold text-white">CURLEA Special Offer.</span>
+          <span className="font-semibold text-white">Where luxury meets every curl.</span>
           <br />
-          Buy any full set and receive a luxury gift on us.
+          Discover premium heatless sets and accessories designed for effortless beauty.
         </motion.p>
 
         <motion.div
