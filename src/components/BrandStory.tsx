@@ -261,7 +261,7 @@ export const BrandStory = () => {
   const textRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const { isMobile, isTablet } = useBreakpoint();
-
+  
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],

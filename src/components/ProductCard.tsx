@@ -5,6 +5,7 @@ import { useCart } from "@/contexts/CartContext";
 import { OptimizedImage } from "./OptimizedImage";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
+import { useProductStock } from "@/hooks/useProductStock";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
@@ -182,6 +183,26 @@ const ProductCardComponent = ({
   // Track which color swatch is being hovered for tooltip
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
+  // Fetch real-time stock from Supabase
+  // Get size from product data - map product IDs to sizes
+  const getProductSize = (): string => {
+    const sizeMap: Record<string, string> = {
+      'dreamcurl-jumbo': 'Jumbo',
+      'dreamcurl-original': 'Large',
+      'dreamcurl-midi': 'Midi',
+      'zero-heat-mini': 'Mini',
+      'dreamcurl-short-set': 'Original',
+      'heat-buns': 'Standard' // Could be Jumbo/Large/Midi/Mini based on variant
+    };
+    return sizeMap[id] || 'Standard';
+  };
+
+  const { available, status, isInStock, loading } = useProductStock(
+    id,
+    getProductSize(),
+    activeColor?.name || null
+  );
+
   // Get the current image based on selected color
   const currentImage = activeColor
     ? getColorVariantImage(id, activeColor.name, image, images)
@@ -189,6 +210,15 @@ const ProductCardComponent = ({
 
   const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+
+    // Check stock before adding to cart
+    if (!isInStock || loading) {
+      toast.error('Out of Stock', {
+        description: 'This item is currently sold out',
+        duration: 3000,
+      });
+      return;
+    }
 
     // Call the onAddToCart prop if provided
     if (onAddToCart) {
@@ -248,7 +278,7 @@ const ProductCardComponent = ({
 
     // Automatically open cart dashboard
     openCart();
-  }, [id, name, price, currentImage, activeColor, onAddToCart, addToCart, openCart]);
+  }, [id, name, price, currentImage, activeColor, onAddToCart, addToCart, openCart, isInStock, loading]);
 
   const handleColorSelect = useCallback((e: React.MouseEvent, color: ColorOption) => {
     e.stopPropagation();
@@ -482,6 +512,13 @@ const ProductCardComponent = ({
             </h3>
             <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
 
+            {/* Low Stock Badge */}
+            {!loading && status === 'low_stock' && isInStock && (
+              <div className="mt-2">
+                <LowStockBadge quantity={available} threshold={3} />
+              </div>
+            )}
+
             {/* 3. Enhanced Color Swatches */}
             {colorOptions.length > 0 && (
               <div className="flex gap-2 mt-3 flex-wrap relative">
@@ -561,19 +598,22 @@ const ProductCardComponent = ({
           <div className="flex items-end">
             <motion.button
               type="button"
-              className={`group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md transition-all duration-300 flex-shrink-0 overflow-hidden ${comingSoon ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl cursor-pointer'}`}
-              aria-label="Add to cart"
-              disabled={comingSoon}
-              whileHover={comingSoon ? {} : {
+              className={`group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md transition-all duration-300 flex-shrink-0 overflow-hidden ${comingSoon || (!loading && !isInStock)
+                  ? 'opacity-40 cursor-not-allowed'
+                  : 'hover:shadow-xl cursor-pointer'
+                }`}
+              aria-label={loading ? 'Checking stock...' : isInStock ? 'Add to cart' : 'Sold out'}
+              disabled={comingSoon || loading || !isInStock}
+              whileHover={comingSoon || loading || !isInStock ? {} : {
                 scale: 1.1,
                 rotate: 5,
                 transition: { duration: 0.2, ease: "easeOut" }
               }}
-              whileTap={comingSoon ? {} : {
+              whileTap={comingSoon || loading || !isInStock ? {} : {
                 scale: 0.95,
                 transition: { duration: 0.1 }
               }}
-              onClick={comingSoon ? undefined : handleAddToCart}
+              onClick={comingSoon || loading || !isInStock ? undefined : handleAddToCart}
             >
               {/* Hover background effect */}
               <motion.div

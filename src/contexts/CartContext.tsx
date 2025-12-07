@@ -54,7 +54,7 @@ export const calculatePromoDiscount = (items: CartItem[]): number => {
 
   // Count total PAID items
   const totalPaidItems = flattenedItems.length;
-
+  
   // Only apply discount if there are 3 or more PAID items
   if (totalPaidItems < 3) return 0;
 
@@ -92,8 +92,8 @@ const clampQuantityToAvailability = (quantity: number, maxAvailable?: number | n
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
-      const existingItem = state.items.find(item =>
-        item.id === action.payload.id &&
+      const existingItem = state.items.find(item => 
+        item.id === action.payload.id && 
         item.selectedColor === action.payload.selectedColor &&
         item.selectedSize === action.payload.selectedSize
       );
@@ -131,8 +131,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'REMOVE_FROM_CART':
       return {
         ...state,
-        items: state.items.filter(item =>
-          !(item.id === action.payload.id &&
+        items: state.items.filter(item => 
+          !(item.id === action.payload.id && 
             item.selectedColor === action.payload.selectedColor &&
             item.selectedSize === action.payload.selectedSize)
         ),
@@ -143,8 +143,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         items: state.items.map(item =>
           (item.id === action.payload.id &&
-            item.selectedColor === action.payload.selectedColor &&
-            item.selectedSize === action.payload.selectedSize)
+           item.selectedColor === action.payload.selectedColor &&
+           item.selectedSize === action.payload.selectedSize)
             ? {
               ...item,
               quantity: clampQuantityToAvailability(action.payload.quantity, item.maxAvailable)
@@ -231,7 +231,7 @@ const loadCartFromStorage = (): CartState => {
   if (typeof window === 'undefined') {
     return { items: [], isOpen: false };
   }
-
+  
   try {
     const savedCart = localStorage.getItem('curlea-cart');
     if (savedCart) {
@@ -249,14 +249,14 @@ const loadCartFromStorage = (): CartState => {
   } catch (error) {
     console.error('Error loading cart from localStorage:', error);
   }
-
+  
   return { items: [], isOpen: false };
 };
 
 // Save cart to localStorage
 const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === 'undefined') return;
-
+  
   try {
     localStorage.setItem('curlea-cart', JSON.stringify({ items }));
   } catch (error) {
@@ -442,16 +442,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Memoize context value to prevent unnecessary re-renders
   const value = useMemo(
     () => ({
-      state,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      toggleCart,
-      openCart,
-      closeCart,
-      itemCount,
-      promoDiscount,
+        state,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        toggleCart,
+        openCart,
+        closeCart,
+        itemCount,
+        promoDiscount,
       refreshInventory,
     }),
     [state, addToCart, removeFromCart, updateQuantity, clearCart, toggleCart, openCart, closeCart, itemCount, promoDiscount, refreshInventory]

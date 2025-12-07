@@ -220,17 +220,18 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
         {video ? (
           /* Unique Overlapping Gallery Layout with Video */
-          <div className="relative">
-            <div className="grid grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-4 sm:-translate-x-6 md:-translate-x-10 lg:-translate-x-14">
+          <div className="relative overflow-x-hidden">
+            {/* Mobile: Compressed layout with smaller gaps */}
+            <div className="grid grid-cols-[0.85fr_0.6fr_0.85fr] sm:grid-cols-[0.8fr_0.55fr_0.8fr] md:grid-cols-[0.74fr_0.52fr_0.74fr] gap-0 items-stretch px-0 mx-auto max-w-full overflow-visible -translate-x-2 sm:-translate-x-4 md:-translate-x-6 lg:-translate-x-10 xl:-translate-x-14">
             {/* Left Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-start -ml-0.5 sm:-ml-1 md:-ml-2 -mr-3 sm:-mr-4 md:-mr-6 lg:-mr-7"
+              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-start -ml-0 sm:-ml-0.5 sm:-ml-1 md:-ml-2 -mr-1 sm:-mr-2 md:-mr-4 lg:-mr-6 xl:-mr-7"
               initial={{ opacity: 0, x: -30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -30, scale: 0.9 }}
               transition={{ delay: 0.3, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.55] sm:scale-[0.62] md:scale-[0.74] lg:scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.60] sm:scale-[0.65] md:scale-[0.70] lg:scale-[0.75] xl:scale-[0.80]"
                 onClick={() => setSelectedMedia('left')}
               >
                 {/* Decorative border frame */}
@@ -253,7 +254,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Center Video - Elegant Hero */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[100px] sm:min-h-[180px] md:min-h-[260px] lg:min-h-0 z-10 flex items-center justify-center justify-self-center -translate-x-3 sm:-translate-x-5 md:-translate-x-7 lg:-translate-x-8 -mx-2 sm:-mx-3 md:-mx-5 lg:-mx-6"
+              className="relative aspect-[4/5] min-h-[100px] sm:min-h-[180px] md:min-h-[260px] lg:min-h-0 z-10 flex items-center justify-center justify-self-center -translate-x-1 sm:-translate-x-3 md:-translate-x-5 lg:-translate-x-7 xl:-translate-x-8 -mx-1 sm:-mx-2 md:-mx-4 lg:-mx-5 xl:-mx-6"
               initial={{ opacity: 0, y: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
               transition={{ delay: 0.5, duration: 1.5, ease: [0.43, 0.13, 0.23, 0.96] }}
@@ -299,7 +300,7 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
                   transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] sm:shadow-[0_40px_100px_-25px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 transition-all duration-500 z-10 isolate transform scale-[0.58] sm:scale-[0.62] md:scale-[0.69] lg:scale-[0.73] bg-black/10">
+                <div className="relative h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] sm:shadow-[0_40px_100px_-25px_rgba(0,0,0,0.65)] ring-1 ring-white/25 border border-white/10 transition-all duration-500 z-10 isolate transform scale-[0.65] sm:scale-[0.68] md:scale-[0.72] lg:scale-[0.75] xl:scale-[0.78] bg-black/10">
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
@@ -376,13 +377,13 @@ export const MediaShowcaseSection = ({ product }: { product: Product }) => {
 
             {/* Right Image - Skewed Elegant Design */}
             <motion.div
-              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-end -translate-x-4 sm:-translate-x-6 md:-translate-x-10 lg:-translate-x-12 -ml-3 sm:-ml-4 md:-ml-6 lg:-ml-8"
+              className="relative aspect-[4/5] min-h-[180px] sm:min-h-[240px] md:min-h-[320px] lg:min-h-0 z-30 justify-self-end -translate-x-1 sm:-translate-x-3 md:-translate-x-6 lg:-translate-x-9 xl:-translate-x-12 -ml-1 sm:-ml-2 md:-ml-4 lg:-ml-6 xl:-ml-8"
               initial={{ opacity: 0, x: 30, scale: 0.9 }}
               animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: 30, scale: 0.9 }}
               transition={{ delay: 0.7, duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               <motion.div
-                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.55] sm:scale-[0.62] md:scale-[0.74] lg:scale-[0.80]"
+                className="relative h-full overflow-visible cursor-pointer group z-20 transform scale-[0.60] sm:scale-[0.65] md:scale-[0.70] lg:scale-[0.75] xl:scale-[0.80]"
                 onClick={() => setSelectedMedia('right')}
               >
                 {/* Decorative border frame */}

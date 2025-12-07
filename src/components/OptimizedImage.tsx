@@ -171,8 +171,7 @@ export const OptimizedImage = ({
           }}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          fetchPriority={priority ? 'high' : 'auto'}
-          {...({} as any)} // Suppress React DOM warning
+          fetchpriority={priority ? 'high' : 'auto'}
         />
       )}
     </div>

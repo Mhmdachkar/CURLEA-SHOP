@@ -234,39 +234,120 @@ export async function createStripeOrderAndItems(
       const metadata = item.product_metadata || {};
       const variantStr = item.variant || '';
       
-      // Parse size and color from variant string if not in metadata
-      // Variant format examples: "Midi - Purple", "Large - Pink", "Jumbo Single - Green"
-      let size = metadata.size || null;
-      let color = metadata.color || null;
+      // Extract size and color from metadata first (most reliable)
+      let size = metadata.size || metadata.selectedSize || null;
+      let color = metadata.color || metadata.selectedColor || null;
       let productId = metadata.product_id || null;
       let sku = metadata.sku || null;
       
+      // Map UI sizes to database sizes
+      if (size) {
+        const sizeMap: Record<string, string> = {
+          'Original': 'Large',
+          'Large': 'Large',
+          'Mini': 'Mini',
+          'Midi': 'Midi',
+          'Jumbo': 'Jumbo',
+          'Standard': 'Standard',
+          '9-piece-complete': 'Standard',
+          '4-piece-type1': 'Standard',
+          '4-piece-type2': 'Standard',
+          '4-piece-type3': 'Standard'
+        };
+        size = sizeMap[size] || size;
+      }
+      
+      // Normalize color names to database format
+      if (color) {
+        const colorMap: Record<string, string> = {
+          'MULBERRY': 'Mulberry',
+          'Mulberry': 'Mulberry',
+          'PURPLE': 'Mulberry',
+          'Purple': 'Mulberry',
+          'CANDY': 'CANDY',
+          'Candy': 'CANDY',
+          'LATTE': 'Latte',
+          'Latte': 'Latte',
+          'OLIVE': 'Olive',
+          'Olive': 'Olive',
+          'Royal Purple': 'Royal Purple',
+          'Rose Gold': 'Rose Gold',
+          'Earl Grey': 'Earl Grey',
+          'Olive Lux': 'Olive Lux'
+        };
+        color = colorMap[color] || color;
+      }
+      
+      // Extract from variant string if not in metadata
       if (!size && variantStr) {
-        // Extract size from variant string
-        const sizePatterns = /\b(Large|Jumbo|Midi|Small|Mini|Original|One Size)\b/i;
+        const sizePatterns = /\b(Large|Jumbo|Midi|Small|Mini|Original|One Size|Standard)\b/i;
         const sizeMatch = variantStr.match(sizePatterns);
-        if (sizeMatch) size = sizeMatch[1];
+        if (sizeMatch) {
+          const matchedSize = sizeMatch[1];
+          const sizeMap: Record<string, string> = {
+            'Original': 'Large',
+            'Large': 'Large',
+            'Mini': 'Mini',
+            'Midi': 'Midi',
+            'Jumbo': 'Jumbo',
+            'Standard': 'Standard'
+          };
+          size = sizeMap[matchedSize] || matchedSize;
+        }
       }
       
       if (!color && variantStr) {
-        // Extract color from variant string
-        const colorPatterns = /\b(Purple|Pink|Brown|Green|Candy|Latte|Mulberry|Olive|Blue|Red|Black|White)\b/i;
+        const colorPatterns = /\b(Purple|Pink|Brown|Green|Candy|Latte|Mulberry|Olive|Blue|Red|Black|White|Gold|Print)\b/i;
         const colorMatch = variantStr.match(colorPatterns);
-        if (colorMatch) color = colorMatch[1];
+        if (colorMatch) {
+          const matchedColor = colorMatch[1];
+          const colorMap: Record<string, string> = {
+            'Purple': 'Mulberry',
+            'Pink': 'CANDY',
+            'Brown': 'Latte',
+            'Green': 'Olive'
+          };
+          color = colorMap[matchedColor] || matchedColor;
+        }
       }
       
-      // Try to match product_id from product_name
+      // For products without size/color, default to Standard/null
+      if (!size) {
+        // Check if product is an accessory (no size/color variants)
+        const accessoryProducts = [
+          'curly-clip-1', 'curly-scarf-1', 'satin-scrunchies-french-5pc',
+          'curly-claw-1', 'korean-clips-10set', 'bow-tie-7set'
+        ];
+        if (productId && accessoryProducts.includes(productId)) {
+          size = 'Standard';
+          color = null;
+        }
+      }
+      
+      // Try to match product_id from product_name or use from metadata
       if (!productId && item.product_name) {
         const name = item.product_name.toLowerCase();
+        // Full Sets
         if (name.includes('dreamcurl') && name.includes('jumbo')) productId = 'dreamcurl-jumbo';
         else if (name.includes('dreamcurl') && name.includes('midi')) productId = 'dreamcurl-midi';
         else if (name.includes('dreamcurl') && (name.includes('original') || name.includes('large'))) productId = 'dreamcurl-original';
-        else if (name.includes('zero heat') || name.includes('mini')) productId = 'zero-heat-mini';
-        else if (name.includes('bonnet') || name.includes('bun bon')) productId = 'peau-de-soie-bonnet';
-        else if (name.includes('scrunchie')) productId = 'scrunchies-7pc';
-        else if (name.includes('korean') && name.includes('claw')) productId = 'curly-clip-2';
-        else if (name.includes('flat') && name.includes('claw')) productId = 'curly-clip-1';
-        else if (name.includes('bow tie')) productId = 'bow-tie-scrunchies';
+        else if (name.includes('zero heat') || (name.includes('mini') && name.includes('set'))) productId = 'zero-heat-mini';
+        else if (name.includes('dreamcurl') && name.includes('short')) productId = 'dreamcurl-short-set';
+        // Heatless Tools
+        else if (name.includes('bonnet') || name.includes('bun bon') || name.includes('heatless curling')) productId = 'heatless-5';
+        // Curly Hair Collection - Accessories
+        else if (name.includes('satin scrunchies') || name.includes('french 5')) productId = 'satin-scrunchies-french-5pc';
+        else if (name.includes('korean') && (name.includes('clip') || name.includes('10'))) productId = 'korean-clips-10set';
+        else if ((name.includes('curved resin') || name.includes('duckbill') || name.includes('flat clip')) && name.includes('9')) productId = 'curly-clip-1';
+        else if (name.includes('geometric flower') || name.includes('claw clip') || name.includes('10 piece')) productId = 'curly-claw-1';
+        else if (name.includes('luxe alloy') || name.includes('songmay')) productId = 'songmay-hair-clips';
+        else if (name.includes('bow tie') || name.includes('7 set')) productId = 'bow-tie-7set';
+        else if (name.includes('satin scarf') || name.includes('scrunchies set')) productId = 'curly-scarf-1';
+      }
+      
+      // Use product_id from metadata if available (most reliable)
+      if (!productId && metadata.product_id) {
+        productId = metadata.product_id;
       }
       
       // Build variant_details JSONB

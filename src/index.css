@@ -49,6 +49,19 @@ html.page-loading {
   overflow: hidden !important;
 }
 
+/* Scrollbar hide utility for horizontal scrolling elements */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Sticky Product Bottom Bar - Professional e-commerce style */
+/* No additional styles needed - uses fixed bottom positioning */
+
 html.page-loading body {
   overflow: hidden !important;
   touch-action: none !important;

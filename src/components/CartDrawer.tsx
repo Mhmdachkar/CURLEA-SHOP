@@ -547,14 +547,14 @@ export const CartDrawer = () => {
           contentRef.current.scrollTop = 0;
         }
       });
-
+      
       // Also scroll after animation completes (spring animation is ~400ms)
       const timeoutId = setTimeout(() => {
         if (contentRef.current) {
           contentRef.current.scrollTop = 0;
         }
       }, 500);
-
+      
       return () => clearTimeout(timeoutId);
     }
   }, [state.isOpen, state.items]);
@@ -616,7 +616,7 @@ export const CartDrawer = () => {
 
   const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {
     updateQuantity(item.id, newQuantity, item.selectedColor, item.selectedSize);
-
+    
     // Track analytics
     if (typeof window !== 'undefined' && (window as any).analytics) {
       const priceNumber = parseFloat(item.price.replace('€', ''));
@@ -636,9 +636,9 @@ export const CartDrawer = () => {
   const handleRemoveFromCart = (item: CartItem) => {
     const priceNumber = parseFloat(item.price.replace('€', ''));
     const newCartTotal = calculateTotal() - (priceNumber * item.quantity);
-
+    
     removeFromCart(item.id, item.selectedColor, item.selectedSize);
-
+    
     // Track analytics
     if (typeof window !== 'undefined' && (window as any).analytics) {
       (window as any).analytics.trackCart('remove', {
@@ -661,7 +661,7 @@ export const CartDrawer = () => {
         items_count: state.items.reduce((total, item) => total + item.quantity, 0),
       });
     }
-
+    
     closeCart();
     navigate('/checkout');
   };
@@ -683,7 +683,7 @@ export const CartDrawer = () => {
           });
         }
       });
-
+      
       clearCart();
     }
   };
@@ -710,7 +710,7 @@ export const CartDrawer = () => {
             {/* Header */}
             <Header>
               <div>
-                <Title>Shopping Cart</Title>
+              <Title>Shopping Cart</Title>
                 {/* Promotional Display - Active discount or Incentive message */}
                 {totalItemsCount >= 3 ? (
                   promoDiscount > 0 && (
@@ -746,7 +746,7 @@ export const CartDrawer = () => {
                   <EmptyDescription>Add some products to get started!</EmptyDescription>
                 </EmptyState>
               ) : (
-                <ItemsList>
+                  <ItemsList>
                   {(() => {
                     const { discountedIds, thirdUnitInfo } = getDiscountedItems();
                     return state.items.map((item) => {
@@ -758,39 +758,39 @@ export const CartDrawer = () => {
                       const thirdUnitIndex = thirdUnitInfo?.unitIndex ?? -1;
 
                       return (
-                        <CartItemCard
+                      <CartItemCard
                           key={itemKey}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.15 }}
-                        >
-                          {/* Product Image(s) */}
-                          {item.isBundle && item.images && item.images.length ? (
-                            <div style={{ display: 'flex', gap: '0.25rem' }}>
-                              {item.images.slice(0, 3).map((img, idx) => (
-                                <ProductImage key={idx}>
-                                  <Image src={img} alt={`${item.name} ${idx + 1}`} />
-                                </ProductImage>
-                              ))}
-                            </div>
-                          ) : (
-                            <ProductImage>
+                      >
+                        {/* Product Image(s) */}
+                        {item.isBundle && item.images && item.images.length ? (
+                          <div style={{ display: 'flex', gap: '0.25rem' }}>
+                            {item.images.slice(0, 3).map((img, idx) => (
+                              <ProductImage key={idx}>
+                                <Image src={img} alt={`${item.name} ${idx + 1}`} />
+                              </ProductImage>
+                            ))}
+                          </div>
+                        ) : (
+                          <ProductImage>
                               {hasDiscount && <DiscountBadge>50% OFF</DiscountBadge>}
-                              <Image src={item.image} alt={item.name} />
-                            </ProductImage>
-                          )}
+                            <Image src={item.image} alt={item.name} />
+                          </ProductImage>
+                        )}
 
-                          {/* Product Details */}
-                          <ProductDetails>
-                            <ProductName>{item.name}</ProductName>
-                            {item.selectedColor && (
-                              <ProductVariant>Color: {item.selectedColor}</ProductVariant>
-                            )}
-                            {item.size && (
-                              <ProductVariant>Size: {item.size}</ProductVariant>
-                            )}
-                            <ProductPrice>
+                        {/* Product Details */}
+                        <ProductDetails>
+                          <ProductName>{item.name}</ProductName>
+                          {item.selectedColor && (
+                            <ProductVariant>Color: {item.selectedColor}</ProductVariant>
+                          )}
+                          {item.size && (
+                            <ProductVariant>Size: {item.size}</ProductVariant>
+                          )}
+                          <ProductPrice>
                               {hasDiscount && isThirdUnitItem ? (
                                 (() => {
                                   const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
@@ -833,41 +833,41 @@ export const CartDrawer = () => {
                                   </span>
                                 </>
                               ) : item.isBundle && item.originalPrice ? (
-                                <>
-                                  <span style={{ textDecoration: 'line-through', opacity: 0.7, marginRight: '0.5rem' }}>{item.originalPrice}</span>
-                                  <span>{item.price}</span>
-                                </>
-                              ) : (
-                                <>{item.price}</>
-                              )}
-                            </ProductPrice>
-                          </ProductDetails>
+                              <>
+                                <span style={{ textDecoration: 'line-through', opacity: 0.7, marginRight: '0.5rem' }}>{item.originalPrice}</span>
+                                <span>{item.price}</span>
+                              </>
+                            ) : (
+                              <>{item.price}</>
+                            )}
+                          </ProductPrice>
+                        </ProductDetails>
 
-                          {/* Quantity Controls */}
-                          <QuantityControls>
-                            <QuantityRow>
-                              <QuantityButton
+                        {/* Quantity Controls */}
+                        <QuantityControls>
+                          <QuantityRow>
+                            <QuantityButton
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   handleUpdateQuantity(item, item.quantity - 1);
                                 }}
                                 aria-label="Decrease quantity"
-                              >
-                                <Minus />
-                              </QuantityButton>
-                              <QuantityDisplay>{item.quantity}</QuantityDisplay>
-                              <QuantityButton
+                            >
+                              <Minus />
+                            </QuantityButton>
+                            <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                            <QuantityButton
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   handleUpdateQuantity(item, item.quantity + 1);
                                 }}
                                 aria-label="Increase quantity"
-                              >
-                                <Plus />
-                              </QuantityButton>
-                            </QuantityRow>
+                            >
+                              <Plus />
+                            </QuantityButton>
+                          </QuantityRow>
                             <RemoveButton
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -876,21 +876,21 @@ export const CartDrawer = () => {
                               }}
                               aria-label="Remove item"
                             >
-                              Remove
-                            </RemoveButton>
-                          </QuantityControls>
-                        </CartItemCard>
+                            Remove
+                          </RemoveButton>
+                        </QuantityControls>
+                      </CartItemCard>
                       );
                     });
                   })()}
-                </ItemsList>
+                  </ItemsList>
               )}
             </Content>
 
             {/* Footer - Always Visible (Total, Buttons) */}
             {state.items.length > 0 && (
               <Footer>
-                {promoDiscount > 0 && (
+                  {promoDiscount > 0 && (
                   <div style={{
                     padding: '0.75rem 1rem',
                     background: 'linear-gradient(135deg, rgba(164, 25, 61, 0.05), rgba(212, 175, 55, 0.05))',
@@ -930,16 +930,16 @@ export const CartDrawer = () => {
                 </TotalRow>
 
                 {/* Checkout Button */}
-                <ButtonGroup>
-                  <CheckoutButton onClick={handleCheckout}>
-                    Checkout
-                  </CheckoutButton>
-                  <ClearButton onClick={handleClearCart}>
-                    Clear Cart
-                  </ClearButton>
-                </ButtonGroup>
+                  <ButtonGroup>
+                    <CheckoutButton onClick={handleCheckout}>
+                      Checkout
+                    </CheckoutButton>
+                    <ClearButton onClick={handleClearCart}>
+                      Clear Cart
+                    </ClearButton>
+                  </ButtonGroup>
               </Footer>
-            )}
+              )}
           </Drawer>
         </>
       )}
