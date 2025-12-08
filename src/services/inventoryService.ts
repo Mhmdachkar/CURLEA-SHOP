@@ -25,11 +25,13 @@ export async function getVariantStock(
     size: string = 'Standard',
     color: string | null = null
 ): Promise<VariantStock | null> {
+    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
+
     try {
         let query = supabase
             .from('product_variants')
             .select('*')
-            .eq('product_id', productId)
+            .eq('product_id', normalizedProductId)
             .eq('size', size)
             .eq('is_active', true);
 
@@ -69,11 +71,13 @@ export async function getVariantStock(
 export async function getAllVariantsForProduct(
     productId: string
 ): Promise<VariantStock[]> {
+    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
+
     try {
         const { data, error } = await supabase
             .from('product_variants')
             .select('*')
-            .eq('product_id', productId)
+            .eq('product_id', normalizedProductId)
             .eq('is_active', true)
             .order('size')
             .order('color');
@@ -127,11 +131,13 @@ export async function getStockStatus(
  * Get total stock across all variants for a product
  */
 export async function getTotalProductStock(productId: string): Promise<number> {
+    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
+
     try {
         const { data, error } = await supabase
             .from('product_variants')
             .select('stock_quantity')
-            .eq('product_id', productId)
+            .eq('product_id', normalizedProductId)
             .eq('is_active', true);
 
         if (error) {
@@ -163,7 +169,7 @@ export function normalizeColorName(color: string | null): string | null {
 
     // Normalize to handle case variations
     const normalized = color.trim();
-    
+
     const colorMap: Record<string, string> = {
         // CSV color names (lowercase) → Database color names
         'purple': 'Mulberry',

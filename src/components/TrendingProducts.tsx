@@ -133,7 +133,8 @@ export const TrendingProducts = () => {
   const trendingProducts = allProducts.filter(product =>
     product.id === 'dreamcurl-short-set' ||
     product.id === 'dreamcurl-midi' ||
-    product.id === 'curly-clip-1'
+    product.id === 'curly-clip-1' ||
+    product.id === 'heatless-5'
   );
 
   return (
