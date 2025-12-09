@@ -3,7 +3,8 @@
 -- Generated from: Book 2(inventory).csv
 -- Date: 2025-12-07
 -- Total Variants: 53
--- Color Mapping: purple→Mulberry, pink→CANDY, brown→Latte, green→Olive
+-- Color Mapping (CSV → Database): purple→Mulberry, pink→CANDY, brown→Latte, green→Olive
+-- Note: CSV uses lowercase "brown" but database stores "Latte" (proper color name)
 -- Size Mapping: large→Large (UI shows "Original"), jumbo→Jumbo, midi→Midi, mini→Mini
 -- ==========================================
 
@@ -150,7 +151,8 @@ DO UPDATE SET
 -- ==========================================
 -- HEAT BUNS (heatless-5)
 -- CSV: Heat buns → "CURLEA Bun Bons Heatless Curling System"
--- Color Mapping: purple→Mulberry, pink→CANDY, brown→Latte, green→Olive
+-- Color Mapping (CSV → Database): purple→Mulberry, pink→CANDY, brown→Latte (not brown!), green→Olive
+-- Database stores: Mulberry, CANDY, Latte, Olive (proper color names)
 -- ==========================================
 INSERT INTO product_variants (product_id, variant_name, size, color, stock_quantity, price, sku)
 VALUES

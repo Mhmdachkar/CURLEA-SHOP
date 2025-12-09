@@ -167,28 +167,37 @@ export function normalizeColorName(color: string | null): string | null {
     const normalized = color.trim();
 
     const colorMap: Record<string, string> = {
-        // CSV color names (lowercase) → Database color names
+        // CSV/Legacy color names → Database color names
+        // Note: CSV uses lowercase (purple, pink, brown, green)
         'purple': 'Mulberry',
         'pink': 'CANDY',
-        'brown': 'Latte',
+        'brown': 'Latte',    // CSV legacy - converts to Latte
         'green': 'Olive',
 
         // UI color names (various cases) → Database color names
         'MULBERRY': 'Mulberry',
         'Mulberry': 'Mulberry',
         'mulberry': 'Mulberry',
-        'PURPLE': 'Mulberry',  // zero-heat-mini uses "PURPLE" which maps to "Mulberry"
+        'PURPLE': 'Mulberry',
         'Purple': 'Mulberry',
-        'purple': 'Mulberry',
+        
         'CANDY': 'CANDY',
         'Candy': 'CANDY',
         'candy': 'CANDY',
+        'PINK': 'CANDY',
+        'Pink': 'CANDY',
+        
         'LATTE': 'Latte',
         'Latte': 'Latte',
         'latte': 'Latte',
+        'BROWN': 'Latte',    // Legacy - converts to Latte
+        'Brown': 'Latte',    // Legacy - converts to Latte
+        
         'OLIVE': 'Olive',
         'Olive': 'Olive',
         'olive': 'Olive',
+        'GREEN': 'Olive',
+        'Green': 'Olive',
 
         // Single Sets mapping (special case)
         'Royal Purple': 'Royal Purple',

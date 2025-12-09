@@ -519,9 +519,10 @@ export const ProductDetailPage = () => {
               const lookupKey = `${dbSize}-${normalizedColor || 'null'}`;
               const variant = variantLookup.get(lookupKey);
               
-              // Store with UI color name in key (not normalized) so selectors can find it
-              // Key format: "uiSize-uiColor" (e.g., "Jumbo-MULBERRY", "Large-Mulberry")
-              const key = `${uiSize}-${color}`;
+              // IMPORTANT: Store with DATABASE size in key so lookups match!
+              // Key format: "dbSize-uiColor" (e.g., "Jumbo-MULBERRY", "Large-CANDY")
+              // This ensures size selectors can find the stock using dbSize
+              const key = `${dbSize}-${color}`;
               
               if (variant) {
                 stockMap.set(key, { 

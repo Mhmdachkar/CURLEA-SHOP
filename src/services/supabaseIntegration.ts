@@ -301,13 +301,13 @@ export async function createStripeOrderAndItems(
         const colorMatch = variantStr.match(colorPatterns);
         if (colorMatch) {
           const matchedColor = colorMatch[1];
-          const colorMap: Record<string, string> = {
-            'Purple': 'Mulberry',
-            'Pink': 'CANDY',
-            'Brown': 'Latte',
-            'Green': 'Olive'
-          };
-          color = colorMap[matchedColor] || matchedColor;
+        const colorMap: Record<string, string> = {
+          'Purple': 'Mulberry',
+          'Pink': 'CANDY',
+          'Brown': 'Latte',    // Legacy CSV color - converts to Latte
+          'Green': 'Olive'
+        };
+        color = colorMap[matchedColor] || matchedColor;
         }
       }
       
