@@ -71,13 +71,11 @@ export async function getVariantStock(
 export async function getAllVariantsForProduct(
     productId: string
 ): Promise<VariantStock[]> {
-    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
-
     try {
         const { data, error } = await supabase
             .from('product_variants')
             .select('*')
-            .eq('product_id', normalizedProductId)
+            .eq('product_id', productId)
             .eq('is_active', true)
             .order('size')
             .order('color');
@@ -131,13 +129,11 @@ export async function getStockStatus(
  * Get total stock across all variants for a product
  */
 export async function getTotalProductStock(productId: string): Promise<number> {
-    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
-
     try {
         const { data, error } = await supabase
             .from('product_variants')
             .select('stock_quantity')
-            .eq('product_id', normalizedProductId)
+            .eq('product_id', productId)
             .eq('is_active', true);
 
         if (error) {

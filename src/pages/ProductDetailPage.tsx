@@ -305,7 +305,11 @@ export const ProductDetailPage = () => {
       stockKey = selectedSize || Object.keys(product.sizeOptions)[0];
     } else if (['heatless-5', 'heat-buns', 'heatless-6', 'dreamcurl-short-set'].includes(product.id)) {
       // Products with standard size selectors
-      const checkSize = selectedSize || 'Mini';
+      let checkSize = selectedSize || 'Mini';
+      // Map UI size to database size for heatless-5 (Original → Large)
+      if (product.id === 'heatless-5' && checkSize === 'Original') {
+        checkSize = 'Large';
+      }
       if (product.colors && product.colors.length > 0 && selectedColor) {
         // Use UI color name directly (not normalized) to match stockMap keys
         stockKey = `${checkSize}-${selectedColor}`;
@@ -1391,7 +1395,11 @@ export const ProductDetailPage = () => {
         <div className="flex flex-wrap gap-2">
           {product.colors.map((color, index) => {
             // For heatless-5, use selected size or default to 'Mini' (first size option)
-            const checkSize = selectedSize || 'Mini';
+            let checkSize = selectedSize || 'Mini';
+            // Map UI size to database size (Original → Large)
+            if (checkSize === 'Original') {
+              checkSize = 'Large';
+            }
             const stockKey = `${checkSize}-${color}`;
             const stockInfo = variantStock.get(stockKey);
             const stockCount = stockInfo?.available ?? 0;
@@ -1696,8 +1704,21 @@ export const ProductDetailPage = () => {
         
         <div className="flex flex-wrap gap-2">
           {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => {
-            const stockInfo = variantStock.get(size);
-            const stockCount = stockInfo?.available ?? 0;
+            // Calculate total stock across all colors for this size
+            let totalStock = 0;
+            let hasAnyStock = false;
+            if (product.colors && product.colors.length > 0) {
+              for (const color of product.colors) {
+                const stockKey = `${size}-${color}`;
+                const colorStockInfo = variantStock.get(stockKey);
+                if (colorStockInfo) {
+                  totalStock += colorStockInfo.available || 0;
+                  if (colorStockInfo.available > 0) hasAnyStock = true;
+                }
+              }
+            }
+            
+            const stockCount = totalStock;
             const isSoldOut = stockCount === 0;
             const isSelected = selectedSize === size;
 
@@ -1727,7 +1748,7 @@ export const ProductDetailPage = () => {
               >
                 {size}
                 {/* Stock Badge - Only show SOLD OUT, not X LEFT */}
-                {stockInfo && isSoldOut && (
+                {isSoldOut && (
                   <motion.span
                     className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-500 text-white rounded-full shadow-md"
                     initial={{ scale: 0 }}
@@ -1776,9 +1797,25 @@ export const ProductDetailPage = () => {
         
         <div className="flex flex-wrap gap-2">
           {['Mini', 'Midi', 'Original', 'Jumbo'].map((size, index) => {
-                      const stockInfo = variantStock.get(size);
-                      const stockCount = stockInfo?.available ?? 0;
-                      const isSoldOut = stockCount === 0;
+            // Map UI size to database size (Original → Large in database)
+            const dbSize = size === 'Original' ? 'Large' : size;
+            
+            // Calculate total stock across all colors for this size
+            let totalStock = 0;
+            let hasAnyStock = false;
+            if (product.colors && product.colors.length > 0) {
+              for (const color of product.colors) {
+                const stockKey = `${dbSize}-${color}`;
+                const colorStockInfo = variantStock.get(stockKey);
+                if (colorStockInfo) {
+                  totalStock += colorStockInfo.available || 0;
+                  if (colorStockInfo.available > 0) hasAnyStock = true;
+                }
+              }
+            }
+            
+            const stockCount = totalStock;
+            const isSoldOut = stockCount === 0;
             const isSelected = selectedSize === size;
             
             return (
@@ -1807,7 +1844,7 @@ export const ProductDetailPage = () => {
               >
                 {size}
                           {/* Stock Badge - Only show SOLD OUT, not X LEFT */}
-                          {stockInfo && isSoldOut && (
+                          {isSoldOut && (
                             <motion.span
                               className="absolute -top-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-500 text-white rounded-full shadow-md"
                               initial={{ scale: 0 }}
@@ -2398,6 +2435,10 @@ export const ProductDetailPage = () => {
                                 checkSize = sizeMap[product.id] || 'Standard';
                               } else if (selectedSize) {
                                 checkSize = selectedSize;
+                                // Map UI size to database size for heatless-5 (Original → Large)
+                                if (product.id === 'heatless-5' && checkSize === 'Original') {
+                                  checkSize = 'Large';
+                                }
                               }
                               
                               const stockKey = `${checkSize}-${color}`;
