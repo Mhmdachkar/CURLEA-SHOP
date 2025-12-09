@@ -1,6 +1,12 @@
 /**
  * Inventory Management System
- * Tracks stock levels for all product variants
+ * @deprecated This file contains LEGACY hardcoded data - DO NOT USE
+ * Use @/hooks/useInventory.ts and @/utils/inventoryService.ts instead
+ * These connect to the real database via Supabase
+ * 
+ * IMPORTANT: All inventory now managed in Supabase product_variants table
+ * Color mapping: brown → Latte
+ * Size mapping: large → Large (UI shows as "Original")
  */
 
 export interface InventoryItem {

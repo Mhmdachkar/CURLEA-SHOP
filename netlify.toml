@@ -1,131 +1,194 @@
+# ==========================================
+# CURLEA LUXE - NETLIFY CONFIGURATION
+# Performance & Caching Optimization
+# ==========================================
+
 [build]
-  # Install dependencies and build command
-  command = "npm install && npm run build:netlify"
+  # Build command
+  command = "npm run build"
   
-  # Directory to publish (where the built files are)
+  # Publish directory (Vite default)
   publish = "dist"
   
-  # Node.js version
-  [build.environment]
-    NODE_VERSION = "18"
+  # Functions directory (if you add serverless functions later)
+  functions = "netlify/functions"
 
-[build.processing]
-  # Enable image optimization
-  skip_processing = false
-
-[build.processing.css]
-  # Minify CSS
-  bundle = true
-  minify = true
-
-[build.processing.js]
-  # Minify JavaScript
-  bundle = true
-  minify = true
-
-[build.processing.html]
-  # Minify HTML
-  pretty_urls = true
-
-# Redirect rules - Order matters! Specific rules first, then fallback
-
-# 301 Redirects from legacy subdomain to primary domain
-# This ensures SEO value is preserved when moving from curlea.netlify.app to curlea.beauty
-[[redirects]]
-  from = "https://curlea.netlify.app/*"
-  to = "https://curlea.beauty/:splat"
-  status = 301
-  force = true
-
-# Ensure assets are NOT redirected (served directly)
-[[redirects]]
-  from = "/assets/*"
-  to = "/assets/:splat"
-  status = 200
-  force = true
-
-# SPA fallback for all other routes
+# ==========================================
+# REDIRECTS & REWRITES (SPA Routing)
+# ==========================================
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
   force = false
 
-# Security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-      # Content Security Policy
-      Content-Security-Policy = """
-        default-src 'self';
-        img-src 'self' https://images.unsplash.com https://lovable.dev https://*.stripe.com https://www.facebook.com data: blob:;
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com;
-        script-src-elem 'self' 'unsafe-inline' https://js.stripe.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
-        media-src 'self' https://cdn.pixabay.com blob: data:;
-        connect-src 'self' https: blob: https://*.stripe.com https://www.google-analytics.com https://www.googletagmanager.com;
-        base-uri 'self';
-        form-action 'self' https://checkout.stripe.com;
-        object-src 'none';
-        frame-src https://checkout.stripe.com https://hooks.stripe.com;
-      """
-    
-    # Security headers
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-XSS-Protection = "1; mode=block"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
-    
-    # Performance headers (default for routes) - don't cache HTML
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    
-    # CORS headers (if needed)
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
+# ==========================================
+# CACHE HEADERS FOR STATIC ASSETS
+# ==========================================
 
-# Specific headers for assets
+# Images - Cache for 1 year
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "image/webp"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.avif"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "image/avif"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.gif"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "image/svg+xml"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+# Videos - Cache for 1 year
+[[headers]]
+  for = "/*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.webm"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.ogg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS and JavaScript - Cache for 1 year
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Fonts - Cache for 1 year
+[[headers]]
+  for = "/*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.ttf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.otf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.eot"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Assets directory - Cache for 1 year
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
 
-# Headers for CSS files
-[[headers]]
-  for = "/assets/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-    Content-Type = "text/css; charset=utf-8"
-
-# Headers for JavaScript files
-[[headers]]
-  for = "/assets/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-    Content-Type = "application/javascript; charset=utf-8"
-
-# Headers for HTML files
+# HTML - No caching (for SPA updates)
 [[headers]]
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Headers for video files
 [[headers]]
-  for = "/*.mp4"
+  for = "/index.html"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Accept-Ranges = "bytes"
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Headers for images
-[[headers]]
-  for = "/*.{png,jpg,jpeg,gif,webp,svg,ico}"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+# ==========================================
+# BUILD SETTINGS
+# ==========================================
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--legacy-peer-deps"
 
-# Functions (if you plan to add serverless functions later)
-[functions]
-  directory = "netlify/functions"
+# ==========================================
+# PLUGIN SETTINGS (Optional - Uncomment to use)
+# ==========================================
+
+# Automatically optimize images on deploy
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
+
+# Enable asset optimization
+[[plugins]]
+  package = "netlify-plugin-submit-sitemap"
+  [plugins.inputs]
+    baseUrl = "https://yourwebsite.com"
+    sitemapPath = "/sitemap.xml"
+    ignorePeriod = 0
+
+# ==========================================
+# PERFORMANCE OPTIMIZATIONS
+# ==========================================
+
+# Enable automatic minification (Netlify does this by default)
+# Enable Brotli compression (Netlify does this by default)
+# Enable HTTP/2 (Netlify does this by default)

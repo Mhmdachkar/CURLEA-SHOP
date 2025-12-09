@@ -10,6 +10,7 @@ interface OptimizedImageProps {
   priority?: boolean;
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
   removeBlackBorders?: boolean;
+  sizes?: string;
 }
 
 // Image cache to prevent re-downloading
@@ -25,7 +26,8 @@ export const OptimizedImage = ({
   onError,
   priority = false,
   objectFit = 'cover',
-  removeBlackBorders = false
+  removeBlackBorders = false,
+  sizes
 }: OptimizedImageProps) => {
   const [isLoaded, setIsLoaded] = useState(imageCache.has(src));
   const [isInView, setIsInView] = useState(priority);
@@ -172,6 +174,7 @@ export const OptimizedImage = ({
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
           fetchpriority={priority ? 'high' : 'auto'}
+          sizes={sizes}
         />
       )}
     </div>
