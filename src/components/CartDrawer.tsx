@@ -654,16 +654,19 @@ export const CartDrawer = () => {
   };
 
   const handleCheckout = () => {
-    // Track checkout start
-    if (typeof window !== 'undefined' && (window as any).analytics) {
-      (window as any).analytics.trackCart('checkout_start', {
-        cart_total: calculateTotal(),
-        items_count: state.items.reduce((total, item) => total + item.quantity, 0),
-      });
-    }
-    
+    // Close cart and navigate immediately for better UX
     closeCart();
     navigate('/checkout');
+    
+    // Track checkout start asynchronously (non-blocking)
+    setTimeout(() => {
+      if (typeof window !== 'undefined' && (window as any).analytics) {
+        (window as any).analytics.trackCart('checkout_start', {
+          cart_total: calculateTotal(),
+          items_count: state.items.reduce((total, item) => total + item.quantity, 0),
+        });
+      }
+    }, 0);
   };
 
   const handleClearCart = () => {

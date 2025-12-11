@@ -25,7 +25,8 @@ export async function getVariantStock(
     size: string = 'Standard',
     color: string | null = null
 ): Promise<VariantStock | null> {
-    const normalizedProductId = productId === 'heatless-5' ? 'heat-buns' : productId;
+    // Use productId directly - no conversion needed
+    const normalizedProductId = productId;
 
     try {
         let query = supabase
@@ -219,4 +220,52 @@ export async function getVariantStockNormalized(
 ): Promise<VariantStock | null> {
     const normalizedColor = normalizeColorName(color);
     return getVariantStock(productId, size, normalizedColor);
+}
+
+/**
+ * Get total stock for a specific color across all sizes
+ * Used for ProductCard to check if any size is available for a color
+ */
+export async function getColorStockAcrossAllSizes(
+    productId: string,
+    color: string | null = null
+): Promise<{ available: number; status: 'in_stock' | 'low_stock' | 'out_of_stock' }> {
+    const normalizedProductId = productId === 'heatless-5' ? 'heatless-5' : productId;
+    const normalizedColor = normalizeColorName(color);
+    
+    try {
+        let query = supabase
+            .from('product_variants')
+            .select('available_quantity')
+            .eq('product_id', normalizedProductId)
+            .eq('is_active', true);
+
+        // Handle color matching
+        if (normalizedColor) {
+            query = query.eq('color', normalizedColor);
+        } else {
+            query = query.is('color', null);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error fetching color stock:', error);
+            return { available: 0, status: 'out_of_stock' };
+        }
+
+        // Sum up available quantity across all sizes for this color
+        const totalAvailable = data?.reduce((sum, v) => sum + (v.available_quantity || 0), 0) || 0;
+
+        // Determine status
+        let status: 'in_stock' | 'low_stock' | 'out_of_stock' = 'out_of_stock';
+        if (totalAvailable > 0) {
+            status = totalAvailable <= 3 ? 'low_stock' : 'in_stock';
+        }
+
+        return { available: totalAvailable, status };
+    } catch (error) {
+        console.error('Error in getColorStockAcrossAllSizes:', error);
+        return { available: 0, status: 'out_of_stock' };
+    }
 }

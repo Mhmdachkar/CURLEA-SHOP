@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import {
     getVariantStockNormalized,
     getStockStatus,
-    getTotalProductStock
+    getTotalProductStock,
+    getColorStockAcrossAllSizes
 } from '@/services/inventoryService';
 
 export interface StockInfo {
@@ -35,7 +36,23 @@ export function useProductStock(
             try {
                 setStockInfo(prev => ({ ...prev, loading: true }));
 
-                // Fetch variant stock from Supabase
+                // If size is empty, check total stock across all sizes for the color
+                // This is used for ProductCard to enable button if ANY size is available
+                if (!size || size === '') {
+                    const colorStock = await getColorStockAcrossAllSizes(productId, color);
+                    
+                    if (!mounted) return;
+
+                    setStockInfo({
+                        available: colorStock.available,
+                        status: colorStock.status,
+                        isInStock: colorStock.available > 0,
+                        loading: false
+                    });
+                    return;
+                }
+
+                // Fetch variant stock from Supabase for specific size
                 const variant = await getVariantStockNormalized(productId, size, color);
 
                 if (!mounted) return;

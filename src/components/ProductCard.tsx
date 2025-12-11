@@ -184,15 +184,20 @@ const ProductCardComponent = ({
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   // Fetch real-time stock from Supabase
-  // Get size from product data - map product IDs to sizes
+  // For products with multiple sizes (dreamcurl-short-set, heatless-5), 
+  // we should check total stock across all sizes for the selected color
+  // instead of checking just one specific size
+  const shouldCheckTotalStock = ['dreamcurl-short-set', 'heatless-5', 'heat-buns'].includes(id);
+  
   const getProductSize = (): string => {
+    // For products with multiple sizes, return empty to trigger total stock check
+    if (shouldCheckTotalStock) return '';
+    
     const sizeMap: Record<string, string> = {
       'dreamcurl-jumbo': 'Jumbo',
       'dreamcurl-original': 'Large',
       'dreamcurl-midi': 'Midi',
       'zero-heat-mini': 'Mini',
-      'dreamcurl-short-set': 'Original',
-      'heat-buns': 'Standard' // Could be Jumbo/Large/Midi/Mini based on variant
     };
     return sizeMap[id] || 'Standard';
   };
@@ -595,12 +600,12 @@ const ProductCardComponent = ({
           </div>
 
           {/* 4. Right Side: Add to Cart Button */}
-          <div className="flex items-end">
+          <div className="flex items-end relative z-20">
             <motion.button
               type="button"
               className={`group relative flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black shadow-md transition-all duration-300 flex-shrink-0 overflow-hidden ${comingSoon || (!loading && !isInStock)
-                  ? 'opacity-40 cursor-not-allowed'
-                  : 'hover:shadow-xl cursor-pointer'
+                  ? 'opacity-40 cursor-not-allowed pointer-events-none'
+                  : 'hover:shadow-xl cursor-pointer pointer-events-auto'
                 }`}
               aria-label={loading ? 'Checking stock...' : isInStock ? 'Add to cart' : 'Sold out'}
               disabled={comingSoon || loading || !isInStock}
