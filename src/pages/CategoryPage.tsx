@@ -1055,14 +1055,14 @@ export const CategoryPage = () => {
                     {/* Product Info - Hidden for Coming Soon */}
                     {!product.comingSoon && (
                       <div className="space-y-2 sm:space-y-4 w-full px-1 sm:px-0">
-                        <h3 className="font-semibold text-xs sm:text-lg tracking-wide uppercase group-hover:text-primary transition-colors line-clamp-2 font-sharp-serif">
+                        <h3 className="font-semibold text-xs sm:text-lg tracking-wide uppercase text-black transition-colors line-clamp-2 font-sharp-serif">
                           {product.name}
                         </h3>
                         <p className="text-[10px] sm:text-sm font-light leading-relaxed text-black line-clamp-2 sm:line-clamp-3 hidden sm:block">
                           {product.description[0]}
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 pt-1 sm:pt-2">
-                          <span className="text-sm sm:text-2xl font-semibold text-primary font-sharp-serif">
+                          <span className="text-sm sm:text-2xl font-semibold text-black font-sharp-serif">
                             {product.price}
                           </span>
                           <span className="text-[10px] sm:text-sm text-muted-foreground font-light">
