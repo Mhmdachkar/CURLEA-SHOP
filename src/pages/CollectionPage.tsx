@@ -17,13 +17,8 @@ export const CollectionPage = () => {
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
 
-  // Check if coming from product detail page to skip animation
-  const [showLoader, setShowLoader] = useState(() => {
-    // Check if we're coming from a product detail page
-    const isFromProductDetail = window.location.search.includes('from=product') ||
-      document.referrer.includes('/product/');
-    return !isFromProductDetail; // Only show loader if NOT coming from product detail
-  });
+  // Always show the elegant CURLEA animation when entering the shop page
+  const [showLoader, setShowLoader] = useState(true);
 
   // Elegant section animations with professional timing
   const sectionVariants = {
@@ -80,18 +75,12 @@ export const CollectionPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("CollectionPage: Component mounted, showLoader:", showLoader);
-    console.log("CollectionPage: Current URL:", window.location.pathname);
-
-    // Only show animation if not coming from product detail page
-    if (showLoader) {
-      const timer = setTimeout(() => {
-        console.log("CollectionPage: Hiding loader after 4000ms");
-        setShowLoader(false);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [showLoader]);
+    // Always show the CURLEA brand animation for 4 seconds
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Display all products from the products.ts file, excluding coming soon products
   const displayedProducts = products.filter(product => !product.comingSoon);
@@ -100,14 +89,14 @@ export const CollectionPage = () => {
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
       <Navbar />
 
-      {/* Modern Elegant Brand Loader */}
+      {/* Modern Elegant Brand Loader - CURLEA Animation */}
       <AnimatePresence mode="wait">
         {showLoader && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+            transition={{ duration: 0.3 }}
             style={{
               position: 'fixed',
               top: 0,
@@ -115,10 +104,11 @@ export const CollectionPage = () => {
               right: 0,
               bottom: 0,
               backgroundColor: '#000000',
-              zIndex: 99999,
+              zIndex: 999999,
               width: '100vw',
               height: '100vh',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              pointerEvents: 'auto'
             }}
           >
             <CurleaBrandAnimation />
