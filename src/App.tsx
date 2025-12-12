@@ -13,6 +13,7 @@ import { registerServiceWorker } from "@/utils/serviceWorker";
 
 import PromotionalBanner from "@/components/PromotionalBanner";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+import { useRoutePreload } from "@/hooks/useRoutePreload";
 import { lazy, Suspense, useEffect } from "react";
 import { initializeSupabaseIntegration, trackCampaignFromUrl } from "@/services/supabaseIntegration";
 
@@ -42,6 +43,9 @@ const queryClient = new QueryClient();
 const App = () => {
   // Initialize smooth scroll
   useSmoothScroll();
+  
+  // Preload critical routes for instant navigation
+  useRoutePreload();
 
   // Register Service Worker for offline support
   useEffect(() => {

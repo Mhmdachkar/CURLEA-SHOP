@@ -6,6 +6,7 @@ import { OptimizedImage } from "./OptimizedImage";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { useProductStock } from "@/hooks/useProductStock";
+import { preloadRoute } from "@/hooks/useRoutePreload";
 
 // Shopping Bag Icon (from Heroicons)
 const CartIcon = () => (
@@ -298,12 +299,20 @@ const ProductCardComponent = ({
     setHoveredColor(null);
   }, []);
 
+  const handleCardHover = useCallback(() => {
+    if (!comingSoon) {
+      // Preload product detail page for instant navigation
+      preloadRoute('product');
+    }
+  }, [comingSoon]);
+
   return (
     <motion.div
       className={`w-full bg-white rounded-lg shadow-md overflow-hidden flex flex-col ${comingSoon ? 'pointer-events-none' : 'cursor-pointer hover:shadow-xl'} transition-shadow duration-300 relative`}
       whileHover={comingSoon ? {} : { y: -4 }}
       transition={{ duration: 0.2 }}
       onClick={comingSoon ? undefined : onClick}
+      onMouseEnter={handleCardHover}
     >
 
       {/* 1. Product Image - 1:1 Aspect Ratio */}

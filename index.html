@@ -84,12 +84,23 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
   <meta name="theme-color" content="#A4193D" />
 
+  <!-- DNS Prefetch & Preconnect for Performance -->
+  <link rel="dns-prefetch" href="https://vfhxwzcbjdlfmizakvqc.supabase.co">
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="dns-prefetch" href="https://js.stripe.com">
+  <link rel="preconnect" href="https://vfhxwzcbjdlfmizakvqc.supabase.co" crossorigin>
+  
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
+  
+  <!-- Preload critical assets for instant navigation -->
+  <link rel="prefetch" href="/src/pages/CollectionPage.tsx" as="script">
+  <link rel="prefetch" href="/src/pages/ProductDetailPage.tsx" as="script">
+  <link rel="prefetch" href="/src/pages/CheckoutPage.tsx" as="script">
 </head>
 
 <body>
