@@ -518,9 +518,11 @@ const ProductCardComponent = ({
             <p className="text-lg font-semibold text-gray-900 mt-1 font-sharp-serif">{price}</p>
 
             {/* Low Stock Badge */}
-            {!loading && status === 'low_stock' && isInStock && (
+            {!loading && status === 'low_stock' && isInStock && available <= 3 && (
               <div className="mt-2">
-                <LowStockBadge quantity={available} threshold={3} />
+                <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-orange-800 bg-orange-100 rounded-full">
+                  Only {available} left in stock
+                </span>
               </div>
             )}
 
