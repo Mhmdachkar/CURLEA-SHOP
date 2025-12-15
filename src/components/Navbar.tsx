@@ -531,18 +531,12 @@ export const Navbar = () => {
           // Set scrolled state
           setIsScrolled(currentScrollY > 50);
 
-          // Detect scroll direction and set opacity
+          // Simple rule: visible only at very top, hidden once user scrolls
           if (currentScrollY < 50) {
             // At top of page - always show
             setNavbarOpacity(1);
-            setScrollDirection('down');
-          } else if (currentScrollY > lastScrollY) {
-            // Scrolling DOWN - show navbar (opacity = 1)
-            setScrollDirection('down');
-            setNavbarOpacity(1);
-          } else if (currentScrollY < lastScrollY) {
-            // Scrolling UP - hide navbar (opacity = 0)
-            setScrollDirection('up');
+          } else {
+            // Anywhere below top - always hide
             setNavbarOpacity(0);
           }
 

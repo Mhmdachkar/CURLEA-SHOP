@@ -12,6 +12,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 
 import PromotionalBanner from "@/components/PromotionalBanner";
+import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useRoutePreload } from "@/hooks/useRoutePreload";
 import { lazy, Suspense, useEffect } from "react";
@@ -103,6 +104,7 @@ const App = () => {
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />
+                <WhatsAppFloatingButton />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     <Route path="/" element={<Index />} />

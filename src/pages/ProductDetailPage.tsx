@@ -2380,7 +2380,7 @@ export const ProductDetailPage = () => {
                 >
                   <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                     {/* Mobile: Optimized layout with color selection */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 md:gap-4 py-2.5 sm:py-3 md:py-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 md:gap-4 py-2.5 sm:py-3 md:py-2.5 lg:py-3">
                       {/* Top Row: Product Info + Color Selection (Mobile) */}
                       <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
                         {/* Product Info */}
@@ -2396,7 +2396,7 @@ export const ProductDetailPage = () => {
                               <OptimizedImage
                                 src={currentProductImage || product?.image || ''}
                                 alt={`${product?.name || 'Product'}${selectedColor ? ` - ${selectedColor}` : ''}`}
-                                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-cover rounded-lg border border-gray-200 shadow-sm"
+                                className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-14 lg:h-14 object-cover rounded-lg border border-gray-200 shadow-sm"
                                 onError={(e) => {
                                   // Fallback to default product image if color variant fails
                                   if (currentProductImage && currentProductImage !== product?.image) {
@@ -2408,10 +2408,10 @@ export const ProductDetailPage = () => {
                           </div>
                           {/* Product Name & Price */}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                            <h3 className="text-xs sm:text-sm md:text-xs lg:text-sm font-semibold text-gray-900 truncate">
                               {product?.name || 'Product'}
                             </h3>
-                            <p className="text-xs sm:text-sm md:text-lg font-bold text-primary mt-0.5">
+                            <p className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-primary mt-0.5">
                               {product?.price || '$0.00'}
                             </p>
                           </div>

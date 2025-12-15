@@ -137,10 +137,10 @@ VALUES
 
 INSERT INTO product_variants (product_id, variant_name, size, color, stock_quantity, price, sku)
 VALUES
-    ('satin-scrunchies-french-5pc', 'Scrunchies 5 Set', 'Standard', NULL, 42, 6.77, 'SCRUNCHIES-5PC'),
-    ('korean-clips-10set', 'Korean Clips 10 Set', 'Standard', NULL, 23, 11.99, 'KOREAN-CLIPS-10'),
-    ('curly-clip-1', 'Flat Clips 9 Set', 'Standard', NULL, 14, 14.99, 'FLAT-CLIPS-9'),
-    ('bow-tie-7set', 'Bow Tie 7 Set', 'Standard', NULL, 22, 12.99, 'BOWTIE-CLIPS-7');
+    ('satin-scrunchies-french-5pc', 'Scrunchies 5 Set', 'Standard', NULL, 42, 11.99, 'SCRUNCHIES-5PC'),
+    ('curly-claw-1', 'Geometric Flower Hair Claw Clip 10 Set', 'Standard', NULL, 40, 15.99, 'CLAW-CLIPS-10'),
+    ('curly-clip-1', 'Curved Resin Hair Clip 9 Set', 'Standard', NULL, 149, 14.99, 'FLAT-CLIPS-9'),
+    ('curly-scarf-1', 'Elegant Satin Scarf + Scrunchies 7 Set', 'Standard', NULL, 22, 11.99, 'SCARF-SCRUNCHIES-7');
 
 COMMIT;
 
