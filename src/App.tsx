@@ -28,6 +28,7 @@ const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const SuccessPage = lazy(() => import("./pages/SuccessPage"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage").then(m => ({ default: m.CategoryPage })));
 const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+const ProductVerificationPanel = lazy(() => import("./components/ProductVerificationPanel").then(m => ({ default: m.ProductVerificationPanel })));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -119,6 +120,7 @@ const App = () => {
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/success" element={<SuccessPage />} />
                     <Route path="/analytics" element={<AnalyticsDashboard />} />
+                    <Route path="/verify-products" element={<ProductVerificationPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -50,6 +50,7 @@ const ModalContainer = styled(motion.div)`
   -webkit-backface-visibility: hidden;
   -webkit-overflow-scrolling: touch;
   margin: auto;
+  box-sizing: border-box;
 
   @media (min-width: 640px) {
     border-radius: 1.25rem;
@@ -126,7 +127,7 @@ const CloseButton = styled.button`
 `;
 
 const ContentWrapper = styled.div`
-  padding: 1.5rem 1.25rem 2.5rem;
+  padding: 1.5rem 1.25rem 3.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -139,6 +140,7 @@ const ContentWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   position: relative;
+  box-sizing: border-box;
   
   /* Custom scrollbar styling */
   &::-webkit-scrollbar {
@@ -160,22 +162,22 @@ const ContentWrapper = styled.div`
   }
 
   @media (min-width: 480px) {
-    padding: 2rem 1.5rem 3rem;
+    padding: 2rem 1.5rem 4rem;
     gap: 1rem;
   }
 
   @media (min-width: 768px) {
-    padding: 2.5rem 2rem 3.5rem;
+    padding: 2.5rem 2rem 4.5rem;
     gap: 1.25rem;
   }
   
   @media (max-height: 600px) {
-    padding: 1.25rem 1rem 2rem;
+    padding: 1.25rem 1rem 3.5rem;
     gap: 0.75rem;
   }
 
   @media (max-width: 374px) {
-    padding: 1.25rem 1rem 2rem;
+    padding: 1.25rem 1rem 3.5rem;
     gap: 0.75rem;
   }
 `;
@@ -363,7 +365,8 @@ const CTAButton = styled(motion.button)`
   box-shadow: 0 8px 25px rgba(220, 38, 38, 0.35);
   position: relative;
   overflow: hidden;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
   letter-spacing: -0.01em;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
@@ -376,11 +379,14 @@ const CTAButton = styled(motion.button)`
   -webkit-tap-highlight-color: transparent;
   width: 100%;
   max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
 
   @media (min-width: 480px) {
     padding: 0.875rem 2rem;
     width: auto;
     max-width: none;
+    margin-top: 0.75rem;
   }
 
   &::before {
