@@ -21,8 +21,12 @@ const curlyHeroImages = [curlyHeroImage1, curlyHeroImage2, curlyHeroImage3];
 // Placeholder requested path
 const CURLY_PLACEHOLDER = new URL('../assets/curly hair collection/product4/placeholder.jpg', import.meta.url).href;
 
+import { sanitizeCategory } from '@/utils/securityEnhanced';
+
 export const CategoryPage = () => {
-  const { category } = useParams();
+  const { category: rawCategory } = useParams();
+  // Sanitize category from URL to prevent injection
+  const category = rawCategory ? sanitizeCategory(rawCategory) : null;
   const navigate = useNavigate();
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);

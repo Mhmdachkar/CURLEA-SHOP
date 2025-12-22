@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
-import { useCart, CartItem } from '@/contexts/CartContext';
+import { useCart, CartItem, FULL_SET_PRODUCT_IDS } from '@/contexts/CartContext';
 
 /* ============================================
    STYLED COMPONENTS - MOBILE FIRST
@@ -476,9 +476,16 @@ export const CartDrawer = () => {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Calculate total items count for promo message - memoized for performance
+  // Calculate total items count - memoized for performance
   const totalItemsCount = useMemo(() => {
     return state.items.reduce((sum, item) => sum + item.quantity, 0);
+  }, [state.items]);
+
+  // Calculate eligible FULL SET items count for the Christmas offer
+  const eligibleFullSetCount = useMemo(() => {
+    return state.items
+      .filter((item) => FULL_SET_PRODUCT_IDS.has(item.id))
+      .reduce((sum, item) => sum + item.quantity, 0);
   }, [state.items]);
 
   // Lock body scroll when cart is open and preserve scroll position
@@ -572,44 +579,52 @@ export const CartDrawer = () => {
   };
 
   // Helper: Get items that receive discount - memoized for performance
+  // Buy 2, Get 1 Free: For every 2 items purchased, the next item is free
   const getDiscountedItems = useMemo(() => {
     return () => {
-      // Filter out free items ($0) - they don't count toward the promotion
-      const paidItems = state.items.filter(item => {
+      // Filter to eligible FULL SET items and exclude free ($0) items
+      const eligiblePaidItems = state.items.filter(item => {
+        if (!FULL_SET_PRODUCT_IDS.has(item.id)) return false;
         const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
         return price > 0;
       });
 
-      // Flatten all items into individual units (respecting quantity) to find the 3rd item
+      // Flatten all eligible items into individual units (respecting quantity) to find free items
       const flattenedItems: Array<{ item: CartItem; unitIndex: number }> = [];
-      for (const item of paidItems) {
+      for (const item of eligiblePaidItems) {
         // Add each quantity as a separate unit
         for (let i = 0; i < item.quantity; i++) {
           flattenedItems.push({ item, unitIndex: i });
         }
       }
 
-      const totalPaidItems = flattenedItems.length;
+      const totalEligibleItems = flattenedItems.length;
 
-      if (totalPaidItems < 3) return { discountedIds: new Set<string>(), thirdUnitInfo: null };
+      // Buy 2, Get 1 Free: minimum 2 items required, only 1 free item (the 3rd one)
+      if (totalEligibleItems < 2) return { discountedIds: new Set<string>(), freeUnitsInfo: [] };
 
-      // The 3rd item (index 2) gets the discount
+      // Only give 1 free item (the 3rd one) - simple Buy 2, Get 1 Free
       const thirdItem = flattenedItems[2];
+      if (!thirdItem) return { discountedIds: new Set<string>(), freeUnitsInfo: [] };
+
       const discountedItem = thirdItem.item;
       const thirdUnitIndex = thirdItem.unitIndex;
 
       const discountedIds = new Set<string>();
+      const freeUnitsInfo: Array<{ itemKey: string; unitIndex: number; item: CartItem }> = [];
+
       // Mark the item that contains the 3rd unit
       const itemKey = `${discountedItem.id}-${discountedItem.selectedColor || 'default'}-${discountedItem.selectedSize || 'default'}`;
       discountedIds.add(itemKey);
+      freeUnitsInfo.push({
+        itemKey,
+        unitIndex: thirdUnitIndex,
+        item: discountedItem
+      });
 
       return { 
         discountedIds, 
-        thirdUnitInfo: { 
-          itemKey, 
-          unitIndex: thirdUnitIndex,
-          item: discountedItem
-        } 
+        freeUnitsInfo
       };
     };
   }, [state.items]);
@@ -715,14 +730,14 @@ export const CartDrawer = () => {
               <div>
               <Title>Shopping Cart</Title>
                 {/* Promotional Display - Active discount or Incentive message */}
-                {totalItemsCount >= 3 ? (
+                {eligibleFullSetCount >= 3 ? (
                   promoDiscount > 0 && (
                     <DiscountRow style={{ marginTop: '0.5rem', marginBottom: '0' }}>
-                      <DiscountLabel>50% OFF 3RD ITEM</DiscountLabel>
+                      <DiscountLabel>Congratulations for having one full set for free!</DiscountLabel>
                       <DiscountAmount>-{formatPrice(promoDiscount)}</DiscountAmount>
                     </DiscountRow>
                   )
-                ) : totalItemsCount > 0 ? (
+                ) : eligibleFullSetCount === 2 ? (
                   <DiscountRow style={{
                     marginTop: '0.5rem',
                     marginBottom: '0',
@@ -730,10 +745,32 @@ export const CartDrawer = () => {
                     border: '1px dashed rgba(212, 175, 55, 0.3)'
                   }}>
                     <DiscountLabel style={{ fontSize: '0.75rem' }}>
-                      Add {3 - totalItemsCount} more {3 - totalItemsCount === 1 ? 'item' : 'items'} for 50% OFF!
+                      Now choose your 3rd free full set!
                     </DiscountLabel>
                   </DiscountRow>
-                ) : null}
+                ) : eligibleFullSetCount === 1 ? (
+                  <DiscountRow style={{
+                    marginTop: '0.5rem',
+                    marginBottom: '0',
+                    background: 'linear-gradient(135deg, rgba(164, 25, 61, 0.08), rgba(212, 175, 55, 0.08))',
+                    border: '1px dashed rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <DiscountLabel style={{ fontSize: '0.75rem' }}>
+                      Buy one more full set to get one for free!
+                    </DiscountLabel>
+                  </DiscountRow>
+                ) : (
+                  <DiscountRow style={{
+                    marginTop: '0.5rem',
+                    marginBottom: '0',
+                    background: 'linear-gradient(135deg, rgba(164, 25, 61, 0.08), rgba(212, 175, 55, 0.08))',
+                    border: '1px dashed rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <DiscountLabel style={{ fontSize: '0.75rem' }}>
+                      Buy any 2 Full Sets, Get 3rd one FREE
+                    </DiscountLabel>
+                  </DiscountRow>
+                )}
               </div>
               <CloseButton onClick={closeCart}>
                 <X />
@@ -751,14 +788,14 @@ export const CartDrawer = () => {
               ) : (
                   <ItemsList>
                   {(() => {
-                    const { discountedIds, thirdUnitInfo } = getDiscountedItems();
+                    const { discountedIds, freeUnitsInfo } = getDiscountedItems();
                     return state.items.map((item) => {
                       // Match the key format used in getDiscountedItems
                       const itemKey = `${item.id}-${item.selectedColor || 'default'}-${item.selectedSize || 'default'}`;
                       const hasDiscount = discountedIds.has(itemKey);
-                      // Check if this item contains the 3rd unit and which unit index it is
-                      const isThirdUnitItem = thirdUnitInfo?.itemKey === itemKey;
-                      const thirdUnitIndex = thirdUnitInfo?.unitIndex ?? -1;
+                      // Check if this item contains any free units and which unit indices they are
+                      const freeUnitsForThisItem = freeUnitsInfo.filter(freeUnit => freeUnit.itemKey === itemKey);
+                      const freeUnitIndices = freeUnitsForThisItem.map(freeUnit => freeUnit.unitIndex);
 
                       return (
                       <CartItemCard
@@ -779,7 +816,7 @@ export const CartDrawer = () => {
                           </div>
                         ) : (
                           <ProductImage>
-                              {hasDiscount && <DiscountBadge>50% OFF</DiscountBadge>}
+                              {hasDiscount && <DiscountBadge>FREE</DiscountBadge>}
                             <Image src={item.image} alt={item.name} />
                           </ProductImage>
                         )}
@@ -794,17 +831,18 @@ export const CartDrawer = () => {
                             <ProductVariant>Size: {item.size}</ProductVariant>
                           )}
                           <ProductPrice>
-                              {hasDiscount && isThirdUnitItem ? (
+                              {hasDiscount && freeUnitsForThisItem.length > 0 ? (
                                 (() => {
                                   const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-                                  const fullPriceUnits = item.quantity - 1; // All units except the 3rd one
-                                  const discountedUnitPrice = itemPrice * 0.5; // 50% off for 3rd unit
-                                  const totalPrice = (itemPrice * fullPriceUnits) + discountedUnitPrice;
+                                  // Only 1 free unit (the 3rd one) - Buy 2, Get 1 Free
+                                  const numberOfFreeUnits = 1;
+                                  const fullPriceUnits = Math.max(item.quantity - numberOfFreeUnits, 0);
+                                  const totalPrice = itemPrice * fullPriceUnits;
                                   return (
                                     <>
-                                      {item.quantity > 1 && (
+                                      {item.quantity > numberOfFreeUnits && (
                                         <span style={{ fontSize: '0.75rem', opacity: 0.7, marginRight: '0.5rem' }}>
-                                          {item.quantity - 1} × {formatPrice(itemPrice)} + 1 × {formatPrice(discountedUnitPrice)} =
+                                          {fullPriceUnits} × {formatPrice(itemPrice)} + {numberOfFreeUnits} × {formatPrice(0)} =
                                         </span>
                                       )}
                                       <span style={{
@@ -921,7 +959,7 @@ export const CartDrawer = () => {
                       color: '#A4193D',
                       fontWeight: 600
                     }}>
-                      <span>Discount (50% off):</span>
+                      <span>Christmas Offer (3rd Item FREE):</span>
                       <span>-{formatPrice(promoDiscount)}</span>
                     </div>
                   </div>

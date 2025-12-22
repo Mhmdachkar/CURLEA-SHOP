@@ -51,8 +51,8 @@ const PromotionalBanner = () => {
   const offers = [
     {
       id: 0,
-      title: "SPECIAL OFFER",
-      subtitle: "Buy 2 Items, Get 50% OFF 3rd Item",
+      title: "CHRISTMAS OFFER",
+      subtitle: "Buy any 2 Full Sets, Get 3rd one FREE",
       gradient: "from-black via-gray-900 to-black"
     }
   ];

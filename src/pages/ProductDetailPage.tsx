@@ -12,6 +12,7 @@ import { getProductById, getCurlyHairCollectionProductById, getCurlyHairCollecti
 import { getHeatlessCurlingRodProducts, getHeatlessCurlingRodProductById } from "./CategoryPage";
 import { useCart } from "@/contexts/CartContext";
 import { validateProductId } from "@/utils/validation";
+import { sanitizeProductId } from "@/utils/securityEnhanced";
 import { preloadImagesWithPriority } from "@/utils/imagePreloader";
 import { useRealtimeState } from "@/hooks/useRealtimeState";
 import { useEventProduct, useEventUI, EVENTS } from "@/hooks/useEventSystem";
@@ -24,7 +25,9 @@ import { SoldOutBadge, LowStockBadge } from "@/components/SoldOutBadge";
 import { getVariantStock, normalizeColorName, getAllVariantsForProduct, VariantStock } from "@/services/inventoryService";
 
 export const ProductDetailPage = () => {
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  // Sanitize product ID from URL to prevent injection
+  const id = rawId ? sanitizeProductId(rawId) : null;
   const navigate = useNavigate();
   const location = useLocation();
   const { addToCart, openCart, state: cartState } = useCart();
@@ -161,13 +164,13 @@ export const ProductDetailPage = () => {
   const [variantStock, setVariantStock] = useState<Map<string, { stock: number; available: number }>>(new Map()); // Map of "size-color" or "size" to stock info
   const [showStickyHeader, setShowStickyHeader] = useState(false);
 
-  // Validate product ID
+  // Validate product ID - handle null from sanitization
   if (!id || !validateProductId(id)) {
     return (
       <div className="min-h-screen bg-background pt-24 pb-16 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4 text-red-500">Invalid Product ID</h1>
-          <p className="text-muted-foreground mb-8">The product ID contains invalid characters.</p>
+          <p className="text-muted-foreground mb-8">The product ID contains invalid characters or has been sanitized for security.</p>
           <button
             onClick={() => navigate("/")}
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
@@ -325,7 +328,8 @@ export const ProductDetailPage = () => {
         'zero-heat-mini': 'Mini'
       };
       const checkSize = defaultSizes[product.id] || 'Standard';
-      // Use UI color name directly (not normalized) to match stockMap keys
+      // Use UI color name directly to match stockMap keys (stockMap uses UI colors, not normalized)
+      // The stockMap is built with UI color names, so we use selectedColor directly
       stockKey = selectedColor ? `${checkSize}-${selectedColor}` : checkSize;
     } else {
       // Products without selectors
@@ -755,9 +759,9 @@ export const ProductDetailPage = () => {
       return;
     }
 
-    // For BUN BONS - Heatless Curling System, require size selection (excluding sold out Original)
-    if (product.id === 'heatless-5' && (!selectedSize || selectedSize === 'Original')) {
-      const errorMsg = selectedSize === 'Original' ? 'Original size is currently sold out. Please select another size.' : 'Please select a size';
+    // For BUN BONS - Heatless Curling System, require size selection
+    if (product.id === 'heatless-5' && !selectedSize) {
+      const errorMsg = 'Please select a size';
       setError(errorMsg);
       showError(errorMsg);
       return;

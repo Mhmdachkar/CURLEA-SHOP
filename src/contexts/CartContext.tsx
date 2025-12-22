@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useCallback, useMemo } from 'react';
 import { fbTrack, gaTrack } from '@/utils/tracking';
+import { secureStorage, sanitizeInput, sanitizeObject } from '@/utils/securityEnhanced';
+
+// Eligible full-set product IDs for the Christmas offer
+export const FULL_SET_PRODUCT_IDS = new Set<string>([
+  'dreamcurl-original', // Dream Curl Original Full Set
+  'dreamcurl-midi',     // Dream Curl Full Set Midi
+  'dreamcurl-jumbo',    // Dream Curl Full Set Jumbo
+  'zero-heat-mini',     // Zero Heat Mini Full Set
+]);
 
 export interface CartItem {
   id: string;
@@ -34,17 +43,20 @@ type CartAction =
   | { type: 'CLOSE_CART' }
   | { type: 'SET_ITEMS'; payload: CartItem[] };
 
-// Helper function to calculate promotional discount: Buy 2, Get 50% Off 3rd Item
+// Helper function to calculate promotional discount:
+// Christmas Offer → Buy any 2 eligible FULL SETS, get the 3rd FULL SET FREE
+// Logic: For every 2 items purchased, the next item is free
 export const calculatePromoDiscount = (items: CartItem[]): number => {
-  // Filter out free items ($0) - they don't count toward the promotion
-  const paidItems = items.filter(item => {
+  // Filter down to eligible FULL SET items only and exclude free ($0) items
+  const eligiblePaidItems = items.filter(item => {
+    if (!FULL_SET_PRODUCT_IDS.has(item.id)) return false;
     const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
     return price > 0;
   });
 
-  // Flatten all items into individual units (respecting quantity) to find the 3rd item
+  // Flatten all items into individual units (respecting quantity) to find free items
   const flattenedItems: Array<{ price: number; item: CartItem }> = [];
-  for (const item of paidItems) {
+  for (const item of eligiblePaidItems) {
     const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
     // Add each quantity as a separate unit
     for (let i = 0; i < item.quantity; i++) {
@@ -52,18 +64,22 @@ export const calculatePromoDiscount = (items: CartItem[]): number => {
     }
   }
 
-  // Count total PAID items
+  // Count total eligible FULL SET units
   const totalPaidItems = flattenedItems.length;
   
-  // Only apply discount if there are 3 or more PAID items
-  if (totalPaidItems < 3) return 0;
+  // Only apply discount if there are 2 or more eligible FULL SET items
+  // Buy 2, Get 1 Free: minimum 2 items required, only 1 free item (the 3rd one)
+  if (totalPaidItems < 2) return 0;
 
-  // The 3rd item (index 2) gets the discount
+  // Only give 1 free item (the 3rd one) - simple Buy 2, Get 1 Free
+  // The 3rd eligible FULL SET item (index 2) gets the discount
   const thirdItem = flattenedItems[2];
+  if (!thirdItem) return 0;
+
   const thirdItemPrice = thirdItem.price;
 
-  // 50% off the 3rd item specifically
-  const discount = thirdItemPrice * 0.5;
+  // 100% off the 3rd eligible FULL SET item (3rd item is FREE)
+  const discount = thirdItemPrice;
 
   return discount;
 };
@@ -233,10 +249,16 @@ const loadCartFromStorage = (): CartState => {
   }
   
   try {
-    const savedCart = localStorage.getItem('curlea-cart');
+    // Use secure storage wrapper
+    const savedCart = secureStorage.getItem('curlea-cart');
     if (savedCart) {
+      // Safe JSON parsing with validation
       const parsed = JSON.parse(savedCart);
-      const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
+      
+      // Sanitize parsed object to prevent prototype pollution
+      const sanitizedParsed = sanitizeObject(parsed);
+      
+      const rawItems = Array.isArray(sanitizedParsed.items) ? sanitizedParsed.items : [];
       const sanitizedItems = rawItems
         .map(normalizeCartItem)
         .filter((item): item is CartItem => Boolean(item));
@@ -247,20 +269,30 @@ const loadCartFromStorage = (): CartState => {
       };
     }
   } catch (error) {
-    console.error('Error loading cart from localStorage:', error);
+    console.error('[Security] Error loading cart from localStorage:', error);
   }
   
   return { items: [], isOpen: false };
 };
 
-// Save cart to localStorage
+// Save cart to localStorage with security
 const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === 'undefined') return;
   
   try {
-    localStorage.setItem('curlea-cart', JSON.stringify({ items }));
+    // Sanitize items before saving
+    const sanitizedItems = items.map(item => ({
+      ...item,
+      id: sanitizeInput(item.id),
+      name: sanitizeInput(item.name),
+      selectedColor: item.selectedColor ? sanitizeInput(item.selectedColor) : undefined,
+      selectedSize: item.selectedSize ? sanitizeInput(item.selectedSize) : undefined,
+    }));
+    
+    // Use secure storage wrapper
+    secureStorage.setItem('curlea-cart', JSON.stringify({ items: sanitizedItems }));
   } catch (error) {
-    console.error('Error saving cart to localStorage:', error);
+    console.error('[Security] Error saving cart to localStorage:', error);
   }
 };
 

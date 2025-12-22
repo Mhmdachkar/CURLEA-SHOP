@@ -12,6 +12,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 
 import PromotionalBanner from "@/components/PromotionalBanner";
+import { ChristmasOfferModal } from "@/components/ChristmasOfferModal";
+import { FloatingGiftIcon } from "@/components/FloatingGiftIcon";
 import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useRoutePreload } from "@/hooks/useRoutePreload";
@@ -101,6 +103,8 @@ const App = () => {
                 }}
               >
                 <PromotionalBanner />
+                <ChristmasOfferModal />
+                <FloatingGiftIcon />
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />

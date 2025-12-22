@@ -6,6 +6,7 @@ import { createStripeCheckout, calculateCartTotal, parsePriceToNumber } from '@/
 import { toast } from 'sonner';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { getCampaignAttribution } from '@/utils/campaignTracking';
+import { sanitizeInput, sanitizeEmail, sanitizePhone, sanitizeAddress, escapeHtml } from '@/utils/securityEnhanced';
 import '../styles/checkout-styles.css';
 
 type PaymentMethod = 'stripe' | 'cod' | null;
@@ -98,7 +99,27 @@ export default function CheckoutPage() {
     };
 
     const handleInputChange = (key: string, value: string) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
+        // Sanitize input based on field type
+        let sanitizedValue = value;
+        switch (key) {
+            case 'email':
+                sanitizedValue = sanitizeEmail(value);
+                break;
+            case 'phone':
+                sanitizedValue = sanitizePhone(value);
+                break;
+            case 'address':
+            case 'city':
+            case 'zipCode':
+                sanitizedValue = sanitizeAddress(value);
+                break;
+            case 'name':
+            default:
+                sanitizedValue = sanitizeInput(value);
+                break;
+        }
+        
+        setFormData(prev => ({ ...prev, [key]: sanitizedValue }));
         if (errors[key]) {
             setErrors(prev => {
                 const next = { ...prev };
@@ -159,8 +180,16 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
-            // Ensure country is always Lebanon
-            const deliveryData = { ...formData, country: 'Lebanon' };
+            // Ensure country is always Lebanon and sanitize all form data
+            const deliveryData = {
+                name: sanitizeInput(formData.name),
+                phone: sanitizePhone(formData.phone),
+                email: sanitizeEmail(formData.email),
+                address: sanitizeAddress(formData.address),
+                city: sanitizeAddress(formData.city),
+                zipCode: sanitizeInput(formData.zipCode),
+                country: 'Lebanon'
+            };
 
             // Generate unique order ID
             const orderId = `COD-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -801,7 +830,7 @@ export default function CheckoutPage() {
                                         initial={{ opacity: 0, y: -5 }}
                                         animate={{ opacity: 1, y: 0 }}
                                     >
-                                        <span className="text-[#A4193D] font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>50% OFF 3RD ITEM</span>
+                                        <span className="text-[#A4193D] font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>3RD ITEM FREE (Christmas Offer)</span>
                                         <span className="font-semibold text-[#A4193D] flex-shrink-0 whitespace-nowrap" style={typography}>
                                             -${promoDiscount.toFixed(2)}
                                         </span>

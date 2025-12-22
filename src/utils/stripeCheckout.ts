@@ -4,6 +4,7 @@
  */
 
 import { CartItem } from '@/contexts/CartContext';
+import { secureSessionStorage, sanitizeInput, sanitizeObject } from '@/utils/securityEnhanced';
 
 export interface StripeCheckoutRequest {
   cartItems: CartItem[];
@@ -88,10 +89,10 @@ export const createStripeCheckout = async (
   // Get session ID from analytics if available
   const sessionId = (window as any).analytics?.getSessionId?.();
   
-  // Get UTM parameters from sessionStorage if available
-  const utmSource = sessionStorage.getItem('utm_source');
-  const utmMedium = sessionStorage.getItem('utm_medium');
-  const utmCampaign = sessionStorage.getItem('utm_campaign');
+  // Get UTM parameters from secure sessionStorage if available
+  const utmSource = secureSessionStorage.getItem('utm_source');
+  const utmMedium = secureSessionStorage.getItem('utm_medium');
+  const utmCampaign = secureSessionStorage.getItem('utm_campaign');
   
   try {
     const response = await fetch(apiEndpoint, {
@@ -101,16 +102,20 @@ export const createStripeCheckout = async (
         'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
       },
-      body: JSON.stringify({
-        cartItems: formattedItems,
-        currency,
-        sessionId,
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        successUrl: request.successUrl || `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: request.cancelUrl || `${window.location.origin}/`,
-      }),
+      body: JSON.stringify(sanitizeObject({
+        cartItems: formattedItems.map(item => ({
+          ...item,
+          product_name: sanitizeInput(item.product_name),
+          image_url: sanitizeInput(item.image_url),
+        })),
+        currency: sanitizeInput(currency),
+        sessionId: sanitizeInput(sessionId || ''),
+        utm_source: sanitizeInput(utmSource || ''),
+        utm_medium: sanitizeInput(utmMedium || ''),
+        utm_campaign: sanitizeInput(utmCampaign || ''),
+        successUrl: sanitizeInput(request.successUrl || `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`),
+        cancelUrl: sanitizeInput(request.cancelUrl || `${window.location.origin}/`),
+      })),
     });
     
     if (!response.ok) {

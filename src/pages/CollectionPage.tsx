@@ -83,7 +83,16 @@ export const CollectionPage = () => {
   }, []);
 
   // Display all products from the products.ts file, excluding coming soon products
-  const displayedProducts = products.filter(product => !product.comingSoon);
+  // Remove duplicates by using a Map with product.id as key
+  const displayedProducts = React.useMemo(() => {
+    const productMap = new Map<string, Product>();
+    products.forEach(product => {
+      if (!product.comingSoon && !productMap.has(product.id)) {
+        productMap.set(product.id, product);
+      }
+    });
+    return Array.from(productMap.values());
+  }, []);
 
   return (
     <div className="min-h-screen bg-white" style={{ scrollBehavior: 'smooth' }}>
@@ -1831,7 +1840,7 @@ const ElegantProductGrid = ({
   displayedProducts: Product[];
   navigate: (path: string) => void;
 }) => {
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   const handleAddToCart = (product: {
     id: string;
@@ -1958,7 +1967,7 @@ const ElegantProductGrid = ({
         >
           {displayedProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={`${product.id}-${index}`}
               className="group cursor-pointer"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
