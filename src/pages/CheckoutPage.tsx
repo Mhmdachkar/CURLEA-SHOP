@@ -89,7 +89,8 @@ export default function CheckoutPage() {
             case 'city':
                 return value.trim().length < 2 ? 'City is required' : '';
             case 'zipCode':
-                return value.trim().length < 3 ? 'Zip code is required' : '';
+                // ZIP code is optional - no validation required
+                return '';
             case 'country':
                 // Country is always Lebanon, no validation needed
                 return '';
@@ -143,6 +144,8 @@ export default function CheckoutPage() {
         Object.keys(formData).forEach(key => {
             // Skip country validation (always Lebanon)
             if (key === 'country') return;
+            // Skip zipCode validation (optional field)
+            if (key === 'zipCode') return;
 
             const error = validateField(key, formData[key as keyof typeof formData]);
             if (error) newErrors[key] = error;
@@ -431,7 +434,11 @@ export default function CheckoutPage() {
     };
 
     const isFormValid = paymentMethod === 'cod'
-        ? Object.keys(formData).every(key => formData[key as keyof typeof formData].trim() !== '') && Object.keys(errors).length === 0
+        ? Object.keys(formData).every(key => {
+            // Skip zipCode (optional) and country (always set to Lebanon)
+            if (key === 'zipCode' || key === 'country') return true;
+            return formData[key as keyof typeof formData].trim() !== '';
+        }) && Object.keys(errors).length === 0
         : paymentMethod === 'stripe';
 
     return (
@@ -733,14 +740,14 @@ export default function CheckoutPage() {
 
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-700 mb-1.5" style={typography}>
-                                                        ZIP
+                                                        ZIP <span className="text-gray-400 font-normal">(Optional)</span>
                                                     </label>
                                                     <input
                                                         type="text"
                                                         value={formData.zipCode}
                                                         onChange={(e) => handleInputChange('zipCode', e.target.value)}
                                                         onBlur={() => handleBlur('zipCode')}
-                                                        placeholder="1107"
+                                                        placeholder="1107 (Optional)"
                                                         className={`w-full px-3 py-2 text-sm rounded-sm border transition-all focus:outline-none focus:ring-2 ${errors.zipCode
                                                             ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
                                                             : 'border-gray-200 focus:border-gray-900 focus:ring-gray-900/10'
