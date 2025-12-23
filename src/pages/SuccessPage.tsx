@@ -82,7 +82,7 @@ export default function SuccessPage() {
                 customer_email: order.customerEmail,
                 shipping_method: 'standard',
                 status: 'completed',
-                shipping_total: order.deliveryFee || 4.00,
+                shipping_total: 4.00, // $4 delivery fee for all orders
                 discount_total: order.discountAmount || 0,
                 total_value: order.total,
                 payment_method: 'stripe',
@@ -152,9 +152,9 @@ export default function SuccessPage() {
               customerEmail: order.customerEmail,
               delivery: order.delivery,
               cart: order.cart,
-              deliveryFee: order.deliveryFee || 4.00, // $4 delivery fee for Stripe payments
+              deliveryFee: 4.00, // $4 delivery fee for all orders
               subtotal: order.subtotal,
-              discountAmount: order.discountAmount || order.stripeDiscount || 0,
+              discountAmount: order.discountAmount || 0,
               total: order.total,
             }),
           });

@@ -4,6 +4,7 @@
 // - Responds 200 for supported events so Stripe marks delivery successful
 
 const Stripe = require('stripe');
+const { createClient } = require('@supabase/supabase-js');
 
 // Node.js 18+ has native fetch support (Netlify Functions use Node 18+)
 
@@ -69,7 +70,7 @@ exports.handler = async (event) => {
 
         let subtotal = 0;
         let discountAmount = 0;
-        let deliveryFee = 0.00; // No delivery fee for Stripe payments
+        let deliveryFee = 4.00; // $4 delivery fee for all orders
         const cart = [];
 
         for (const item of lineItems.data) {
@@ -166,6 +167,93 @@ exports.handler = async (event) => {
           discountAmount,
           total,
         };
+
+        // Deduct inventory for Stripe orders
+        try {
+          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          
+          if (supabaseUrl && supabaseServiceKey) {
+            const supabase = createClient(supabaseUrl, supabaseServiceKey);
+            
+            console.log('[Stripe Webhook] Deducting inventory for order:', orderNumber);
+            
+            // Deduct inventory for each cart item
+            for (const item of cart) {
+              try {
+                // Extract size and color from item
+                const size = item.size || 'Standard';
+                const color = item.color || null;
+                
+                // Find variant
+                let query = supabase
+                  .from('product_variants')
+                  .select('id, stock_quantity, available_quantity, variant_name')
+                  .eq('product_id', item.product_id)
+                  .eq('size', size)
+                  .eq('is_active', true);
+                
+                if (color) {
+                  query = query.eq('color', color);
+                } else {
+                  query = query.is('color', null);
+                }
+                
+                const { data: variant, error: fetchError } = await query.limit(1).maybeSingle();
+                
+                if (fetchError || !variant) {
+                  console.warn(`[Stripe Webhook] Variant not found for ${item.product_id}, size: ${size}, color: ${color}`);
+                  continue;
+                }
+                
+                // Check stock
+                if (variant.available_quantity < item.quantity) {
+                  console.warn(`[Stripe Webhook] Insufficient stock for ${variant.variant_name}`);
+                  continue;
+                }
+                
+                // Deduct stock
+                const { error: updateError } = await supabase
+                  .from('product_variants')
+                  .update({
+                    stock_quantity: variant.stock_quantity - item.quantity,
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq('id', variant.id);
+                
+                if (updateError) {
+                  console.error(`[Stripe Webhook] Error updating stock:`, updateError);
+                  continue;
+                }
+                
+                // Log inventory movement
+                try {
+                  await supabase.from('inventory_movements').insert({
+                    variant_id: variant.id,
+                    movement_type: 'sale',
+                    quantity: -item.quantity,
+                    previous_stock: variant.stock_quantity,
+                    new_stock: variant.stock_quantity - item.quantity,
+                    order_id: orderNumber,
+                    notes: `Automatic deduction from Stripe order ${orderNumber}`,
+                    created_by: 'system',
+                  });
+                } catch (logError) {
+                  console.warn('[Stripe Webhook] Failed to log inventory movement (non-critical)');
+                }
+                
+                console.log(`[Stripe Webhook] ✅ Deducted ${item.quantity} units of ${variant.variant_name}`);
+                
+              } catch (itemError) {
+                console.error(`[Stripe Webhook] Error processing item:`, itemError);
+                // Continue with other items
+              }
+            }
+          }
+        } catch (inventoryError) {
+          console.error('[Stripe Webhook] Error deducting inventory (non-blocking):', inventoryError);
+          // Don't fail the webhook - inventory can be adjusted manually
+        }
 
         // Update Supabase orders directly
         try {
@@ -286,9 +374,145 @@ exports.handler = async (event) => {
         }
         break;
       }
+      
+      case 'checkout.session.expired': {
+        // Handle expired checkout sessions - cancel pending orders
+        const session = stripeEvent.data.object;
+        const orderNumber = session.metadata?.order_number || `STRIPE-${session.id}`;
+        
+        console.log('[Stripe Webhook] Checkout session expired:', orderNumber);
+        
+        try {
+          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          
+          if (supabaseUrl && supabaseServiceKey) {
+            // Update analytics orders table
+            await fetch(`${supabaseUrl}/rest/v1/orders?order_id=eq.${encodeURIComponent(orderNumber)}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseServiceKey,
+                'Authorization': `Bearer ${supabaseServiceKey}`,
+              },
+              body: JSON.stringify({
+                status: 'cancelled',
+                fulfillment_status: 'cancelled',
+                updated_at: new Date().toISOString(),
+              }),
+            });
+            
+            // Update public orders table
+            await fetch(`${supabaseUrl}/rest/v1/orders?stripe_session_id=eq.${session.id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseServiceKey,
+                'Authorization': `Bearer ${supabaseServiceKey}`,
+              },
+              body: JSON.stringify({
+                status: 'cancelled',
+                updated_at: new Date().toISOString(),
+              }),
+            });
+            
+            console.log('[Stripe Webhook] Order cancelled due to session expiry');
+          }
+        } catch (err) {
+          console.error('[Stripe Webhook] Error cancelling expired order:', err);
+        }
+        break;
+      }
+      
+      case 'payment_intent.payment_failed': {
+        // Handle failed payments
+        const paymentIntent = stripeEvent.data.object;
+        const orderNumber = paymentIntent.metadata?.order_number;
+        
+        if (orderNumber) {
+          console.log('[Stripe Webhook] Payment failed for order:', orderNumber);
+          
+          try {
+            const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+            const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+            
+            if (supabaseUrl && supabaseServiceKey) {
+              // Update analytics orders table
+              await fetch(`${supabaseUrl}/rest/v1/orders?order_id=eq.${encodeURIComponent(orderNumber)}`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': supabaseServiceKey,
+                  'Authorization': `Bearer ${supabaseServiceKey}`,
+                },
+                body: JSON.stringify({
+                  status: 'failed',
+                  fulfillment_status: 'cancelled',
+                  updated_at: new Date().toISOString(),
+                }),
+              });
+              
+              console.log('[Stripe Webhook] Order marked as failed');
+            }
+          } catch (err) {
+            console.error('[Stripe Webhook] Error marking order as failed:', err);
+          }
+        }
+        break;
+      }
+      
+      case 'charge.refunded': {
+        // Handle refunds - restore inventory
+        const charge = stripeEvent.data.object;
+        const paymentIntentId = charge.payment_intent;
+        
+        console.log('[Stripe Webhook] Refund processed for payment intent:', paymentIntentId);
+        
+        try {
+          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          
+          if (supabaseUrl && supabaseServiceKey) {
+            const supabase = createClient(supabaseUrl, supabaseServiceKey);
+            
+            // Find order by payment intent
+            const { data: orders } = await supabase
+              .from('orders')
+              .select('order_number, status')
+              .eq('stripe_payment_intent_id', paymentIntentId)
+              .limit(1);
+            
+            if (orders && orders.length > 0) {
+              const order = orders[0];
+              const orderNumber = order.order_number;
+              
+              // Update order status to refunded
+              await fetch(`${supabaseUrl}/rest/v1/orders?stripe_payment_intent_id=eq.${paymentIntentId}`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': supabaseServiceKey,
+                  'Authorization': `Bearer ${supabaseServiceKey}`,
+                },
+                body: JSON.stringify({
+                  status: 'refunded',
+                  updated_at: new Date().toISOString(),
+                }),
+              });
+              
+              // TODO: Restore inventory for refunded items
+              // This would require fetching the order items and calling restoreInventoryForOrder
+              console.log('[Stripe Webhook] Order marked as refunded:', orderNumber);
+              console.log('[Stripe Webhook] ⚠️ Manual inventory restoration may be required');
+            }
+          }
+        } catch (err) {
+          console.error('[Stripe Webhook] Error processing refund:', err);
+        }
+        break;
+      }
+      
       case 'payment_intent.succeeded':
-      case 'payment_intent.payment_failed':
-      case 'checkout.session.expired':
       default: {
         // No-op for now; we acknowledge receipt to stop retries
       }

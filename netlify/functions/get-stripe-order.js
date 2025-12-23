@@ -79,14 +79,14 @@ exports.handler = async (event, context) => {
         country: session.shipping_details?.address?.country || 'N/A',
       },
       cart: [],
-      deliveryFee: 4.00, // Default delivery fee
-      stripeDiscount: discountAmount || 0,
+      deliveryFee: 4.00, // $4 delivery fee for all orders
+      stripeDiscount: 0, // No Stripe discount
     };
 
-    // Format line items (excluding discount line items)
+    // Format line items (excluding delivery fee line items)
     if (session.line_items?.data) {
       let calculatedSubtotal = 0;
-      let extractedDeliveryFee = 0.00; // No delivery fee for Stripe payments
+      let extractedDeliveryFee = 4.00; // $4 delivery fee
       
       session.line_items.data.forEach((item) => {
         // Skip discount line items (negative amounts)

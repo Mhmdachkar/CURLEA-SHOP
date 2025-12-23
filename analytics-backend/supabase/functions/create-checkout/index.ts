@@ -102,21 +102,21 @@ serve(async (req) => {
       return Number.isFinite(numeric) ? numeric : 0;
     };
 
-    // Step 6: Calculate subtotal and apply 5% discount for Stripe
+    // Step 6: Calculate subtotal and delivery fee
     const subtotal = cartItems.reduce((total: number, item: any) => {
       const itemPrice = parsePriceToNumber(item.price);
       return total + (itemPrice * item.quantity);
     }, 0);
     
-    // Apply 5% discount for Stripe payments
-    const discountAmount = subtotal * 0.05;
-    const deliveryFee = 0.00; // No delivery fee for Stripe payments
+    // No discount for Stripe payments - removed 5% discount
+    const discountAmount = 0;
+    const deliveryFee = 4.00; // $4 delivery fee for all payment methods
     const totalAmount = subtotal - discountAmount + deliveryFee;
 
     console.log('Subtotal:', subtotal);
-    console.log('Stripe discount (5%):', discountAmount);
+    console.log('Discount amount:', discountAmount);
     console.log('Delivery fee:', deliveryFee);
-    console.log('Total amount after discount and delivery:', totalAmount);
+    console.log('Total amount:', totalAmount);
 
     // Step 7: Create absolute image URLs
     const getBaseOrigin = (): string | null => {
@@ -187,23 +187,20 @@ serve(async (req) => {
     
     console.log('Created line items with images:', lineItems.length, 'items');
 
-    // Step 8.5: Add discount line item (5% off)
-    if (discountAmount > 0) {
+    // Step 8.5: Add delivery fee line item ($4 for all orders)
+    if (deliveryFee > 0) {
       lineItems.push({
         price_data: {
           currency: String(currency || 'USD').toLowerCase(),
           product_data: {
-            name: 'Stripe Payment Discount (5%)',
+            name: 'Delivery Fee',
           },
-          unit_amount: -Math.round(discountAmount * 100), // Negative amount for discount
+          unit_amount: Math.round(deliveryFee * 100), // Convert to cents
         },
         quantity: 1,
       });
-      console.log('Added 5% discount line item:', discountAmount);
+      console.log('Added delivery fee line item:', deliveryFee);
     }
-
-    // Step 8.6: Delivery fee removed - no delivery fee for Stripe payments
-    // (Delivery fee line item removed)
 
     // Step 9: Generate unique order ID
     const generateUniqueOrderId = () => {
@@ -265,7 +262,7 @@ serve(async (req) => {
       customer_email: null, // Will be filled by Stripe after payment
       subtotal: subtotal,
       discount_total: discountAmount,
-      shipping_total: 0, // No delivery fee for Stripe payments
+      shipping_total: deliveryFee, // $4 delivery fee
       tax_total: 0,
       total_value: totalAmount,
       currency: currency,

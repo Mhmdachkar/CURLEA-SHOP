@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { getCampaignAttribution } from '@/utils/campaignTracking';
 import { sanitizeInput, sanitizeEmail, sanitizePhone, sanitizeAddress, escapeHtml } from '@/utils/securityEnhanced';
+import { deductInventoryForOrder } from '@/services/inventoryDeduction';
 import '../styles/checkout-styles.css';
 
 type PaymentMethod = 'stripe' | 'cod' | null;
@@ -32,6 +33,7 @@ export default function CheckoutPage() {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
 
     const cart = useMemo(() => state.items.map((item: any) => {
         const priceNum = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
@@ -57,13 +59,11 @@ export default function CheckoutPage() {
         [cart]
     );
 
-    // 5% discount for Stripe payments
-    const stripeDiscount = useMemo(() => {
-        return paymentMethod === 'stripe' ? subtotal * 0.05 : 0;
-    }, [paymentMethod, subtotal]);
+    // No discount for Stripe payments anymore - removed 5% discount
+    const stripeDiscount = 0;
 
-    // Delivery fee: $0 for Stripe payments (free delivery), $4 for COD
-    const deliveryFee = paymentMethod === 'stripe' ? 0 : 4;
+    // Delivery fee: $4 for all payment methods
+    const deliveryFee = 4;
     const total = subtotal + deliveryFee - stripeDiscount - promoDiscount;
     const savings = useMemo(() => {
         return cart.reduce((sum, item) => {
@@ -177,6 +177,16 @@ export default function CheckoutPage() {
 
     const handleCODSubmit = async () => {
         if (!validateForm()) return;
+        
+        // Prevent duplicate submissions
+        if (submittedOrderId) {
+            toast.error('Order already submitted. Redirecting...');
+            setTimeout(() => {
+                window.location.href = '/success?order_id=' + submittedOrderId;
+            }, 1000);
+            return;
+        }
+        
         setIsSubmitting(true);
 
         try {
@@ -191,8 +201,13 @@ export default function CheckoutPage() {
                 country: 'Lebanon'
             };
 
-            // Generate unique order ID
+            // Generate unique order ID with idempotency
             const orderId = `COD-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+            
+            // Store order ID to prevent duplicate submissions
+            setSubmittedOrderId(orderId);
+            sessionStorage.setItem('last_order_id', orderId);
+            sessionStorage.setItem('last_order_timestamp', Date.now().toString());
 
             // Format items for analytics
             const items = state.items.map(item => {
@@ -318,6 +333,36 @@ export default function CheckoutPage() {
                 console.error('[Checkout] Error details:', err.message, err.stack);
             }
 
+            // Deduct inventory for COD orders
+            try {
+                console.log('[Checkout] Deducting inventory for COD order:', orderId);
+                
+                const inventoryItems = cart.map((item) => ({
+                    product_id: item.id,
+                    product_name: item.name,
+                    quantity: item.quantity,
+                    size: item.selectedSize,
+                    color: item.selectedColor,
+                    price: parsePriceToNumber(item.price),
+                    metadata: {
+                        selectedSize: item.selectedSize,
+                        selectedColor: item.selectedColor,
+                    },
+                }));
+                
+                const inventoryResult = await deductInventoryForOrder(orderId, inventoryItems);
+                
+                if (inventoryResult.success) {
+                    console.log('[Checkout] ✅ Inventory deducted successfully:', inventoryResult.deductedItems.length, 'items');
+                } else {
+                    console.warn('[Checkout] ⚠️ Some inventory deductions failed:', inventoryResult.failedItems);
+                    // Don't block order completion - log for manual review
+                }
+            } catch (inventoryError: any) {
+                console.error('[Checkout] Error deducting inventory (non-blocking):', inventoryError);
+                // Don't block order completion - inventory can be adjusted manually
+            }
+
             // Clear cart immediately
             clearCart();
 
@@ -341,6 +386,22 @@ export default function CheckoutPage() {
         if (state.items.length === 0) {
             toast.error('Your cart is empty');
             return;
+        }
+        
+        // Check for recent order submission (within last 5 minutes)
+        const lastOrderTimestamp = sessionStorage.getItem('last_order_timestamp');
+        if (lastOrderTimestamp) {
+            const timeSinceLastOrder = Date.now() - parseInt(lastOrderTimestamp);
+            if (timeSinceLastOrder < 5 * 60 * 1000) { // 5 minutes
+                const lastOrderId = sessionStorage.getItem('last_order_id');
+                toast.error('You recently placed an order. Please wait before placing another.');
+                if (lastOrderId) {
+                    setTimeout(() => {
+                        window.location.href = '/success?order_id=' + lastOrderId;
+                    }, 2000);
+                }
+                return;
+            }
         }
 
         // Track checkout start event
@@ -459,9 +520,6 @@ export default function CheckoutPage() {
                                             </p>
                                             <p className="text-xs text-gray-500" style={typography}>
                                                 Secure card payment • PCI compliant
-                                            </p>
-                                            <p className="text-xs font-semibold text-green-600 mt-1" style={typography}>
-                                                🎉 Get 5% discount on total price!
                                             </p>
                                         </div>
                                     </div>
@@ -810,19 +868,6 @@ export default function CheckoutPage() {
                                     <span className="text-gray-600 flex-shrink-0" style={typography}>Subtotal</span>
                                     <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>${subtotal.toFixed(2)}</span>
                                 </motion.div>
-                                {stripeDiscount > 0 && (
-                                    <motion.div
-                                        className="flex justify-between items-center gap-2 text-sm"
-                                        whileHover={{ x: 2, transition: { duration: 0.2 } }}
-                                        initial={{ opacity: 0, y: -5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                    >
-                                        <span className="text-green-600 font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>Stripe Discount (5%)</span>
-                                        <span className="font-semibold text-green-600 flex-shrink-0 whitespace-nowrap" style={typography}>
-                                            -${stripeDiscount.toFixed(2)}
-                                        </span>
-                                    </motion.div>
-                                )}
                                 {promoDiscount > 0 && (
                                     <motion.div
                                         className="flex justify-between items-center gap-2 text-sm"
@@ -836,17 +881,15 @@ export default function CheckoutPage() {
                                         </span>
                                     </motion.div>
                                 )}
-                                {deliveryFee > 0 && (
-                                    <motion.div
-                                        className="flex justify-between items-center gap-2 text-sm"
-                                        whileHover={{ x: 2, transition: { duration: 0.2 } }}
-                                    >
-                                        <span className="text-gray-600 flex-shrink-0" style={typography}>Delivery</span>
-                                        <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>
-                                            ${deliveryFee.toFixed(2)}
-                                        </span>
-                                    </motion.div>
-                                )}
+                                <motion.div
+                                    className="flex justify-between items-center gap-2 text-sm"
+                                    whileHover={{ x: 2, transition: { duration: 0.2 } }}
+                                >
+                                    <span className="text-gray-600 flex-shrink-0" style={typography}>Delivery</span>
+                                    <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>
+                                        ${deliveryFee.toFixed(2)}
+                                    </span>
+                                </motion.div>
                                 <motion.div
                                     className="flex justify-between items-center gap-2 pt-3 border-t border-gray-200"
                                     whileHover={{
