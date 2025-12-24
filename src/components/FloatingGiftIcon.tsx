@@ -115,8 +115,12 @@ export const FloatingGiftIcon = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(edgePositions[0]);
 
-  // Hide on checkout and success pages
-  const shouldHide = location.pathname === '/checkout' || location.pathname === '/success';
+  // Hide on checkout, success, and analytics pages
+  const shouldHide = location.pathname === '/checkout' || 
+                     location.pathname === '/success' || 
+                     location.pathname === '/shopify-analytics' || 
+                     location.pathname === '/analytics' ||
+                     location.pathname === '/shopify-home-dashboard';
 
   const handleClick = () => {
     // Clear secure sessionStorage to show the modal again

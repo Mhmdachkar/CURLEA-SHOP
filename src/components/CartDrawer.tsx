@@ -617,9 +617,9 @@ export const CartDrawer = () => {
       const itemKey = `${discountedItem.id}-${discountedItem.selectedColor || 'default'}-${discountedItem.selectedSize || 'default'}`;
       discountedIds.add(itemKey);
       freeUnitsInfo.push({
-        itemKey,
-        unitIndex: thirdUnitIndex,
-        item: discountedItem
+          itemKey, 
+          unitIndex: thirdUnitIndex,
+          item: discountedItem
       });
 
       return { 

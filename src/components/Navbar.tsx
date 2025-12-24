@@ -517,6 +517,15 @@ export const Navbar = () => {
 
   // Check if we're on a product detail page
   const isProductDetailPage = location.pathname.startsWith('/product/');
+  
+  // Hide navbar on analytics pages (they have their own header)
+  const isAnalyticsPage = location.pathname === '/shopify-analytics' || 
+                          location.pathname === '/analytics' ||
+                          location.pathname === '/shopify-home-dashboard';
+  
+  if (isAnalyticsPage) {
+    return null; // Don't render navbar on analytics pages
+  }
 
   // Scroll direction and opacity detection
   useEffect(() => {

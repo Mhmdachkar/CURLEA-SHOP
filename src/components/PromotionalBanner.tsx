@@ -43,8 +43,11 @@ const PromotionalBanner = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Hide banner on checkout page
-  if (location.pathname === '/checkout') {
+  // Hide banner on checkout and analytics pages
+  if (location.pathname === '/checkout' || 
+      location.pathname === '/shopify-analytics' || 
+      location.pathname === '/analytics' ||
+      location.pathname === '/shopify-home-dashboard') {
     return null;
   }
 

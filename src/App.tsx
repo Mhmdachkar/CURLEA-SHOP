@@ -1,7 +1,7 @@
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { RealtimeProvider } from "@/contexts/RealtimeContext";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -27,7 +27,7 @@ const CollectionPage = lazy(() => import("./pages/CollectionPage").then(m => ({ 
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const SuccessPage = lazy(() => import("./pages/SuccessPage"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage").then(m => ({ default: m.CategoryPage })));
-const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+const ShopifyHomeDashboard = lazy(() => import("./pages/ShopifyHomeDashboard"));
 const ProductVerificationPanel = lazy(() => import("./components/ProductVerificationPanel").then(m => ({ default: m.ProductVerificationPanel })));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -112,14 +112,18 @@ const App = () => {
                 <WhatsAppFloatingButton />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    <Route path="/" element={<Index />} />
+                    {/* Redirect root to Shopify Home Dashboard */}
+                    <Route path="/" element={<Navigate to="/shopify-home-dashboard" replace />} />
                     <Route path="/shop" element={<CollectionPage />} />
                     <Route path="/collection" element={<CollectionPage />} />
                     <Route path="/category/:category" element={<CategoryPage />} />
                     <Route path="/product/:id" element={<ProductDetailPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/success" element={<SuccessPage />} />
-                    <Route path="/analytics" element={<AnalyticsDashboard />} />
+                    {/* Analytics Dashboard - Redirect old routes to new dashboard */}
+                    <Route path="/analytics" element={<Navigate to="/shopify-home-dashboard" replace />} />
+                    <Route path="/shopify-analytics" element={<Navigate to="/shopify-home-dashboard" replace />} />
+                    <Route path="/shopify-home-dashboard" element={<ShopifyHomeDashboard />} />
                     <Route path="/verify-products" element={<ProductVerificationPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
