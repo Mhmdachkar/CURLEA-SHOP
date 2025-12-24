@@ -75,9 +75,9 @@ function getDateRange(days: number = 30): { start: string; end: string } {
 /**
  * Fetch Orders Data
  */
-export async function fetchOrdersData(limit: number = 50): Promise<OrderRow[]> {
+export async function fetchOrdersData(limit: number = 50, days: number = 30): Promise<OrderRow[]> {
   try {
-    const { start, end } = getDateRange(30);
+    const { start, end } = getDateRange(days);
     
     // Try to fetch from public.orders (Stripe orders) first
     const { data: stripeOrders, error: stripeError } = await supabase
@@ -160,9 +160,9 @@ export async function fetchOrdersData(limit: number = 50): Promise<OrderRow[]> {
 /**
  * Fetch Customers Data (aggregated from orders)
  */
-export async function fetchCustomersData(limit: number = 50): Promise<CustomerRow[]> {
+export async function fetchCustomersData(limit: number = 50, days: number = 30): Promise<CustomerRow[]> {
   try {
-    const { start, end } = getDateRange(30);
+    const { start, end } = getDateRange(days);
     
     // Get all completed orders
     const { data: orders, error } = await supabase
@@ -275,9 +275,9 @@ export async function fetchCustomersData(limit: number = 50): Promise<CustomerRo
  * Fetch Visited Links Data (from page_views)
  * Shows pages visited and where visitors came from (referrer)
  */
-export async function fetchVisitedLinksData(limit: number = 50): Promise<VisitedLinkRow[]> {
+export async function fetchVisitedLinksData(limit: number = 50, days: number = 30): Promise<VisitedLinkRow[]> {
   try {
-    const { start, end } = getDateRange(30);
+    const { start, end } = getDateRange(days);
     
     // Query page_views with referrer information
     // Note: page_views table has 'title' column, not 'page_title'

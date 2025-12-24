@@ -25,7 +25,7 @@ interface UseDashboardTablesReturn {
   error: string | null;
 }
 
-export function useDashboardTables(): UseDashboardTablesReturn {
+export function useDashboardTables(days: number = 30): UseDashboardTablesReturn {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [customers, setCustomers] = useState<CustomerRow[]>([]);
   const [visitedLinks, setVisitedLinks] = useState<VisitedLinkRow[]>([]);
@@ -41,9 +41,9 @@ export function useDashboardTables(): UseDashboardTablesReturn {
       try {
         // Fetch all data in parallel
         const [ordersData, customersData, linksData, inventoryData] = await Promise.all([
-          fetchOrdersData(50),
-          fetchCustomersData(50),
-          fetchVisitedLinksData(50),
+          fetchOrdersData(50, days),
+          fetchCustomersData(50, days),
+          fetchVisitedLinksData(50, days),
           fetchInventoryData(),
         ]);
 
@@ -60,7 +60,7 @@ export function useDashboardTables(): UseDashboardTablesReturn {
     }
 
     loadData();
-  }, []);
+  }, [days]);
 
   return {
     orders,
