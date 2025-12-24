@@ -22,6 +22,8 @@ import { OrdersTable } from './OrdersTable';
 import { CustomersTable } from './CustomersTable';
 import { VisitedLinksTable } from './VisitedLinksTable';
 import { InventoryTable } from './InventoryTable';
+import { CartEventsTable } from './CartEventsTable';
+import { VisitsTable } from './VisitsTable';
 
 type MetricKey = 'sessions' | 'total_sales' | 'total_orders' | 'conversion_rate';
 
@@ -138,7 +140,7 @@ export const ShopifyHomeDashboardWidget: React.FC = () => {
 
   const selectedDays = getDaysFromRange(selectedDateRange);
   const { data, loading, error } = useShopifyHomeDashboard(selectedDays);
-  const { orders, customers, visitedLinks, inventory, loading: tablesLoading } = useDashboardTables(selectedDays);
+  const { orders, customers, visitedLinks, inventory, cartEvents, visits, loading: tablesLoading } = useDashboardTables(selectedDays);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -524,6 +526,16 @@ export const ShopifyHomeDashboardWidget: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <VisitedLinksTable links={visitedLinks} loading={tablesLoading} />
           <InventoryTable inventory={inventory} loading={tablesLoading} />
+        </div>
+
+        {/* Cart Events Row - Full Width */}
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          <CartEventsTable cartEvents={cartEvents} loading={tablesLoading} />
+        </div>
+
+        {/* Visits Row - Full Width */}
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          <VisitsTable visits={visits} loading={tablesLoading} />
         </div>
       </div>
     </div>

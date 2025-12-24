@@ -58,6 +58,63 @@ export interface InventoryRow {
   is_active: boolean;
 }
 
+export interface CartEventRow {
+  id: string;
+  session_id: string;
+  visit_id: string | null;
+  event_type: 'add' | 'remove' | 'update' | 'view' | 'checkout_start' | 'checkout_complete' | 'abandoned';
+  product_id: string | null;
+  external_product_id: string | null;
+  product_title: string | null;
+  variant_id: string | null;
+  variant_title: string | null;
+  variant_size: string | null;
+  variant_color: string | null;
+  variant_sku: string | null;
+  variant_stock_quantity: number | null;
+  variant_available_quantity: number | null;
+  variant_price: number | null;
+  quantity: number;
+  price: number | null;
+  total_value: number | null;
+  cart_total: number | null;
+  discount_code: string | null;
+  discount_amount: number | null;
+  created_at: string;
+  // Aggregated stats
+  view_count: number;
+  add_to_cart_count: number;
+  unique_sessions: number;
+}
+
+export interface VisitRow {
+  id: string;
+  session_id: string;
+  ip_address: string | null;
+  device: string | null;
+  browser: string | null;
+  os: string | null;
+  country: string | null;
+  city: string | null;
+  region: string | null;
+  referrer: string | null;
+  landing_page: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  is_mobile: boolean;
+  is_tablet: boolean;
+  is_desktop: boolean;
+  screen_width: number | null;
+  screen_height: number | null;
+  language: string | null;
+  timezone: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /**
  * Get date range for queries (default: last 30 days)
  */
@@ -416,6 +473,235 @@ export async function fetchInventoryData(): Promise<InventoryRow[]> {
     return inventory.sort((a, b) => a.available_quantity - b.available_quantity);
   } catch (error) {
     console.error('Error fetching inventory:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch Cart Events Data (from cart_events and product_variants tables)
+ * Shows products with most views, clicks, and cart interactions
+ */
+export async function fetchCartEventsData(limit: number = 50, days: number = 30): Promise<CartEventRow[]> {
+  try {
+    const { start, end } = getDateRange(days);
+    
+    // Fetch cart events with all columns
+    const { data: cartEvents, error: cartEventsError } = await supabase
+      .from('cart_events')
+      .select('*')
+      .gte('created_at', `${start}T00:00:00`)
+      .lte('created_at', `${end}T23:59:59`)
+      .order('created_at', { ascending: false });
+
+    if (cartEventsError) {
+      console.error('Error fetching cart events:', cartEventsError);
+      return [];
+    }
+
+    if (!cartEvents || cartEvents.length === 0) {
+      console.log('No cart events found in database');
+      return [];
+    }
+
+    // Get unique variant IDs to fetch variant details
+    const variantIds = [...new Set(cartEvents
+      .map(ce => ce.variant_id)
+      .filter((id): id is string => id !== null && id !== undefined)
+    )];
+
+    // Fetch product variants data
+    let variantMap = new Map<string, any>();
+    if (variantIds.length > 0) {
+      const { data: variants, error: variantsError } = await supabase
+        .from('product_variants')
+        .select('*')
+        .in('id', variantIds);
+
+      if (!variantsError && variants) {
+        variants.forEach(variant => {
+          variantMap.set(variant.id, variant);
+        });
+      }
+    }
+
+    // Aggregate cart events by product/variant
+    const productMap = new Map<string, {
+      product_id: string | null;
+      external_product_id: string | null;
+      product_title: string | null;
+      variant_id: string | null;
+      variant_title: string | null;
+      variant_size: string | null;
+      variant_color: string | null;
+      variant_sku: string | null;
+      variant_stock_quantity: number | null;
+      variant_available_quantity: number | null;
+      variant_price: number | null;
+      view_count: number;
+      add_to_cart_count: number;
+      unique_sessions: Set<string>;
+      last_event_at: string;
+      total_value: number;
+    }>();
+
+    cartEvents.forEach(event => {
+      const key = event.variant_id || event.external_product_id || event.product_id || 'unknown';
+      
+      if (!productMap.has(key)) {
+        const variant = event.variant_id ? variantMap.get(event.variant_id) : null;
+        
+        productMap.set(key, {
+          product_id: event.product_id || null,
+          external_product_id: event.external_product_id || null,
+          product_title: event.product_title || null,
+          variant_id: event.variant_id || null,
+          variant_title: event.variant_title || null,
+          variant_size: variant?.size || null,
+          variant_color: variant?.color || null,
+          variant_sku: variant?.sku || null,
+          variant_stock_quantity: variant?.stock_quantity || null,
+          variant_available_quantity: variant?.available_quantity || null,
+          variant_price: variant?.price || event.price || null,
+          view_count: 0,
+          add_to_cart_count: 0,
+          unique_sessions: new Set(),
+          last_event_at: event.created_at,
+          total_value: 0,
+        });
+      }
+
+      const entry = productMap.get(key)!;
+      entry.unique_sessions.add(event.session_id);
+
+      // Count views
+      if (event.event_type === 'view') {
+        entry.view_count += 1;
+      }
+
+      // Count add to cart
+      if (event.event_type === 'add') {
+        entry.add_to_cart_count += 1;
+        entry.total_value += (event.total_value || event.price || 0) * (event.quantity || 1);
+      }
+
+      // Update last event time
+      if (new Date(event.created_at) > new Date(entry.last_event_at)) {
+        entry.last_event_at = event.created_at;
+      }
+    });
+
+    // Convert to array and create CartEventRow objects
+    const cartEventRows: CartEventRow[] = Array.from(productMap.values()).map((entry, index) => {
+      // Get the most recent event for this product/variant for full details
+      const recentEvent = cartEvents.find(ce => 
+        (ce.variant_id && ce.variant_id === entry.variant_id) ||
+        (ce.external_product_id && ce.external_product_id === entry.external_product_id) ||
+        (ce.product_id && ce.product_id === entry.product_id)
+      );
+
+      return {
+        id: entry.variant_id || entry.external_product_id || entry.product_id || `event-${index}`,
+        session_id: recentEvent?.session_id || '',
+        visit_id: recentEvent?.visit_id || null,
+        event_type: recentEvent?.event_type || 'view',
+        product_id: entry.product_id,
+        external_product_id: entry.external_product_id,
+        product_title: entry.product_title,
+        variant_id: entry.variant_id,
+        variant_title: entry.variant_title,
+        variant_size: entry.variant_size,
+        variant_color: entry.variant_color,
+        variant_sku: entry.variant_sku,
+        variant_stock_quantity: entry.variant_stock_quantity,
+        variant_available_quantity: entry.variant_available_quantity,
+        variant_price: entry.variant_price,
+        quantity: recentEvent?.quantity || 1,
+        price: entry.variant_price || recentEvent?.price || null,
+        total_value: entry.total_value || recentEvent?.total_value || null,
+        cart_total: recentEvent?.cart_total || null,
+        discount_code: recentEvent?.discount_code || null,
+        discount_amount: recentEvent?.discount_amount || null,
+        created_at: entry.last_event_at,
+        view_count: entry.view_count,
+        add_to_cart_count: entry.add_to_cart_count,
+        unique_sessions: entry.unique_sessions.size,
+      };
+    });
+
+    // Sort by view count (most viewed first), then by add to cart count
+    return cartEventRows
+      .sort((a, b) => {
+        if (b.view_count !== a.view_count) {
+          return b.view_count - a.view_count;
+        }
+        return b.add_to_cart_count - a.add_to_cart_count;
+      })
+      .slice(0, limit);
+  } catch (error) {
+    console.error('Error fetching cart events:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch Visits Data (from visits table)
+ * Shows all visitor information including device, location, and UTM parameters
+ */
+export async function fetchVisitsData(limit: number = 50, days: number = 30): Promise<VisitRow[]> {
+  try {
+    const { start, end } = getDateRange(days);
+    
+    // Fetch all visits with all columns
+    const { data: visits, error } = await supabase
+      .from('visits')
+      .select('*')
+      .gte('created_at', `${start}T00:00:00`)
+      .lte('created_at', `${end}T23:59:59`)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Error fetching visits:', error);
+      return [];
+    }
+
+    if (!visits || visits.length === 0) {
+      console.log('No visits found in database');
+      return [];
+    }
+
+    // Map visits data to VisitRow format
+    const visitRows: VisitRow[] = visits.map((visit: any) => ({
+      id: visit.id || '',
+      session_id: visit.session_id || '',
+      ip_address: visit.ip_address || null,
+      device: visit.device || null,
+      browser: visit.browser || null,
+      os: visit.os || null,
+      country: visit.country || null,
+      city: visit.city || null,
+      region: visit.region || null,
+      referrer: visit.referrer || null,
+      landing_page: visit.landing_page || null,
+      utm_source: visit.utm_source || null,
+      utm_medium: visit.utm_medium || null,
+      utm_campaign: visit.utm_campaign || null,
+      utm_term: visit.utm_term || null,
+      utm_content: visit.utm_content || null,
+      is_mobile: visit.is_mobile || false,
+      is_tablet: visit.is_tablet || false,
+      is_desktop: visit.is_desktop !== false, // Default to true if not set
+      screen_width: visit.screen_width || null,
+      screen_height: visit.screen_height || null,
+      language: visit.language || null,
+      timezone: visit.timezone || null,
+      created_at: visit.created_at || '',
+      updated_at: visit.updated_at || visit.created_at || '',
+    }));
+
+    return visitRows;
+  } catch (error) {
+    console.error('Error fetching visits:', error);
     return [];
   }
 }
