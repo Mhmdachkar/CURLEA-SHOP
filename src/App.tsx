@@ -112,8 +112,7 @@ const App = () => {
                 <WhatsAppFloatingButton />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* Redirect root to Shopify Home Dashboard */}
-                    <Route path="/" element={<Navigate to="/shopify-home-dashboard" replace />} />
+                    <Route path="/" element={<Index />} />
                     <Route path="/shop" element={<CollectionPage />} />
                     <Route path="/collection" element={<CollectionPage />} />
                     <Route path="/category/:category" element={<CategoryPage />} />
