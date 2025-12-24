@@ -24,6 +24,8 @@ import { VisitedLinksTable } from './VisitedLinksTable';
 import { InventoryTable } from './InventoryTable';
 import { CartEventsTable } from './CartEventsTable';
 import { VisitsTable } from './VisitsTable';
+import { SalesAnalyticsTable } from './SalesAnalyticsTable';
+import { useSalesAnalytics } from '@/hooks/useSalesAnalytics';
 
 type MetricKey = 'sessions' | 'total_sales' | 'total_orders' | 'conversion_rate';
 
@@ -41,6 +43,7 @@ const DATE_RANGE_OPTIONS: DateRangeOption[] = [
   { label: 'Last 30 days', value: 'last_30_days', days: 30 },
   { label: 'Last 90 days', value: 'last_90_days', days: 90 },
   { label: 'Last 365 days', value: 'last_365_days', days: 365 },
+  { label: 'All time', value: 'all_time', days: 3650 }, // 10 years
 ];
 
 // Channel options
@@ -141,6 +144,7 @@ export const ShopifyHomeDashboardWidget: React.FC = () => {
   const selectedDays = getDaysFromRange(selectedDateRange);
   const { data, loading, error } = useShopifyHomeDashboard(selectedDays);
   const { orders, customers, visitedLinks, inventory, cartEvents, visits, loading: tablesLoading } = useDashboardTables(selectedDays);
+  const { metrics: salesMetrics, topProducts, loading: salesLoading } = useSalesAnalytics(selectedDays);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -536,6 +540,15 @@ export const ShopifyHomeDashboardWidget: React.FC = () => {
         {/* Visits Row - Full Width */}
         <div className="grid grid-cols-1 gap-4 sm:gap-6">
           <VisitsTable visits={visits} loading={tablesLoading} />
+        </div>
+
+        {/* Sales Analytics Row - Full Width */}
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          <SalesAnalyticsTable 
+            metrics={salesMetrics} 
+            topProducts={topProducts} 
+            loading={salesLoading} 
+          />
         </div>
       </div>
     </div>

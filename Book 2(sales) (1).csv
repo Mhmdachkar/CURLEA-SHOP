@@ -1,0 +1,102 @@
+Date,Product,Color,Size,Quantity_sold,Selling_Price,Rvenue,Cost_per_unit,COGS,Profit,Key
+24-May,full sets,pink,large,1,24.99,24.99,7,7,17.99,full sets-pink-large
+24-May,full set,purple,large,1,24.99,24.99,7,7,17.99,full set-purple-large
+24-May,full set,purple,large,1,24.99,24.99,7,7,17.99,full set-purple-large
+5 of jul,single set,pink,jumbo,1,22.99,22.99,4,4,18.99,single set-pink-jumbo
+5 of jul,full set,pink,midi,1,20,20,3,3,17,full set-pink-midi
+6 of jul,single set,pink,large,1,22.99,22.99,4,4,18.99,single set-pink-large
+6 of jul,single set,pink,large,1,20,20,3,3,17,single set-pink-large
+6 of jul,single set,pink,jumbo,1,22.99,22.99,4,4,18.99,single set-pink-jumbo
+6 of jul,single set,purple,large,1,20,20,3,3,17,single set-purple-large
+9 of jun,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+9 of jun,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+9 of jun,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+11 of jul,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+12 of jul,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+13 of jul,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+17 of jul,full set,purple,large,1,19.99,19.99,4,4,15.99,full set-purple-large
+17 of jul,full set,brown,mini,1,19.99,19.99,4,4,15.99,full set-brown-mini
+17 of jul,full set,pink,large,1,19.99,19.99,4,4,15.99,full set-pink-large
+19 of jul,single set,pink,large,1,16.99,16.99,4,4,12.99,single set-pink-large
+19 of jul,full set,purple,large,1,19.99,19.99,4,4,15.99,full set-purple-large
+19 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+19 of jul,bow tie,.,.,1,11.99,11.99,5.53,5.53,6.46,bow tie-.-.
+19 of jul,single set,pink,mini/large,2,16.99,33.98,3.5,7,26.98,single set-pink-mini/large
+19 of jul,heat buns,purple,large,1,19.99,19.99,4,4,15.99,heat buns-purple-large
+19 of jul,heat buns,pink,large,1,19.99,19.99,4,4,15.99,heat buns-pink-large
+20 of jul,flat clips 9pcs,.,.,1,16.99,16.99,6.21,6.21,10.78,flat clips 9pcs-.-.
+20 of jul,flat clips 9pcs,.,.,1,16.99,16.99,6.21,6.21,10.78,flat clips 9pcs-.-.
+20 of jul,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+21 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+22 of jul,flat clips 9pcs,.,.,3,42.48,127.44,5.54,16.62,110.82,flat clips 9pcs-.-.
+22 of jul,single set,brown,large,1,16.99,16.99,4,4,12.99,single set-brown-large
+23 of jul,single and heat,purple,midi,2,36.98,73.96,3.5,7,66.96,single and heat-purple-midi
+23 of jul,heat buns,pink,large,1,19.99,19.99,4,4,15.99,heat buns-pink-large
+25 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+25 of jul,heat buns,brown,large,1,19.99,19.99,4,4,15.99,heat buns-brown-large
+26 of jul,bow tie 7pcs,.,.,1,11.99,11.99,6.53,6.53,5.46,bow tie 7pcs-.-.
+26 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+26 of jul,full set,purple,large,1,19.99,19.99,4,4,15.99,full set-purple-large
+26 of jul,heat buns,purple,large,1,19.99,19.99,4,4,15.99,heat buns-purple-large
+26 of jul,flat clips 9pcs,.,.,1,16.99,16.99,6.21,6.21,10.78,flat clips 9pcs-.-.
+26 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+27 of jul,heat buns,pink,large,1,19.99,19.99,4,4,15.99,heat buns-pink-large
+27 of jul,heat buns,purple,large,1,19.99,19.99,4,4,15.99,heat buns-purple-large
+27 of jul,single set,purple,large,1,16.99,16.99,4,4,12.99,single set-purple-large
+28 of jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+28 of jul,heat buns,purple,large,1,19.99,19.99,4,4,15.99,heat buns-purple-large
+29 of jul,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+29 of jul,heat buns,pink,large,1,19.99,19.99,4,4,15.99,heat buns-pink-large
+29 of jul,scrunchies,.,.,2,6.99,13.98,1.49,2.98,11,scrunchies-.-.
+29 of jul,scrunchies,.,.,3,3.5,10.5,1.49,4.47,6.03,scrunchies-.-.
+29 of jul,flat clips 5pcs,.,.,2,8.99,17.98,5.35,10.7,7.28,flat clips 5pcs-.-.
+30 of jul,full set,brown,large,1,19.99,19.99,4,4,15.99,full set-brown-large
+5-Aug,heat buns,pink,mini,1,19.99,19.99,4,4,15.99,heat buns-pink-mini
+5-Aug,full set,pink,large,1,19.99,19.99,4,4,15.99,full set-pink-large
+5-Aug,heat buns,pink,"2midi,1mini",3,19.99,59.97,3.33,9.99,49.98,"heat buns-pink-2midi,1mini"
+5-Aug,heat buns,pink,large,1,19.99,19.99,4,4,15.99,heat buns-pink-large
+14-Aug,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+4-Sep,bow tie 7pcs,.,.,1,11.99,11.99,6.53,6.53,5.46,bow tie 7pcs-.-.
+4-Sep,full set,brown,large,1,19.99,19.99,4,4,15.99,full set-brown-large
+25-Jul,flat clips 5pcs,.,.,1,8.99,8.99,6.21,6.21,2.78,flat clips 5pcs-.-.
+5-Sep,heat buns,purple,large,1,19.99,19.99,4,4,15.99,heat buns-purple-large
+5-Sep,heat buns,green,large,1,19.99,19.99,4,4,15.99,heat buns-green-large
+5-Sep,heat buns,green,large,1,19.99,19.99,4,4,15.99,heat buns-green-large
+5-Sep,heat buns,brown,large,1,19.99,19.99,4,4,15.99,heat buns-brown-large
+6-Sep,heat buns,purple/pink,large/jumbo,2,39.98,79.96,3.5,7,72.96,heat buns-purple/pink-large/jumbo
+6-Sep,heat buns,purple,jumbo,1,19.99,19.99,4,4,15.99,heat buns-purple-jumbo
+7-Sep,heat buns,pink,mini,2,19.99,39.98,3.5,7,32.98,heat buns-pink-mini
+7-Sep,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+7-Sep,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+9-Sep,single set,brown,large,1,16.99,16.99,4,4,12.99,single set-brown-large
+11-Sep,heat buns,pink,large,1,19.99,19.99,3.5,3.5,16.49,heat buns-pink-large
+11-Sep,full set,brown,midi,1,21.99,21.99,3.5,3.5,18.49,full set-brown-midi
+14-Sep,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+15-Sep,flat clips 9pcs,.,.,2,13.99,27.98,5.54,11.08,16.9,flat clips 9pcs-.-.
+19-Sep,flat clips 9pcs,.,.,1,13.99,13.99,6.21,6.21,7.78,flat clips 9pcs-.-.
+19-Sep,flat clips 9pcs,.,.,1,13.99,13.99,6.21,6.21,7.78,flat clips 9pcs-.-.
+8-Sep,flat clips 4pcs,.,.,1,7.99,7.99,6.21,6.21,1.78,flat clips 4pcs-.-.
+1-Dec,heat buns,purple,mini,2,18.49,36.98,3,6,30.98,heat buns-purple-mini
+1-Dec,full set/korean free,.,.,1,22.99,22.99,3,3,19.99,full set/korean free-.-.
+7-Dec,flat clips 9pcs,.,.,1,14.99,14.99,5.54,5.54,9.45,flat clips 9pcs-.-.
+7-Dec,full set/korean free,brown,jumbo,1,22.99,22.99,3,3,19.99,full set/korean free-brown-jumbo
+7-Dec,heat buns,purple,jumbo,1,22.99,22.99,3,3,19.99,heat buns-purple-jumbo
+7-Dec,full set,pink,midi,2,22.99,45.98,3,6,39.98,full set-pink-midi
+7-Dec,heat buns,brown,jumbo,1,19.99,19.99,3,3,16.99,heat buns-brown-jumbo
+7-Dec,heat buns,purple,midi,1,19.99,19.99,3,3,16.99,heat buns-purple-midi
+7-Dec,flat clips 4pcs,.,.,1,8.99,8.99,5.54,5.54,3.45,flat clips 4pcs-.-.
+7-Dec,full set,brown,jumbo,1,22.99,22.99,3,3,19.99,full set-brown-jumbo
+7-Dec,heat buns/full set,green/purple,midi,2,21.49,42.98,3,6,36.98,heat buns/full set-green/purple-midi
+7-Dec,heat buns,purple,midi,1,19.99,19.99,3,3,16.99,heat buns-purple-midi
+8-Dec,heat buns/flat clips 4pcs,brown,jumbo,2,14.49,28.98,4.105,8.21,20.77,heat buns/flat clips 4pcs-brown-jumbo
+8-Dec,heat buns,green,jumbo,1,19.99,19.99,3,3,16.99,heat buns-green-jumbo
+13-Dec,full set,purple,large,1,22.99,22.99,3,3,19.99,full set-purple-large
+13-Dec,single set,brown,large,1,16.99,16.99,3,3,13.99,single set-brown-large
+16-Dec,full set,pink,large,1,22.99,22.99,3,3,19.99,full set-pink-large
+16-Dec,heat buns,brown,mini,1,10,10,3,3,7,heat buns-brown-mini
+19-Dec,flat clips 9pcs/scrrunchies,.,.,2,21.76,43.52,3.28,6.56,36.96,flat clips 9pcs/scrrunchies-.-.
+19-Dec,flat clips 4pcs,.,.,1,8.99,8.99,5.21,5.21,3.78,flat clips 4pcs-.-.
+19-Dec,flat clips 4pcs/ bowtie,.,.,2,20.98,41.96,5.37,10.74,31.22,flat clips 4pcs/ bowtie-.-.
+19-Dec,flat clips 4pcs,.,.,1,8.99,8.99,5.21,5.21,3.78,flat clips 4pcs-.-.
+19-Dec,flat clips 4pcs,.,.,1,8.99,8.99,5.21,5.21,3.78,flat clips 4pcs-.-.
+19-Dec,flat clips 9pcs,.,.,1,14.99,14.99,5.21,5.21,9.78,flat clips 9pcs-.-.
