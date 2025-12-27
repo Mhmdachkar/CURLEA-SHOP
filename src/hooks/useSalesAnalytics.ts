@@ -75,3 +75,4 @@ export function useSalesAnalytics(days: number = 30): UseSalesAnalyticsReturn {
   };
 }
 
+

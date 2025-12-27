@@ -238,3 +238,4 @@ WHERE order_date >= '2025-11-01'
   AND payment_status = 'completed'
 ORDER BY order_date DESC, order_id;
 
+

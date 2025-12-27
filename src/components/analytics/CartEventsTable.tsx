@@ -223,3 +223,4 @@ export const CartEventsTable: React.FC<CartEventsTableProps> = ({ cartEvents, lo
   );
 };
 
+

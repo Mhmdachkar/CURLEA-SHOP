@@ -89,3 +89,4 @@ WHERE payment_status = 'completed';
 -- =====================================================
 SELECT '✅ RLS policies updated! Data should now be accessible from the frontend.' as status;
 
+

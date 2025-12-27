@@ -106,3 +106,4 @@ WHERE order_date >= '2025-11-01'
 -- 3. Make sure each order has a unique order_id
 -- =====================================================
 
+

@@ -271,3 +271,4 @@ export const formatDateRange = (start: string, end: string): string => {
   return `${startFormatted}–${endFormatted}`;
 };
 
+

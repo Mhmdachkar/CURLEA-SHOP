@@ -350,3 +350,4 @@ export const formatPercentage = (value) => {
   return `${sign}${value.toFixed(1)}%`;
 };
 
+

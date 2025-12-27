@@ -147,3 +147,4 @@ Profit Margin = (Net Profit / Total Revenue) × 100
 
 🎉 **You're all set!** Your sales analytics are now live.
 
+

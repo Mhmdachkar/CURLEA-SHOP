@@ -206,3 +206,4 @@ export function SalesAnalyticsTable({ metrics, topProducts, loading }: SalesAnal
   );
 }
 
+

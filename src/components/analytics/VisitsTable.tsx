@@ -270,3 +270,4 @@ export const VisitsTable: React.FC<VisitsTableProps> = ({ visits, loading }) => 
   );
 };
 
+
