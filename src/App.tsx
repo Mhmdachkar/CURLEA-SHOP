@@ -1,7 +1,7 @@
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { RealtimeProvider } from "@/contexts/RealtimeContext";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -12,8 +12,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 
 import PromotionalBanner from "@/components/PromotionalBanner";
-import { ChristmasOfferModal } from "@/components/ChristmasOfferModal";
-import { FloatingGiftIcon } from "@/components/FloatingGiftIcon";
 import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useRoutePreload } from "@/hooks/useRoutePreload";
@@ -27,7 +25,7 @@ const CollectionPage = lazy(() => import("./pages/CollectionPage").then(m => ({ 
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const SuccessPage = lazy(() => import("./pages/SuccessPage"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage").then(m => ({ default: m.CategoryPage })));
-const ShopifyHomeDashboard = lazy(() => import("./pages/ShopifyHomeDashboard"));
+const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
 const ProductVerificationPanel = lazy(() => import("./components/ProductVerificationPanel").then(m => ({ default: m.ProductVerificationPanel })));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -104,8 +102,6 @@ const App = () => {
                 }}
               >
                 <PromotionalBanner />
-                <ChristmasOfferModal />
-                <FloatingGiftIcon />
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />
@@ -119,10 +115,7 @@ const App = () => {
                     <Route path="/product/:id" element={<ProductDetailPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/success" element={<SuccessPage />} />
-                    {/* Analytics Dashboard - Redirect old routes to new dashboard */}
-                    <Route path="/analytics" element={<Navigate to="/shopify-home-dashboard" replace />} />
-                    <Route path="/shopify-analytics" element={<Navigate to="/shopify-home-dashboard" replace />} />
-                    <Route path="/shopify-home-dashboard" element={<ShopifyHomeDashboard />} />
+                    <Route path="/analytics" element={<AnalyticsDashboard />} />
                     <Route path="/verify-products" element={<ProductVerificationPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />

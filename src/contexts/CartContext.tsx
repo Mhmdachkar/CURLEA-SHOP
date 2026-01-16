@@ -44,44 +44,10 @@ type CartAction =
   | { type: 'SET_ITEMS'; payload: CartItem[] };
 
 // Helper function to calculate promotional discount:
-// Christmas Offer → Buy any 2 eligible FULL SETS, get the 3rd FULL SET FREE
-// Logic: For every 2 items purchased, the next item is free
+// Disabled - Christmas offer removed
 export const calculatePromoDiscount = (items: CartItem[]): number => {
-  // Filter down to eligible FULL SET items only and exclude free ($0) items
-  const eligiblePaidItems = items.filter(item => {
-    if (!FULL_SET_PRODUCT_IDS.has(item.id)) return false;
-    const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-    return price > 0;
-  });
-
-  // Flatten all items into individual units (respecting quantity) to find free items
-  const flattenedItems: Array<{ price: number; item: CartItem }> = [];
-  for (const item of eligiblePaidItems) {
-    const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-    // Add each quantity as a separate unit
-    for (let i = 0; i < item.quantity; i++) {
-      flattenedItems.push({ price: itemPrice, item });
-    }
-  }
-
-  // Count total eligible FULL SET units
-  const totalPaidItems = flattenedItems.length;
-  
-  // Only apply discount if there are 2 or more eligible FULL SET items
-  // Buy 2, Get 1 Free: minimum 2 items required, only 1 free item (the 3rd one)
-  if (totalPaidItems < 2) return 0;
-
-  // Only give 1 free item (the 3rd one) - simple Buy 2, Get 1 Free
-  // The 3rd eligible FULL SET item (index 2) gets the discount
-  const thirdItem = flattenedItems[2];
-  if (!thirdItem) return 0;
-
-  const thirdItemPrice = thirdItem.price;
-
-  // 100% off the 3rd eligible FULL SET item (3rd item is FREE)
-  const discount = thirdItemPrice;
-
-  return discount;
+  // Discount calculation disabled
+  return 0;
 };
 
 const CartContext = createContext<{

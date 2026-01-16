@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
 
 // IMPORTANT: WhatsApp requires full international format without "+" or leading zeros.
 // Example: if your country code is +961 and your number is 70 898 080,
@@ -14,15 +13,6 @@ const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_PHONE || FALLBACK_WHATSAP
 );
 
 const WhatsAppFloatingButton: React.FC = () => {
-  const location = useLocation();
-  
-  // Hide on analytics pages
-  if (location.pathname === '/shopify-analytics' || 
-      location.pathname === '/analytics' ||
-      location.pathname === '/shopify-home-dashboard') {
-    return null;
-  }
-  
   // Cute, friendly default message
   const message =
     "Hi CURLEA team! I have a quick question about your products and offers.";

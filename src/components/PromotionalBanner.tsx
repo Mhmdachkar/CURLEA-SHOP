@@ -43,19 +43,16 @@ const PromotionalBanner = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Hide banner on checkout and analytics pages
-  if (location.pathname === '/checkout' || 
-      location.pathname === '/shopify-analytics' || 
-      location.pathname === '/analytics' ||
-      location.pathname === '/shopify-home-dashboard') {
+  // Hide banner on checkout page
+  if (location.pathname === '/checkout') {
     return null;
   }
 
   const offers = [
     {
       id: 0,
-      title: "CHRISTMAS OFFER",
-      subtitle: "Buy any 2 Full Sets, Get 3rd one FREE",
+      title: "",
+      subtitle: "Buy any 2 full sets and get the third for free",
       gradient: "from-black via-gray-900 to-black"
     }
   ];
@@ -82,30 +79,6 @@ const PromotionalBanner = () => {
               className="flex items-center justify-center text-center"
             >
               <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-                <motion.span
-                  className="text-[#D4AF37] font-extrabold text-xs md:text-sm tracking-[0.15em] uppercase"
-                  style={{
-                    textShadow: '0 0 20px rgba(212, 175, 55, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3)',
-                    WebkitFontSmoothing: 'antialiased',
-                    MozOsxFontSmoothing: 'grayscale',
-                    filter: 'contrast(1.1) brightness(1.1)'
-                  }}
-                  initial={{ scale: 0.95 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                >
-                  {currentOfferData.title}
-                </motion.span>
-
-                <motion.span
-                  className="hidden md:inline text-[#D4AF37]/40 font-light text-sm"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                >
-                  •
-                </motion.span>
-
                 <motion.span
                   className="text-white font-semibold text-sm md:text-base tracking-wide"
                   style={{

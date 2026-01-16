@@ -246,23 +246,24 @@ const ShopOfferButton = () => {
   };
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -2 }}
-      whileTap={{ scale: 0.98 }}
+    <motion.button
       onClick={handleShopNow}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="bg-white text-gray-900 font-semibold px-8 py-4 md:px-10 md:py-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer flex items-center gap-2"
+      style={{
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontWeight: 600,
+        fontSize: '1rem',
+        letterSpacing: '0.01em',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        border: 'none',
+      }}
     >
-      <Button
-        size="lg"
-        className="relative bg-gradient-to-r from-[#D4AF37] to-[#F2D06B] hover:from-[#B5952F] hover:to-[#D4AF37] text-black font-bold px-10 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:shadow-[0_0_50px_rgba(212,175,55,0.8)] overflow-hidden cursor-pointer"
-      >
-        <span className="relative z-10">Shop Now</span>
-        <motion.div
-          className="absolute inset-0 bg-white/20"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-      </Button>
-    </motion.div>
+      <span>Shop Now</span>
+      <span style={{ fontSize: '0.875rem' }}>→</span>
+    </motion.button>
   );
 };
 
@@ -273,18 +274,18 @@ const ShopOfferButton = () => {
 const slides = [
   {
     image: hero1,
-    title: "Embrace Your Natural Shine",
-    subtitle: "Discover luxurious care for every hair type",
+    title: "CURLEA",
+    subtitle: "Signature Collection",
   },
   {
     image: hero2,
-    title: "Curl Is Power",
-    subtitle: "Embrace your natural form with confidence",
+    title: "CURLEA",
+    subtitle: "Signature Collection",
   },
   {
     image: hero3,
-    title: "Define Your Beauty",
-    subtitle: "Embrace your natural power",
+    title: "CURLEA",
+    subtitle: "Signature Collection",
   },
 ];
 
@@ -457,11 +458,11 @@ export const HeroSection = () => {
     };
   }, [isPageLoading]);
 
-  // Auto-rotate slides
+  // Auto-rotate slides every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 8000);
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 
@@ -518,73 +519,32 @@ export const HeroSection = () => {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-        <motion.h1
-            className="relative text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.215, 0.61, 0.355, 1] }}
-        >
-            <motion.span
-              className="inline-block"
-              animate={{
-                textShadow: [
-                  '0 0 20px rgba(255,255,255,0.3)',
-                  '0 0 40px rgba(255,255,255,0.5)',
-                  '0 0 20px rgba(255,255,255,0.3)',
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              CURLEA
-            </motion.span>
-            <br />
-            <motion.span
-              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F2D06B] to-[#D4AF37]"
-              style={{
-                backgroundSize: '200% auto',
-              }}
-              animate={{
-                backgroundPosition: ['0% center', '100% center', '0% center'],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            >
-              Signature Collection
-            </motion.span>
-        </motion.h1>
         </motion.div>
 
         <motion.p
-          className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto font-light leading-relaxed"
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-white mb-6 sm:mb-8 max-w-xs sm:max-w-xl md:max-w-2xl mx-auto leading-relaxed px-4 sm:px-0"
+          style={{
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
+            textRendering: 'optimizeLegibility',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
         >
-          <span className="font-semibold text-white">Where luxury meets every curl.</span>
-          <br />
-          Discover premium heatless sets and accessories designed for effortless beauty.
+          <span className="font-semibold block mb-2 sm:mb-0 sm:inline" style={{ fontWeight: 600 }}>Where luxury meets every curl.</span>
+          <br className="hidden sm:inline" />
+          <span className="font-light block sm:inline" style={{ fontWeight: 300 }}>Discover premium heatless sets and accessories designed for effortless beauty.</span>
         </motion.p>
 
         <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex items-center justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
-            >
+        >
           <ShopOfferButton />
-          <Link to="/collection">
-            <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-            <Button
-              variant="outline"
-              size="lg"
-                className="bg-transparent border-2 border-white/50 text-white hover:bg-white/10 hover:border-white px-10 py-6 text-lg rounded-full backdrop-blur-sm transition-all duration-300"
-            >
-              View Collection
-            </Button>
-            </motion.div>
-          </Link>
         </motion.div>
 
         {/* Scroll Indicator */}

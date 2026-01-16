@@ -20,7 +20,7 @@ const typography = {
 };
 
 export default function CheckoutPage() {
-    const { state, clearCart, promoDiscount } = useCart();
+    const { state, clearCart } = useCart();
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -64,7 +64,7 @@ export default function CheckoutPage() {
 
     // Delivery fee: $4 for all payment methods
     const deliveryFee = 4;
-    const total = subtotal + deliveryFee - stripeDiscount - promoDiscount;
+    const total = subtotal + deliveryFee - stripeDiscount;
     const savings = useMemo(() => {
         return cart.reduce((sum, item) => {
             if (typeof item.originalPrice === 'number' && !isNaN(item.originalPrice)) {
@@ -875,19 +875,6 @@ export default function CheckoutPage() {
                                     <span className="text-gray-600 flex-shrink-0" style={typography}>Subtotal</span>
                                     <span className="font-medium text-gray-900 flex-shrink-0 whitespace-nowrap" style={typography}>${subtotal.toFixed(2)}</span>
                                 </motion.div>
-                                {promoDiscount > 0 && (
-                                    <motion.div
-                                        className="flex justify-between items-center gap-2 text-sm"
-                                        whileHover={{ x: 2, transition: { duration: 0.2 } }}
-                                        initial={{ opacity: 0, y: -5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                    >
-                                        <span className="text-[#A4193D] font-medium flex-shrink min-w-0 text-xs sm:text-sm" style={typography}>3RD ITEM FREE (Christmas Offer)</span>
-                                        <span className="font-semibold text-[#A4193D] flex-shrink-0 whitespace-nowrap" style={typography}>
-                                            -${promoDiscount.toFixed(2)}
-                                        </span>
-                                    </motion.div>
-                                )}
                                 <motion.div
                                     className="flex justify-between items-center gap-2 text-sm"
                                     whileHover={{ x: 2, transition: { duration: 0.2 } }}
