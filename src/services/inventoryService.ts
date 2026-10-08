@@ -1,8 +1,47 @@
-import { supabase } from '@/lib/supabase';
-
 /**
- * Inventory Service - Fetch real-time stock from Supabase
+ * Inventory Service - Fetch stock counts from the same-origin stock function.
  */
+
+interface StockRow {
+    id: string;
+    product_id: string;
+    size: string;
+    color: string | null;
+    available_quantity: number;
+}
+
+const stockCache = new Map<string, VariantStock[]>();
+
+function toVariant(row: StockRow): VariantStock {
+    const available = Number(row.available_quantity) || 0;
+    return {
+        id: row.id,
+        product_id: row.product_id,
+        variant_name: row.size,
+        size: row.size,
+        color: row.color,
+        stock_quantity: available,
+        reserved_quantity: 0,
+        available_quantity: available,
+        price: null,
+        is_active: true,
+    };
+}
+
+async function loadProductVariants(productId: string): Promise<VariantStock[]> {
+    if (stockCache.has(productId)) return stockCache.get(productId)!;
+    try {
+        const response = await fetch(`/.netlify/functions/stock?productId=${encodeURIComponent(productId)}`);
+        if (!response.ok) return [];
+        const body = await response.json();
+        const variants = Array.isArray(body.variants) ? body.variants.map(toVariant) : [];
+        stockCache.set(productId, variants);
+        return variants;
+    } catch (error) {
+        console.error('Error loading stock:', error);
+        return [];
+    }
+}
 
 export interface VariantStock {
     id: string;
@@ -29,37 +68,10 @@ export async function getVariantStock(
     const normalizedProductId = productId;
 
     try {
-        let query = supabase
-            .from('product_variants')
-            .select('*')
-            .eq('product_id', normalizedProductId)
-            .eq('size', size)
-            .eq('is_active', true);
-
-        // Handle color matching
-        if (color) {
-            query = query.eq('color', color);
-        } else {
-            query = query.is('color', null);
-        }
-
-        // Use maybeSingle() to handle 0 rows gracefully, and limit(1) to handle multiple rows
-        const { data, error } = await query.limit(1).maybeSingle();
-
-        if (error) {
-            // Only log non-404 errors (PGRST116 is "no rows found" which is expected)
-            if (error.code !== 'PGRST116') {
-                console.error('Error fetching variant stock:', error);
-            }
-            return null;
-        }
-
-        // If no data found, return null (this is expected for products not in inventory)
-        if (!data) {
-            return null;
-        }
-
-        return data;
+        const variants = await loadProductVariants(normalizedProductId);
+        return variants.find((variant) =>
+            variant.size === size && (color ? variant.color === color : !variant.color)
+        ) || null;
     } catch (error) {
         console.error('Error in getVariantStock:', error);
         return null;
@@ -73,20 +85,7 @@ export async function getAllVariantsForProduct(
     productId: string
 ): Promise<VariantStock[]> {
     try {
-        const { data, error } = await supabase
-            .from('product_variants')
-            .select('*')
-            .eq('product_id', productId)
-            .eq('is_active', true)
-            .order('size')
-            .order('color');
-
-        if (error) {
-            console.error('Error fetching product variants:', error);
-            return [];
-        }
-
-        return data || [];
+        return await loadProductVariants(productId);
     } catch (error) {
         console.error('Error in getAllVariantsForProduct:', error);
         return [];
@@ -131,18 +130,8 @@ export async function getStockStatus(
  */
 export async function getTotalProductStock(productId: string): Promise<number> {
     try {
-        const { data, error } = await supabase
-            .from('product_variants')
-            .select('stock_quantity')
-            .eq('product_id', productId)
-            .eq('is_active', true);
-
-        if (error) {
-            console.error('Error fetching total stock:', error);
-            return 0;
-        }
-
-        return data?.reduce((sum, v) => sum + (v.stock_quantity || 0), 0) || 0;
+        const variants = await loadProductVariants(productId);
+        return variants.reduce((sum, variant) => sum + (variant.available_quantity || 0), 0);
     } catch (error) {
         console.error('Error in getTotalProductStock:', error);
         return 0;
@@ -234,28 +223,11 @@ export async function getColorStockAcrossAllSizes(
     const normalizedColor = normalizeColorName(color);
     
     try {
-        let query = supabase
-            .from('product_variants')
-            .select('available_quantity')
-            .eq('product_id', normalizedProductId)
-            .eq('is_active', true);
-
-        // Handle color matching
-        if (normalizedColor) {
-            query = query.eq('color', normalizedColor);
-        } else {
-            query = query.is('color', null);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-            console.error('Error fetching color stock:', error);
-            return { available: 0, status: 'out_of_stock' };
-        }
-
-        // Sum up available quantity across all sizes for this color
-        const totalAvailable = data?.reduce((sum, v) => sum + (v.available_quantity || 0), 0) || 0;
+        const variants = await loadProductVariants(normalizedProductId);
+        const matching = variants.filter((variant) =>
+            normalizedColor ? variant.color === normalizedColor : !variant.color
+        );
+        const totalAvailable = matching.reduce((sum, variant) => sum + (variant.available_quantity || 0), 0);
 
         // Determine status
         let status: 'in_stock' | 'low_stock' | 'out_of_stock' = 'out_of_stock';

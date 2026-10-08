@@ -11,7 +11,6 @@ import RouteAnalytics from "@/components/RouteAnalytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 
-import PromotionalBanner from "@/components/PromotionalBanner";
 import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { useRoutePreload } from "@/hooks/useRoutePreload";
@@ -102,7 +101,6 @@ const App = () => {
                   v7_relativeSplatPath: true
                 }}
               >
-                <PromotionalBanner />
                 <ScrollToTop />
                 <RouteAnalytics />
                 <RealtimeSync />

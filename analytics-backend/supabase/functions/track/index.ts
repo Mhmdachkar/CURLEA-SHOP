@@ -25,26 +25,19 @@ serve(async (req) => {
   try {
     // Get Supabase credentials from environment
     // Supabase automatically provides SUPABASE_URL and SUPABASE_ANON_KEY
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? 'https://vfhxwzcbjdlfmizakvqc.supabase.co';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    // Try Service Role first (bypasses RLS), fall back to Anon Key
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_ANON_KEY');
-    
-    if (!supabaseKey) {
-      console.error('No Supabase key found in environment');
-      console.error('Available env vars:', Object.keys(Deno.env.toObject()));
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Supabase server credentials are not configured');
       return new Response(
-        JSON.stringify({ error: 'Server configuration error - no API key' }),
+        JSON.stringify({ error: 'Server configuration error' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
-    
-    console.log('Using Supabase URL:', supabaseUrl);
-    console.log('API key type:', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ? 'Service Role' : 'Anon');
-    
     // Initialize Supabase client
     let supabase;
     try {

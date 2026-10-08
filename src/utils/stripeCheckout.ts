@@ -53,10 +53,10 @@ export const formatCartItemsForCheckout = (items: CartItem[]) => {
   return items.map(item => ({
     id: item.id,
     product_name: item.name,
+    selectedSize: item.selectedSize,
+    selectedColor: item.selectedColor,
     variant: item.selectedSize || item.selectedColor || 'Default',
     quantity: item.quantity,
-    price: item.price,
-    currency: item.currency || 'USD',
     image_url: item.image || (item.images?.[0] || ''),
   }));
 };
@@ -70,21 +70,7 @@ export const createStripeCheckout = async (
   request: StripeCheckoutRequest
 ): Promise<StripeCheckoutResponse> => {
   const { cartItems, currency = 'USD' } = request;
-  
-  // Determine API endpoint - use production Supabase
-  // Note: If you want to use local Supabase, start it with: supabase start
-  const apiEndpoint = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`;
-  
-  console.log('🚀 Creating Stripe checkout session...');
-  console.log('API Endpoint:', apiEndpoint);
-  console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-  console.log('Supabase Anon Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-  
   const formattedItems = formatCartItemsForCheckout(cartItems);
-  console.log('📦 Cart items with images:', formattedItems.map(item => ({
-    name: item.product_name,
-    image_url: item.image_url
-  })));
   
   // Get session ID from analytics if available
   const sessionId = (window as any).analytics?.getSessionId?.();
@@ -95,12 +81,10 @@ export const createStripeCheckout = async (
   const utmCampaign = secureSessionStorage.getItem('utm_campaign');
   
   try {
-    const response = await fetch(apiEndpoint, {
+    const response = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
       },
       body: JSON.stringify(sanitizeObject({
         cartItems: formattedItems.map(item => ({

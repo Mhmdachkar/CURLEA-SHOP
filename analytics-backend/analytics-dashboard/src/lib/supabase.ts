@@ -1,23 +1,42 @@
 /**
- * Supabase Client for CURLEA Analytics Dashboard
- * Provides connection to all Supabase tables for analytics, products, orders, and campaigns
+ * The dashboard bundle does not include a database key.
+ * Direct browser queries are closed.
  */
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vfhxwzcbjdlfmizakvqc.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase environment variables not configured');
+function closedQuery(): any {
+  const result = {
+    data: null,
+    error: { message: 'Database access is server-side only', code: 'client_disabled' },
+    count: null,
+  };
+  const promise = Promise.resolve(result);
+  const builder: any = new Proxy(() => builder, {
+    get(_target, prop) {
+      if (prop === 'then') return promise.then.bind(promise);
+      if (prop === 'catch') return promise.catch.bind(promise);
+      if (prop === 'finally') return promise.finally.bind(promise);
+      return () => builder;
+    },
+    apply() {
+      return builder;
+    },
+  });
+  return builder;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
+export const supabase = {
+  from() {
+    return closedQuery();
   },
-});
+  auth: {
+    async signInWithPassword() {
+      return {
+        data: { user: null, session: null },
+        error: { message: 'Sign-in from the browser is disabled' },
+      };
+    },
+  },
+};
 
 // Type definitions for database tables
 export interface Visit {

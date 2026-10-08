@@ -103,6 +103,18 @@ function extractVariantInfo(item: OrderItem): { size: string; color: string | nu
  * Uses Supabase RPC function for atomic operations
  */
 export async function deductInventoryForOrder(
+  _orderId: string,
+  _items: OrderItem[]
+): Promise<InventoryDeductionResult> {
+  return {
+    success: false,
+    deductedItems: [],
+    failedItems: [],
+    error: 'Inventory is updated by the server when the order is created',
+  };
+}
+
+async function deductInventoryForOrderUnused(
   orderId: string,
   items: OrderItem[]
 ): Promise<InventoryDeductionResult> {

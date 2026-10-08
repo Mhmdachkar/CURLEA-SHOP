@@ -692,12 +692,11 @@ export const ChristmasOfferModal = () => {
                   CHRISTMAS OFFER
                   <Snowflake style={{ width: '0.875rem', height: '0.875rem' }} />
                 </Subtitle>
-                <Title>Buy 2 Full Sets, Get 3rd FREE</Title>
+                <Title>Shop the Full Sets</Title>
               </div>
 
               <OfferText>
-                Celebrate the season with our exclusive Christmas promotion! 
-                Purchase any 2 full sets and receive your 3rd full set absolutely free.
+                Explore the DreamCurl full sets and choose the size and color that suits your routine.
               </OfferText>
 
               <OfferDetails>
@@ -712,7 +711,7 @@ export const ChristmasOfferModal = () => {
                     Select any color and size - your choice, your style
                   </OfferListItem>
                   <OfferListItem>
-                    Discount applied automatically at checkout
+                    Each set is priced individually at checkout
                   </OfferListItem>
                 </OfferList>
               </OfferDetails>

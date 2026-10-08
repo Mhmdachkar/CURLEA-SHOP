@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { getCampaignAttribution } from '@/utils/campaignTracking';
 import { sanitizeInput, sanitizeEmail, sanitizePhone, sanitizeAddress, escapeHtml } from '@/utils/securityEnhanced';
-import { deductInventoryForOrder } from '@/services/inventoryDeduction';
 import '../styles/checkout-styles.css';
 
 type PaymentMethod = 'stripe' | 'cod' | null;
@@ -223,71 +222,11 @@ export default function CheckoutPage() {
                 };
             });
 
-            // Track the order in database as completed (COD orders are confirmed on checkout)
-            if ((window as any).analytics) {
-                console.log('[Checkout] Tracking COD order in analytics:', {
-                    order_id: orderId,
-                    customer_email: formData.email,
-                    total_value: total,
-                    items_count: items.length,
-                });
+            let confirmedSubtotal = subtotal;
+            let confirmedDelivery = deliveryFee;
+            let confirmedTotal = total;
 
-                try {
-                    // Get campaign attribution
-                    const campaignAttribution = getCampaignAttribution();
-
-                    (window as any).analytics.trackPurchase({
-                        order_id: orderId,
-                        customer_email: formData.email,
-                        customer_phone: formData.phone, // Include phone number
-                        subtotal: subtotal,
-                        shipping_total: deliveryFee,
-                        discount_total: 0,
-                        tax_total: 0,
-                        total_value: total,
-                        currency: 'USD',
-                        payment_method: 'cash_on_delivery',
-                        shipping_method: 'cash_on_delivery', // COD includes delivery fee
-                        source: campaignAttribution.source,
-                        utm_source: campaignAttribution.utm_source,
-                        utm_medium: campaignAttribution.utm_medium,
-                        utm_campaign: campaignAttribution.utm_campaign,
-                        utm_term: campaignAttribution.utm_term,
-                        utm_content: campaignAttribution.utm_content,
-                        items: items,
-                        status: 'completed',
-                    });
-                    console.log('[Checkout] Analytics order tracking initiated with campaign attribution');
-                } catch (analyticsError: any) {
-                    console.error('[Checkout] Error tracking order in analytics:', analyticsError);
-                    console.error('[Checkout] Analytics error details:', analyticsError.message, analyticsError.stack);
-                }
-            } else {
-                console.warn('[Checkout] Analytics SDK not available - order not tracked in analytics table');
-            }
-
-            // Send order email via Resend (non-blocking)
-            sendOrderEmail({
-                orderId,
-                paymentMethod: 'cod',
-                customerEmail: formData.email,
-                delivery: deliveryData,
-                cart: cart.map(item => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    selectedColor: item.selectedColor,
-                    selectedSize: item.selectedSize,
-                })),
-                deliveryFee,
-                subtotal,
-                total,
-            }).catch(error => {
-                // Log error but don't block order completion
-                console.error('Email sending failed:', error);
-            });
-
-            // Also create an entry in public.orders (Stripe orders table) for COD to store email and phone
+            // Create the order on the server. Stock is deducted there.
             try {
                 const orderItems = cart.map((item) => {
                     const unitPrice = parsePriceToNumber(item.price);
@@ -326,45 +265,72 @@ export default function CheckoutPage() {
                     undefined           // userId
                 );
 
-                if (result.success) {
-                    console.log('[Checkout] COD order created successfully in public.orders:', result.orderId);
-                } else {
-                    console.error('[Checkout] Failed to create COD order in public.orders:', result.error);
+                if (!result.success) {
+                    console.error('[Checkout] Failed to create COD order:', result.error);
+                    toast.error(result.error || 'Failed to create order. Please try again.');
+                    setSubmittedOrderId(null);
+                    setIsSubmitting(false);
+                    return;
                 }
+
+                confirmedSubtotal = result.subtotal ?? subtotal;
+                confirmedDelivery = result.deliveryFee ?? deliveryFee;
+                confirmedTotal = result.total ?? total;
             } catch (err: any) {
-                console.error('[Checkout] Error creating COD order in public.orders:', err);
-                console.error('[Checkout] Error details:', err.message, err.stack);
+                console.error('[Checkout] Error creating COD order:', err);
+                toast.error('Failed to create order. Please try again.');
+                setSubmittedOrderId(null);
+                setIsSubmitting(false);
+                return;
             }
 
-            // Deduct inventory for COD orders
-            try {
-                console.log('[Checkout] Deducting inventory for COD order:', orderId);
-                
-                const inventoryItems = cart.map((item) => ({
-                    product_id: item.id,
-                    product_name: item.name,
-                    quantity: item.quantity,
-                    size: item.selectedSize,
-                    color: item.selectedColor,
-                    price: parsePriceToNumber(item.price),
-                    metadata: {
-                        selectedSize: item.selectedSize,
-                        selectedColor: item.selectedColor,
-                    },
-                }));
-                
-                const inventoryResult = await deductInventoryForOrder(orderId, inventoryItems);
-                
-                if (inventoryResult.success) {
-                    console.log('[Checkout] ✅ Inventory deducted successfully:', inventoryResult.deductedItems.length, 'items');
-                } else {
-                    console.warn('[Checkout] ⚠️ Some inventory deductions failed:', inventoryResult.failedItems);
-                    // Don't block order completion - log for manual review
+            if ((window as any).analytics) {
+                try {
+                    const campaignAttribution = getCampaignAttribution();
+                    (window as any).analytics.trackPurchase({
+                        order_id: orderId,
+                        customer_email: formData.email,
+                        customer_phone: formData.phone,
+                        subtotal: confirmedSubtotal,
+                        shipping_total: confirmedDelivery,
+                        discount_total: 0,
+                        tax_total: 0,
+                        total_value: confirmedTotal,
+                        currency: 'USD',
+                        payment_method: 'cash_on_delivery',
+                        shipping_method: 'cash_on_delivery',
+                        source: campaignAttribution.source,
+                        utm_source: campaignAttribution.utm_source,
+                        utm_medium: campaignAttribution.utm_medium,
+                        utm_campaign: campaignAttribution.utm_campaign,
+                        utm_term: campaignAttribution.utm_term,
+                        utm_content: campaignAttribution.utm_content,
+                        items: items,
+                        status: 'completed',
+                    });
+                } catch (analyticsError: any) {
+                    console.error('[Checkout] Error tracking order in analytics:', analyticsError);
                 }
-            } catch (inventoryError: any) {
-                console.error('[Checkout] Error deducting inventory (non-blocking):', inventoryError);
-                // Don't block order completion - inventory can be adjusted manually
             }
+
+            sendOrderEmail({
+                orderId,
+                paymentMethod: 'cod',
+                customerEmail: formData.email,
+                delivery: deliveryData,
+                cart: cart.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    selectedColor: item.selectedColor,
+                    selectedSize: item.selectedSize,
+                })),
+                deliveryFee: confirmedDelivery,
+                subtotal: confirmedSubtotal,
+                total: confirmedTotal,
+            }).catch(error => {
+                console.error('Email sending failed:', error);
+            });
 
             // Clear cart immediately
             clearCart();

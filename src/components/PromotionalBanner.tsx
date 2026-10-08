@@ -54,7 +54,7 @@ const PromotionalBanner = () => {
     {
       id: 0,
       title: "",
-      subtitle: "Buy any 2 full sets and get the third for free",
+      subtitle: "",
       gradient: "from-black via-gray-900 to-black"
     }
   ];

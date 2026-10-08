@@ -12,18 +12,12 @@
   }
 
   // Get endpoint from window config or use default
-  const endpoint = window.__ANALYTICS_CONFIG__?.endpoint || 
-                   'https://vfhxwzcbjdlfmizakvqc.supabase.co/functions/v1/track';
-  
-  const debug = window.__ANALYTICS_CONFIG__?.debug || false;
+  const endpoint = window.__ANALYTICS_CONFIG__?.endpoint || '/.netlify/functions/track';
+  const debug = window.__ANALYTICS_CONFIG__?.debug === true;
 
-  console.log('[Analytics Init] Initializing with endpoint:', endpoint);
-  
   analytics.init({
     endpoint: endpoint,
     debug: debug
   });
-
-  console.log('[Analytics Init] Analytics SDK initialized successfully');
 })();
 

@@ -2,16 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
-// IMPORTANT: WhatsApp requires full international format without "+" or leading zeros.
-// Example: if your country code is +961 and your number is 70 898 080,
-// the correct value would be "96170898080".
-//
-// You can override this via VITE_WHATSAPP_PHONE in your .env file.
-const FALLBACK_WHATSAPP_NUMBER = "70898080"; // Local number from your request
-const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_PHONE || FALLBACK_WHATSAPP_NUMBER).replace(
-  /\D/g,
-  ""
-);
+// Shown on the button, so this is a public contact number, not a secret.
+const WHATSAPP_NUMBER = "70898080";
 
 const WhatsAppFloatingButton: React.FC = () => {
   const location = useLocation();

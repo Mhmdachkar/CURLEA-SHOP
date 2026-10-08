@@ -14,8 +14,7 @@
 /* Advanced Scroll System - Simplified */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 140px;
-  /* Mobile: Account for taller promotional banner + navbar */
+  scroll-padding-top: 72px;
   overflow-x: hidden;
   overscroll-behavior: none;
 }
@@ -23,24 +22,21 @@ html {
 /* Responsive scroll padding for desktop */
 @media (min-width: 768px) {
   html {
-    scroll-padding-top: 120px;
-    /* Desktop: Account for shorter promotional banner + navbar */
+    scroll-padding-top: 80px;
   }
 }
 
 body {
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
-  padding-top: 70px;
-  /* Mobile: Promotional banner height when text stacks */
+  padding-top: 0;
   overflow-x: hidden;
 }
 
 /* Responsive body padding for desktop */
 @media (min-width: 768px) {
   body {
-    padding-top: 52px;
-    /* Desktop: Promotional banner height (single line) */
+    padding-top: 0;
   }
 }
 

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, ShoppingBag, Mail } from 'lucide-react';
 import '../styles/checkout-styles.css';
-import { createStripeOrderAndItems } from '@/services/supabaseIntegration';
 import { fbTrack, gaTrack } from '@/utils/tracking';
 import { getCampaignAttribution } from '@/utils/campaignTracking';
 
@@ -68,12 +67,10 @@ export default function SuccessPage() {
         // Only update analytics orders table if webhook hasn't processed yet
         // (This is a fallback in case webhook hasn't fired yet)
         try {
-          const updateResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track`, {
+          const updateResponse = await fetch('/.netlify/functions/track', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
             },
             body: JSON.stringify({
               type: 'order_update',

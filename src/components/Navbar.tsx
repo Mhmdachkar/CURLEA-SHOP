@@ -12,7 +12,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
   position: fixed;
-  top: 70px; /* Mobile: Height of promotional banner when text stacks (py-3.5 * 2 + text height) */
+  top: 0;
   left: 0;
   right: 0;
   z-index: ${({ theme }) => theme.zIndex.sticky}; /* Below drawer (1500) but above content */
@@ -25,11 +25,6 @@ const NavContainer = styled(motion.nav) <{ $isScrolled: boolean; $isProductDetai
     $isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.1)' : 'none'};
   border-bottom: ${({ $isScrolled }) =>
     $isScrolled ? '1px solid rgba(212, 175, 55, 0.3)' : 'none'};
-  
-  /* Responsive positioning - adjust for desktop where banner is shorter */
-  @media ${({ theme }) => theme.mediaQueries.tablet} {
-    top: 52px; /* Desktop: Banner is single line, shorter height */
-  }
   
   /* Gold gradient line at the bottom */
   &::after {
@@ -74,9 +69,9 @@ const NavInner = styled.div`
 `;
 
 const Logo = styled(motion.a) <{ $isScrolled: boolean; $isProductDetailPage?: boolean }>`
-  font-family: "Montserrat", "Optima", ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: 300;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 500;
   text-transform: uppercase;
   color: ${({ $isScrolled, $isProductDetailPage, theme }) =>
     ($isScrolled || $isProductDetailPage) ? theme.colors.foreground : '#ffffff'};
@@ -96,7 +91,6 @@ const Logo = styled(motion.a) <{ $isScrolled: boolean; $isProductDetailPage?: bo
     position: relative;
     display: inline-block;
     transition: all 0.3s ease;
-    mix-blend-mode: screen;
     
     &::before {
       content: '';
@@ -129,21 +123,21 @@ const Logo = styled(motion.a) <{ $isScrolled: boolean; $isProductDetailPage?: bo
     $isScrolled ? theme.colors.foreground : '#ffffff'};
   }
 
+  letter-spacing: 0.22em;
+
   &:hover {
-    letter-spacing: 0.35em;
-    transform: scale(1.02);
     text-shadow: ${({ $isScrolled }) =>
     $isScrolled ? '0 2px 4px rgba(0, 0, 0, 0.15)' : '0 4px 16px rgba(0, 0, 0, 0.5)'};
   }
 
   @media ${({ theme }) => theme.mediaQueries.tablet} {
-    font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-    letter-spacing: 0.3em;
+    font-size: 1.2rem;
+    letter-spacing: 0.24em;
   }
 
   @media ${({ theme }) => theme.mediaQueries.desktop} {
-    font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
-    letter-spacing: 0.35em;
+    font-size: 1.35rem;
+    letter-spacing: 0.26em;
   }
 `;
 
@@ -614,11 +608,11 @@ export const Navbar = () => {
               e.preventDefault();
               navigate("/");
             }}
-            className="flex items-center justify-center gap-[0.25em]"
+            className="flex items-center justify-center gap-[0.06em]"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             whileHover={{
-              scale: 1.05,
+              scale: 1.02,
               transition: {
                 duration: 0.4,
                 ease: [0.215, 0.61, 0.355, 1]

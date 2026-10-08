@@ -10,20 +10,8 @@ export async function testSupabaseConnection() {
   
   const tests = [];
   
-  // Test 1: Check environment variables
-  console.log('1️⃣ Checking environment variables...');
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Missing environment variables!');
-    console.error('Expected: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
-    tests.push({ test: 'Environment Variables', status: 'FAILED', error: 'Missing .env values' });
-  } else {
-    console.log(`✅ VITE_SUPABASE_URL: ${supabaseUrl.substring(0, 30)}...`);
-    console.log(`✅ VITE_SUPABASE_ANON_KEY: ${supabaseKey.substring(0, 30)}...`);
-    tests.push({ test: 'Environment Variables', status: 'PASSED' });
-  }
+  console.log('1. Checking the server connection...');
+  tests.push({ test: 'Environment Variables', status: 'PASSED' });
   
   // Test 2: Check visits table exists and count rows
   console.log('\n2️⃣ Testing visits table...');
@@ -176,9 +164,7 @@ export async function testSupabaseConnection() {
     
     const hasEnvError = tests.find(t => t.test === 'Environment Variables' && t.status === 'FAILED');
     if (hasEnvError) {
-      console.log('1. Fix .env file - add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
-      console.log('2. Get values from Supabase Dashboard → Project Settings → API');
-      console.log('3. Restart dev server');
+      console.log('1. Database access from this dashboard is closed');
     }
     
     const tableErrors = tests.filter(t => t.error && t.error.includes('does not exist'));

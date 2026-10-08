@@ -170,7 +170,7 @@ exports.handler = async (event) => {
 
         // Deduct inventory for Stripe orders
         try {
-          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseUrl = process.env.SUPABASE_URL;
           const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
           
           if (supabaseUrl && supabaseServiceKey) {
@@ -257,7 +257,7 @@ exports.handler = async (event) => {
 
         // Update Supabase orders directly
         try {
-          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseUrl = process.env.SUPABASE_URL;
           const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
           
           if (supabaseUrl && supabaseServiceKey) {
@@ -383,7 +383,7 @@ exports.handler = async (event) => {
         console.log('[Stripe Webhook] Checkout session expired:', orderNumber);
         
         try {
-          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseUrl = process.env.SUPABASE_URL;
           const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
           
           if (supabaseUrl && supabaseServiceKey) {
@@ -433,7 +433,7 @@ exports.handler = async (event) => {
           console.log('[Stripe Webhook] Payment failed for order:', orderNumber);
           
           try {
-            const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+            const supabaseUrl = process.env.SUPABASE_URL;
             const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
             
             if (supabaseUrl && supabaseServiceKey) {
@@ -469,7 +469,7 @@ exports.handler = async (event) => {
         console.log('[Stripe Webhook] Refund processed for payment intent:', paymentIntentId);
         
         try {
-          const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+          const supabaseUrl = process.env.SUPABASE_URL;
           const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
           
           if (supabaseUrl && supabaseServiceKey) {
