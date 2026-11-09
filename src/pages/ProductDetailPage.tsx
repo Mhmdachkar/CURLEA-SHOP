@@ -3026,19 +3026,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
+                      <p className="font-semibold text-sm mb-2">Best For:</p>
                       <p className="text-sm text-muted-foreground">Short to medium hair (shoulder length and above)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Tighter, bouncier curls with more definition</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">4-6 hours or overnight</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want long-lasting, defined curls with maximum hold</p>
                     </div>
                   </div>
@@ -3062,19 +3062,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
+                      <p className="font-semibold text-sm mb-2">Best For:</p>
                       <p className="text-sm text-muted-foreground">Medium to long hair (shoulder to mid-back)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Medium curls with beautiful bounce and volume</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">6-8 hours for best results</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want versatile curls that last all day</p>
                     </div>
                   </div>
@@ -3098,19 +3098,19 @@ export const ProductDetailPage = () => {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Best For:</p>
+                      <p className="font-semibold text-sm mb-2">Best For:</p>
                       <p className="text-sm text-muted-foreground">Long to very long hair (mid-back and beyond)</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Curl Type:</p>
+                      <p className="font-semibold text-sm mb-2">Curl Type:</p>
                       <p className="text-sm text-muted-foreground">Soft, loose waves with natural flow</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Ideal Time:</p>
+                      <p className="font-semibold text-sm mb-2">Ideal Time:</p>
                       <p className="text-sm text-muted-foreground">6-8 hours or overnight</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-sm mb-2">? Perfect If You:</p>
+                      <p className="font-semibold text-sm mb-2">Perfect If You:</p>
                       <p className="text-sm text-muted-foreground">Want effortless, beachy waves with volume</p>
                     </div>
                   </div>
